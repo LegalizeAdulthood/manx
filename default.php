@@ -6,7 +6,7 @@
 <link rel="shortcut icon" type="image/x-icon" href="manx.ico">
 <body id="VT100-NET">
 <div id="AUTH">Guest | <a href="login.php">Login</a></div><div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div><div id="MENU"><a class="firston">Search</a><span class="nodisp"> | </span><a href="about.php">About</a><span class="nodisp"> | </span><a href="help.php">Help</a></div>
-<div id="SEARCHFORM"><form action="search.php" method="get" name="f"><div class="field">Company: <select id="CP" name="cp"><OPTION VALUE="71">3Com Corporation</OPTION>
+<div id="SEARCHFORM"><form action="default.php" method="get" name="f"><div class="field">Company: <select id="CP" name="cp"><OPTION VALUE="71">3Com Corporation</OPTION>
 <OPTION VALUE="73">ABLE Communications</OPTION>
 <OPTION VALUE="98">Acorn Computers Limited</OPTION>
 <OPTION VALUE="53">Adaptec, Inc.</OPTION>
@@ -112,7 +112,7 @@
 <OPTION VALUE="40">Zilog, Inc.</OPTION>
 </SELECT> Keywords: <INPUT ID="Q" NAME="q" VALUE="" SIZE="20" MAXLENGTH="256"> Online only: <input type="checkbox" name="on"> <INPUT ID="GO" TYPE="SUBMIT" VALUE="Search"></DIV></FORM></div>
 <DIV CLASS="resbar">Showing all documents. Results <B>1 - 10</B> of <B>9688</B>.</DIV>
-<DIV CLASS="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<B CLASS="currpage">1</B>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=10;cp=1">2</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=20;cp=1">3</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=30;cp=1">4</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=40;cp=1">5</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=50;cp=1">6</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=60;cp=1">7</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=70;cp=1">8</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=80;cp=1">9</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=90;cp=1">10</A>&nbsp;&nbsp;<A HREF="search.php?q=;start=10;cp=1"><B>Next</B></A></DIV>
+<DIV CLASS="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<B CLASS="currpage">1</B>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=10;cp=1">2</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=20;cp=1">3</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=30;cp=1">4</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=40;cp=1">5</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=50;cp=1">6</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=60;cp=1">7</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=70;cp=1">8</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=80;cp=1">9</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=90;cp=1">10</A>&nbsp;&nbsp;<A HREF="default.php?q=;start=10;cp=1"><B>Next</B></A></DIV>
 <TABLE CLASS="restable"><THEAD><TR><TH>Part</TH><TH>Date</TH><TH>Title</TH><TH CLASS="last">Status</TH></TR></THEAD><TBODY><tr valign="top">
 <TD></TD>
 <TD></TD>
@@ -173,6 +173,6 @@
 <TD><A HREF="details.php/1,4301">KA8/I Positive I/O Bus Option Description</A></TD>
 <TD>&nbsp;</TD>
 </TR>
-</TBODY></TABLE><DIV CLASS="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<B CLASS="currpage">1</B>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=10;cp=1">2</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=20;cp=1">3</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=30;cp=1">4</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=40;cp=1">5</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=50;cp=1">6</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=60;cp=1">7</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=70;cp=1">8</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=80;cp=1">9</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="search.php?q=;start=90;cp=1">10</A>&nbsp;&nbsp;<A HREF="search.php?q=;start=10;cp=1"><B>Next</B></A></DIV>
+</TBODY></TABLE><DIV CLASS="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<B CLASS="currpage">1</B>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=10;cp=1">2</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=20;cp=1">3</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=30;cp=1">4</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=40;cp=1">5</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=50;cp=1">6</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=60;cp=1">7</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=70;cp=1">8</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=80;cp=1">9</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=90;cp=1">10</A>&nbsp;&nbsp;<A HREF="default.php?q=;start=10;cp=1"><B>Next</B></A></DIV>
 </div></body></html>
 
