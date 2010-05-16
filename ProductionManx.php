@@ -60,7 +60,12 @@ class ProductionManx implements Manx
 	}
 	function renderDocumentSummary()
 	{
-		return '18297 manuals, 6127 of which are online, at 52 websites';
+		$rows = $this->_pdo->query("SELECT COUNT(*) FROM `PUB`")->fetch();
+		print $rows[0] . ' manuals, ';
+		$rows = $this->_pdo->query("SELECT COUNT(*) FROM `PUB` WHERE `pub_has_online_copies` = 1")->fetch();
+		print $rows[0] . ' of which are online, at ';
+		$rows = $this->_pdo->query("SELECT COUNT(*) FROM `SITE`")->fetch();
+		print $rows[0] . ' websites';
 	}
 	function renderLoginLink($page)
 	{

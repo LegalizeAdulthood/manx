@@ -25,7 +25,7 @@ of Contents and full text when these become available.</p>
 mainframes, or associated devices such as terminals and printers.
 Tiziano's <A HREF="http://1000bit.net/">1000 BiT</A> is the best
 catalogue for microcomputers.</P>
-<P><STRONG>Manx</STRONG> currently knows about <?php print $manx->renderDocumentSummary(); ?>.</P>
+<P><STRONG>Manx</STRONG> currently knows about <?php $manx->renderDocumentSummary(); ?>.</P>
 <P>Manx covers the following companies:
 <?php
 	$manx->renderCompanyList();
