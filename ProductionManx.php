@@ -2,7 +2,7 @@
 
 require 'Manx.php';
 
-class ProductionCompany implements Manx
+class ProductionManx implements Manx
 {
 	public function renderDefaultCompanies()
 	{
