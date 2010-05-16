@@ -5,7 +5,12 @@
 <link rel="stylesheet" type="text/css" href="../manx.css">
 <link href="../manx.ico" type="image/x-icon" rel="shortcut icon">
 <body id="VT100-NET">
-<div id="AUTH">Guest | <a href="../login.php?redirect=http%3A%2F%2Fvt100.net%2Fmanx%2Fdetails%3Fcp%3D1%3Bid%3D3129%3Bcn%3D1%3Bpn%3D0">Login</a></div><div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div><div id="MENU"><a class="first" href="../default.php">Search</a><span class="nodisp"> | </span><a href="../about.php">About</a><span class="nodisp"> | </span><a href="../help.php">Help</a></div>
+<?php
+	require 'ProductionManx.php';
+	$manx = new ProductionManx();
+	$page = 'details.php%3Fcp%3D1%3Bid%3D3129%3Bcn%3D1%3Bpn%3D0';
+?>
+<div id="AUTH">Guest | <?php print $manx->renderLoginLink($page); ?></div><div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div><div id="MENU"><a class="first" href="../default.php">Search</a><span class="nodisp"> | </span><a href="../about.php">About</a><span class="nodisp"> | </span><a href="../help.php">Help</a></div>
 <DIV CLASS="det"><H1>PDP-11/70 Hardware Student Handouts</H1>
 <TABLE><TBODY><TR><TD>Company:</TD><TD>Digital Equipment Corporation</TD></TR>
 <TR><TD>Part:</TD><TD> </TD></TR>

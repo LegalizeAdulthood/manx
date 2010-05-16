@@ -3,7 +3,15 @@
 </head>
 <body>
 <body id="VT100-NET">
-<div id="AUTH">Guest | <a href="login.php">Login</a></div><div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div><div id="MENU"><A CLASS="first" href="default.php">Search</a><span class="nodisp"> | </span><a href="about.php">About</A><SPAN CLASS="nodisp"> | </SPAN><A HREF="help.php">Help</A></DIV>
+<?php
+	require 'ProductionManx.php';
+	$manx = new ProductionManx();
+?>
+<div id="AUTH">Guest | <a href="login.php">Login</a></div>
+<div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
+<div id="MENU"><A CLASS="first" href="default.php">Search</a><span class="nodisp">
+| </span><a href="about.php">About</A><SPAN CLASS="nodisp">
+| </SPAN><A HREF="help.php">Help</A></DIV>
 <div class="det"><form id="LOGINFORM" method="post" action="login.php">
 <table id="LOGINBOX">
 <tbody>
