@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
 <head>
-<title>Manx: snake</title>
+<title>Manx</title>
 <link rel="stylesheet" type="text/css" href="manx.css">
 <link href="manx.ico" type="image/x-icon" rel="shortcut icon">
 <body id="VT100-NET">
@@ -28,7 +28,7 @@ catalogue for microcomputers.</P>
 <P><STRONG>Manx</STRONG> currently knows about <?php print $manx->renderDocumentSummary(); ?>.</P>
 <P>Manx covers the following companies:
 <?php
-	print $manx->renderCompanyList();
+	$manx->renderCompanyList();
 ?>
 </P>
 <p>The list below shows the websites included in Manx. As Manx is
@@ -38,7 +38,7 @@ sites, please let me know about them. Even if a site only contains
 one manual, it is worth including. This list is ordered by date of
 inclusion in Manx.</p>
 <?php
-	print $manx->renderSiteList();
+	$manx->renderSiteList();
 ?>
 <p>Some of these sites are marked as being Low Bandwidth. They are either on
 a home DSL line, or the owner has indicated that they should not be mirrored
