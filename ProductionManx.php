@@ -4,6 +4,15 @@ require 'Manx.php';
 
 class ProductionManx implements Manx
 {
+	public function __construct()
+	{
+		$_pdo = new PDO("mysql:host=localhost;dbname=manx");
+	}
+	public function __destruct()
+	{
+		$_pdo = null;
+	}
+	
 	function renderSiteList()
 	{
 		return '<ul>
