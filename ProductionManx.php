@@ -8,7 +8,8 @@ class ProductionManx implements Manx
 
 	public function __construct()
 	{
-		$this->_pdo = new PDO("mysql:host=localhost;dbname=manx", "root", "spammer");
+		$config = explode(" ", trim(file_get_contents("config.txt")));
+		$this->_pdo = new PDO($config[0], $config[1], $config[2]);
 	}
 	public function __destruct()
 	{
