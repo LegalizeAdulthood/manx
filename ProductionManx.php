@@ -15,7 +15,7 @@ class ProductionManx implements Manx
 	{
 		$this->_pdo = null;
 	}
-	
+
 	function renderSiteList()
 	{
 		try
@@ -70,7 +70,7 @@ class ProductionManx implements Manx
 	}
 	function renderLoginLink($page)
 	{
-		return '<a href="login.php?redirect=http%3A%2F%2Fvt100.net%2F' . $page . '">Login</a>';
+		print '<a href="login.php?redirect=http%3A%2F%2Fvt100.net%2F' . $page . '">Login</a>';
 	}
 	
 	public function renderDefaultCompanies()
@@ -150,6 +150,16 @@ class ProductionManx implements Manx
 <td>&nbsp;</td>
 </tr>
 </tbody></table><div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=10;cp=1">2</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=20;cp=1">3</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=30;cp=1">4</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=40;cp=1">5</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=50;cp=1">6</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=60;cp=1">7</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=70;cp=1">8</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=80;cp=1">9</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=90;cp=1">10</a>&nbsp;&nbsp;<a href="default.php?q=;start=10;cp=1"><b>Next</b></a></div>';
+	}
+
+	function renderSearchResults()
+	{
+		print '<div id="Div1"><form action="default.php" method="get" name="f"><div class="field">Company: ';
+		$this->renderDefaultCompanies();
+		print 'Keywords: <input id="Text1" name="q" value="" size="20" maxlength="256" />
+Online only: <input type="checkbox" name="on" />
+<input id="Submit1" type="submit" value="Search" /></div></form></div>';
+		print $this->renderDefaultSearchResults();
 	}
 }
 

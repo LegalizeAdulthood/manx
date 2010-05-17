@@ -10,7 +10,7 @@
 	require 'ProductionManx.php';
 	$manx = new ProductionManx();
 ?>
-<div id="AUTH">Guest | <?php print $manx->renderLoginLink('help.php'); ?></div>
+<div id="AUTH">Guest | <?php $manx->renderLoginLink('help.php'); ?></div>
 <div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
 <div id="MENU"><a class="first" href="default.php">Search</a><span class="nodisp">
 | </span><a href="about.php">About</a><span class="nodisp">
