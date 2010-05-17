@@ -1,9 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/tr/html4/strict.dtd">
 <html lang="en">
 <head>
 <title>Manx</title>
-<link rel="stylesheet" type="text/css" href="manx.css">
-<link href="manx.ico" type="image/x-icon" rel="shortcut icon">
+<link rel="stylesheet" type="text/css" href="manx.css" />
+<link href="manx.ico" type="image/x-icon" rel="shortcut icon" />
+</head>
 <body id="VT100-NET">
 <?php
 	require 'ProductionManx.php';
@@ -14,7 +15,7 @@
 <div id="MENU"><a class="first" href="default.php">Search</a><span class="nodisp">
 | </span><a href="about.php">About</a><span class="nodisp">
 | </span><a class="on">Help</a></div>
-<DIV CLASS="det"><h1>Help</h1>
+<div class="det"><h1>Help</h1>
 <p>To search, enter a word or words from the title of the manual you're
 looking for, or some letters or digits from the part number. Each word
 you search for must contain at least three letters (or you'd get loads

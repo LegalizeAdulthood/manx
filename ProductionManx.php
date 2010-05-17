@@ -87,69 +87,69 @@ class ProductionManx implements Manx
 	
 	public function renderDefaultSearchResults()
 	{
-		return '<DIV CLASS="resbar">Showing all documents. Results <B>1 - 10</B> of <B>9688</B>.</DIV>
-<DIV CLASS="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<B CLASS="currpage">1</B>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=10;cp=1">2</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=20;cp=1">3</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=30;cp=1">4</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=40;cp=1">5</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=50;cp=1">6</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=60;cp=1">7</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=70;cp=1">8</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=80;cp=1">9</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=90;cp=1">10</A>&nbsp;&nbsp;<A HREF="default.php?q=;start=10;cp=1"><B>Next</B></A></DIV>
-<TABLE CLASS="restable"><THEAD><TR><TH>Part</TH><TH>Date</TH><TH>Title</TH><TH CLASS="last">Status</TH></TR></THEAD><TBODY><tr valign="top">
-<TD></TD>
-<TD></TD>
-<TD><A HREF="details.php/1,3129">PDP-11/70 Hardware Student Handouts</A></TD>
-<TD>Online</TD>
-</TR>
+		return '<div class="resbar">Showing all documents. Results <b>1 - 10</b> of <b>9688</b>.</div>
+<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=10;cp=1">2</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=20;cp=1">3</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=30;cp=1">4</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=40;cp=1">5</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=50;cp=1">6</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=60;cp=1">7</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=70;cp=1">8</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=80;cp=1">9</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=90;cp=1">10</a>&nbsp;&nbsp;<a href="default.php?q=;start=10;cp=1"><b>Next</b></a></div>
+<table class="restable"><thead><tr><th>Part</th><th>Date</th><th>Title</th><th class="last">Status</th></tr></thead><tbody><tr valign="top">
+<td></td>
+<td></td>
+<td><a href="details.php/1,3129">PDP-11/70 Hardware Student Handouts</a></td>
+<td>Online</td>
+</tr>
 <tr valign="top">
-<TD></TD>
-<TD></TD>
-<TD><A HREF="details.php/1,3230">FP11-B Floating-Point Processor Engineering Drawings</A></TD>
-<TD>Online</TD>
-</TR>
+<td></td>
+<td></td>
+<td><a href="details.php/1,3230">FP11-B Floating-Point Processor Engineering Drawings</a></td>
+<td>Online</td>
+</tr>
 <tr valign="top">
-<TD></TD>
-<TD></TD>
-<TD><A HREF="details.php/1,3311">XVM Upgrades</A></TD>
-<TD>Online</TD>
-</TR>
+<td></td>
+<td></td>
+<td><a href="details.php/1,3311">XVM Upgrades</a></td>
+<td>Online</td>
+</tr>
 <tr valign="top">
-<TD></TD>
-<TD></TD>
-<TD><A HREF="details.php/1,3329">RL11/01 Disk Sub-System Training Handout</A></TD>
-<TD>Online</TD>
-</TR>
+<td></td>
+<td></td>
+<td><a href="details.php/1,3329">RL11/01 Disk Sub-System Training Handout</a></td>
+<td>Online</td>
+</tr>
 <tr valign="top">
-<TD></TD>
-<TD></TD>
-<TD><A HREF="details.php/1,3874">Prioris MX 6200 Server-Specific Information</A></TD>
-<TD>Online</TD>
-</TR>
+<td></td>
+<td></td>
+<td><a href="details.php/1,3874">Prioris MX 6200 Server-Specific Information</a></td>
+<td>Online</td>
+</tr>
 <tr valign="top">
-<TD></TD>
-<TD></TD>
-<TD><A HREF="details.php/1,3875">Prioris MX 6000 Servers Product Change Information</A></TD>
-<TD>Online</TD>
-</TR>
+<td></td>
+<td></td>
+<td><a href="details.php/1,3875">Prioris MX 6000 Servers Product Change Information</a></td>
+<td>Online</td>
+</tr>
 <tr valign="top">
-<TD></TD>
-<TD></TD>
-<TD><A HREF="details.php/1,3953">DW08 Schematics</A></TD>
-<TD>Online</TD>
-</TR>
+<td></td>
+<td></td>
+<td><a href="details.php/1,3953">DW08 Schematics</a></td>
+<td>Online</td>
+</tr>
 <tr valign="top">
-<TD></TD>
-<TD></TD>
-<TD><A HREF="details.php/1,3999">TU77 Field Change Orders (FCOs)</A></TD>
-<TD>Online</TD>
-</TR>
+<td></td>
+<td></td>
+<td><a href="details.php/1,3999">TU77 Field Change Orders (FCOs)</a></td>
+<td>Online</td>
+</tr>
 <tr valign="top">
-<TD></TD>
-<TD></TD>
-<TD><A HREF="details.php/1,4300">KP8/I Power Failure Option Function Description</A></TD>
-<TD>&nbsp;</TD>
-</TR>
+<td></td>
+<td></td>
+<td><a href="details.php/1,4300">KP8/I Power Failure Option Function Description</a></td>
+<td>&nbsp;</td>
+</tr>
 <tr valign="top">
-<TD></TD>
-<TD></TD>
-<TD><A HREF="details.php/1,4301">KA8/I Positive I/O Bus Option Description</A></TD>
-<TD>&nbsp;</TD>
-</TR>
-</TBODY></TABLE><DIV CLASS="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<B CLASS="currpage">1</B>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=10;cp=1">2</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=20;cp=1">3</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=30;cp=1">4</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=40;cp=1">5</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=50;cp=1">6</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=60;cp=1">7</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=70;cp=1">8</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=80;cp=1">9</A>&nbsp;&nbsp;<A CLASS="navpage" HREF="default.php?q=;start=90;cp=1">10</A>&nbsp;&nbsp;<A HREF="default.php?q=;start=10;cp=1"><B>Next</B></A></DIV>';
+<td></td>
+<td></td>
+<td><a href="details.php/1,4301">KA8/I Positive I/O Bus Option Description</a></td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table><div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=10;cp=1">2</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=20;cp=1">3</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=30;cp=1">4</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=40;cp=1">5</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=50;cp=1">6</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=60;cp=1">7</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=70;cp=1">8</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=80;cp=1">9</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=90;cp=1">10</a>&nbsp;&nbsp;<a href="default.php?q=;start=10;cp=1"><b>Next</b></a></div>';
 	}
 }
 

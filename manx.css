@@ -1,9 +1,9 @@
-BODY { background: none #fff no-repeat; margin: 0 }
+body { background: none #fff no-repeat; margin: 0 }
 
 #AUTH { float: right; color: #fff; padding: 0.3em }
 #HDR0, #HDR { background-color: #089698; color: #eee; margin: 0 }
 #HDR FORM { margin: 0 }
-#HDR TD { color: #eee }
+#HDR td { color: #eee }
 .field {margin: 0.5em 1em }
 /*
 #CP { border: thin solid #eee }
@@ -11,27 +11,27 @@ BODY { background: none #fff no-repeat; margin: 0 }
 #GO { border: thin solid #eee; background-color: #ff8f35; color: #000; height: 1.5em; font-weight: bolder }
  */
 
-DIV.det { margin: 10px }
+div.det { margin: 10px }
 
 #LOGO h1 span { display: none }
 #LOGO h1 { background: #089698 url(manx.png) no-repeat top left; height: 80px; margin: 0}
 
-H1, H2 { color: #089698; background-color: transparent }
+h1, h2 { color: #089698; background-color: transparent }
 
-TABLE.restable TD,
-TABLE.restable TH { padding: 0.1em 1em; text-align: left }
+table.restable td,
+table.restable th { padding: 0.1em 1em; text-align: left }
 table.restable td.idcol,
 table.restable th.idcol { text-align: right }
-.restable BLOCKQUOTE { margin: 0.5em 2em; font-size: smaller }
+.restable blockquote { margin: 0.5em 2em; font-size: smaller }
 
 .logo { float: left; width: 180px }
 
-IMG.button { border: none }
+img.button { border: none }
 
 /*.resbar { background-color: #089698; color: #fff; padding: 0.1em 1em }*/
 .resbar { background-color: transparent; color: #000; font-weight: bolder; padding: 0.2em 1em; margin-top: 0.5em }
 
-DIV.query {
+div.query {
 	margin-left: 10em;
 }
 
@@ -46,28 +46,28 @@ DIV.query {
 
 .warning { background-color: transparent; color: #f00 }
 
-DIV.toc UL { margin-left: 0; padding-left: 0 }
-DIV.toc LI { padding-left: 0; list-style-type: none }
-DIV.toc LI.level1 SPAN.level1 { padding-right: 1em}
-DIV.toc LI.level2 { margin-left: 3em }
-DIV.toc LI.level2 SPAN { float: left; width: 5em }
-DIV.toc LI.level3 SPAN { float: left; width: 7em }
-DIV.toc LI.level4 SPAN { float: left; width: 9em }
-DIV.toc LI.level5 SPAN { float: left; width: 11em }
+div.toc ul { margin-left: 0; padding-left: 0 }
+div.toc li { padding-left: 0; list-style-type: none }
+div.toc li.level1 span.level1 { padding-right: 1em}
+div.toc li.level2 { margin-left: 3em }
+div.toc li.level2 span { float: left; width: 5em }
+div.toc li.level3 span { float: left; width: 7em }
+div.toc li.level4 span { float: left; width: 9em }
+div.toc li.level5 span { float: left; width: 11em }
 
-UL.citelist { margin: 0; padding-left: 0 }
-UL.citelist LI { padding-left: 0; list-style-type: none }
+ul.citelist { margin: 0; padding-left: 0 }
+ul.citelist li { padding-left: 0; list-style-type: none }
 
 .navbot { text-align: right }
 .nodisp { display: none }
 #MENU { background-color: #089698; padding: 3px 10px; margin-top: 1px }
-#MENU A { color: #eee; text-decoration: none; font-weight: bolder;
+#MENU a { color: #eee; text-decoration: none; font-weight: bolder;
 	border-right: 1px solid #eee; padding: 3px 10px
 }
-#MENU A.first { border-left: 1px solid #eee }
-#MENU A:hover { background-color: #ff8f35; color: #000 }
-#MENU A.firston { border-left: 1px solid #eee; background-color: #ff8f35; color: #000 }
-#MENU A.on { background-color: #ff8f35; color: #000 }
+#MENU a.first { border-left: 1px solid #eee }
+#MENU a:hover { background-color: #ff8f35; color: #000 }
+#MENU a.firston { border-left: 1px solid #eee; background-color: #ff8f35; color: #000 }
+#MENU a.on { background-color: #ff8f35; color: #000 }
 
 .ss { color: #999; background-color: transparent }
 
