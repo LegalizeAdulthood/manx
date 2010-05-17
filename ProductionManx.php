@@ -1,9 +1,9 @@
 <?php
 
 require 'PDODatabaseAdapter.php';
-require 'Manx.php';
+require 'IManx.php';
 
-class ProductionManx implements Manx
+class ProductionManx implements IManx
 {
 	private $_db;
 

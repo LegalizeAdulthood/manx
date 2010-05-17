@@ -1,6 +1,6 @@
 <?php
 
-interface Manx
+interface IManx
 {
 	public function renderDefaultCompanies();
 	public function renderDefaultSearchResults();
