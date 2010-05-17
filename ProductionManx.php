@@ -1,23 +1,28 @@
 <?php
 
+require 'PDODatabaseAdapter.php';
 require 'Manx.php';
 
 class ProductionManx implements Manx
 {
-	private $_pdo;
+	private $_db;
 
 	public static function getInstance()
 	{
-		return new ProductionManx();
-	}
-	private function __construct()
-	{
 		$config = explode(" ", trim(file_get_contents("config.txt")));
-		$this->_pdo = new PDO($config[0], $config[1], $config[2]);
+		return getInstanceForDatabase(PDODatabaseAdapter::getInstance(new PDO($config[0], $config[1], $config[2])));
+	}
+	public static function getInstanceForDatabase($db)
+	{
+		return new ProductionManx($db);
+	}
+	private function __construct($db)
+	{
+		$this->_db = $db;
 	}
 	public function __destruct()
 	{
-		$this->_pdo = null;
+		$this->_db = null;
 	}
 
 	function renderSiteList()
@@ -25,7 +30,7 @@ class ProductionManx implements Manx
 		try
 		{
 			print '<ul>';
-			foreach ($this->_pdo->query("SELECT `url`,`description`,`low` FROM `SITE` ORDER BY `siteid`") as $row)
+			foreach ($this->_db->query("SELECT `url`,`description`,`low` FROM `SITE` ORDER BY `siteid`") as $row)
 			{
 				print '<li><a href="' . $row['url'] . '">' . htmlspecialchars($row['description']) . '</a>';
 				if ('Y' == $row['low'])
@@ -45,10 +50,10 @@ class ProductionManx implements Manx
 	{
 		try
 		{
-			$rows = $this->_pdo->query("SELECT COUNT(*) FROM `COMPANY` WHERE `display` = 'Y'")->fetch();
+			$rows = $this->_db->query("SELECT COUNT(*) FROM `COMPANY` WHERE `display` = 'Y'")->fetch();
 			$count = $rows[0];
 			$i = 0;
-			foreach ($this->_pdo->query("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`") as $row)
+			foreach ($this->_db->query("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`") as $row)
 			{
 				print '<a href="default.php?cp=' . $row['id'] . '">' . htmlspecialchars($row['name']) . '</a>';
 				$i++;
@@ -65,11 +70,11 @@ class ProductionManx implements Manx
 	}
 	function renderDocumentSummary()
 	{
-		$rows = $this->_pdo->query("SELECT COUNT(*) FROM `PUB`")->fetch();
+		$rows = $this->_db->query("SELECT COUNT(*) FROM `PUB`")->fetch();
 		print $rows[0] . ' manuals, ';
-		$rows = $this->_pdo->query("SELECT COUNT(*) FROM `PUB` WHERE `pub_has_online_copies` = 1")->fetch();
+		$rows = $this->_db->query("SELECT COUNT(*) FROM `PUB` WHERE `pub_has_online_copies` = 1")->fetch();
 		print $rows[0] . ' of which are online, at ';
-		$rows = $this->_pdo->query("SELECT COUNT(*) FROM `SITE`")->fetch();
+		$rows = $this->_db->query("SELECT COUNT(*) FROM `SITE`")->fetch();
 		print $rows[0] . ' websites';
 	}
 	function renderLoginLink($page)
@@ -81,7 +86,7 @@ class ProductionManx implements Manx
 	{
 		print '<select id="CP" name="cp">';
 		$defaultId = 1; // Digital Equipment Corporation
-		foreach ($this->_pdo->query("SELECT `id`,`name` FROM `COMPANY` ORDER BY `sort_name`") as $row)
+		foreach ($this->_db->query("SELECT `id`,`name` FROM `COMPANY` ORDER BY `sort_name`") as $row)
 		{
 			$id = $row['id'];
 			print '<option value="' . $id . ($id == $defaultId ? ' selected' : '') . '>' . htmlspecialchars($row['name']) . '</option>';
