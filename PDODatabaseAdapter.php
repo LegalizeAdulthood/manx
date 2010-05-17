@@ -9,13 +9,13 @@
 		}
 		private function __construct($pdo)
 		{
-			$_pdo = $pdo;
+			$this->_pdo = $pdo;
 		}
 		private $_pdo;
 
 		public function query($statement)
 		{
-			return $_pdo->query($statement);
+			return $this->_pdo->query($statement);
 		}
 	}
 ?>
