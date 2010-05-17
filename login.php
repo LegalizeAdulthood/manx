@@ -5,7 +5,7 @@
 <body id="VT100-NET">
 <?php
 	require 'ProductionManx.php';
-	$manx = new ProductionManx();
+	$manx = ProductionManx::getInstance();
 ?>
 <div id="AUTH">Guest | <a href="login.php">Login</a></div>
 <div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>

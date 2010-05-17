@@ -6,7 +6,11 @@ class ProductionManx implements Manx
 {
 	private $_pdo;
 
-	public function __construct()
+	public static function getInstance()
+	{
+		return new ProductionManx();
+	}
+	private function __construct()
 	{
 		$config = explode(" ", trim(file_get_contents("config.txt")));
 		$this->_pdo = new PDO($config[0], $config[1], $config[2]);
