@@ -1,0 +1,8 @@
+glob:_ReSharper.*
+glob:config.txt
+glob:.hgignore
+glob:*.user
+glob:*.ncb
+glob:Debug
+glob:Release
+glob:*.suo
