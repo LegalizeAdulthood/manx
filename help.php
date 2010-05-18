@@ -10,11 +10,13 @@
 	require_once 'ProductionManx.php';
 	$manx = ProductionManx::getInstance();
 ?>
+<div id="HEADER">
 <div id="AUTH">Guest | <?php $manx->renderLoginLink('help.php'); ?></div>
 <div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
 <div id="MENU"><a class="first" href="default.php">Search</a><span class="nodisp">
 | </span><a href="about.php">About</a><span class="nodisp">
 | </span><a class="on">Help</a></div>
+</div>
 <div class="det"><h1>Help</h1>
 <p>To search, enter a word or words from the title of the manual you're
 looking for, or some letters or digits from the part number. Each word

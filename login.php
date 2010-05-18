@@ -7,12 +7,13 @@
 	require_once 'ProductionManx.php';
 	$manx = ProductionManx::getInstance();
 ?>
+<div id="HEADER">
 <div id="AUTH">Guest | <a href="login.php">Login</a></div>
 <div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
 <div id="MENU"><a class="first" href="default.php">Search</a><span class="nodisp">
 | </span><a href="about.php">About</a><span class="nodisp">
 | </span><a href="help.php">Help</a></div>
-
+</div>
 <div class="det"><form id="LOGINFORM" method="post" action="login.php">
 <table id="LOGINBOX">
 <tbody>

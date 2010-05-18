@@ -11,7 +11,13 @@
 	$manx = ProductionManx::getInstance();
 	$page = 'details.php%3Fcp%3D1%3Bid%3D3129%3Bcn%3D1%3Bpn%3D0';
 ?>
-<div id="AUTH">Guest | <?php $manx->renderLoginLink($page); ?></div><div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div><div id="MENU"><a class="first" href="../default.php">Search</a><span class="nodisp"> | </span><a href="../about.php">About</a><span class="nodisp"> | </span><a href="../help.php">Help</a></div>
+<div id="HEADER">
+<div id="AUTH">Guest | <?php $manx->renderLoginLink($page); ?></div>
+<div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
+<div id="MENU"><a class="first" href="../default.php">Search</a><span class="nodisp">
+| </span><a href="../about.php">About</a><span class="nodisp">
+| </span><a href="../help.php">Help</a></div>
+</div>
 <div class="det"><h1>PDP-11/70 Hardware Student Handouts</h1>
 <table><tbody><tr><td>Company:</td><td>Digital Equipment Corporation</td></tr>
 <tr><td>Part:</td><td> </td></tr>

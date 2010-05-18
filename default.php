@@ -10,11 +10,13 @@
 	require_once 'ProductionManx.php';
 	$manx = ProductionManx::getInstance();
 ?>
+<div id="HEADER">
 <div id="AUTH">Guest | <?php $manx->renderLoginLink(); ?></div>
 <div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
 <div id="MENU"><a class="firston">Search</a><span class="nodisp">
 | </span><a href="about.php">About</a><span class="nodisp">
 | </span><a href="help.php">Help</a></div>
+</div>
 <?php
 	$manx->renderSearchResults();
 ?>
