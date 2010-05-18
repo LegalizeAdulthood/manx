@@ -1,7 +1,7 @@
 <?php
 
-require 'PDODatabaseAdapter.php';
-require 'IManx.php';
+require_once 'PDODatabaseAdapter.php';
+require_once 'IManx.php';
 
 class ProductionManx implements IManx
 {
@@ -10,7 +10,8 @@ class ProductionManx implements IManx
 	public static function getInstance()
 	{
 		$config = explode(" ", trim(file_get_contents("config.txt")));
-		return getInstanceForDatabase(PDODatabaseAdapter::getInstance(new PDO($config[0], $config[1], $config[2])));
+		$db = PDODatabaseAdapter::getInstance(new PDO($config[0], $config[1], $config[2]));
+		return ProductionManx::getInstanceForDatabase($db);
 	}
 	public static function getInstanceForDatabase($db)
 	{
