@@ -1,0 +1,109 @@
+#PART	EK-TR79F-MM-001
+#TITLE	TR79-FA DECmagtape (1600 cpi) Maintenance Manual
+1	Chapter 1	Introduction
+2	1.1	Introduction
+2	1.2	General Description
+2	1.3	Specifications
+3	1.3.1	Transport Control Unit
+3	1.3.2	Magnetic Tape Transport
+2	1.4	Operation
+1	Chapter 2	Installation
+2	2.1	Site Considerations
+2	2.2	Cables
+3	2.2.1	Unibus
+3	2.2.2	TCU/MTT Cable
+2	2.3	Grounding
+2	2.4	Initial Operation
+3	2.4.1	Acceptance Procedure
+4	2.4.1.1	Test 1
+4	2.4.1.2	Test 2
+4	2.4.1.3	Test 3
+4	2.4.1.4	Test 4
+4	2.4.1.5	Test 5
+2	2.5	Related Literature
+1	Chapter 3	Operation and Programming
+2	3.1	General
+2	3.2	Register Formats
+3	3.2.1	Control Register (764000)
+3	3.2.2	Status Register (764002)
+2	3.3	Interrupts
+2	3.4	Programming Techniques
+1	Chapter 4	Theory of Operation
+2	4.1	General
+2	4.2	Status Register (SR)
+2	4.3	Control Register (CR)
+2	4.4	Recording Format
+3	4.4.1	Format Architecture
+3	4.4.2	Definitions
+3	4.4.3	Track Identification
+3	4.4.4	Parity
+3	4.4.5	Identification Burst (IDB)
+3	4.4.6	Preamble
+3	4.4.7	Postamble
+3	4.4.8	Data Record
+3	4.4.9	Tape Mark (TM)
+3	4.4.10	Inter-Block Gap (IBG)
+2	4.5	Gap Compositions
+3	4.5.1	Gap Shutdown
+4	4.5.1.1	Write Shut-Down
+4	4.5.1.2	Read Forward Shut-Down
+4	4.5.1.3	Identification Burst Shut-Down
+3	4.5.2	Gap Start-Up
+4	4.5.2.1	Write Start-Up
+4	4.5.2.2	Read Start-Up
+3	4.5.3	Tape Mark Gap
+4	4.5.3.1	Tape Mark Shut-Down
+4	4.5.3.2	Tape Mark Start-Up
+3	4.5.4	Erase Gap
+4	4.5.4.1	Erase Shut-Down
+4	4.5.4.2	Erase Start-Up
+3	4.5.5	Read Reverse Gap
+2	4.6	MTT Commands
+3	4.6.1	FWD
+3	4.6.2	REV
+3	4.6.3	FAST
+3	4.6.4	RWND
+3	4.6.5	LOCAL
+3	4.6.6	WT ENB
+3	4.6.7	WSWC
+3	4.6.8	WID
+3	4.6.9	EOFC
+3	4.6.10	WPAMB
+3	4.6.11	EODAT
+3	4.6.12	WRITE
+3	4.6.13	READ
+3	4.6.14	ERASE
+3	4.6.15	SP REV
+2	4.7	TCU and MTT Troubleshooting
+2	4.8	List of Mnemonics
+1	Chapter 5	Maintenance
+2	5.1	Special Test Equipment
+2	5.2	Preventive Maintenance
+3	5.2.1	TR79-FA Magtape Controller Monthly Field Service Preventive Maintenance
+3	5.2.2	TR79-FA Magtape Controller Quarterly Field Service Preventive Maintenance
+3	5.2.3	TR79-FA Magtape Controller Annual Field Service Preventive Maintenance
+3	5.2.4	HP7970E Magtape Drive Quarterly Field Service Preventive Maintenance
+3	5.2.5	HP7970E Magtape Drive Semiannual Field Service Preventive Maintenance
+3	5.2.6	HP7970E Magtape Drive Annual Field Service Preventive Maintenance
+3	5.2.7	HP7970E Magtape Drive Two-Year Field Service Preventive Maintenance
+2	5.3	Corrective Maintenance Techniques
+1	Chapter 6	Spare Parts
+2	6.1	Modules
+1	Appendix A	TR79-FA Test Program Description
+2	A.1	Abstract TR79-FA Test (MAINDEC-11-DZTRA)
+2	A.2	Requirements
+2	A.3	Loading Procedure
+2	A.4	Starting Procedure
+3	A.4.1	Test Selection
+2	A.5	Operating Procedure
+2	A.6	Test Abstract
+3	A.6.1	PRETST: Pretest
+3	A.6.2	Test 1
+3	A.6.3	Test 2
+3	A.6.4	Test 3
+3	A.6.5	Test 4
+3	A.6.6	Test 5
+2	A.7	Errors
+1	Appendix B	Shipping List
+2	B.1	Equipment Furnished
+

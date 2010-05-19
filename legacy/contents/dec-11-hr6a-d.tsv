@@ -1,0 +1,52 @@
+#PART DEC-11-HR6A-D
+#TITLE PDP-11 Conventions Manual
+1	Appendix A	General Maintenance
+2	A.1	Scope
+2	A.2	Test Equipment and Tools
+2	A.3	Installation of ECOs
+2	A.4	Module Identification and Layout
+2	A.5	Module Component Identification
+2	A.6	Unibus Connections
+2	A.7	Multiple Box Systems
+2	A.8	Power Control
+2	A.9	System Unit Removal/Installation
+2	A.10	Maintenance Tips
+3	A.10.1	Diagnostic Programs
+3	A.10.2	KM11 Maintenance Set
+3	A.10.3	Observation of Service Major State Operation
+1	Appendix B	Logic Symbology
+2	B.1	General
+2	B.2	Logic Symbol
+3	B.2.1	State Indicator
+4	B.2.1.1	State Indicator Absent
+4	B.2.1.2	State Indicator Present
+3	B.2.2	Table of Combinations
+3	B.2.3	Flip-Flop
+3	B.2.4	One-Shot Functions
+3	B.2.5	One-Shot Delays
+3	B.2.6	Schmitt Trigger
+3	B.2.7	Amplifier
+3	B.2.8	Time Delay Symbol
+3	B.2.9	General Logic Symbol
+1	Appendix C	Drawing Set
+2	C.1	Introduction
+2	C.2	Logic Drawing Organization
+2	C.3	Signal Names
+2	C.4	Signal Flow
+2	C.5	Wire List
+1	Appendix D	Processor Signals
+1	Appendix E	Product Code for Software Products
+2	E.1	Introduction
+2	E.2	Computer Series -- [XX]-XXXX-XX
+2	E.3	Product Identification -- XX-[XXXX]-XX
+2	E.3.1	Major Category
+2	E.3.2	Minor Category
+2	E.3.3	Option Category
+2	E.3.4	Revision Category
+2	E.3.5	Minor Category
+2	E.3.6	Unique Designation Category
+2	E.4	Distribution Method -- XX-XXXX-[XX]
+2	E.5	Special Classification
+2	E.6	Typical Example
+1	Appendix F	PDP-11 Glossary
+1	Appendix G	PDP-11 Standard Abbreviations

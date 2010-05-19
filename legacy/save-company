@@ -1,0 +1,102 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use CGI qw(:cgi -no_xhtml);
+use DBI;
+use Encode;
+use POSIX ();
+use Manx::DB;
+use Manx::Utilities;
+
+binmode STDOUT, ':utf8';
+
+sub html_header($$);
+
+my ($dbh, $smt, $sth, $rc, $rv, @rowary);
+
+my $SEARCHURL = '/manx/search';
+my $DETAILSURL = '/manx/details';
+
+my $DEFAULTNUMPERPAGE = 10;
+
+my @errors;
+
+$dbh = connectdb();
+die $DBI::errstr if $DBI::err;
+
+my ($session, $user_id, $user_username, $user_gn, $user_sn, $user_fullname);
+
+my $logged_in = 0;
+if ($session = cookie('manxSession')) {
+	my @rowary = $dbh->selectrow_array('select U.id,U.username,U.gn,U.sn from SESSION S,USER U where S.user=U.id and S.id=?', undef, $session);
+	if (@rowary) {
+		$logged_in = 1;
+		($user_id,$user_username,$user_gn,$user_sn) = @rowary;
+		$user_fullname = "$user_gn $user_sn";
+	}
+}
+
+if (!$logged_in) {
+	$user_username = 'Guest';
+}
+
+@rowary = $dbh->selectrow_array('select confval from CONFIG where confkey="updated"');
+my ($year, $mon, $mday, $hour, $min, $sec) = $rowary[0] =~ /(....)(..)(..)(..)(..)(..)/;
+my $time = POSIX::mktime($sec, $min, $hour, $mday, $mon - 1, $year - 1900);
+my $tlm = POSIX::strftime("%a, %d %b %Y %T GMT", gmtime($time));
+	
+print header(-charset => 'utf-8');
+html_header($logged_in, $user_username);
+
+print '<p>', html_encode(param('coname')), '</p>';
+print '<p>', html_encode(param('coshort')), '</p>';
+print '<p>', html_encode(param('cosort')), '</p>';
+
+$rv = $dbh->do('update COMPANY set name=?, shortname=?, sort_name=? where id=?', undef, param('coname'), param('cosort'), param('coshort'), param('id'));
+if ($rv) {
+	my $r = $dbh->selectrow_hashref('select name,shortname,sort_name from COMPANY where id=?', undef, param('id'));
+	print q{<div id="compedit"><form action="save-company" name="editform" method="post">},
+		q{<input type="hidden" name="id" value="}, html_encode(param('id')), q{">},
+		q{<fieldset><legend>Edit company</legend>},
+		q{<ul>},
+			q{<li><label for="coname">Full name</label><input type="text" name="coname" value="}, html_encode($r->{name}), q{" size="40" maxlength="50"></li>},
+			q{<li><label for="coshort">Short name or abbrev.</label><input type="text" name="coshort" value="}, html_encode($r->{shortname}), q{" size="40" maxlength="50"></li>},
+			q{<li><label for="cosort">Name for sorting purposes</label><input type="text" name="cosort" value="}, html_encode($r->{sort_name}), q{" size="40" maxlength="50"></li>},
+		q{</ul></fieldset>},
+		q{<input type="submit" name="Save">},
+		q{</form></div>};
+} else {
+	print '<p>Error: ', html_encode($DBI::errstr), '</p>';
+	print qq{<div class="navbot"><hr>Comments, queries or problems to &lt;$Manx::DB::admin_email&gt;</div></div></body></html>\n};
+	
+}
+
+$dbh->disconnect() if $dbh;
+exit;
+
+sub html_header($$) {
+	my ($logged_in, $username) = @_;
+
+	print qq{<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">\n},
+		qq{<html lang="en">\n<head>\n<title>Manx</title>\n},
+		qq{<link rel="stylesheet" type="text/css" href="manx-style.css">\n},
+		qq{<link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">\n};
+
+	print qq{<body id="VT100-NET">\n};
+	print qq{<div id="AUTH">}, html_encode($username), ' | ';
+	if ($logged_in) {
+		print qq{<a href="/manx/login?op=LOGO">Logout</a></div>};
+	} else {
+		my $redirloc = CGI::escape(url(-full => 1, -query => 1));
+		print qq{<a href="/manx/login?redirect=$redirloc">Login</a></div>};
+	}
+	print qq{<div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>};
+
+	# Menu
+	print qq{<div id="MENU">},
+		qq{<a class="firston">Search</a><span class="nodisp"> | </span>},
+		qq{<a href="/manx/about">About</a><span class="nodisp"> | </span>},
+		qq{<a href="/manx/help">Help</a>},
+		qq{</div>\n};
+}

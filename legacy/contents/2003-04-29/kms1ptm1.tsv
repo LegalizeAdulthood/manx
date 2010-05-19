@@ -1,0 +1,112 @@
+#PART EK-KMS1P-TM-001
+1	Chapter 1	Introduction
+2	1.1	Scope
+2	1.2	General Description
+2	1.3	KMS11-PX/PY/PZ System Operation
+2	1.4	General Specifications
+3	1.4.1	Power Requirements
+3	1.4.2	Environmental Requirements -- All KMS11-P
+2	1.5	EIA Standards Overview (RS-449 vs RS-232-C)
+1	Chapter 2	Installation
+2	2.1	Scope
+2	2.2	Unpacking and Examination
+2	2.3	Installation Considerations
+2	2.4	Preinstallation Considerations
+3	2.4.1	System and Device Positioning
+4	2.4.1.1	System Positioning
+4	2.4.1.2	Device Positioning
+3	2.4.2	System Requirements
+2	2.5	Microprocessor Installation
+3	2.5.1	Backplane Considerations
+3	2.5.2	M8206 Considerations
+3	2.5.3	M8206 Insertion
+2	2.6	Line Unit Installation
+3	2.6.1	M8203 Considerations
+3	2.6.2	M8203 Insertion
+2	2.7	KMS11-P System Testing
+3	2.7.1	Functional Diagnostic Testing
+3	2.7.2	DECX/11 System Exerciser (PDP-11)
+3	2.7.3	Final Cable Connections
+2	2.8	KMS11-P Installation Check-Off List
+1	Chapter 3	Programming
+2	3.1	Introduction
+2	3.2	Logical Organization of Registers
+2	3.3	KMC11-B (M8206) Registers
+3	3.3.1	UNIBUS Control and Status Registers
+3	3.3.2	OBUS*/IBUS* CSR Registers
+4	3.3.2.1	NPR Control Register
+4	3.3.2.2	Microprocessor Register
+4	3.3.2.3	Program Counter Register
+4	3.3.2.4	Memory Address Register
+3	3.3.3	OBUS/IBUS CSR Registers
+4	3.3.3.1	The Microprocessor OBUS/IBUS CSR Registers
+3	3.3.4	Line Unit CSR Registers
+4	3.3.4.1	IBUS Register 10
+4	3.3.4.2	OBUS Register 10
+4	3.3.4.3	IBUS Register 11
+4	3.3.4.4	OBUS Register 11
+4	3.3.4.5	IBUS Register 12
+4	3.3.4.6	OBUS Register 12
+4	3.3.4.7	IBUS Register 13
+4	3.3.4.8	OBUS Register 13
+4	3.3.4.9	IBUS Register 14
+4	3.3.4.10	OBUS Register 14
+4	3.3.4.11	IBUS Register 15
+4	3.3.4.12	OBUS Register 15
+4	3.3.4.13	IBUS Register 16
+4	3.3.4.14	OBUS Register 16
+4	3.3.4.15	IBUS Register 17
+4	3.3.4.16	OBUS Register 17
+3	3.3.5	Extended Registers/Indirect Addressing
+4	3.3.5.1	AX0-15 Register
+4	3.3.5.2	AX0-16 Register
+4	3.3.5.3	AX1-15 Register
+4	3.3.5.4	AX1-16 Register
+4	3.3.5.5	AX2-15 Register
+4	3.3.5.6	AX2-16 Register
+4	3.3.5.7	AX3-15 Register
+4	3.3.5.8	AX3-16 Register
+1	Chapter 4	Service
+2	4.1	Scope
+2	4.2	Maintenance Philosophy
+2	4.3	Maintenance Functions/Maintenance Modes
+3	4.3.1	Maintenance Register (BSEL 1)
+3	4.3.2	Maintenance Modes
+4	4.3.2.1	Maintenance Modes
+4	4.3.2.2	System Test
+4	4.3.2.3	Single Step Internal Maintenance Mode
+4	4.3.2.4	System Test Internal Maintenance Mode
+4	4.3.2.5	External Maintenance Mode
+3	4.3.3	Maintenance (LED) Indicators
+2	4.4	Preventive Maintenance (PM)
+2	4.5	Corrective Maintenance on a PDP-11 Processor
+3	4.5.1	CZKMB/CZKMC
+3	4.5.2	CZDMR/CZDMS
+3	4.5.3	CZKMR
+3	4.5.4	DECX/11 KMC11-B Module
+3	4.5.5	Examination of KMS11-P Internal Components
+2	4.6	Corrective Maintenance on a VAX-11
+3	4.6.1	EVDHA REV. Microprocessor Repair Level Diagnostics
+3	4.6.2	ESDHB REV. Microprocessor Functional Tests
+3	4.6.3	EVDMA REV. Line Unit Repair Level Diagnostics
+3	4.6.4	EVDIG REV. Line Unit Functional Tests
+1	Appendix A	Floating Device Addressess and Vectors
+2	A.1	Floating Device Addresses
+2	A.2	Floating Vector Addresses
+2	A.3	Examples of Device and Vector Address Assignment
+3	A.3.1	Example 1
+3	A.3.2	Example 2
+1	Appendix B	Diagnostic Supervisor Summary
+2	B.1	Introduction
+2	B.2	Versions of the Diagnostic Supervisor
+2	B.3	Loading and Running a Supervisor Diagnostic
+3	B.3.1	Five Steps to Run a Supervisor Diagnostic
+2	B.4	Supervisor Commands
+3	B.4.1	Command Switches
+3	B.4.2	Control/Escape Characters Supported
+2	B.5	Setup Utility
+1	Appendix C	Drive Interface for EVDIG Diagnostic
+2	C.1	General
+2	C.2	Functions
+1	Appendix D	Command and Response Format for CZKMR Diagnostic
+1	Appendix E	Glossary

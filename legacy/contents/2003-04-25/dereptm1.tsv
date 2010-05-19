@@ -1,0 +1,110 @@
+#PART EK-DEREP-TM-001
+1	Chapter 1	Introduction
+2	1.1	Functional Description
+3	1.1.1	Local Repeater
+3	1.1.2	Remote Repeater
+3	1.1.3	Operator Interface
+2	1.2	Physical Description
+3	1.2.1	Local Repeater
+3	1.2.2	Remote Repeater
+2	1.3	Physical Specifications
+2	1.4	Environmental Specifications
+2	1.5	Electrical Specifications
+2	1.6	Performance Specifications
+1	Chapter 2	Installation
+2	2.1	Introduction
+2	2.2	Typical Installation
+2	2.3	Preinstallation Considerations
+2	2.4	Unpacking and Inspection
+2	2.5	Installation
+3	2.5.1	Local Repeater Installation
+3	2.5.2	Remote Repeater Installation
+2	2.6	Installation Testing
+3	2.6.1	Internal Self-Test
+3	2.6.2	External Self-Test
+3	2.6.3	Executing the Repeater Self-Test
+2	2.7	Installing Standby Repeaters
+3	2.7.1	Standby Repeater Installation
+3	2.7.2	Testing the Standby Function of the Standby Repeater
+1	Chapter 3	Theory of Operation
+2	3.1	Scope
+2	3.2	Definitions
+2	3.3	Repeater States
+2	3.4	Repeater Operation
+3	3.4.1	Carrier
+3	3.4.2	CPT (Collision Presence Test)
+3	3.4.3	Collisions
+2	3.5	Segmentation
+3	3.5.1	Autosegmentation
+3	3.5.2	Exit from Segmentation
+2	3.6	Standby Mode
+3	3.6.1	Active Standby Repeaters
+3	3.6.2	Standby Repeaters Reentering the Passive State
+2	3.7	Self-Test
+3	3.7.1	Internal Self-Test
+3	3.7.2	External Self-Test for Local Repeaters
+3	3.7.3	External Self-Test for Remote Repeaters
+1	Chapter 4	Technical Description
+2	4.1	Scope
+2	4.2	The Data Structure
+2	4.3	Functional Block Description
+3	4.3.1	Assumptions
+3	4.3.2	Typical Data Flow
+2	4.4	Circuit Descriptions
+3	4.4.1	Data Path Circuits
+4	4.4.1.1	Transceiver Interfaces
+4	4.4.1.2	Fiber-Optic Interface
+4	4.4.1.3	Collision Circuits
+4	4.4.1.4	CPT Detect
+4	4.4.1.5	B Interface Select Multiplexer
+4	4.4.1.6	Receive Multiplexer
+4	4.4.1.7	Manchester Data Decoder
+4	4.4.1.8	FIFO
+4	4.4.1.9	FIFO I/O Address Comparator
+4	4.4.1.10	Slot-Time Counter
+4	4.4.1.11	Preamble Generator
+4	4.4.1.12	EOP (End-of-Preamble) Detect
+4	4.4.1.13	Transmit Multiplexer
+4	4.4.1.14	XMT Data Encoder (Manchester Encoder)
+4	4.4.1.15	XMT (Transmit) Enable
+3	4.4.2	Control Circuits
+4	4.4.2.1	Master Oscillator and Clock Generator
+4	4.4.2.2	Input Synchronizer
+4	4.4.2.3	State Machine
+4	4.4.2.4	Jam Counter
+4	4.4.2.5	Go Counter
+4	4.4.2.6	Display Indicators and Drivers
+4	4.4.2.7	Power-up Reset
+4	4.4.2.8	Power Supply
+1	Chapter 5	Maintenance
+2	5.1	Scope
+2	5.2	Maintenance Philosophy
+3	5.2.1	Required Equipment
+3	5.2.2	Optional Equipment
+2	5.3	Preventive Maintenance (PM)
+3	5.3.1	Internal Self-Test
+3	5.3.2	External Self-Test
+3	5.3.3	Executing the Repeater Self-Test
+2	5.4	Corrective Maintenance
+3	5.4.1	Troubleshooting Tips
+3	5.4.2	Repeater LED Indications
+3	5.4.3	Self-Test Errors and Troubleshooting
+2	5.5	Repeater Disassembly
+3	5.5.1	Opening and Closing the Repeater
+3	5.5.2	Opening and Closing the Internal Metal Chassis
+3	5.5.3	Fiber-Optic Module Removal and Replacement
+3	5.5.4	Logic Module Removal and Replacement
+3	5.5.5	Power Supply/Fan Removal and Replacement
+1	Appendix A	Fiber-Optic Link Certification
+2	A.1	Introduction
+2	A.2	Fiber-Optic Link Certification
+2	A.3	Requirements
+3	A.3.1	Cable Requirements
+3	A.3.2	Required Equipment
+2	A.4	Certification Procedure
+3	A.4.1	Loss Calculation Formula
+3	A.4.2	FOTDR Procedure
+4	A.4.2.1	Equipment Setup
+4	A.4.2.2	Cable Measurement
+2	A.5	Possible Problem Sources
+2	A.6	Recording the Results

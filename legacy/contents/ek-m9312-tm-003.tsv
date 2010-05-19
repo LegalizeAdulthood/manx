@@ -1,0 +1,73 @@
+#PART EK-M9312-TM-003
+#TITLE M9312 Bootstrap/Terminator Module Technical Manual
+1	Chapter 1	Introduction
+2	1.1	General Description
+3	1.1.1	Scope
+3	1.1.2	Related Documentation
+2	1.2	Definition of Terms
+2	1.3	Physical Description
+2	1.4	Electrical Specifications
+3	1.4.1	External Electrical Interfaces
+3	1.4.2	Electrical Prerequisites
+3	1.4.3	Timing
+3	1.4.4	Operational Environmental Specifications
+2	1.5	Installation
+3	1.5.1	Power-Up Boot Enable
+3	1.5.2	Boot Selection
+3	1.5.3	External Boot Switch
+1	Chapter 2	Hardware Description
+2	2.1	General
+2	2.2	ROM Memory
+3	2.2.1	ROM Specifications
+3	2.2.2	ROM Format
+4	2.2.2.1	ROM Header
+3	2.2.3	ROM Data
+4	2.2.3.1	ROM Data Transfer
+4	2.2.3.2	ROM Data Organization
+3	2.2.4	Requirements for new ROMs and Uses of the M9312
+2	2.3	Power-Up Sequence
+2	2.4	Power-Up Booting Logic
+3	2.4.1	Power-Up and Power-Down
+3	2.4.2	Processor Reads New Program Counter
+3	2.4.3	Processor Reads New Status Word
+3	2.4.4	Power-Up Boot Enable Switch
+2	2.5	External Boot Circuit
+2	2.6	Power-Up Transfer Detection Logic
+2	2.7	Power-Up Clear
+2	2.8	Address Detection Logic
+3	2.8.1	M9312 Address Space
+3	2.8.2	Memory Access Constraints
+3	2.8.3	LO ROM ENA H Jumper
+2	2.9	Address Offset Switch Bank
+2	2.10	M9312 Terminator
+1	Chapter 3	Console Emulator
+2	3.1	General
+2	3.2	Using the Console Emulator
+3	3.2.1	Successive Operations
+4	3.2.1.1	Examine
+4	3.2.1.2	Deposit
+4	3.2.1.3	Alternate Deposit-Examine Operations
+4	3.2.1.4	Alternate Examine-Deposit Operations
+3	3.2.2	Limits of Operation
+2	3.3	Bootstraps Started From the Console Emulator
+3	3.3.1	Booting the High-Speed Reader Using the Console Emulator
+3	3.3.2	Booting a Disk Using the Console Emulator
+2	3.4	Recovering From Errors In the Console Emulator Routine
+1	Chapter 4	Bootstrapping
+1	Chapter 5	Extended Addressing
+2	5.1	General
+2	5.2	Virtual and Physical Addresses
+2	5.3	Address Mapping Without Memory Management
+2	5.4	Address Mapping With Memory Management
+2	5.5	Creation of a Virtual Address
+2	5.6	Constraints
+1	Chapter 6	Diagnostics
+2	6.1	General
+2	6.2	Diagnostics
+2	6.3	Diagnostics (PDP-11/60 and 11/70)
+1	Appendix A	M9312 Jumpers
+1	Appendix B	M9312 ROMs
+1	Appendix C	M9312 Address Offset Switch Bank
+1	Appendix D	M9312 Faston Tab Connections
+1	Appendix E	Cross Reference and Identification Tables
+1	Appendix F	Diagnostic and Console Emulator ROMs

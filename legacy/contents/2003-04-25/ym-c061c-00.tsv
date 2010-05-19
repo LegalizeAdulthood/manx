@@ -1,0 +1,81 @@
+#PART YM-C061C-00
+1	1	Introduction
+2	1.1	General Description
+2	1.2	General Operation
+2	1.3	Specifications
+3	1.3.1	DMS11-D(A)
+1	2	Installation
+2	2.1	General
+3	2.1.1	Site Considerations
+3	2.1.2	Hardware Installation
+3	2.1.3	Cables
+2	2.2	Field Checkout/Acceptance Procedure
+3	2.2.1	System Test Requirements
+4	2.2.1.1	Hardware
+4	2.2.1.2	Software
+3	2.2.2	System Test Procedure
+4	2.2.2.1	Hardware Procedures
+4	2.2.2.2	Software Procedures
+2	2.3	Related Literature
+1	3	Operation and Programming
+2	3.1	General Description
+2	3.2	Programming
+3	3.2.1	Parameter Setup
+3	3.2.2	Transmitting a Character
+3	3.2.3	Receiving a Character
+3	3.2.4	Primary Register Set Description
+4	3.2.4.1	Primary Register 10
+4	3.2.4.2	Primary Register 11
+4	3.2.4.3	Primary Register 12
+4	3.2.4.4	Primary Register 13
+4	3.2.4.5	Primary Register 14
+4	3.2.4.6	Primary Register 15
+4	3.2.4.7	Primary Register 16
+4	3.2.4.8	Primary Register 17
+3	3.2.5	Secondary Register Set Description
+4	3.2.5.1	Secondary Register 0
+4	3.2.5.2	Secondary Register 1
+4	3.2.5.3	Secondary Register 2
+4	3.2.5.4	Secondary Register 3
+4	3.2.5.5	Secondary Register 4
+4	3.2.5.6	Secondary Register 5
+4	3.2.5.7	Secondary Register 6
+4	3.2.5.8	Secondary Register 7
+2	3.3	Firmware -- An Overview
+3	3.3.1	Command Structure
+4	3.3.1.1	INITIALIZATION Command
+4	3.3.1.2	LINE INITialization Command
+4	3.3.1.3	CONTROL IN Command
+4	3.3.1.4	BUFFER ADDRESS IN Command
+4	3.3.1.5	BUFFER ADDRESS OUT Command
+4	3.3.1.6	CONTROL OUT Command
+3	3.3.2	Data Transfer Operations
+4	3.3.2.1	Initialization Sequence
+4	3.3.2.2	Line Initialization Sequence
+4	3.3.2.3	Receive/Transmit Sequence
+1	4	Theory of Operation
+2	4.1	General
+2	4.2	Circuit Description
+3	4.2.1	Block Diagram
+3	4.2.2	OBUS Interface
+3	4.2.3	MISC I
+3	4.2.4	MISC II
+3	4.2.5	PAGE 6-13 Line Interface
+4	4.2.5.1	Universal Synchronous Receiver/Transmitter Chip
+4	4.2.5.2	CRC32 Chip (DMS11-D Only)
+3	4.2.6	Register 14 Multiplexer
+3	4.2.7	IBUS Interface
+1	5	Maintenance
+2	5.1	General
+2	5.2	Fault Isolation
+2	5.3	Diagnostic Software
+3	5.3.1	Static Diagnostic
+3	5.3.2	Dynamic Diagnostic
+2	5.4	Preventive Maintenance
+2	5.5	Special Adjustments
+1	6	CSS Built Parts
+2	6.1	Module M8711 (M8711-YA)
+2	6.2	DMS11-D Test Connectors
+1	A	Shipping/Accessories List
+2	A.1	Equipment Furnished
+1	B	Specifications for Complex Circuits

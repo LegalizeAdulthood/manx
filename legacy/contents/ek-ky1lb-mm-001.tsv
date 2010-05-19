@@ -1,0 +1,84 @@
+#PART EK-KY1LB-MM-001
+#TITLE KY11-LB Programmer's Console/Interface Module Operation and Maintenance Manual
+1	Chapter 1	Operating Characteristics
+2	1.1	Introduction
+2	1.2	General Description
+2	1.3	Functional Description
+2	1.4	Specifications
+3	1.4.1	M7859 Interface Module Performance Specifications
+3	1.4.2	Electrical Specifications
+3	1.4.3	Mechanical Specifications
+3	1.4.4	Environmental Specifications
+1	Chapter 2	Function Description
+2	2.1	Introduction
+2	2.2	Programmer's Console Keypad Functions/Controls and Indicators
+3	2.2.1	Console Mode
+3	2.2.2	Maintenance Mode
+2	2.3	Hardware Organization
+2	2.4	Microprocessor Instruction Set
+1	Chapter 3	Interface Module
+2	3.1	Microprocessor
+3	3.1.1	General Organization
+3	3.1.2	State Control
+3	3.1.3	Microprocessor Timing
+3	3.1.4	Transition State Diagram
+3	3.1.5	System Start-Up
+2	3.2	Interface Module Registers and Controls
+3	3.2.1	Address Register
+3	3.2.2	Bus Address Register
+3	3.2.3	Switch Register
+3	3.2.4	Data Bus Control
+3	3.2.5	Unibus Control
+1	Chapter 4	Microprocessor Instruction Description
+2	4.1	Data and Instruction Formats
+2	4.2	Microprocessor Instructions
+3	4.2.1	Index Register Instructions
+3	4.2.2	Accumulator Group Instructions
+3	4.2.3	Program Counter and Stack Control Instructions
+3	4.2.4	Input/Output Instructions
+3	4.2.5	Machine Instruction
+1	Chapter 5	Interface Module Detailed Logic Description
+2	5.1	Introduction
+2	5.2	Programmer's Console Keypad Function Sequences
+3	5.2.1	Console Mode Key Functions
+3	5.2.2	Maintenance Mode Key Functions
+2	5.3	Detailed Logic Description
+3	5.3.1	Clock Circuitry
+3	5.3.2	Power-Up Logic/Interrupt
+3	5.3.3	Microprocessor
+3	5.3.4	Timing State Decoder
+3	5.3.5	Address Register
+3	5.3.6	ROM
+3	5.3.7	RAM
+3	5.3.8	Switch Register
+3	5.3.9	Switch Register Address Decode Logic
+3	5.3.10	Bus Address Register
+3	5.3.11	Data Bus Control Logic
+3	5.3.12	Unibus Control
+3	5.3.13	Keypad Scan Logic
+3	5.3.14	Indicator Logic
+3	5.3.15	Halt Logic
+3	5.3.16	Buffers
+4	5.3.16.1	Tristate Buffers (8093)
+4	5.3.16.2	Tristate Transceivers (8833)
+1	Chapter 6	Console Mode Operation
+2	6.1	Introduction
+2	6.2	Console Key Operations
+2	6.3	Notes On Operation
+2	6.4	Examples of Console Sequences
+1	Chapter 7	Maintenance Mode Operation
+2	7.1	Introduction
+2	7.2	Maintenance Mode Key Operations
+2	7.3	Notes On Operation
+1	Chapter 8	KY11-LB Maintenance
+2	8.1	Preliminary Considerations
+2	8.2	M7859 Failures
+1	Chapter 9	KY11-LB Installation
+2	9.1	KY11-LB Description
+2	9.2	CPU Box Type
+2	9.3	CPU Differences
+2	9.4	BA11-L 13.3 cm (5¼ inch Box) Installation
+2	9.5	BA11-K 26.7 cm (10½ inch Box) Installation
+2	9.6	Maintenance Mode Hook-Up
+1	Appendix A	KY11-LB Micro-Code Listings
+1	Appendix B	IC Descriptions

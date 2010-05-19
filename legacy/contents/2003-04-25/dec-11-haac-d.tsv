@@ -1,0 +1,70 @@
+#PART DEC-11-HAAC-D
+1	Chapter 1	General Information
+2	1.1	Purpose of the AA11-D
+2	1.2	System Description
+3	1.2.1	AA11-D Subsystem
+3	1.2.2	AA11-A Display Option
+3	1.2.3	AA11-B Display Option
+3	1.2.4	AA11-C Display Option
+2	1.3	AA11-D Physical Description
+3	1.3.1	H704-C/H704-H Analog Power Supply
+3	1.3.2	H720 Power Supply
+2	1.4	System Expansion
+2	1.5	Specifications
+1	Chapter 2	Operation and Programming
+2	2.1	AA11-D Operation
+2	2.2	Control and Status Word
+2	2.3	Programming Example of DAC Loading
+2	2.4	Programming Example for Drawing Horizontal Line
+2	2.5	Programming Example for Drawing Vertical Line
+1	Chapter 3	Theory of Operationo
+2	3.1	AA11-D Functional Description
+2	3.2	Display Option
+2	3.3	A614 DAC Module
+2	3.4	Scope Control Module
+3	3.4.1	Control and Status
+3	3.4.2	Intensification of a Point Upon Loading X-Axis
+3	3.4.3	Intensification of a Point Upon Loading Y-Axis
+3	3.4.4	Intensification of a Preselected Point
+3	3.4.5	Scope Control Jumper Connections
+3	3.4.6	VT01-A Intensification (Storage Mode)
+3	3.4.7	VT01-A Intensification (Non-Storage Mode)
+3	3.4.8	VR01-A Display Intensification
+3	3.4.9	VR12 Display Intensification
+3	3.4.10	Scope Control Display and Light Pen Servicing
+3	3.4.11	Scope Control Priority Structure
+1	Chapter 4	Installation and Adjustments
+2	4.1	Installation Procedures
+3	4.1.1	AA11-D Installation
+3	4.1.2	Scope Option Installation
+2	4.2	Adjustment
+3	4.2.1	H704-C/H704-H Power Supply Adjustment
+3	4.2.2	A614 DAC Module Offset Adjustment
+3	4.2.3	A614 DAC Module Gain Adjustment
+3	4.2.4	A614 DAC Module Calibration Procedure
+1	Chapter 5	Maintenance
+2	5.1	Preventive Maintenance
+3	5.1.1	Preventive Maintenance Tasks
+2	5.2	Corrective Maintenance
+3	5.2.1	AA11 DAC Calibration Diagnostic Program
+3	5.2.2	AA11-A, -B, -C Scope Control Diagnostic
+2	5.3	Recommended Spare Parts
+2	5.4	Test Equipment
+1	Chapter 6	Engineering Drawings
+2	6.1	Drawing Codes
+2	6.2	Wire List
+2	6.3	Drawing Number List
+1	Appendix A	AA11-E VR20 Color Display Control
+2	A.1	Introduction
+2	A.2	Programming
+3	A.2.1	Programming Example
+2	A.3	Detailed Description
+3	A.3.1	Intensifying Point -- No Color Change
+3	A.3.2	Intensifying Point -- Color Change
+3	A.3.3	Channel Selection
+3	A.3.4	Speaker Driver
+2	A.4	Field Installation
+3	A.4.1	Color Delay Adjustment
+3	A.4.2	Amplifier Calibration
+3	A.4.3	Acceptance Test
+2	A.5	Troubleshooting

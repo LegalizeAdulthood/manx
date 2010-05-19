@@ -1,0 +1,80 @@
+#PART EK-DELNI-TM-001
+1	Chapter 1	Introduction
+2	1.1	Digital Ethernet Local Network Interconnect (DELNI) Overview
+3	1.1.1	Communication Interfaces
+3	1.1.2	Operating Modes/Operational Communication Interfaces
+3	1.1.3	Operational Applications
+2	1.2	DELNI Functional Description
+3	1.2.1	LOCAL Mode Operation
+3	1.2.2	GLOBAL Mode Operation
+2	1.3	DELNI Physical Description
+3	1.3.1	Physical Characteristics
+3	1.3.2	Configurations
+2	1.4	DELNI Controls, Indicators, and Fusing
+3	1.4.1	Controls and Indicators
+3	1.4.2	Fusing
+3	1.4.3	Spare Fuses and Fuse Holders
+2	1.5	DELNI Rack Mount Option
+2	1.6	Related Documentation
+1	Chapter 2	DELNI Network Configuration Guidelines
+2	2.1	Configuration Guidelines
+3	2.1.1	Standalone DELNI LAN
+3	2.1.2	Two-Tier DELNI LAN
+3	2.1.3	Connected DELNI LAN
+2	2.2	Configuration Limitations
+1	Chapter 3	DELNI Interfaces, Input/Output Signal Flow, and Specifications
+2	3.1	Communication Interfaces
+3	3.1.1	Local Connector Interfaces
+3	3.1.2	Global Connector Interfaces
+2	3.2	Input/Output Signal Flow and Timing Relationships
+3	3.2.1	LOCAL Mode Signal Flow and Timing Relationships
+3	3.2.2	GLOBAL Mode Signal Flow and Timing Relationships
+2	3.3	Input/Output Circuit and Signal Characteristics
+3	3.3.1	CHn TRANSMIT Pair Signal Requirements
+3	3.3.2	CHn TRANSMIT Pair Circuit Response
+3	3.3.3	CHn RECEIVE Pair Circuit Characteristics
+3	3.3.4	CHn RECEIVE Pair Signal Characteristics
+3	3.3.5	CHn COLLISION PRESENCE Pair Circuit Characteristics
+3	3.3.6	CHn COLLISION PRESENCE Pair Signal Characteristics
+3	3.3.7	XCVR TRANSMIT Pair Circuit Characteristics
+3	3.3.8	XCVR TRANSMIT Pair Signal Characteristics
+3	3.3.9	XCVR RECEIVE Pair Signal Requirements
+3	3.3.10	XCVR RECEIVE Pair Circuit Response
+3	3.3.11	XCVR COLLISION PRESENCE Pair Signal Requirements
+3	3.3.12	XCVR COLLISION PRESENCE Pair Circuit Response
+3	3.3.13	XCVR POWER Pair Characteristics
+3	3.3.14	XCVR POWER Pair External Load Requirements
+2	3.4	Input Power Requirements
+2	3.5	Environmental Requirements
+1	Chapter 4	Functional Theory of Operation
+2	4.1	DELNI Circuit Characteristics
+3	4.1.1	Power Supply
+3	4.1.2	Operating Mode Control
+3	4.1.3	Local Connector Interface
+3	4.1.4	Data Concentrator
+3	4.1.5	Data Router
+3	4.1.6	Data Presence and Local Collision Detector
+3	4.1.7	Data Enable/Local Collision Control
+3	4.1.8	Local Heartbeat Timers
+3	4.1.9	Local/Global Heartbeat and Collision Signaling Control
+3	4.1.10	10 MHz Oscillator
+3	4.1.11	Global XMIT Data Substitute
+3	4.1.12	Global Connector Interface
+2	4.2	DELNI Functional Operation
+3	4.2.1	LOCAL Mode Functional Theory
+4	4.2.1.1	Transmit/Receive
+4	4.2.1.2	Local Heartbeat Signaling
+4	4.2.1.3	Local Collision Detection
+4	4.2.1.4	Local Collision Signaling
+3	4.2.2	GLOBAL Mode Functional Theory
+4	4.2.2.1	Transmit
+4	4.2.2.2	Local Collision Detection
+4	4.2.2.3	Local Collision Condition Data Control and Collision Signaling
+4	4.2.2.4	Receive
+4	4.2.2.5	Global Collision and Heartbeat Signal Detection
+4	4.2.2.6	Global Collision and Heartbeat Signaling
+1	Chapter 5	Module Removal and Replacement Instructions
+2	5.1	Logic Module Removal Procedure
+2	5.2	Connector Board Removal Procedure
+2	5.3	Connector Board Installation Procedure
+2	5.4	Logic Module Installation Procedure

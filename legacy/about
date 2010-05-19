@@ -1,0 +1,158 @@
+#!/usr/bin/perl -w
+
+# 2006-05-07 Use UTF8DBI
+# 2004-05-13 Changed servers
+# 2004-02-13 From static HTML to script
+
+use strict;
+
+use CGI qw(:cgi -no_xhtml);
+use DBI;
+use POSIX ();
+use Manx::DB;
+use Manx::User;
+use Manx::Utilities;
+
+binmode STDOUT, ':utf8';
+
+sub html_header($);
+
+my ($dbh, $smt, $sth, $rc, $rv, @rowary);
+
+my $SEARCHURL = '/manx/search';
+
+$dbh = connectdb();
+die $DBI::errstr if $DBI::err;
+
+my $user = Manx::User::from_session($dbh, cookie('manxSession'));
+
+@rowary = $dbh->selectrow_array('select confval from CONFIG where confkey="updated"');
+my ($year, $mon, $mday, $hour, $min, $sec) = $rowary[0] =~ /(....)(..)(..)(..)(..)(..)/;
+my $time = POSIX::mktime($sec, $min, $hour, $mday, $mon - 1, $year - 1900);
+my $tlm = POSIX::strftime("%a, %d %b %Y %T GMT", gmtime($time));
+
+#print header('-last-modified' => $tlm, '-cache-control' => 'max-age=600', '-expires' => '+1h', '-charset' => 'utf-8');
+print header(-charset => 'utf-8');
+html_header($user);
+
+my ($num_manuals, $num_online, $num_sites);
+
+$sth = $dbh->prepare('select count(*) from PUB');
+warn $DBI::errstr if $DBI::err;
+$rv = $sth->execute;
+warn $DBI::errstr if $DBI::err;
+
+@rowary = $sth->fetchrow_array;
+$num_manuals = $rowary[0];
+
+$rc = $sth->finish;
+warn $DBI::errstr if $DBI::err;
+
+$sth = $dbh->prepare('select count(distinct pub) from COPY');
+warn $DBI::errstr if $DBI::err;
+$rv = $sth->execute;
+warn $DBI::errstr if $DBI::err;
+
+@rowary = $sth->fetchrow_array;
+$num_online = $rowary[0]+0;
+
+$rc = $sth->finish;
+warn $DBI::errstr if $DBI::err;
+
+$sth = $dbh->prepare('select count(*) from SITE');
+warn $DBI::errstr if $DBI::err;
+$rv = $sth->execute;
+warn $DBI::errstr if $DBI::err;
+
+@rowary = $sth->fetchrow_array;
+$num_sites = $rowary[0];
+
+$rc = $sth->finish;
+warn $DBI::errstr if $DBI::err;
+
+print qq{<DIV CLASS="det"><h1>About Manx</h1>\n};
+print qq{<p>Manx is a catalogue of manuals for old computers.</p>\n};
+print qq{<p>Many of these manuals can't be found by search engines because },
+	qq{the manuals have been scanned but haven't been converted to text. },
+	qq{Manx's search engine is currently limited to searching part numbers, },
+	qq{titles and keywords of these manuals, though there are plans to search },
+	qq{Tables of Contents and full text when these become available.</p>\n};
+
+print qq{<P>This catalogue mostly covers manufacturers of minicomputers and mainframes, or associated devices such},
+	qq{ as terminals and printers. Tiziano's <A HREF="http://1000bit.net/">1000 BiT</A> is the best catalogue for},
+	qq{ microcomputers.</P>\n};
+print qq{<P><STRONG>Manx</STRONG> currently knows about $num_manuals manuals, $num_online of which are online, at},
+	qq{ $num_sites websites.</P>\n};
+
+print qq{<P>Manx covers the following companies: };
+
+my $num_companies = 0;
+$sth = $dbh->prepare('select id,name from COMPANY where display="Y" order by sort_name');
+$rv = $sth->execute;
+while (@rowary = $sth->fetchrow_array) {
+	print ', ' if ++$num_companies > 1;
+	print qq{<A HREF="${SEARCHURL}?cp=$rowary[0]">}, html_encode($rowary[1]), '</A>';
+}
+$sth->finish;
+print "</P>\n";
+
+print qq{<p>The list below shows the websites included in Manx. As Manx is still },
+	qq{being built, you will find that not all of the holdings of these websites },
+	qq{have been catalogued. If you know of manuals on other sites, please },
+	qq{let me know about them. Even if a site only contains one manual, it is worth },
+	qq{including. This list is ordered by date of inclusion in Manx.</p>\n};
+print "<ul>\n";
+
+$sth = $dbh->prepare('select url,description,low from SITE where live="Y" order by siteid');
+$rv = $sth->execute;
+while (@rowary = $sth->fetchrow_array) {
+	print '<li><a href="', html_encode($rowary[0]), '">', html_encode($rowary[1]), '</a>';
+	print ' <span class="warning">(Low Bandwidth)</span>' if uc($rowary[2]) eq 'Y';
+	print "</li>\n";
+}
+$sth->finish;
+
+print "</ul>\n";
+print qq{<p>Some of these sites are marked as being Low Bandwidth. They are either on a },
+	qq{home DSL line, or the owner has indicated that they should not be mirrored with tools. },
+	qq{It isn't a comment on the usefulness of the site!</p>\n};
+
+#print '<table><tbody>';
+#$sth = $dbh->prepare('show variables like "character_set%"');
+#$rv = $sth->execute;
+#while (@rowary = $sth->fetchrow_array) {
+#	print '<tr><td>', html_encode($rowary[0]), '</td><td>', html_encode($rowary[1]), "</td></tr>\n";
+#}
+#print '</tbody></table>';
+
+print qq{<div class="navbot"><hr>Manx is no longer maintained</div></div></body></html>\n};
+
+$dbh->disconnect() if $dbh;
+exit;
+
+sub html_header($) {
+	my ($u) = shift;
+
+	print qq{<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">\n},
+		qq{<html lang="en">\n<head>\n<title>Manx</title>\n},
+		qq{<link rel="stylesheet" type="text/css" href="manx-style.css">\n},
+		qq{<link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">\n};
+
+	print qq{<body id="VT100-NET">\n};
+	print qq{<div id="AUTH">}, html_encode($u->{username}), ' | ';
+	if ($u->{logged_in}) {
+		print qq{<a href="/manx/login?LOGO=1">Logout</a></div>};
+	} else {
+		my $redirloc = CGI::escape(url(-full => 1, -query => 1));
+		print qq{<a href="/manx/login?redirect=$redirloc">Login</a></div>};
+	}
+	print qq{<div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>};
+
+	# Menu
+	print qq{<div id="MENU">},
+		qq{<a class="first" href="/manx/search">Search</a><span class="nodisp"> | </span>},
+		qq{<a class="on">About</a><span class="nodisp"> | </span>},
+		qq{<a href="/manx/help">Help</a>},
+		qq{</div>\n};
+
+}

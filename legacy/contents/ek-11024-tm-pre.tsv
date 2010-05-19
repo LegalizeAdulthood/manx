@@ -1,0 +1,232 @@
+#PART	EK-11024-TM-PRE
+#TITLE	PDP-11/24 System Technical Manual
+1	Chapter 1	Introduction
+2	1.1	Manual Scope
+2	1.2	System Overview
+2	1.3	PDP-11/24 Central Processor
+3	1.3.1	CPU Data and Control Chips
+3	1.3.2	Memory Management
+3	1.3.3	Operator's Console
+3	1.3.4	Serial Line Units
+3	1.3.5	Line Time Clock
+3	1.3.6	Bootstrap
+3	1.3.7	UNIBUS Termination
+3	1.3.8	MS11-L MOS Memory System
+3	1.3.9	Floating-Point Processor
+3	1.3.10	Commercial Instruction Set Processor
+2	1.4	General-Purpose Registers
+2	1.5	Addressing Memory and Peripherals
+2	1.6	Addressing Modes
+2	1.7	Instruction Set
+2	1.8	Configuration
+3	1.8.1	BA11-L Mounting Box
+3	1.8.2	BA11-A Mounting Box
+3	1.8.3	System Configuration
+2	1.9	PDP-11/24 Backplane
+2	1.10	Specifications
+1	Chapter 2	Installation
+2	2.1	General
+2	2.2	Site Considerations
+3	2.2.1	Humidity and Temperature
+3	2.2.2	Air-Conditioning
+3	2.2.3	Acoustical Damping
+3	2.2.4	Lighting
+3	2.2.5	Special Mounting Conditions
+3	2.2.6	Static Electricity
+2	2.3	Electrical Requirements
+3	2.3.1	System Grounding
+2	2.4	Unpacking
+3	2.4.1	PDP-11/24-AA, AC, BC Unit Removal
+3	2.4.2	PDP-11/24 System Cabinet Removal
+2	2.5	Initial Inspection
+2	2.6	Installation
+3	2.6.1	BA11-L Installation
+3	2.6.2	BA11-A Installation
+4	2.6.2.1	Index Plate Mounting
+4	2.6.2.2	Slide Assembly Mounting
+4	2.6.2.3	Mounting Box to Slide Installation
+3	2.6.3	PDP-11/24 System Cabinet Installation
+4	2.6.3.1	Expander Cabinet Installation
+4	2.6.3.2	Stabilizer Installation
+2	2.7	Module Utilization in a Typical System
+2	2.8	Module Jumper and Switch Configuration
+3	2.8.1	CPU Module (M7133)
+3	2.8.2	M9312 Bootstrap/Terminator Module
+4	2.8.2.1	M9312 Jumper Configuration
+4	2.8.2.2	M9312 ROMs
+3	2.8.3	UNIBUS Map Module (M7134)
+4	2.8.3.1	UNIBUS Map Module Jumper Leads and Memory Page Selection
+4	2.8.3.2	Diagnostic and Bootstrap Loader ROMs
+4	2.8.3.3	Voltage Monitor Switch Selection
+2	2.9	Initial Power-Up and System Checkout
+3	2.9.1	Power Check
+3	2.9.2	Power-Up
+1	Chapter 3	PDP-11/24 Operation
+2	3.1	Console Operation
+3	3.1.1	Operator's Console Switches
+3	3.1.2	Operator's Console Indicators
+2	3.2	Console Terminal
+3	3.2.1	ODT Operation
+3	3.2.2	ODT Entry Conditions
+2	3.3	ODT Command Set
+3	3.3.1	Address Specification
+3	3.3.2	Processor I/O Addresses
+3	3.3.3	Entering of Octal Digits
+3	3.3.4	ODT Timeout
+3	3.3.5	Memory Parity Errors
+3	3.3.6	Invalid Characters
+3	3.3.7	Correcting Type-In Errors
+2	3.4	PDP-11/24 Registers
+3	3.4.1	Processor Status Word
+3	3.4.2	Serial Line Unit 1 Registers
+4	3.4.2.1	SLU1 Receiver Control/Status Register (RCSR)
+4	3.4.2.2	SLU1 Receiver Data Buffer (RBUF)
+4	3.4.2.3	SLU1 Transmitter Control/Status Register (XCSR)
+4	3.4.2.4	SLU1 Transmitter Buffer Register (XBUF)
+3	3.4.3	Serial Line Unit 2 Registers
+4	3.4.3.1	SLU2 Receiver Control/Status Register (RCSR)
+4	3.4.3.2	SLU2 Receiver Data Buffer (RBUF)
+4	3.4.3.3	SLU2 Transmitter Control/Status Register (XCSR)
+4	3.4.3.4	TU58 Transmitter Buffer Register (XBUF)
+3	3.4.4	Line Time Clock Control/Status Register (LTC)
+3	3.4.5	Memory Management Registers
+4	3.4.5.1	Status Register 0 (SR0)
+4	3.4.5.2	Status Register 1 (SR1)
+4	3.4.5.3	Status Register 2 (SR2)
+4	3.4.5.4	Status Register 3 (SR3)
+3	3.4.6	Display Register
+1	Chapter 4	CPU Functional Description
+2	4.1	Introduction
+3	4.1.1	Central Processor
+3	4.1.2	Processor Options
+4	4.1.2.1	Memory Management Unit
+4	4.1.2.2	Floating Point
+4	4.1.2.3	Commercial Instruction Set
+2	4.2	Timing
+3	4.2.1	Timing Cycles
+4	4.2.1.1	Short Cycle
+4	4.2.1.2	Input/Output Cycles
+3	4.2.2	Timing Logic
+2	4.3	PDP-11/24 Central Processor
+3	4.3.1	Control Path
+3	4.3.2	Microinstruction Bus (MIB <15:00>)
+3	4.3.3	PDP-11/24 Data Path
+3	4.3.4	Data Address Lines (DAL<15:00>)
+2	4.4	PDP-11/24 Chip Set Control Logic
+2	4.5	System Bus Logic
+3	4.5.1	Address and Data
+4	4.5.1.1	Address
+4	4.5.1.2	Data Paths
+4	4.5.1.3	Direct Memory Access
+3	4.5.2	System Bus Timing
+3	4.5.3	System Bus Errors
+4	4.5.3.1	Timeout Error
+4	4.5.3.2	Parity Error
+2	4.6	Internal Address Decode
+2	4.7	Serial Line Inputs
+3	4.7.1	Console Terminal SLU
+4	4.7.1.1	Transmitter Operation
+4	4.7.1.2	Receiver Operation
+4	4.7.1.3	SLU1 Maintenance Configuration
+3	4.7.2	Serial Line Unit 2
+4	4.7.2.1	Transmitter Operation (SLU2)
+4	4.7.2.2	SLU2 Receiver Operation
+3	4.7.3	Baud Rate Logic
+2	4.8	Line Time Clock (LTC)
+2	4.9	Display Register
+2	4.10	Interrupt Request Logic
+2	4.11	Interrupt Errors
+3	4.11.1	SACK Timeout
+3	4.11.2	Vector Timeout
+1	Chapter 5	Memory Management
+2	5.1	Introduction
+2	5.2	Relocation
+3	5.2.1	Address Mapping
+3	5.2.2	Address Translation
+4	5.2.2.1	18-Bit Mapping
+4	5.2.2.2	22-Bit Mapping
+4	5.2.2.3	Physical Addressing
+2	5.3	Memory Management Registers
+3	5.3.1	Page Address Register (PAR)
+3	5.3.2	Page Description Registers (PDR)
+2	5.4	Memory Management Status Registers
+3	5.4.1	Status Register 0 (SR0)
+3	5.4.2	Status Register 1 (SR1)
+3	5.4.3	Status Register 2 (SR2)
+3	5.4.4	Status Register 3 (SR3)
+2	5.5	Microinstruction Register (MIR)
+2	5.6	Memory Management Enable (MME) Logic
+2	5.7	Memory Management Timing
+2	5.8	Memory Management Control Signals
+1	Chapter 6	KT24 UNIBUS Map Option
+2	6.1	Introduction
+2	6.2	UNIBUS Map
+3	6.2.1	MSYN Steering
+3	6.2.2	Map Control
+3	6.2.3	Map Addressing and Relocation
+3	6.2.4	Addressing Limits
+2	6.3	Boot Logic
+2	6.4	Voltage Monitor
+2	6.5	Registers
+3	6.5.1	UNIBUS Map Registers
+3	6.5.2	Last Mapped Address (LMA) Register
+3	6.5.3	CPU Error Register
+1	Chapter 7	Floating-Point Processor Functional Description
+2	7.1	Introduction
+2	7.2	Floating-Point Formats
+3	7.2.1	FPP Integer Formats
+3	7.2.2	FPP Precision Formats
+3	7.2.3	Floating-Point Data Word
+4	7.2.3.1	Floating-Point Fraction
+4	7.2.3.2	Floating-Point Exponent
+3	7.2.4	Processing of Floating-Point Exceptions
+2	7.3	Floating-Point Processor Status Register (FPS)
+2	7.4	Floating-Point Instructions
+3	7.4.1	Floating-Point Accumulators
+3	7.4.2	Instruction Formats
+2	7.5	Floating-Point Instructions
+3	7.5.1	Arithmetic Instructions
+3	7.5.2	Floating-Modulo Instruction
+3	7.5.3	Load Instruction
+3	7.5.4	Store Instruction
+3	7.5.5	Load Convert (Double-to-Floating, Floating-to-Double Instructions)
+3	7.5.6	Store Convert (Double-to-Floating, Floating-to-Double Instructions)
+3	7.5.7	Clear Instruction
+3	7.5.8	Test Instruction
+3	7.5.9	Absolute Instruction
+3	7.5.10	Negate Instruction
+3	7.5.11	Load Exponent Instruction
+3	7.5.12	Load Convert Integer-to-Floating Instruction
+3	7.5.13	Store Exponent Instruction
+3	7.5.14	Store Convert Floating-to-Integer Instruction
+3	7.5.15	Load FPP's Program Status
+3	7.5.16	Store FPP's Program Status
+3	7.5.17	Store FPP's Status
+3	7.5.18	Copy Floating Condition Codes
+3	7.5.19	Set Floating Mode
+3	7.5.20	Set Double Mode
+3	7.5.21	Set Integer Mode
+3	7.5.22	Set Long-Integer Mode
+2	7.6	Floating-Point Instruction Execution
+1	Chapter 8	Commercial Instruction Set Processor
+2	8.1	Introduction
+2	8.2	Character Data Types
+2	8.3	Decimal String Data Types
+2	8.4	CIS Instruction Execution
+1	Chapter 9	Maintenance
+2	9.1	Troubleshooting Procedures
+2	9.2	MAINDEC Diagnostic Programs
+3	9.2.1	Diagnostic Designations
+3	9.2.2	Running Diagnostics
+4	9.2.2.1	CJKDB-PDP-11/24 CPU Diagnostic
+4	9.2.2.2	CJKDA-KTF11A Memory Management Diagnostic
+4	9.2.2.3	CJKDF-11/24 Option Diagnostic
+4	9.2.2.4	CZM9B-M9312, 11/24, 11/44 UBI Boot Diagnostic
+4	9.2.2.5	CKKUA-11/24, 11/44 UBI Map Diagnostic
+4	9.2.2.6	CZMSD-MS11 L/M Memory Diagnostic
+4	9.2.2.7	DZKAQ-PDP-11 Power-Fail Diagnostic
+4	9.2.2.8	CJKDC, CJKDD-KEF11-A FP Diagnostic Part 1 and 2
+4	9.2.2.9	CJKDH-KEF11-B CIS Diagnostic
+1	Appendix A	Comm Regulator
+1	Appendix B	Floating-Point Instruction Set
+1	Appendix C	PDP-11/24 Backplane Assignments

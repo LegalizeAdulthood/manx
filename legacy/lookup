@@ -1,0 +1,42 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use CGI qw(:cgi -no_xhtml);
+use DBI;
+use Manx::DB;
+use Manx::Utilities;
+
+binmode STDOUT, ':utf8';
+
+my $dbh = connectdb();
+
+if (defined(param('part'))) {
+	my $part = normalise_part_number(param('part')) . '%';
+
+	print header(-type => 'text/xml', -charset => 'utf-8');
+
+	my $sth = $dbh->prepare('select pub_id,ph_part,ph_title' .
+				' from PUB' .
+				' join PUBHISTORY on pub_history = ph_id' .
+				' where (ph_match_part like ? or ph_match_alt_part like ?)' .
+				' and ph_company = ?' .
+				' order by ph_sort_part, ph_pubdate' .
+				' limit 10');
+	$sth->execute($part, $part, param('company'));
+
+	print '<?xml-stylesheet href="lookup-style.css" type="text/css"?>', "\n";
+	print '<publist>';
+	while (my $r = $sth->fetchrow_hashref) {
+		print '<pub manxid="', $r->{pub_id}, '">',
+			  '<part>', html_encode($r->{ph_part}), '</part>',
+			  '<title>', html_encode($r->{ph_title}), '</title>',
+		      "</pub>\n";
+	}
+	$sth->finish;
+
+	print '</publist>';
+}
+
+$dbh->disconnect() if $dbh;
+exit;

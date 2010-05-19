@@ -1,0 +1,350 @@
+#PART	EK-VT125-UG-002
+#TITLE	VT125 Graphics Terminal User Guide
+1	1	Operating Information
+2		General
+2		Terminal Operation
+2		Controls and Indicators
+3		Monitor Controls
+4		AC Voltage Selection Switch
+4		AC Power ON/OFF Switch
+3		Keyboard Controls
+4		Standard Keys
+4		Function Keys
+3		Auxiliary Keys
+4		SET-UP Keys
+3		Visual Indicators
+4		ON LINE
+4		LOCAL
+4		KBD LOCKED
+4		L1 - L4
+3		Audible Indicators
+4		Keyclick
+4		Long Tone
+4		Series of Long Tones
+1	2	SET-UP Features
+2		General
+2		SET-UP Features
+3		Operator Preference
+3		Communication Compatibility
+3		Installation
+2		Feature Selection
+2		Entering and Exiting SET-UP
+2		Feature Memories
+3		Operating Memory
+3		User Permanent Memory
+4		Store
+4		Recall
+4		Reset
+3		SET-UP Default Memory
+2		SET-UP Feature Definitions
+3		General SET-UP Features
+4		On-Line/Local
+4		Screen Brightness
+3		SET-UP A Features
+4		Tabs
+3		SET-UP B Features
+4		SCROLL
+4		AUTO REPEAT
+4		SCREEN BACKGROUND
+4		CURSOR
+4		MARGIN BELL
+4		KEYCLICK
+4		ANSI/VT52
+4		AUTO XON/XOFF
+4		US/UK CHARACTER SET
+4		AUTO WRAP
+4		LINEFEED/NEW LINE
+4		INTERLACE
+4		PARITY SENSE
+4		PARITY
+4		BITS PER CHARACTER
+4		POWER
+4		AUX PORTS BITS PER CHARACTER
+4		AUX PORT SPEED
+3		Transmit Speed
+3		Receive Speed
+4		Answerback Message
+1	3	Transmitted Characters
+2		General
+2		Standard Keys
+2		Function Keys
+3		Cursor Control Keys
+3		Control Character Keys
+2		Auxiliary Keypad Keys
+1	4	Received Character Processing
+2		General
+2		Errors
+2		ASCII Table and Received Characters
+2		Displayable Characters
+3		Control Characters Received
+2		Sequences
+2		ANSI Sequences
+2		SET-UP Feature and Mode Selection
+3		Set Mode
+3		Reset Mode
+3		ANSI Specified Modes
+3		DIGITAL Private Modes
+3		ANSI/VT52 Mode
+3		Auto Repeat Mode
+3		Autowrap Mode
+3		Column Mode
+3		Cursor Keys Mode
+3		Linefeed/New Line Mode
+3		Keypad Application Mode
+3		Keypad Numeric Mode
+3		Origin Mode
+3		Screen Mode
+3		Scroll Mode
+2		Character Sets and Selection
+3		Select Character Sets
+3		Single Shift 2
+3		Single Shift 3
+3		Select Graphic Rendition
+2		Scrolling
+3		Scrolling Region
+3		Set Top and Bottom Margins
+2		Cursor Position
+2		Tabs
+3		Horizontal Tabulation Set
+3		Tabulation Clear
+2		Line Attributes
+3		Double-Height Line
+3		Double-Width Line
+3		Single-Width Line
+2		Erasing
+3		Erase In Display
+3		Erase In Line
+2		VT125 Communication and Graphics Protocol Controls
+3		Device Control String
+3		Device Control String Parameters
+3		Delimit Image Format
+3		Enter VT105 Emulator Mode
+3		String Terminator
+3		Media Copy
+3		ANSI Parameters
+3		Private Parameters
+2		Reports
+3		Cursor Position Report
+3		Device Attributes
+3		Identify Terminal
+3		Device Status Report
+3		Requests
+3		Responses
+2		Reset
+3		Reset to Initial State
+2		Tests and Adjustments
+3		Screen Alignment Display
+3		Invoke Confidence Test
+2		Indicators
+3		Keyboard Indicators
+3		Load LEDs
+2		VT52 Compatible Sequences
+2		VT52 Modes
+2		SET-UP Feature and Mode Selection
+3		Enter ANSI Mode
+3		Alternate Keypad Mode On
+3		Alternate Keypad Mode Off
+2		VT52 Character Sets and Selection
+3		Enter Graphics Mode
+3		Exit Graphics Mode
+2		VT52 Cursor Positioning
+2		VT52 Erasing
+3		Erase to End of Screen
+3		Erase to End of Line
+2		VT52 Reports
+3		Identity
+1	5	ReGIS Programming
+2		Introduction
+2		Definitions
+2		ReGIS Syntax
+3		ReGIS Single Character Commands
+3		Parentheses, Brackets, Pixel Vectors, and Quotes
+3		Commas and Spaces
+3		Control Characters
+3		Order of Performance
+3		Numeric Values
+2		Position
+3		Coordinates
+2		Position Command
+3		Absolute Position
+3		Relative Position
+3		Combining Absolute and Relative Positions
+3		Null Position
+3		Pixel Vectors
+3		Temporary Pixel Vector Multiplier
+3		Begin a Bounded Sequence of Coordinates
+3		Start an Unbounded Sequence of Coordinates
+3		End a Sequence of Coordinates
+2		Writing Commands
+3		Pixels
+3		Odd-Y Simulation
+2		Vector Command
+3		Dot at Current Position
+3		Vector from Current Position to Specified Position
+3		Pixel Vectors
+3		Bounded Sequence of Positions
+3		Unbounded Sequence of Positions
+3		Temporary Writing Controls
+2		Curves
+3		Circles
+3		Circle with Center at Current Position
+3		Circle with Center at Specified Position
+2		Arcs
+3		Arc with Center at Current Position
+3		Arc with Center at Specified Position
+2		Open and Closed Curves
+3		Interpolation of Curves
+3		Unbounded (Open) Curves
+3		Bounded (Closed) Curves
+3		Temporary Curve Writing Controls
+2		Text
+2		Text Commands
+3		Initial Text Defaults
+3		Text
+3		Text Character Cell Size
+3		Text Character Height Multiplier
+3		Text Character Spacing
+3		Text Pixel Vector Spacing
+3		Text Character Cell Size
+3		Text Pixel Multiplier
+3		Text String and Character Tilt Direction
+3		Text Italic Tilt
+3		Select Text Character Set
+3		Store and Restore Options
+3		Temporary Writing Controls
+2		Writing Controls
+3		Initial Writing Control Defaults
+3		Writing Modes
+3		Complement Writing
+3		Erase Writing
+3		Replace Writing
+3		Overlay Writing
+3		Foreground Planes
+3		Foreground Intensity and Color
+3		Pixel Vector Length Multiplier
+3		Negative Writing
+3		Shading
+3		Shading On or Off
+3		Shading Character
+3		Shading Reference Line
+3		Patterns
+3		Select Standard Pattern
+3		Specify Binary Pattern
+3		Set Pattern Multiplier
+3		Custom Writing Control Definition
+2		Screen Controls
+3		Initial Screen Control Defaults
+3		Screen Scrolling
+3		Screen Display Addressing Definition
+3		Screen Erase
+3		Screen Hardcopy Output
+3		Screen Background Definition
+3		Screen Output Map Definition
+3		Screen Scale
+3		Screen Time Delay
+2		Macrographs
+3		Clear All Macrographs
+3		Macrograph Definition
+3		Macrograph Invocation
+2		Character Cell Controls
+3		Select Character Set for Loading
+3		Associate Name with Current Character Set
+3		Load Character Cell
+2		Reports
+3		Report Character Set Selected for Loading
+3		Report Contents of a Macrograph
+3		Report Use of Macrograph Storage
+3		Report Cursor Position
+1	6	VT105 Emulation
+2		Introduction
+2		Entering Graph Drawing Mode
+2		Definitions and Limitations
+2		Select Graph Drawing Field
+2		Selecting Desired Display
+3		Loading Control Register 0
+3		Enabling Graphs and Histograms
+3		Enabling Strip Charts and Shade Lines
+3		Loading Control Register 1
+3		Enabling Graph Markers, Vertical Lines, and Horizontal Lines
+2		Forming Graph Drawing Data Characters
+3		Selecting Upper and Lower Data Characters
+3		Load Data Sequences
+3		Frequent Data Entry Errors
+3		Largest Data Character Transmitted First
+3		Zero Valued Characters Not Transmitted
+2		Loading Shade Line
+2		Loading Graph Memories
+2		Histogram Data
+2		Loading Graph Marker Memory
+2		Displaying Vertical Lines
+2		Displaying Horizontal Lines
+2		Load Starting X-Coordinate
+2		Entering Strip Chart Data
+3		Single Strip Chart Data
+3		Dual Strip Chart Data
+1	7	Communications
+2		General
+2		Connecting to Computer Port
+2		Connecting to Auxiliary Port
+2		Serial Character Format
+2		Break Signal
+2		Full-Duplex Communication
+2		Electronic Industry Association Interface
+2		SET-UP and Communications
+2		Control Functions
+2		Communication Cables
+2		Block Diagrams
+2		Input Buffer Overflow Prevention
+3		XON and XOFF Control Characters
+2		Effects of Reset and Tests
+2		Transmit Buffers
+1	8	Installation
+2		General
+2		Site Considerations
+2		Inspection
+2		Installation Procedure
+2		Power Up and Checkout Procedure
+1	9	Maintenance and Troubleshooting
+2		General
+2		Maintenance
+2		What to do in the Event of a Problem
+2		VT125 Self-Tests
+3		Preparing for Self-Tests
+2		Power-Up Self-Test
+2		Computer Port Data Loopback Self-Test
+2		Auxiliary Port Data Loopback Self-Test
+2		Display Test
+2		Video Bit Map Memory Test
+2		VT125 Self-Test Error Codes
+1	10	Options
+2		General
+2		20 mA Current Loop Interface Option
+3		Installation
+3		Computer Data Port Loopback Self-Test
+3		Advanced Video Option
+3		Installation
+3		Advanced Video Option Test
+2		VT1XX-CB or -CL Installation into VT100 and VT105
+2		Installation
+1	11	Accessories and Supplies
+2		General
+2		Accessories
+2		Keycaps
+2		Cables
+2		Power Cords
+2		Hardware Aids
+2		Alignment Templates
+2		Lot Priced Kits
+2		Components and Loose Piece Parts
+2		Related DIGITAL Documentation
+2		Ordering Information
+1	A	Specifications
+1	B	SET-UP B Summary
+1	C	Transmitted Character Summary
+1	D	Programming Summary
+1	E	ANSI Code Extension Techniques
+1	F	Creating Compatible ReGIS
+1	G	HLS Color System in the VT125
+1	H	ReGIS Command Listing
+1	I	Graphics Printer Character Processing
+1		Glossary

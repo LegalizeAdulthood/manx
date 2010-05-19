@@ -1,0 +1,99 @@
+#PART EK-DMR11-UG-002
+1	Chapter 1	Introduction
+2	1.1	Scope
+2	1.2	DMR11 General Description
+2	1.3	DMR11 System Operation
+3	1.3.1	Command Structure
+3	1.3.2	Input Commands
+3	1.3.3	Output Commands
+3	1.3.4	DMR11 Operation Sequencing
+3	1.3.5	Maintenance Mode Specification
+2	1.4	General Specifications
+3	1.4.1	Power Requirements
+3	1.4.2	Environmental Requirements -- A11 DMR11s
+2	1.5	EIA Standards Overview (RS-449 vs RS-232-C)
+1	Chapter 2	Installation
+2	2.1	Scope
+2	2.2	Unpacking and Inspection
+2	2.3	Installation Considerations
+2	2.4	Preinstallation Considerations
+3	2.4.1	System and Device Placement
+4	2.4.1.1	System Placement
+4	2.4.1.2	Device Placement
+3	2.4.2	System Requirements
+2	2.5	Microprocessor Installation
+3	2.5.1	Backplane Considerations
+3	2.5.2	M8207-RA Considerations
+3	2.5.3	M8207-RA Insertion
+2	2.6	Line Unit Installation
+3	2.6.1	M8203 Considerations
+3	2.6.2	M8203 Insertion
+2	2.7	DMR11 System Testing
+3	2.7.1	Functional Diagnostic Testing
+3	2.7.2	DECX11 System Exerciser
+3	2.7.3	Final Cable Connections
+3	2.7.4	DMR11 Link Testing
+2	2.8	DMR11-XX Installation Check-Off List
+1	Chapter 3	Programming
+2	3.1	Introduction
+2	3.2	Command Structure
+3	3.2.1	Control and Status Registers
+3	3.2.2	Initialization
+3	3.2.3	Input Commands Overview
+4	3.2.3.1	Input Command Handshaking
+4	3.2.3.2	Modem Status Read
+3	3.2.4	Output Commands Overview
+4	3.2.4.1	Output Command Handshaking
+2	3.3	Input Commands
+3	3.3.1	Base In
+3	3.3.2	Control In
+3	3.3.3	Receive Buffer Address/Character Count In (RBA/CCI)
+3	3.3.4	Transmit Buffer Address/Character Count In (TBA/CCI)
+3	3.3.5	Halt Request Command
+2	3.4	Output Commands
+3	3.4.1	Receive Buffer Address/Character Count Out (RBA/CCO)
+3	3.4.2	Transmit Buffer Address/Character Count Out (TBA/CCO)
+3	3.4.3	Control Out
+2	3.5	Programming Techniques
+3	3.5.1	Input Command Sequence
+3	3.5.2	Base In Command with Resume Feature
+3	3.5.3	Distinguishing DMR11 from DMC11
+3	3.5.4	DDCMP Maintenance Mode Operation
+4	3.5.4.1	Data Transfer
+4	3.5.4.2	Unattended System Control
+2	3.6	Base Table Counters
+2	3.7	Modem Control
+3	3.7.1	Modem Control Implemented in M8203
+4	3.7.1.1	Modem Ready Lockout of RTS
+4	3.7.1.2	Half-Duplex Mode
+3	3.7.2	Modem Control Implemented in DMR11 Microprogram
+4	3.7.2.1	Auto-Answer
+4	3.7.2.2	Data Set Ready Glitch
+4	3.7.2.3	RTS-CTS Delay
+4	3.7.2.4	Loss of Carrier Detect
+4	3.7.2.5	Receiver Inactive Check
+4	3.7.2.6	Modem Status Read During Input Command
+4	3.7.2.7	Data Terminal Ready Control
+2	3.8	DMR11 Data Link Functions
+1	Appendix A	Floating Device Addresses and Vectors
+2	A.1	Floating Device Addresses
+2	A.2	Floating Vector Addresses
+2	A.3	Examples of Device and Vector Address Assignment
+1	Appendix B	DDCMP In a Nutshell
+2	B.1	DDCMP
+3	B.1.1	Controlling Data Transfers
+3	B.1.2	Error Checking and Recovery
+3	B.1.3	Character Coding
+3	B.1.4	Data Transparency
+3	B.1.5	Data Channel Utilization
+2	B.2	Protocol Description
+2	B.3	Message Format
+1	Appendix C	Diagnostic Supervisor Summary
+2	C.1	Introduction
+2	C.2	Versions of the Diagnostic Supervisor
+2	C.3	Loading and Running a Supervisor Diagnostic
+3	C.3.1	Five Steps to Run a Supervisor Diagnostic
+2	C.4	Supervisor Commands
+3	C.4.1	Command Switches
+3	C.4.2	Control/Escape Characters Supported
+2	C.5	What is the Setup Utility?

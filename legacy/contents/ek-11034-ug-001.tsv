@@ -1,0 +1,101 @@
+#PART	EK-11034-UG-001
+#TITLE	PDP-11/34 System User's Manual
+1	Chapter 1	Introduction
+2	1.1	Scope
+2	1.2	System Description
+3	1.2.1	Unibus
+3	1.2.2	KD11-E (EA) Central Processor
+3	1.2.3	Operator's Console
+3	1.2.4	M9301 Bootstrap/Terminator
+3	1.2.5	M9302 Terminator
+3	1.2.6	Memory
+3	1.2.7	Mounting Box, Backplane, and Power Supply
+3	1.2.8	Optional Equipment
+2	1.3	Related Literature
+1	Chapter 2	Operation
+2	2.1	Operator's Console (KY11-LA)
+3	2.1.1	Console Switches
+3	2.1.2	Console Indicators
+3	2.1.3	Console Emulator
+4	2.1.3.1	Entry Into the Console Emulator
+4	2.1.3.2	Register Printout
+4	2.1.3.3	Console Emulator Program
+4	2.1.3.4	Examples of Console Emulator Operation
+4	2.1.3.5	Booting from Peripheral Devices
+4	2.1.3.6	Possible Operator Errors
+2	2.2	Programmer's Console (KY11-LB)
+3	2.2.1	KY11-LB Controls and Indicators
+3	2.2.2	Notes on Operation
+3	2.2.3	Examples of Programmer's Console Operation
+1	Chapter 3	Functional System Description
+2	3.1	General
+3	3.1.1	Halt-Continue Function
+3	3.1.2	Boot-Initialize Function
+3	3.1.3	Power-Up Reboot Enable Feature
+3	3.1.4	Sack Turnaround Feature
+2	3.2	KY11-LA Detailed Description
+3	3.2.1	HALT/CONT Switch
+3	3.2.2	BOOT/INIT Switch
+3	3.2.3	DC Power Switch
+3	3.2.4	Indicators
+2	3.3	M9301 Bootstrap/ROM Firmware
+3	3.3.1	Basic CPU Diagnostics
+3	3.3.2	Register Display Routine
+3	3.3.3	Memory-Modifying Diagnostics
+3	3.3.4	Bootstrap Programs
+1	Chapter 4	Configuration
+2	4.1	General
+2	4.2	Backplane
+3	4.2.1	Physical Description
+3	4.2.2	Electrical Connections
+4	4.2.2.1	Power
+4	4.2.2.2	Backplane Signal Connections
+3	4.2.3	Module Placement
+2	4.3	Switches and Jumpers
+3	4.3.1	KD11-E Processor
+3	4.3.2	KD11-EA Processor
+3	4.3.3	M9301 Bootstrap/Terminator
+3	4.3.4	DL11-W Serial Line Interface and Real-Time Clock
+4	4.3.4.1	Device Address
+4	4.3.4.2	Vector Address
+4	4.3.4.3	Baud Rate
+4	4.3.4.4	20 mA Current Loop Mode
+4	4.3.4.5	Data Format
+4	4.3.4.6	DL11-W Compatibility Switches
+3	4.3.5	MS11-EP, MS11-FP, and MS11-JP MOS Memory
+3	4.3.6	MM11-CP Core Memory
+3	4.3.7	MM11-DP Core Memory
+3	4.3.8	M7850 Parity Controller
+1	Chapter 5	Installation
+2	5.1	General
+2	5.2	Site Considerations
+3	5.2.1	Humidity and Temperature
+3	5.2.2	Air-Conditioning
+3	5.2.3	Acoustical Damping
+3	5.2.4	Lighting
+3	5.2.5	Special Mounting Conditions
+3	5.2.6	Static Electricity
+2	5.3	Electrical Requirements
+3	5.3.1	System Grounding
+3	5.3.2	Specifications Summary
+2	5.4	Unpacking
+2	5.5	Module Utilization in Typical Systems
+2	5.6	Initial Inspection
+2	5.7	Typical Switch Settings of Modules
+2	5.8	First-Time Start-Up Procedure
+3	5.8.1	Check of Standby Operation
+1	Chapter 6	Troubleshooting
+2	6.1	PDP-11/34 Characteristics Summary
+3	6.1.1	Operation (KY11-LA)
+3	6.1.2	Operation (KY11-LB)
+3	6.1.3	Installation
+2	6.2	Troubleshooting Procedures
+3	6.2.1	Quick Verification Routine
+3	6.2.2	Troubleshooting Flowcharts and Explanations
+1	Appendix A	KY11-LB Maintenance Mode Operation
+1	Appendix B	Extended Addressing
+1	Appendix C	Summary of Equipment Specifications
+
+
+	
+	

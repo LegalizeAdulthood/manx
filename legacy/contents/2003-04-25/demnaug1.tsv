@@ -1,0 +1,55 @@
+#PART EK-DEMNA-UG-001
+1	Chapter 1	DEC LANcontroller 400 Module Overview
+2	1.1	Basic Functions
+2	1.2	Logic Overview
+3	1.2.1	Microprocessor Subsystem
+3	1.2.2	Shared Memory Subsystem
+3	1.2.3	Ethernet Interface Subsystem
+3	1.2.4	XMI Interface Subsystem
+1	Chapter 2	Console Monitor Program
+2	2.1	Introduction
+2	2.2	Setup Procedure
+3	2.2.1	For the Physical Console
+3	2.2.2	For a Networked Terminal When Using NCP
+4	2.2.2.1	DEMNA at Remote Node
+4	2.2.2.2	DEMNA at Local Node
+3	2.2.3	For a Networked Terminal When Using the Console Connection Program
+2	2.3	Invoking the Console
+3	2.3.1	Using NCP
+3	2.3.2	Using the Console Connection Program
+2	2.4	Exiting the Console
+2	2.5	Console Commands
+3		Blank
+3		Examine
+3		Help
+3		Show
+3		T/R
+2	2.6	Console Command Language Control Characters
+2	2.7	How To Use the Status Screens
+3	2.7.1	Error Information
+4	2.7.1.1	Ethernet Error Counters
+4	2.7.1.2	Filtering/Validation Error Counters
+4	2.7.1.3	Lack-of-Resource Counters
+4	2.7.1.4	Time/User Fields
+4	2.7.1.5	LANCE Counters
+4	2.7.1.6	Firmware Debug Counters
+3	2.7.2	Resource Utilization Information
+4	2.7.2.1	Data Density Counters
+4	2.7.2.2	DEMNA Resource Counters
+2	2.8	How To Use the Network Screens
+3	2.8.1	Users versus Nodes
+3	2.8.2	Interval Parameters versus Accumulated Parameters
+3	2.8.3	Interval Screen versus Accumulated Screen
+1	Appendix A	Console Connection Program
+2	A.1	Introduction
+2	A.2	User-Supplied Parameter Values
+2	A.3	Running the Program
+2	A.4	Exiting the Program
+2	A.5	Program Listing
+1	Appendix B	How To Convert an Ethernet Address To a DECnet Address
+1	Appendix C	Ethernet Protocol Types
+1	Appendix D	History Entry Formats
+1	Appendix E	Device Type Codes For XMI Modules
+1	Appendix F	How To Modify Flags In EEPROM
+1	Appendix G	Ethernet Addresses
+1	Appendix H	SAP Assignments and SNAP Protocol ID Assignments

@@ -1,0 +1,35 @@
+#PART EK-KDB50-UG-001
+1	Chapter 1	General Information
+2	1.1	KDB50 Disk Controller Introduction
+3	1.1.1	KDB50 Subsystem
+3	1.1.2	Mass Storage Control Protocol
+3	1.1.3	SDI Bus Interface
+3	1.1.4	VAXBI Bus Interface
+2	1.2	KDB50 BI Modules
+3	1.2.1	SDI Module
+3	1.2.2	Processor Module
+2	1.3	KDB50 Functional Microcode
+3	1.3.1	BI Control Stream
+3	1.3.2	Drive Control Stream
+2	1.4	KDB50 Specifications
+2	1.5	Digital Customer Service Contract Options
+3	1.5.1	Hardware Services
+3	1.5.2	Software Services
+2	1.6	Related Documentation
+1	Chapter 2	Installation
+2	2.1	Before Installing the KDB50
+2	2.2	Installing the KDB50
+2	2.3	Field Acceptance Test Procedure
+3	2.3.1	KDB50 Disk Controller Self Test
+3	2.3.2	KDB50 Subsystem Diagnostics
+2	2.4	System and Software Considerations
+3	2.4.1	System Clock or Timer
+3	2.4.2	Error Logs
+3	2.4.3	Drive Numbering
+1	Chapter 3	KDB50 Programmer Information
+2	3.1	KDB50-Specific Programming Information
+2	3.2	BIIC Registers
+3	3.2.1	VAXBI Required Registers
+3	3.2.2	BIIC Control Registers
+3	3.2.3	KDB50 Specific Registers
+1	Appendix A	Glossary

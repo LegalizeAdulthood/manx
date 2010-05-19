@@ -1,0 +1,263 @@
+#PART	EK-KD11Z-TM-001
+#TITLE	PDP-11/44 System Technical Manual
+1	Chapter 1	Introduction
+2	1.1	General
+2	1.2	Equipment Description
+3	1.2.1	PDP-11/44 CA, -CB Processor System
+3	1.2.2	PDP-11X44 Processor System
+3	1.2.3	Standard Hardware Components
+3	1.2.4	Hardware Options
+2	1.3	Equipment Specifications
+3	1.3.1	PDP-11/44 System Specifications
+3	1.3.2	PDP-11X44 System Specifications
+3	1.3.3	H7140 AA, -AB Power Supply Electrical Specifications
+2	1.4	System Description
+3	1.4.1	KD11-Z Central Processor
+4	1.4.1.1	Data Path Module (M7094)
+4	1.4.1.2	Control Module (M7095)
+4	1.4.1.3	Multifunction Module (M7096)
+4	1.4.1.4	UNIBUS Interface Module (M7098)
+4	1.4.1.5	Console Interface Module (M7090)
+3	1.4.2	MOS Memory
+3	1.4.3	KK11-B Cache Memory
+3	1.4.4	UNIBUS Terminator (M9302)
+3	1.4.5	Optional Modules and Devices
+4	1.4.5.1	FP11-F Floating-Point Processor
+4	1.4.5.2	KE44-A Commercial Instruction Set Processor
+4	1.4.5.3	TU58 DECtape II
+4	1.4.5.4	Standard PDP-11 Peripheral Devices
+2	1.5	Related Documents
+3	1.5.1	DIGITAL Personnel Ordering
+3	1.5.2	Customer Ordering Information
+1	Chapter 2	Operation
+2	2.1	Front Control Panel
+2	2.2	Console Commands
+3	2.2.1	Special Functions
+4	2.2.1.1	Console Command Qualifiers
+4	2.2.1.2	Special Address Field Characters
+4	2.2.1.3	Control Characters
+3	2.2.2	ADDER Command
+3	2.2.3	BOOT Command
+3	2.2.4	CONTINUE Command
+3	2.2.5	DEPOSIT Command
+3	2.2.6	EXAMINE Command
+3	2.2.7	FILL Command
+3	2.2.8	HALT Command
+3	2.2.9	INITIALIZE Command
+3	2.2.10	MICROSTEP Command
+3	2.2.11	SINGLE-INSTRUCTION-STEP Command
+3	2.2.12	START Command
+3	2.2.13	SELF-TEST Command
+3	2.2.14	BINARY LOAD/UNLOAD Command
+3	2.2.15	REPEAT Command
+3	2.2.16	Summary of Errors
+3	2.2.17	Summary of Commands
+2	2.3	PDP-11/44 Registers
+3	2.3.1	CPU Registers
+4	2.3.1.1	Processor Status Word
+4	2.3.1.2	Program Interrupt Request Register
+4	2.3.1.3	Error Register
+4	2.3.1.4	General Registers
+3	2.3.2	Multifunction Module Register
+4	2.3.2.1	Console Terminal Receiver Control/Status Register
+4	2.3.2.2	Console Terminal Receiver Data Buffer Register
+4	2.3.2.3	Console Terminal Transmitter Control/Status Register
+4	2.3.2.4	Console Terminal Transmitter Buffer Register
+4	2.3.2.5	TU58 Receiver Control/Status Register
+4	2.3.2.6	TU58 Receiver Buffer Register
+4	2.3.2.7	TU58 Transmitter Control/Status Register
+4	2.3.2.8	TU58 Transmitter Data Buffer Register
+4	2.3.2.9	Signal Register
+4	2.3.2.10	Line Time Clock Control/Status Register
+3	2.3.3	Cache Memory I/O Page Registers
+4	2.3.3.1	Cache Memory Data Register
+4	2.3.3.2	Cache Hit Register
+4	2.3.3.3	Cache Maintenance Register
+4	2.3.3.4	Cache Control/Status Register
+4	2.3.3.5	Cache Error Register
+3	2.3.4	Memory Management Registers
+4	2.3.4.1	Status Register 0 (SR0)
+4	2.3.4.2	Status Register SR1
+4	2.3.4.3	Status Register SR2
+4	2.3.4.4	Status Register SR3
+4	2.3.4.5	Page Address Registers
+4	2.3.4.6	Page Description Register
+1	Chapter 3	CPU Configuration
+2	3.1	Processor Backplane Assignments
+3	3.1.1	Backplane Assembly Pin Designations
+3	3.1.2	Module Contact Designations
+3	3.1.3	SPC Module Installation
+2	3.2	Module Current Requirements
+3	3.2.1	DC Power Requirements
+3	3.2.2	H7140-AA, -AB DC Power Outputs
+2	3.3	Module Switches, Jumpers and Indicators
+3	3.3.1	Console Interface Module (M7090)
+4	3.3.1.1	Console Terminal Configurations
+4	3.3.1.2	TU58 DECtape II Configuration
+4	3.3.1.3	Remote Diagnosis Configuration
+4	3.3.1.4	Voltage Monitoring
+4	3.3.1.5	LED Indicator
+3	3.3.2	Multifunction Module (M7096)
+4	3.3.2.1	Console Terminal Jumper Leads Selections
+4	3.3.2.2	MFM Console Terminal Baud Rate Selection
+4	3.3.2.3	MFM TU58 DECtape II Jumper Leads
+4	3.3.2.4	MFM TU58 Baud Rate Selection
+4	3.3.2.5	MFM TU58 Device Address Selection
+4	3.3.2.6	TU58 Vector Address Selection
+4	3.3.2.7	Line Time Clock Enable/Disable
+3	3.3.3	UNIBUS Interface Module (M7098)
+4	3.3.3.1	UBI Jumper Leads and Memory Page Selection
+4	3.3.3.2	Diagnostic and Bootstrap Loader ROMs
+3	3.3.4	Cache Memory Module (M7097)
+4	3.3.4.1	LED Indicator Functions
+4	3.3.4.2	Multiport Memory Selection
+3	3.3.5	Control Module (M7095)
+1	Chapter 4	Installation
+2	4.1	Site Considerations
+3	4.1.1	Temperature and Humidity
+3	4.1.2	Acoustical Dampening
+3	4.1.3	Lighting
+3	4.1.4	Static Electricity
+3	4.1.5	Shock and Vibration
+3	4.1.6	Electrical Interface
+2	4.2	Unpacking
+3	4.2.1	PDP-11/44-CA, -CB Unit Removal
+3	4.2.2	PDP-11X44-CA, -CB Cabinet Removal
+4	4.2.2.1	Shipping Restraint Removal
+2	4.3	Equipment Dimensions
+2	4.4	AC Input Power Requirements
+3	4.4.1	Power Connections (AC)
+3	4.4.2	System Grounding
+2	4.5	PDP-11/44 Mounting Box Installation
+3	4.5.1	Index Plate Mounting
+3	4.5.2	Slide Assembly Mounting
+3	4.5.3	Mounting Box to Slide Installation
+2	4.6	PDP-11X44 System Cabinet Installation
+3	4.6.1	Base Stabilizer Installation
+3	4.6.2	Servicing Area
+2	4.7	Cable Routing
+3	4.7.1	Mounting Box Cable Routing
+3	4.7.2	PDP-11X44 Cabinet Cable Routing
+2	4.8	Power Checks
+3	4.8.1	AC Power Distribution
+4	4.8.1.1	Initial AC Power Checks
+3	4.8.2	DC Power Distribution
+4	4.8.2.1	DC Power Checks
+2	4.9	Performance Evaluation
+3	4.9.1	MAINDEC Diagnostic Programs
+4	4.9.1.1	Diagnostic Designations
+3	4.9.2	Internal Diagnostic Programs
+1	Chapter 5	Removal/Replacement Procedures
+2	5.1	BA11-AA, -AB Mounting Box in System Cabinet
+3	5.1.1	Mounting Box Removal
+3	5.1.2	Interface Bracket Removal/Installation
+3	5.1.3	Mounting Box Replacement
+2	5.2	BA11-AA, -AB Slide Mounted Removal/Replacement
+2	5.3	Fan Assembly
+3	5.3.1	Fan Assembly Removal/Replacement
+2	5.4	H7140-AA, -AB Power Supply Removal/Replacement
+3	5.4.1	Power Supply Removal
+3	5.4.2	Power Supply Replacement
+2	5.5	Optional Backplane Assemblies
+3	5.5.1	Optional Backplane Configurations
+3	5.5.2	Backplane Assembly Installation
+3	5.5.3	Backplane Connector Assignments
+3	5.5.4	NPG and BG Jumper Lead Routing
+3	5.5.5	Standard and Modified Backplane Locations
+3	5.5.6	SPC Backplane Locations
+3	5.5.7	Backplane Power Connections
+1	Chapter 6	Detailed Functional Description
+2	6.1	Introduction
+2	6.2	Control Store
+3	6.2.1	MicroPC Generation
+2	6.3	Data Path
+3	6.3.1	Arithmetic Logic Unit (ALU)
+3	6.3.2	ALU B-Reg Logic
+3	6.3.3	ALU Multiplexer (AMUX)
+3	6.3.4	Swap Sign Extend Multiplexer (SSMUX)
+3	6.3.5	Scratchpad Memory
+4	6.3.5.1	Scratchpad Operation
+3	6.3.6	Processor Status Word (PSW)
+2	6.4	Instruction Decode
+3	6.4.1	Instruction Classes
+4	6.4.1.1	Double Operand and Branch Instructions
+4	6.4.1.2	Single Operand Instructions
+4	6.4.1.3	Miscellaneous Instructions
+3	6.4.2	Miscellaneous Decoding for Reset Instruction and T Bit
+3	6.4.3	ALU Auxiliary Control
+2	6.5	Data Transfer Logic
+3	6.5.1	UNIBUS Transfer Logic
+4	6.5.1.1	Processor Clock Inhibit
+4	6.5.1.2	UNIBUS Synchronization
+4	6.5.1.3	Bus Control
+4	6.5.1.4	Generation of MSYN and MSYN/SSYN Timeout
+4	6.5.1.5	Restarting Processor Clock
+3	6.5.2	Bus Arbitration
+4	6.5.2.1	Bus Requests
+4	6.5.2.2	Request Synchronization
+4	6.5.2.3	SACK Timeout
+4	6.5.2.4	Programmed Interrupt Request (PIRQ)
+3	6.5.3	Error Logic
+3	6.5.4	Cache Interface
+2	6.6	System Clock
+2	6.7	Power Fail/Auto Restart
+2	6.8	Memory Management
+3	6.8.1	Relocation
+4	6.8.1.1	Address Mapping
+4	6.8.1.2	Address Translation
+3	6.8.2	Protection
+3	6.8.3	Page Address Registers (PAR)
+3	6.8.4	Page Descriptor Registers (PDR)
+3	6.8.5	Memory Management Fault Logic
+3	6.8.6	I and D Space
+2	6.9	UNIBUS Map
+3	6.9.1	Map Control
+3	6.9.2	Map Addressing and Relocation
+3	6.9.3	Addressing Limits
+2	6.10	Console Processor
+3	6.10.1	8085 Addressing
+3	6.10.2	Console Data Flow
+3	6.10.3	Console-to-PAX Interface
+3	6.10.4	Operation During Command Execution
+2	6.11	Serial Line Units
+3	6.11.1	Console Terminal SLU
+4	6.11.1.1	Transmitter Operation (Terminal UART)
+4	6.11.1.2	Receiver Operation (Terminal UART)
+4	6.11.1.3	Console Terminal Baud Rate Logic
+3	6.11.2	TU58 SLU
+4	6.11.2.1	Transmitter Operation (TU58 UART)
+4	6.11.2.2	Receiver Operation (TU58 UART)
+4	6.11.2.3	Baud Rate Logic
+3	6.11.3	Address Selection
+3	6.11.4	Console Terminal and TU58 Register Descriptions
+4	6.11.4.1	Terminal Receiver Status Register
+4	6.11.4.2	Terminal Receiver Buffer Register
+4	6.11.4.3	Terminal Transmitter Status Register
+4	6.11.4.4	Terminal Transmitter Buffer Register
+4	6.11.4.5	Line Clock Status Register
+4	6.11.4.6	TU58 Receiver Status Register
+4	6.11.4.7	TU58 Receiver Buffer Register
+4	6.11.4.8	TU58 Transmitter Status Register
+4	6.11.4.9	TU58 Transmitter Buffer Register
+3	6.11.5	Interrupt Request Logic
+4	6.11.5.1	Arbitration Between Terminal and TU58 Interrupts
+2	6.12	KK11-B Cache
+3	6.12.1	Memory Organization
+3	6.12.2	Interface Logic
+3	6.12.3	Address Logic
+3	6.12.4	Data Control
+4	6.12.4.1	Write Data Latching
+4	6.12.4.2	Read Data Enable
+3	6.12.5	Cache Array
+4	6.12.5.1	Data Section
+4	6.12.5.2	Tag Section
+3	6.12.6	Cache Flush Control
+3	6.12.7	Valid Control Logic
+3	6.12.8	Write Control Logic
+3	6.12.9	Hit Detect Logic
+3	6.12.10	Cache Register Logic
+3	6.12.11	Address Match Logic
+3	6.12.12	Cache Registers
+
+	
+	

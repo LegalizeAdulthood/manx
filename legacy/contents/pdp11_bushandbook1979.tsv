@@ -1,0 +1,179 @@
+#PART
+#TITLE PDP-11 Bus Handbook 1979
+1	Part 1	Unibus Specification
+1		Introduction
+2		Scope
+2		Content
+1		Unibus Description
+2		Architecture
+2		Unibus Transmission Medium
+2		Bus Terminator
+2		Bus Segment
+2		Bus Repeater
+2		Bus Master
+2		Bus Slave
+2		Bus Arbitrator
+2		Bus Request
+2		Bus Grant
+2		Processor
+2		Interrupt Fielding Processor
+1		Unibus Systems
+2		Signal Lines
+2		Priority Structure
+2		Address Space
+2		Latency
+2		Arrangement of Devices on the Unibus
+2		Expanding the Unibus System
+1		Protocol
+2		Types of Transactions
+2		Priority Arbitration Transactions
+2		Data Transfers
+2		Initialization
+1		Unibus Signal Details
+2		Unibus Sections and Signal Lines
+2		Signal Transmission
+3		Bus Transmission Delay
+3		Skew
+3		Deskew
+2		Types of Unibus Signal Lines
+2		Priority Arbitration Section
+3		Non-Processor Request (NPR)
+3		Non-Processor Grant (NPG)
+3		Bus Request (BR4, BR5, BR6, BR7)
+3		Bus Grant (BG4, BG5, BG6, BG7)
+3		Selection Acknowledged (SACK)
+3		Bus Busy (BBSY)
+2		Data Transfer Section
+3		Data Lines, D<15:00>
+3		Address Lines, A<17:00>
+3		Control Lines, C0, C1
+3		Master Sync (MSYN)
+3		Slave Sync (SSYN)
+3		Interrupt Request (INTR)
+2		Initialization Section
+3		Intialize (INIT)
+3		AC Low (AC LO)
+3		DC Low (DC LO)
+1		Unibus Protocols
+2		Definitions and Concepts
+3		Arbitration
+3		Centralized Arbitration
+3		Priority Arbitration
+3		Data Transfer (Bus Cycle)
+3		Transaction
+3		Protocol
+2		Unibus Operation Concepts
+2		Priority Protocol
+3		Bus Device Priority Levels
+3		Interrupt Fielding Processor CPU Priority Levels
+3		Grant
+3		Assertion
+3		Negation
+3		Priority Arbitration Example
+3		Priority Arbitration Transactions
+3		Notes on the Timing Diagrams
+3		NPR Arbitration Sequence
+3		BR Interrupt Arbitration Sequence
+3		Data Transfer Protocol
+4		Data-In Transaction (DATI or DATIP)
+4		Detailed Description, DATI and DATIP
+4		Data-Out Transaction (DATO or DATOB)
+4		Detailed Description, DATO and DATOB
+4		Read/Modify/Write Transactions (DATIP-DATO/B)
+4		Multiple Word Transfers
+1		Initialization Section
+2		Initialization (INIT)
+3		Processor Requirements
+3		Arbitrator Response
+3		Master/Slave Response
+2		Power-Up and Power-Down Sequences
+1		Unibus Interface Design Guidelines
+2		Preferred Interface Integrated Circuit (IC) Chips
+2		Unibus Transmitter (Driver)
+2		Unibus Receiver
+2		Bus Receiver and Transmitter Equivalent Circuits
+2		DC Bus Load
+2		Module Layout
+2		Backplanes
+2		Grounding
+2		Logic Design Guidelines for Unibus Interfaces
+2		Master Devices
+2		Unibus Control Logic
+2		Bus Request (BR) Device---One Vector
+2		Bus Request (BR) Device---Two Vectors
+2		Non-Processor Request (NPR) Device
+1		Unibus Configuration
+2		Definitions
+3		Unibus Segment
+3		Unibus Cable
+3		Unibus Element
+3		AC Unit Load
+3		DC Unit Load
+3		Lumped Load
+3		Bus Terminator
+3		Semi-Lumped Load
+3		Data-In Transactions
+3		DATIP Transactions
+3		Data-Out Transactions
+3		Parity Error Indications (PA, PB)
+3		Master Sync (MSYN)
+3		Slave Sync (SSYN)
+3		Interrupt Request (INTR)
+3		AC Bus Load
+3		DC Bus Load
+2		Unibus Configuration Rules
+3		Maximum Cable Length (Rule 1)
+3		Maximum DC Loading (Rule 2)
+3		Maximum AC Loading (Rule 3)
+3		Different Cable Lengths (Rule 4)
+3		Voltage Margin Tests (Rule 5)
+1		Unibus Hardware
+2		Unibus Cable (BC11A)
+2		M920 Unibus Jumper Module
+2		M9202 Unibus Jumper with Cable
+2		M930 Unibus Terminator Module
+2		M981 Internal Unibus Terminator Assembly
+2		Drivers, Receivers, and Transmitters
+2		Unibus Connector Block Pin Assignments
+1	Part 2	LSI-11 Bus Specification
+1		Introduction
+2		Master/Slave Relationships
+1		Data Transfer Bus Cycles
+2		Bus Cycle Protocol
+3		Device Addressing
+3		DATI
+3		DATO(B)
+3		DATIO(B)
+3		Parity Protocol
+2		Direct Memory Access
+3		DMA Protocol
+1		Interrupts
+2		Device Priority
+2		Interrupt Protocol
+2		4-Level Interrupt Configurations (LSI-11/23)
+1		Control Functions
+2		Memory Refresh
+2		Halt
+2		Initialization
+2		Power Status
+3		BDCOK H
+3		BPOK H
+2		Power-Up/Down Protocol
+1		Bus Electrical Characteristics
+2		AC Load Definition
+2		DC Load Definition
+2		120 Ohm LSI-11 Bus
+2		Bus Drivers
+2		Bus Receivers
+2		Bus Termination
+2		Bus Interconnecting Wiring
+3		Backplane Wiring
+3		Intra-Backplane Wiring
+3		Power and Ground
+1		System Configurations
+2		Rules for Configuring Single Backplane Systems
+2		Rules for Configuring Multiple Backplane Systems
+2		Power Supply Loading
+1	Appendix A	MASSBUS
+1	Appendix B	DECdataway
+1	Appendix C	PCL-11

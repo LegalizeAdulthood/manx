@@ -1,0 +1,90 @@
+#PART EK-KA490-SV.A01
+1	1	System Module
+2		Introduction
+2		System Overview
+2		Central Processor Unit
+2		Interrupts and Exceptions
+2		Cache Memory
+2		Main Memory System
+2		ROM Memory
+2		Graphics Controller
+2		Network Interface Controller
+2		Serial Line Controller
+2		Time-of-Year Clock
+2		SCSI Controller
+2		DSW21 Synchronous Communications Adapter
+1	2	Firmware
+2		Overview
+2		Power-Up Initialization Code
+2		Console Mode
+2		Extended Self-Test
+2		Utilities
+2		System Test
+2		System ROM
+2		Option ROM
+2		Configuration Table
+2		Driver Descriptor
+2		Interfacing to Diagnostic Drivers
+2		Console Driver Interface
+1	3	System Configuration
+2		Overview
+2		System Box
+1	4	Using the Console
+2		Overview
+2		System Console Commands
+2		Alternate Consoles
+1	5	Diagnostic Testing
+2		Overview
+2		Diagnostic Functions
+2		System Power-Up Test
+2		Displaying System Configuration
+2		Displaying Additional Error Information
+2		Setting Up the Diagnostic Environment
+2		Device Tests
+2		Self-Test Descriptions
+2		System Test Environment Configuration
+2		System Test Monitor
+2		Utilities
+2		MIPS/REX Emulator
+2		Product Fault Management
+2		Using MOP Ethernet Functions
+2		User Environmental Test Package
+2		FEPROM Firmware Update
+2		Updating Firmware On Tape
+1	6	FRUs Removal and Replacement
+2		Overview
+2		Precautions
+2		System FRU Removal
+2		System Preparation
+2		Mass Storage Drive Removal
+2		Power Supply Removal
+2		Module Removal
+2		SPXg 8-Plane Option
+2		SPXgt 24-Plane Option
+2		CPU Module
+2		DSW21 Removal and Replacement
+2		Bezel Removal
+2		Clearing System Password
+2		Testing the VAXstation 4000 Model 90 System
+2		TURBOchannel Option
+2		Shipping Contents
+2		TURBOchannel Adapter and Option Modules
+2		Installing the TURBOchannel Option
+2		TURBOchannel Specifications
+1	Appendix A	Diagnostic Error Codes
+2		Overview
+2		Error Messages
+2		Self-Test Error Messages
+2		System Test Error Messages
+2		Utility Error Messages
+1	Appendix B	Reading the Diagnostic LED Codes
+2		Overview
+2		Diagnostic LED Codes
+1	Appendix C	Troubleshooting
+2		Overview
+2		Troubleshooting
+1	Appendix D	FRU Part Numbers
+2		Overview
+2		Precautions
+2		Model 90 System Box FRUs
+2		Expansion Box FRUs

@@ -1,0 +1,136 @@
+#PART EK-KMV1A-UG-002
+1	Chapter 1	Introduction
+2	1.1	Scope
+2	1.2	KMV1A General Description
+2	1.3	System Operation
+2	1.4	CSR Layout
+2	1.5	BSEL1 Definitions
+2	1.6	KMV1A -- Host Interaction
+1	Chapter 2	Installation
+2	2.1	Scope
+2	2.2	Unpacking and Checkout
+2	2.3	Installation Phases
+2	2.4	Preinstallation Considerations
+3	2.4.1	Mounting Space
+3	2.4.2	Power Requirements
+3	2.4.3	Modem Cable Assembly Requirements
+2	2.5	M7500 Installation
+3	2.5.1	Voltage Check
+3	2.5.2	Switch Settings
+4	2.5.2.1	Address Switches
+4	2.5.2.2	Vector Switches
+3	2.5.3	Jumper Configurations
+3	2.5.4	Standard Switch Setting and Jumper Configuration for KMV1A
+3	2.5.5	M7500 Insertion
+2	2.6	Modem Cable Assembly Installation
+2	2.7	KMV1A System Testing
+3	2.7.1	Diagnostics
+4	2.7.1.1	MicroPDP-11 Family Diagnostics
+4	2.7.1.2	MicroVAX Family Diagnostics
+3	2.7.2	Final Cable Connections
+2	2.8	KMV1A Installation Check List
+1	Chapter 3	Application Mode
+2	3.1	CSR Description
+2	3.2	BSEL1 Definitions
+2	3.3	Loading and Starting Application Firmware
+1	Chapter 4	Application Firmware Development
+2	4.1	KMV1A I/O Programming
+3	4.1.1	Front-end Processor Address Space
+3	4.1.2	I/O Register Assignment
+3	4.1.3	Front-end Processor Interrupt System
+2	4.2	CSR and DMA Interface
+3	4.2.1	CSR and DMA Address Register Description
+3	4.2.2	CSR and DMA Programming
+4	4.2.2.1	Programming Sequence for DMA OUT
+4	4.2.2.2	Programming Sequence for DMA IN
+2	4.3	Line Controller Interface
+3	4.3.1	Line Controller Register Description
+4	4.3.1.1	Channel A Receive Buffer (Address 110 000)
+4	4.3.1.2	Channel A Transmit Buffer (Address 110 002)
+4	4.3.1.3	Channel B Receive Buffer (Address 110 010)
+4	4.3.1.4	Channel B Transmit Buffer (Address 110 012)
+4	4.3.1.5	Channel A Command Registers (Address 110 006)
+5	4.3.1.5.1	Control Register 0
+5	4.3.1.5.2	Control Register 1
+5	4.3.1.5.3	Control Register 2 (Channel A)
+5	4.3.1.5.4	Control Register 3
+5	4.3.1.5.5	Control Register 4
+5	4.3.1.5.6	Control Register 5
+5	4.3.1.5.7	Control Register 6
+5	4.3.1.5.8	Control Register 7
+4	4.3.1.6	Channel B Command Register
+5	4.3.1.6.1	Control Register 0
+5	4.3.1.6.2	Control Register 1
+5	4.3.1.6.3	Control Register 2 (Channel B)
+4	4.3.1.7	Channel A Status Registers
+5	4.3.1.7.1	Status Register 0
+5	4.3.1.7.2	Status Register 1
+4	4.3.1.8	Channel B Status Registers
+5	4.3.1.8.1	Status Register 0
+5	4.3.1.8.2	Status Register 2
+3	4.3.2	Line Controller Interrupt System and Mode Selection
+3	4.3.3	HDLC Operation Example
+2	4.4	Line Clock -- Real Time Clock Interface
+3	4.4.1	Line Clock -- Real Time Clock Register Description
+3	4.4.2	Line Clock Programming
+3	4.4.3	Real Time Clock Programming
+3	4.4.4	Line Clock -- Real Time Clock Parameter Setting
+2	4.5	Peripheral Port Interface
+3	4.5.1	Peripheral Port Register Description
+3	4.5.2	Modem Monitoring and Control
+2	4.6	Host Interrupt and Q-bus Control Interface
+3	4.6.1	Host Interrupt and Q-bus Control Register Description
+3	4.6.2	Host Interrupt and Q-bus Control Programming
+1	Chapter 5	Service
+2	5.1	Scope
+2	5.2	Maintenance Philosophy
+2	5.3	Maintenance Tools and Features
+3	5.3.1	LED Indicators
+3	5.3.2	Self-Test
+3	5.3.3	Line Clock and Loopback Connectors
+4	5.3.3.1	Line Clock
+4	5.3.3.2	Real Time Clock
+4	5.3.3.3	Loopback Connectors/Tests
+2	5.4	Diagnostics
+3	5.4.1	PDP-11 Diagnostics
+4	5.4.1.1	VKMA Logic Diagnostic
+4	5.4.1.2	VKMB Line Controller Diagnostic
+4	5.4.1.3	XKMD DECX-11 Exerciser Module
+3	5.4.2	MicroVAX Diagnostics
+4	5.4.2.1	MDM Package
+2	5.5	Preventive Maintenance
+2	5.6	Corrective Maintenance
+1	Appendix A	Ordering Number and Cabinet Installation Kit
+2	A.1	Scope
+2	A.2	Ordering Numbers
+2	A.3	Cabinet Kits
+1	Appendix B	Installation for RS-232-C Versions
+2	B.1	Scope
+2	B.2	Components of the Package
+2	B.3	Assembly Considerations
+3	B.3.1	Before Installation
+3	B.3.2	Distribution Panel Installation
+4	B.3.2.1	BA11-M, BA123, BA23 and H9642
+4	B.3.2.2	BA11-S
+3	B.3.3	Installation Checklist
+2	B.4	Test Connectors
+1	Appendix C	Installation For RS-422-A Versions
+2	C.1	Scope
+2	C.2	Components of the Package
+2	C.3	Assembly Considerations
+3	C.3.1	Distribution Panel Installation
+4	C.3.1.1	PDP-11/23S, MicroPDP-11, PDP-11/73, or MicroVAX II (CK-KMV1A-EA, CK-KMV1A-EB)
+4	C.3.1.2	PDP-11/23+ (CK-KMV1A-EC)
+3	C.3.2	Installation Checklist
+3	C.3.3	Unused Items
+2	C.4	Test Connectors
+1	Appendix D	Installation for RS-423-A Versions
+2	D.1	Scope
+2	D.2	Components of the Package
+2	D.3	Assembly Considerations
+3	D.3.1	Distribution Panel Installation
+4	D.3.1.1	PDP-11/23S, MicroPDP-11, PDP-11/73, or MicroVAX II (CK-KMV1A-FA, CK-KMV1A-FB)
+4	D.3.1.2	PDP-11/23+ (CK-KMV1A-FC)
+3	D.3.2	Installation Checklist
+3	D.3.3	Unused Items
+2	D.4	Test Connectors

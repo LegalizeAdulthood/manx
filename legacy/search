@@ -1,0 +1,373 @@
+#!/usr/bin/perl -w
+
+# 2009-02-13 moving to new schema
+# 2008-05-06 Finally UTF-8 throughout. Change banner to prepare for online updating and users.
+# 2006-06-10 Tertiary ordering of search results is pubid. MITS results showed some publications twice because there are no part numbers but there are copies.
+# 2006-05-07 Reinstate cgi_buffer, now I've modified it to be UTF-8-aware.
+# 2006-05-07 Don't use cgi_buffer. Use UTF8DBI.
+# 2006-04-16 Link all titles to details page
+# 2006-04-16 Corrected html_encode() of linked titles
+# 2006-04-12 Display "os" tags
+# 2005-01-29 Calling without a search string now shows all documents. Results per page other than 10 now works (but no UI yet).
+# 2005-01-15 Matching parts now also works on match_alt_part, and alt_part is displayed if available.
+# 2005-01-02 Order results by sort_part,pdate. sort_part is currently the same as match_part for all companies except IBM.
+# 2004-05-13 Changed servers
+# 2004-01-24 Scripts and database are now fully UTF-8
+# 2003-11-14 Added more companies (still not looked up in DB, because still want subset). Page selectors weren't passing cp along.
+# 2003-11-14 Order results by part,pdate instead of part. Consider moving to match_part instead of part.
+
+use strict;
+
+use CGI qw(:cgi -no_xhtml);
+use DBI;
+use Encode;
+use POSIX ();
+use Manx::DB;
+use Manx::User;
+use Manx::Utilities;
+
+binmode STDOUT, ':utf8';
+
+sub html_header($);
+
+my ($dbh, $smt, $sth, $rc, $rv, @rowary);
+
+my $SEARCHURL = '/manx/search';
+my $DETAILSURL = '/manx/details';
+
+my $DEFAULTNUMPERPAGE = 10;
+
+my @errors;
+
+my $match_cond = ' and ';
+my $match_clause = '';
+my $online_clause;
+my ($word, $norm_word, @search_words, @ignored_words);
+
+$dbh = connectdb();
+die $DBI::errstr if $DBI::err;
+
+my $user = Manx::User::from_session($dbh, cookie('manxSession'));
+
+@rowary = $dbh->selectrow_array('select confval from CONFIG where confkey="updated"');
+my ($year, $mon, $mday, $hour, $min, $sec) = $rowary[0] =~ /(....)(..)(..)(..)(..)(..)/;
+my $time = POSIX::mktime($sec, $min, $hour, $mday, $mon - 1, $year - 1900);
+my $tlm = POSIX::strftime("%a, %d %b %Y %T GMT", gmtime($time));
+
+my $format;
+if (defined(param('format')) && param('format') eq 'csv') {
+	$format = 'csv';
+} else {
+	$format = 'web';
+}
+
+if (!defined(param('cp'))) {
+	param('cp', '1');
+}
+
+my $param_q = decode("utf8", param('q')) if defined(param('q'));
+
+if (defined($param_q) && ($param_q ne '')) {
+
+	# Split query into words
+	for $word (split /\s/, $param_q) {
+		$word = trim($word);
+		if ($word ne '') {
+			if (length($word) > 2) {
+				push @search_words, $word;
+			} else {
+				push @ignored_words, $word;
+			}
+		}
+	}
+
+	# Form match clause
+	if (scalar @search_words > 0) {
+		$match_clause .= ' and (';
+		my $ord_word = 0;
+		for $word (@search_words) {
+			$match_clause .= $match_cond if ++$ord_word > 1;
+			$norm_word = normalise_part_number($word);
+
+			# Produces a result similar to DBI::quote, but also quotes wildcard characters
+			(my $clean_word = $word) =~ s/([%_'\\])/\\$1/g;
+
+			$match_clause .= qq{(ph_title like '%$clean_word%' or ph_keywords like '%$clean_word%'};
+			if (length($norm_word) > 2) {
+				$match_clause .= qq{ or ph_match_part like '%$norm_word%' or ph_match_alt_part like '%$norm_word%'};
+			}
+			$match_clause .= ')';
+		}
+		$match_clause .= ')';
+	}
+	#print STDERR join(',', @search_words),"\n";
+}
+
+$match_clause = ' ' if $match_clause eq '';
+
+if ($match_clause ne '') {
+
+	if (defined(param('on')) && (param('on') ne '0')) {
+		$online_clause = 'pub_has_online_copies';
+	} else {
+		$online_clause = '1=1';
+	}
+	
+	my $search_string;
+
+	if ($match_cond eq ' OR ') {
+		$search_string = join($match_cond, @search_words);
+	} else {
+		$search_string = join(' ', @search_words);
+	}
+
+	param('q', $search_string);
+	
+	if ($format eq 'web') {
+		#print header('-last-modified' => $tlm, '-cache-control' => 'max-age=600', '-expires' => '+1d', '-charset' => 'utf-8');
+		print header(-charset => 'utf-8');
+		html_header($user);
+
+		print qq{<div id="SEARCHFORM"><form action="$SEARCHURL" method="get" name="f">},
+			qq{<div class="field">Company: <select id="CP" name="cp">};
+		$sth = $dbh->prepare('select id,name from COMPANY where display="Y" order by sort_name');
+		$rv = $sth->execute;
+		while (@rowary = $sth->fetchrow_array) {
+			print qq{<OPTION VALUE="$rowary[0]"}, (param('cp') eq $rowary[0] ? ' SELECTED' : ''), '>', html_encode($rowary[1]), "</OPTION>\n";
+		}
+		$rc = $sth->finish;
+
+		print qq{</SELECT>};
+		print qq{ Keywords: <INPUT ID="Q" NAME="q" VALUE="}, html_encode($param_q), qq{" SIZE="20" MAXLENGTH="256">};
+		print qq{ Online only: <input type="checkbox" name="on"}, (defined(param('on')) ? ' checked' : ''), '>';
+		print qq{ <INPUT ID="GO" TYPE="SUBMIT" VALUE="Search"></DIV></FORM></div>\n};
+	} else {
+		print header(-type => 'text/x-csv', -content_disposition => 'attachment; filename=decronomicon.csv', '-last-modified' => $tlm, '-charset' => 'utf-8');
+	}
+
+	# Because we wish to count copies just once, we have to retrieve the entire set of results
+	# and filter, instead of using LIMIT. "company" is retrieved even though it is fixed at the
+	# moment, because I might want an "any company" feature later.
+	# If we were to use LIMIT, we wouldn't be able to tell how many rows could have been returned (short of COUNTing), because $sth->rows would return 10
+
+	#              0       1        2         3                      4            5            6               7           8            9           10           11
+	$smt = 'select pub_id, ph_part, ph_title, pub_has_online_copies, ph_abstract, pub_has_toc, pub_superseded, ph_pubdate, ph_revision, ph_company, ph_alt_part, ph_pubtype' .
+		' from PUB join PUBHISTORY on pub_history = ph_id' .
+		" where $online_clause $match_clause";
+	$smt .= ' and ph_company=' . param('cp') if param('cp') ne '-1';
+	$smt .= ' order by ph_sort_part, ph_pubdate, pub_id';
+		
+	$sth = $dbh->prepare($smt);
+	warn $DBI::errstr if $DBI::err;
+	$rv = $sth->execute;
+	die $DBI::errstr if $DBI::err;
+
+	my $total_matches = 0;
+	my $last_pubid = 0;
+	my @match_row;
+
+	while (my $r = $sth->fetchrow_hashref) {
+		++$total_matches;
+		push @match_row, $r;
+	}
+
+	$rc = $sth->finish;
+	warn $DBI::errstr if $DBI::err;
+
+	if ($total_matches > 0) {
+		my ($start, $end, $num_per_page, $page_links, @flags);
+		
+		if (defined(param('num'))) {
+			$num_per_page = 0 + param('num');
+			if ($num_per_page < 1) {
+				$num_per_page = $DEFAULTNUMPERPAGE;
+			}
+		} else {
+			$num_per_page = $DEFAULTNUMPERPAGE;
+		}
+		
+		if (defined(param('start'))) {
+			$start = 0 + param('start');
+			$start = $total_matches - 1 if $start >= $total_matches;
+		} else {
+			$start = 0;
+		}
+		$start = int($start / $num_per_page) * $num_per_page;
+		param(-name => 'start', -value => $start);
+		
+		++$start;
+		$end = $start + $num_per_page - 1;
+		if ($end > $total_matches) {
+			$end = $total_matches;
+		}
+
+		if ($format eq 'web') {
+			if (scalar @ignored_words > 0) {
+				print '<P CLASS="warning">Ignoring ', neat_quoted_list(@ignored_words),
+					'. All search words must be at least three letters long.</P>';
+			}
+
+			if (scalar @search_words) {
+				print qq{<DIV CLASS="resbar">Searching for }, neat_quoted_list(@search_words), '.';
+			} else {
+				print qq{<DIV CLASS="resbar">Showing all documents.};
+			}
+
+			print qq{ Results <B>$start - $end</B> of <B>$total_matches</B>.</DIV>\n};
+
+			# Calculate page numbers for all results and generate page links
+			
+			--$start; # zero-based again
+			$page_links = '<DIV CLASS="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;';
+			# Remember to fully parenthesise options here, as '.' has higher priority than '?:'
+			my $link_options =
+				(($num_per_page != $DEFAULTNUMPERPAGE) ? ";num=$num_per_page" : '') .
+				(defined(param('debug')) ? ';debug=1' : '') .
+				(defined(param('disposition')) ? ';disposition=1' : '') .
+				((defined(param('on')) && param('on')) ? ';on=on' : '') .
+				';cp=' . param('cp');
+
+			if ($start != 0) {
+				$page_links .= qq{<A HREF="${SEARCHURL}?q=} . CGI::escape($param_q) . qq{;start=} .
+					($start - $num_per_page) . $link_options . qq{"><B>Previous</B></A>&nbsp;&nbsp;};
+			}
+			my $first_page = int($start / (10 * $num_per_page)) * 10 + 1;
+			my $last_page_num = int(($total_matches + $num_per_page - 1) / $num_per_page);
+			my $last_page_start = ($last_page_num - 1) * $num_per_page;
+			# First page number at the bottom is 1, 11, 21 ...
+			my $curr_page_num = $first_page;
+			my $curr_page_start = ($curr_page_num - 1) * $num_per_page;
+			my $start_page_num = int($start / $num_per_page) + 1;
+
+			my $num_indices = 0;
+			while ($num_indices++ < 10) {
+				if ($start == $curr_page_start) {
+					$page_links .= qq{<B CLASS="currpage">$curr_page_num</B>&nbsp;&nbsp;};
+				} else {
+					$page_links .= qq{<A CLASS="navpage" HREF="${SEARCHURL}?q=} . (CGI::escape($param_q) || '') .
+						qq{;start=$curr_page_start} . $link_options .
+						qq{">$curr_page_num</A>&nbsp;&nbsp;};
+				}
+				++$curr_page_num;
+				$curr_page_start += $num_per_page;
+				last if $curr_page_start > $last_page_start;
+			}
+			if ($start != $last_page_start) {
+				$page_links .= qq{<A HREF="${SEARCHURL}?q=} . (CGI::escape($param_q) || '') . qq{;start=} .
+					($start + $num_per_page) . $link_options . qq{"><B>Next</B></A>};
+			}
+			$page_links .= "</DIV>\n";
+
+			print $page_links;
+			++$start; # one-based for printing results
+
+			print '<TABLE CLASS="restable"><THEAD><TR>',
+				($user->{logged_in} ? '<th class="idcol">Manx ID</th>' : ''),
+				'<TH>Part</TH><TH>Date</TH><TH>Title</TH><TH CLASS="last">Status</TH></TR></THEAD>';
+			print '<TBODY>';
+		}
+
+		for (my $midx = $start - 1; ($midx < $start + $num_per_page - 1) && ($midx < $total_matches); ++$midx) {
+			my $r = $match_row[$midx];
+
+			$r->{ph_part} ||= '';
+			$r->{ph_title} ||= '';
+			$r->{ph_pubdate} ||= '';
+			$r->{ph_revision} ||= '';
+			$r->{ph_alt_part} ||= '';
+
+			if ($format eq 'web') {
+				print qq{<tr valign="top">\n};
+				print qq{<td class="idcol">}, $r->{pub_id},'</td>' if $user->{logged_in};
+				print '<TD>', html_encode_nbsp(trim($r->{ph_part} . ' ' . $r->{ph_revision}));
+				print qq{<BR><SMALL>}, html_encode($r->{ph_alt_part}), '</SMALL>' if ($r->{ph_alt_part} ne '');
+				print qq{</TD>\n<TD>}, html_encode($r->{ph_pubdate}), "</TD>\n";
+
+				# Provide a link to details if the document is online [3] or there is a ToC available [5]. Putting the company in the
+				# link sets the company in the select box on the details page. Could pass the search string through as well,
+				# in case this result prompts the user to change the search string?
+				# 2006-04-16: link everything to details
+				# 2007-03-18: superseded documents or amendments are de-highlighted (grey)
+				print '<TD>';
+				print '<A', ($r->{pub_superseded} || ($r->{ph_pubtype} eq 'A') ? ' CLASS="ss"' : ''),
+					qq{ HREF="$DETAILSURL/$r->{ph_company},$r->{pub_id}">}, html_encode($r->{ph_title}), qq{</A>};
+
+				# See if there are any "os" class tags -- almost identical to code in details.cgi
+				my $sth_tag = $dbh->prepare('select tag_text from TAG,PUBTAG where TAG.id=PUBTAG.tag and TAG.class="os" and pub=?');
+				$sth_tag->execute($r->{pub_id});
+				my @rowtag;
+				my @tags;
+				while (@rowtag = $sth_tag->fetchrow_array) {
+					push @tags, $rowtag[0];
+				}
+				$sth_tag->finish;
+				if (scalar @tags) {
+					print qq{<br><small><b>OS:</b> }, html_encode(join(', ', @tags)), qq{</small>};
+				}
+
+				print "</TD>\n";
+				print '<TD>';
+				@flags = ();
+				push @flags, "Online" if $r->{pub_has_online_copies};
+				push @flags, "Superseded" if $r->{pub_superseded};
+				push @flags, "Amendment" if $r->{ph_pubtype} eq 'A';
+				push @flags, "ToC" if $r->{pub_has_toc};
+				print (scalar @flags > 0 ? join(', ', @flags) : '&nbsp;');
+				print "</TD>\n</TR>\n";
+			} else {
+				# Return row in Excel CSV format, with CRLF endings
+				my @row = (
+					$r->{ph_part},
+					$r->{ph_title}
+				);
+				print join(',', map excelquote, @row), "\015\012";
+			}
+		}
+
+		if ($format eq 'web') {
+			print "</TBODY></TABLE>";
+			print $page_links;
+		}
+	} else {
+		my @try = 'other words';
+		push @try, 'fewer words' if scalar @search_words > 1;
+		push @try, 'widening the search to all documents' if param('on') eq '1';
+
+		print '<DIV CLASS="det"><P>No matches for ', html_encode(neat_quoted_list(@search_words)),
+			'. Please try ', neat_list_or(@try), ".</P>\n";
+	}
+
+	if ($format eq 'web') {
+		print qq{<div class="navbot"><hr>Manx is no longer maintained</div></div></body></html>\n};
+	}
+	
+}
+
+$dbh->disconnect() if $dbh;
+exit;
+
+sub html_header($) {
+	my ($u) = shift;
+
+	print qq{<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">\n},
+		qq{<html lang="en">\n<head>\n<title>Manx</title>\n},
+		qq{<link rel="stylesheet" type="text/css" href="manx-style.css">\n},
+		qq{<link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">\n};
+
+	print qq{<body id="VT100-NET">\n};
+	print qq{<div id="AUTH">}, html_encode($u->{username}), ' | ';
+	if ($u->{logged_in}) {
+		print qq{<a href="/manx/login?LOGO=1">Logout</a></div>};
+	} else {
+		my $redirloc = CGI::escape(url(-full => 1, -query => 1));
+		print qq{<a href="/manx/login?redirect=$redirloc">Login</a></div>};
+	}
+	print qq{<div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>};
+
+	# Menu
+	print qq{<div id="MENU">},
+		qq{<a class="firston">Search</a><span class="nodisp"> | </span>},
+		qq{<a href="/manx/about">About</a><span class="nodisp"> | </span>},
+		qq{<a href="/manx/help">Help</a>},
+		qq{</div>\n};
+}

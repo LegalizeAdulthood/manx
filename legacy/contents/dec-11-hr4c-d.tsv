@@ -1,0 +1,38 @@
+#PART	DEC-11-HR4C-D
+#TITLE	KL11 Teletype Control Manual
+1	Chapter 1	Introduction
+1	Chapter 2	General Description
+2	2.1	Introduction
+2	2.2	Teletype
+2	2.3	Teletype Control
+1	Chapter 3	Detailed Description
+2	3.1	Introduction
+2	3.2	Selection Logic
+3	3.2.1	Address Selector Module
+3	3.2.2	Gating Logic
+3	3.2.3	Bus Drivers and Receivers
+2	3.3	Interrupt Control
+2	3.4	Transmitter Logic
+3	3.4.1	Functional Description
+3	3.4.2	Initialize
+3	3.4.3	Loading
+3	3.4.4	Clock
+3	3.4.5	Shifting
+2	3.5	Receiver Logic
+2	3.6	Maintenance Mode
+1	Chapter 4	Programming Information
+2	4.1	Scope
+2	4.2	Device Registers
+2	4.3	Timing Considerations
+2	4.4	Programming Examples
+1	Chapter 5	Adjustments
+2	5.1	Introduction
+2	5.2	Punch Clock Adjustment
+2	5.3	Reader Clock Adjustment
+2	5.4	Using Uncalibrated Oscilloscope
+1	Chapter 6	Maintenance Aids
+2	6.1	Scope
+2	6.2	General
+2	6.3	Transmitter Circuit
+2	6.4	Receiver Circuit
+1	Appendix A	Teletype Control Variations

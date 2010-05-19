@@ -1,0 +1,76 @@
+#PART DEC-11-HADB-D
+1	Chapter 1	General Information
+2	1.1	Introduction
+2	1.2	Purpose
+2	1.3	Functional Description
+2	1.4	Physical Description
+2	1.5	Specifications
+3	1.5.1	Environmental
+3	1.5.2	Power Requirements
+3	1.5.3	Packaging
+3	1.5.4	Performance Parameters
+2	1.6	Reference Documents
+1	Chapter 2	Installation and Adjustments
+2	2.1	Installation Planning
+2	2.2	Environmental Requirements
+2	2.3	Configurations
+3	2.3.1	Channel Expansion
+3	2.3.2	Bipolar Option AH05
+3	2.3.3	Sample and Hold Amplifier Option AH04
+3	2.3.4	Unibus Connections
+3	2.3.5	Multiplexer Channel Connections
+3	2.3.6	External Clock Connection
+2	2.4	Installation Procedure
+2	2.5	Option Installation
+2	2.6	Adjustment Procedure
+3	2.6.1	Power Supply Adjustments
+3	2.6.2	Timing Adjustment
+3	2.6.3	A/D Converter
+4	2.6.3.1	A812
+4	2.6.3.2	A862 (AH05 Option)
+3	2.6.4	Sample and Hold A405 (AH04 Option)
+4	2.6.4.1	AH04 Option Only
+4	2.6.4.2	AH04 with AH05 Option Only
+3	2.6.5	Switched-Gain Amplifier A220
+3	2.6.6	Multiplexer Setup
+3	2.6.7	External Sync
+1	Chapter 3	Operation and Programming
+2	3.1	Introduction
+2	3.2	Address Format
+2	3.3	CSR Format
+2	3.4	DBR Format
+2	3.5	Interrupt Structure
+2	3.6	External Clock Control
+3	3.6.1	EXT IN
+3	3.6.2	EXT IN A
+3	3.6.3	External Clock Timing Considerations
+1	Chapter 4	Principles of Operation
+2	4.1	Introduction
+2	4.2	Block Diagram Analysis
+2	4.3	Detailed Circuit Analysis
+3	4.3.1	Multiplexer
+3	4.3.2	Scaling Amplifier
+3	4.3.3	A/D Converter
+4	4.3.3.1	Unipolar with Wide Aperture
+4	4.3.3.2	Unipolar with Narrow Aperture
+4	4.3.3.3	Bipolar with Wide Aperture
+4	4.3.3.4	Bipolar with Narrow Aperture
+3	4.3.4	Timing
+3	4.3.5	Bus Interface
+1	Chapter 5	Maintenance
+2	5.1	AD01-D MainDEC-11-D6AB Diagnostic Program
+2	5.2	Preventive Maintenance
+3	5.2.1	Preventive Maintenance Tasks
+2	5.3	Corrective Maintenance
+3	5.3.1	Preliminary Investigation
+3	5.3.2	System Troubleshooting
+3	5.3.3	Logic Troubleshooting
+3	5.3.4	Circuit Troubleshooting
+3	5.3.5	Validation Tests
+3	5.3.6	Recording
+2	5.4	Test Equipment
+2	5.5	Module Handling and Repair
+2	5.6	Spare Parts
+1	Chapter 6	Engineering Drawings
+1	Appendix A	10-Bit Unipolar Calibration Chart
+1	Appendix B	11-Bit Bipolar Calibration Chart

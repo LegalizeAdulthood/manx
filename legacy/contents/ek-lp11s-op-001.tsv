@@ -1,0 +1,46 @@
+#PART EK-LP11S-OP-001
+#TITLE LP11/LS11/LA11 Line Printer User's Manual
+1	Chapter 1	Introduction
+2	1.1	Scope
+2	1.2	General Description
+3	1.2.1	LP11
+4	1.2.1.1	LP11-F, H
+4	1.2.1.2	LP11-J, K
+4	1.2.1.3	LP11-R, S
+4	1.2.1.4	LP11-V, W
+3	1.2.2	LS11
+3	1.2.3	LA11
+3	1.2.4	Controller
+2	1.3	Specifications
+1	Chapter 2	Installation
+2	2.1	Introduction
+2	2.2	Space Requirements
+2	2.3	Unpacking the Line Printer
+2	2.4	Inspection
+2	2.5	Installation Procedures
+3	2.5.1	Primary AC Power Cable
+3	2.5.2	Controller
+3	2.5.3	Signal Cable
+2	2.6	AC Power Checkout Procedures For Printers
+2	2.7	System Checkout Procedure
+1	Chapter 3	Operation
+2	3.1	Introduction
+2	3.2	Controls and Indicators
+2	3.3	Paper Installation
+3	3.3.1	Loading Model LP01
+3	3.3.2	Loading Model LP02
+3	3.3.3	Loading Model LP04
+3	3.3.4	Loading Model LP05
+3	3.3.5	Loading Model LA180 Line Printer
+2	3.4	Operational Tests
+1	Chapter 4	Programming
+2	4.1	General
+3	4.1.1	LP11
+3	4.1.2	LS11
+3	4.1.3	LA11
+2	4.2	Device Registers
+2	4.3	Interrupts
+2	4.4	Addresses
+2	4.5	Timing Considerations
+2	4.6	LS11 vs LP11 Programming Considerations
+2	4.7	Program Examples

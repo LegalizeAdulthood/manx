@@ -1,0 +1,11 @@
+Options +ExecCGI -Indexes
+DirectoryIndex search
+<FilesMatch "^(about|add-pub|add-pub2|details|edit-company|help|login|lookup|part|save-company|search|terminal-manuals|wiki)$">
+	SetHandler cgi-script
+</FilesMatch>
+<FilesMatch "\.pm$">
+	Order allow,deny
+	Deny from all
+</FilesMatch>
+ErrorDocument 403 /manx/404.html
+ErrorDocument 404 /manx/404.html

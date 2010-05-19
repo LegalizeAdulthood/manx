@@ -1,0 +1,76 @@
+#PART	ek-rt100-ps-001
+#TITLE	RT100/102/137 Video Terminals Pocket Service Guide
+1	1	Testing and Troubleshooting
+2	1.1	Introduction
+2	1.2	Prechecks
+2	1.3	Self-Tests
+3	1.3.1	Error Codes
+3	1.3.2	Power-Up Test
+3	1.3.3	Data Loopback Test
+3	1.3.4	EIA Test
+3	1.3.5	Printer Port EIA Test (RT102 Only)
+3	1.3.6	Video Alignment Pattern
+3	1.3.7	SET-UP Screen Test
+2	1.4	Troubleshooting Checks
+2	1.5	Checklist
+1	2	Removal and Replacement
+2	2.1	Introduction
+2	2.2	Access Cover
+2	2.3	Terminal Controller Board
+2	2.4	Advanced Video Board
+2	2.5	Standard Terminal Port
+2	2.6	RT137 Bar Code Module
+2	2.7	20 mA Current Loop Board
+2	2.8	Membrane Keyboard
+2	2.9	Terminal Top Cover
+2	2.10	Video Monitor Board (RT100 and RT137)
+2	2.11	Video Monitor Board (RT102)
+2	2.12	Flyback Transformer and Vertical Choke (RT100 and RT137)
+2	2.13	Flyback Transformer and Vertical Choke (RT102)
+2	2.14	Terminal Base Assembly
+2	2.15	Fans
+2	2.16	Chassis Bottom Cover
+2	2.17	Power Supply (RT100 and RT137)
+2	2.18	Power Supply (RT102)
+2	2.19	RT102 Power Supply Transformer
+2	2.20	RT100 DC Power Harness
+2	2.21	RT137 Expansion Backplane
+2	2.22	CRT and Yoke Assembly
+2	2.23	CRT Storage
+2	2.24	CRT Disposal
+1	3	Video Alignment
+2	3.1	Introduction
+2	3.2	Monitor Adjustments
+3	3.2.1	Brightness Adjustment
+3	3.2.2	Focus Adjustment
+3	3.2.3	Yoke Adjustment
+3	3.2.4	Vertical Height Adjustment
+3	3.2.5	Vertical Linearity Adjustment
+3	3.2.6	Horizontal Width Adjustment
+3	3.2.7	Centering Adjustment
+1	4	Operating Summary
+2	4.1	SET-UP Mode
+3	4.1.1	SET-UP A
+3	4.1.2	SET-UP B (RT100 and RT137)
+3	4.1.3	SET-UP B (RT102)
+3	4.1.4	Changing SET-UP Features
+3	4.1.5	Setting the Answerback Message
+3	4.1.6	Saving SET-UP Features
+3	4.1.7	Recalling SET-UP Features
+3	4.1.8	Resetting the Terminal
+1	5	Board Configurations
+2	5.1	General
+2	5.2	RT100 Board Configurations
+2	5.3	RT102 Board Configurations
+2	5.4	RT137 Bar Code Module Switch Configuration
+1	6	Options
+2	6.1	General
+2	6.2	RT100 Options
+2	6.3	RT102 Options
+2	6.4	RT137 Options
+1	7	Maintenance
+2	7.1	Maintenance Philosophy
+2	7.2	Special Tools Required
+2	7.3	Recommended Weekly Customer Preventive Maintenance
+2	7.4	Field Service Normal Maintenance Procedure
+1	8	Field Replaceable Units

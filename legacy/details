@@ -1,0 +1,518 @@
+#!/usr/bin/perl -w
+
+# 2009-02-13 New Manx schema
+# 2006-05-07 Reinstate cgi_buffer, now I've modified it to be UTF-8-aware.
+# 2006-06-07 Can't use cgi_buffer because it under-declares length of UTF-8 documents. Use UTF8DBI to convert DBI.
+# 2006-04-16 Display citations from other documents
+# 2006-04-12 Display "os" tags
+# 2005-12-21 Don't use utf8_to_html because it is failing on TOC of EK-11005-TM-003.
+# 2004-05-13 Changed servers
+# 2004-01-24 Scripts and database are now fully UTF-8
+
+use strict;
+use warnings;
+
+use CGI qw(:cgi -no_xhtml);
+use DBI;
+use POSIX ();
+use Manx::DB;
+use Manx::Utilities;
+
+sub html_header($$$);
+sub format_doc_ref($);
+
+binmode STDOUT, ':utf8';
+
+sub utf8_to_html($);
+
+my ($dbh, $smt, $sth, $rc, $rv, @rowary);
+
+my $SEARCHURL = '/manx/search';
+my $DETAILSURL = '/manx/details';
+
+my @errors;
+
+my $match_cond = ' and ';
+my $match_clause = '';
+my $online_clause;
+my ($word, $norm_word, @search_words, @ignored_words);
+
+$dbh = connectdb();
+die $DBI::errstr if $DBI::err;
+
+my ($session, $user_id, $user_username, $user_gn, $user_sn, $user_fullname);
+
+my $logged_in = 0;
+if ($session = cookie('manxSession')) {
+	my @rowary = $dbh->selectrow_array('select U.id,U.username,U.gn,U.sn from SESSION S,USER U where S.user=U.id and S.id=?', undef, $session);
+	if (@rowary) {
+		$logged_in = 1;
+		($user_id,$user_username,$user_gn,$user_sn) = @rowary;
+		$user_fullname = "$user_gn $user_sn";
+	}
+}
+
+if (!$logged_in) {
+	$user_username = 'Guest';
+}
+
+@rowary = $dbh->selectrow_array('select confval from CONFIG where confkey="updated"');
+my ($year, $mon, $mday, $hour, $min, $sec) = $rowary[0] =~ /(....)(..)(..)(..)(..)(..)/;
+my $time = POSIX::mktime($sec, $min, $hour, $mday, $mon - 1, $year - 1900);
+my $tlm = POSIX::strftime("%a, %d %b %Y %T GMT", gmtime($time));
+
+my $path_trump = 0;
+if (defined(path_info())) {
+	my $pathi = path_info();
+	#print STDERR "path_info() -> $pathi\n";
+	my ($cp,$id) = $pathi =~ /^\/(\d+),(\d+)$/;
+	if (defined($cp) && defined($id)) {
+		#print STDERR "path trump: $cp -- $id\n";
+		$path_trump = 1;
+		param('cp',$cp);
+		param('id',$id);
+		param('cn',1);
+		param('pn',0);
+	}
+}
+
+my $full_contents;
+if (defined(param('cn')) && param('cn') eq '1') {
+	$full_contents = 1;
+} else {
+	$full_contents = 0;
+}
+
+if (defined(param('pn'))) {
+
+	if ($path_trump) {
+		$match_clause = ' 1=1';
+	} elsif (param('pn') ne '') {
+		$match_clause = ' ph_match_part = ' . $dbh->quote(normalise_part_number(param('pn')));
+	} else {
+		$match_clause = ' ph_match_part is null';
+	}
+
+	if (defined(param('id')) && param('id') ne '') {
+		$match_clause .= ' and pub_id = ' . $dbh->quote(param('id'));
+	}
+
+	#              0      1              2        3           4         5            6            7            8               9        10
+	$smt = 'select pub_id, COMPANY.name, ifnull(ph_part,"") as ph_part, ph_pubdate, ph_title, ph_abstract, ifnull(ph_revision,"") as ph_revision, ph_ocr_file, ph_cover_image, ph_lang, ph_keywords' .
+		' from PUB join PUBHISTORY on pub_history = ph_id' .
+		' join COMPANY on ph_company = COMPANY.id' .
+		" where $match_clause";
+		
+	$sth = $dbh->prepare($smt);
+	warn $DBI::errstr if $DBI::err;
+	$rv = $sth->execute;
+	warn $DBI::errstr if $DBI::err;
+
+	my $r = $sth->fetchrow_hashref;
+
+	$rc = $sth->finish;
+	warn $DBI::errstr if $DBI::err;
+
+	#print header('-last-modified' => $tlm, '-cache-control' => 'max-age=600', '-expires' => '+1d', '-charset' => 'utf-8');
+	print header(-charset => 'utf-8');
+
+	if ($r) {
+		my $pub = $r->{pub_id};
+
+		html_header($logged_in, $user_username, html_encode($r->{ph_title}) . " &ndash; Manx");
+
+		print qq{<DIV STYLE="float:right; margin: 10px"><IMG SRC="}, html_encode($r->{ph_cover_image}), qq{" ALT=""></DIV>} if defined($r->{ph_cover_image});
+		print qq{<DIV CLASS="det"><H1>}, html_encode($r->{ph_title}), qq{</H1>\n<TABLE><TBODY>};
+		print qq{<TR><TD>Company:</TD><TD>}, html_encode($r->{name}), qq{</TD></TR>\n};
+		print qq{<TR><TD>Part:</TD><TD>}, html_encode("$r->{ph_part} $r->{ph_revision}"), qq{</TD></TR>\n};
+		print qq{<TR><TD>Date:</TD><TD>}, html_encode($r->{ph_pubdate}), qq{</TD></TR>\n};
+		print qq{<tr><td>Keywords:</td><td>}, html_encode($r->{ph_keywords}), qq{</td></tr>\n};
+
+		# Language
+		if (defined($r->{ph_lang}) && $r->{ph_lang} ne '+en') { # only display language if not just English
+			# Avoid second name of language, if provided (after ';')
+			my $sthl = $dbh->prepare('select if(locate(";",eng_lang_name),left(eng_lang_name,locate(";",eng_lang_name)-1),eng_lang_name) from LANGUAGE where lang_alpha_2=?');
+			my @rowl;
+			my @lang2 = split(/\+/, $rowary[9]);
+			my @displang;
+			shift @lang2;
+			foreach (@lang2) {
+				$sthl->execute($_);
+				@rowl = $sthl->fetchrow_array;
+				my $langname = 
+				$sthl->finish;
+				push @displang, (@rowl ? $rowl[0] : "?$_?");
+			}
+			print '<tr><td>Language', (scalar @displang > 1 ? 's' : ''), ':</td>' .
+				'<td>', neat_list_plain(@displang), "</td></tr>\n";
+		}
+
+		# Amendments
+		$sth = $dbh->prepare('select ph_company,ph_pub,ph_part,ph_title,ph_pubdate from PUB join PUBHISTORY on pub_id = ph_pub where ph_amend_pub=? order by ph_amend_serial');
+		$sth->execute($pub);
+		my @amendments;
+		while (my $ra = $sth->fetchrow_hashref) {
+			my $amend = qq{<a href="$DETAILSURL/$ra->{ph_company},$ra->{ph_pub}"><cite>} . html_encode($ra->{ph_title}) . qq{</cite></a>};
+			$amend = html_encode($ra->{ph_part}) . ', ' . $amend if defined($ra->{ph_part});
+			$amend .= ' (' . html_encode($ra->{ph_pubdate}) . ')' if defined($ra->{ph_pubdate});
+			# Retrieve OS tags for amendments (see DEC-11-ORUGA-* for example)
+			my $sthos = $dbh->prepare('select tag_text from TAG,PUBTAG where TAG.id=PUBTAG.tag and TAG.class="os" and pub=?');
+			$sthos->execute($ra->{ph_pub});
+			my (@rowtag, @tags);
+			while (@rowtag = $sthos->fetchrow_array) {
+				push @tags,$rowtag[0];
+			}
+			$sthos->finish;
+			if (scalar @tags) {
+				$amend .= ' <b>OS:</b> ' . html_encode(join(', ', @tags));
+			}
+			push @amendments, $amend;
+		}
+		$sth->finish;
+		if (scalar @amendments) {
+			print qq{<tr valign="top"><td>Amended&nbsp;by:</td><td><ul class="citelist"><li>}, join('</li><li>', @amendments), qq{</li></ul></td></tr>\n};
+		}
+
+		# Operating system tags, if any
+		$sth = $dbh->prepare('select tag_text from TAG,PUBTAG where TAG.id=PUBTAG.tag and TAG.class="os" and pub=?');
+		$sth->execute($pub);
+		my @rowtag;
+		my @tags;
+		while (@rowtag = $sth->fetchrow_array) {
+			push @tags, $rowtag[0];
+		}
+		$sth->finish;
+		if (scalar @tags) {
+			print qq{<tr><td>Operating System:</td><td>}, html_encode(join(', ', @tags)), qq{</td></tr>\n};
+		}
+
+		$smt = 'select html_text from LONG_DESC where pub=? order by line';
+		$sth = $dbh->prepare($smt);
+		$rv = $sth->execute($pub);
+		my $started_desc = 0;
+		my @rowdesc;
+		while (@rowdesc = $sth->fetchrow_array) {
+			if (!$started_desc) {
+				print qq{<TR VALIGN="TOP"><TD>Description:</TD><TD>};
+				$started_desc = 1;
+			}
+			print $rowdesc[0];
+		}
+		$rc = $sth->finish;
+		if ($started_desc) {
+			print qq{</TD></TR>\n};
+		}
+
+		# Citations from other documents (only really important when there are no copies online)
+		$sth = $dbh->prepare('select ph_company,ph_pub,ph_part,ph_title' .
+			' from CITEPUB C' .
+			' join PUB on (C.pub = pub_id and C.mentions_pub = ?)' .
+			' join PUBHISTORY on pub_history = ph_id');
+		$sth->execute($pub);
+		my @citations;
+		while (my $rc = $sth->fetchrow_hashref) {
+			push @citations, format_doc_ref($rc); 
+		}
+		$sth->finish;
+		if (scalar @citations) {
+			print qq{<tr valign="top"><td>Cited by:</td><td><ul class="citelist"><li>}, join('</li><li>', @citations), qq{</li></ul></td></tr>\n};
+		}
+
+		# Supersession information. Because documents can be merged in later revisions, or expand to become more than one, there may
+		# be more than one document that preceded or superseded this one.
+		my @supers;
+		$sth = $dbh->prepare('select ph_company,ph_pub,ph_part,ph_title from SUPERSESSION' .
+			' join PUB on (old_pub = pub_id and new_pub=?)' .
+			' join PUBHISTORY on pub_history = ph_id');
+		$sth->execute($pub);
+		while (my $rs = $sth->fetchrow_hashref) {
+			push @supers, format_doc_ref($rs);
+		}
+		$sth->finish;
+		if (scalar @supers) {
+			print qq{<tr valign="top"><td>Supersedes:</td><td><ul class="citelist">},
+				(map {"<li>$_</li>"} @supers), qq{</ul></td></tr>\n};
+		}
+
+		@supers = ();
+		$sth = $dbh->prepare('select ph_company,ph_pub,ph_part,ph_title from SUPERSESSION' .
+			' join PUB on (new_pub = pub_id and old_pub = ?)' .
+			' join PUBHISTORY on pub_history = ph_id');
+		$sth->execute($pub);
+		while (my $rs = $sth->fetchrow_hashref) {
+			push @supers, format_doc_ref($rs);
+		}
+		$sth->finish;
+		if (scalar @supers) {
+			print qq{<tr valign="top"><td>Superseded by:</td><td><ul class="citelist">},
+				(map {"<li>$_</li>"} @supers), qq{</ul></td></tr>\n};
+		}
+
+		if (defined($rowary[7]) && $rowary[7] ne '') {
+			print qq{<TR><TD>Text:</TD>\n<TD>}, html_encode($rowary[7]), "</TD></TR>\n";
+		}
+		print "</TBODY>\n</TABLE>\n";
+
+		my $started_contents = 0;
+
+		$smt = 'select level,label,name from TOC where pub=?';
+		if (!$full_contents) {
+			$smt .= ' and level<2';
+		}
+		$smt .= ' order by line';
+	
+		$sth = $dbh->prepare($smt);
+		warn $DBI::errstr if $DBI::err;
+		$rv = $sth->execute($pub);
+		warn $DBI::errstr if $DBI::err;
+
+		my $currlevel = 0;
+		while (@rowary = $sth->fetchrow_array) {
+			if (!$started_contents) {
+				if ($path_trump) {
+					print qq{<H2>Table of Contents</H2>\n};
+				} elsif ($full_contents) {
+					param('cn','0');
+					print qq{<H2>Full Contents [<A HREF="}, html_encode(self_url()), qq{">Mini</A>]</H2>\n};
+				} else {
+					param('cn','1');
+					print qq{<H2>Mini Contents [<A HREF="}, html_encode(self_url()), qq{">Full</A>]</H2>\n};
+				}
+				print qq{<DIV CLASS="toc">};
+				$started_contents = 1;
+			}
+
+			my ($rowlevel, $rowlabel, $rowname) = @rowary;
+			if ($rowlevel > $currlevel) {
+				++$currlevel;
+				print "\n<UL>\n";
+			} elsif ($rowlevel < $currlevel) {
+				print "</LI>\n";
+				while ($rowlevel < $currlevel) {
+					print "</UL></LI>\n";
+					--$currlevel;
+				}
+			} else {
+				print "</LI>\n";
+			}
+			$rowlabel ||= '&nbsp;' if $currlevel > 1;
+			print qq{<LI CLASS="level$currlevel"><SPAN}, ($currlevel == 1 ? ' CLASS="level1"' : ''), qq{>$rowlabel</SPAN> }, html_encode($rowname);
+			
+			#print "Row: $rowlevel, Label: $rowlabel, Name: $rowname<br>\n";
+		}
+
+		$rc = $sth->finish;
+		warn $DBI::errstr if $DBI::err;
+
+		if ($started_contents) {
+			while (0 < $currlevel--) {
+				print "</LI>\n</UL>";
+			}
+			print "</DIV>";
+		}
+
+		# COPIES
+		#              0       1         2      3     4          5         6                 7               8         9
+		$smt = 'select format, COPY.url, notes, size, SITE.name, SITE.url as site_url, SITE.description, SITE.copy_base, SITE.low, COPY.md5,' .
+		#         10                 11
+			' COPY.amend_serial, COPY.credits, copyid' .
+			' from COPY,SITE where COPY.site=SITE.siteid and pub=? order by SITE.display_order,SITE.siteid';
+		$sth = $dbh->prepare($smt);
+		warn $DBI::errstr if $DBI::err;
+		$rv = $sth->execute($pub);
+		warn $DBI::errstr if $DBI::err;
+
+		print "<h2>Copies</h2>\n";
+		my $copy_count = 0;
+		while (my $rcopy = $sth->fetchrow_hashref) {
+			if (++$copy_count == 1) {
+				print "<TABLE>\n<TBODY>";
+			} else {
+				print qq{<TR>\n<TD COLSPAN="2">&nbsp;</TD>\n</TR>\n};
+			}
+
+			my $copy_url;
+			print "<TR>\n<TD>Address:</TD>\n<TD>";
+			if ($rcopy->{url} =~ /^\+/) {
+				$copy_url = $rcopy->{copy_base} . substr($rcopy->{url}, 1);
+			} else {
+				$copy_url = $rcopy->{url};
+			}
+			print qq{<A HREF="$copy_url">$copy_url</A></TD>\n</TR>\n};
+			print qq{<TR>\n<TD>Site:</TD>\n<TD><A HREF="}, html_encode($rcopy->{site_url}), qq{">}, html_encode($rcopy->{description}),'</A>';
+			print ' <SPAN CLASS="warning">(Low Bandwidth)</SPAN>' if $rcopy->{low} ne 'N';
+			print qq{</TD>\n</TR>\n};
+			print qq{<TR>\n<TD>Format:</TD>\n<TD>}, html_encode($rcopy->{format}), qq{</TD>\n</TR>\n};
+			if ($rcopy->{size}) {
+				print qq{<TR>\n<TD>Size:</TD>\n<TD>$rcopy->{size} bytes};
+				my $size_mib = $rcopy->{size} / (1024 * 1024);
+				my $size_kib = $rcopy->{size} / 1024;
+				if ($size_mib > 1.0) {
+					printf " (%.1f MiB)", $size_mib;
+				} elsif ($size_kib > 1.0) {
+					printf " (%.0f KiB)", $size_kib;
+				}
+				print qq{</TD>\n</TR>\n};
+			}
+			if ($rcopy->{md5}) {
+				print qq{<TR>\n<TD>MD5:</TD>\n<TD>}, html_encode($rcopy->{md5}), qq{</TD>\n</TR>\n}; # shouldn't be anything to escape in md5!
+			}
+			if ($rcopy->{notes}) {
+				print qq{<TR>\n<TD>Notes:</TD>\n<TD>}, html_encode($rcopy->{notes}), "</TD>\n</TR>\n";
+			}
+			if ($rcopy->{credits}) {
+				print qq{<tr>\n<td>Credits:</td>\n<td>}, html_encode($rcopy->{credits}), "</td>\n</tr>\n";
+			}
+			if ($rcopy->{amend_serial}) {
+				my $ramend = $dbh->selectrow_hashref('select ph_company,pub_id,ph_part,ph_title,ph_pubdate from PUB join PUBHISTORY on pub_history = ph_id where ph_amend_pub=? and ph_amend_serial=?', undef, $pub, $rcopy->{amend_serial});
+				my $amend = qq{<a href="$DETAILSURL/$ramend->{ph_company},$ramend->{pub_id}"><cite>} . html_encode($ramend->{ph_title}) . qq{</cite></a>};
+				$amend = html_encode($ramend->{ph_part}) . ', ' . $amend if defined($ramend->{ph_part});
+				$amend .= ' (' . html_encode($ramend->{ph_pubdate}) . ')' if defined($ramend->{ph_pubdate});
+				# Retrieve OS tags for amendments (see DEC-11-ORUGA-* for example)
+				my $sthos = $dbh->prepare('select tag_text from TAG,PUBTAG where TAG.id=PUBTAG.tag and TAG.class="os" and pub=?');
+				$sthos->execute($ramend->{pub_id});
+				my (@rowtag, @tags);
+				while (@rowtag = $sthos->fetchrow_array) {
+					push @tags,$rowtag[0];
+				}
+				$sthos->finish;
+				if (scalar @tags) {
+					$amend .= ' <b>OS:</b> ' . html_encode(join(', ', @tags));
+				}
+				print qq{<tr>\n<td>Amended to:</td>\n<td>$amend</td>\n</tr>\n};
+			}
+
+			my $sthmirror = $dbh->prepare('select replace(url,original_stem,copy_stem) as mirror_url from COPY join mirror on COPY.site=mirror.site where copyid=? order by rank desc');
+			$sthmirror->execute($rcopy->{copyid});
+			my $mirror_count = 0;
+			while (my $rmirror = $sthmirror->fetchrow_hashref) {
+				if (++$mirror_count == 1) {
+					print '<tr valign="top"><td>Mirrors:</td><td><ul style="list-style-type:none;margin:0;padding:0">';
+				}
+				print '<li style="margin:0;padding:0"><a href="', html_encode($rmirror->{mirror_url}), '">', html_encode($rmirror->{mirror_url}), '</a></li>';
+			}
+			$sthmirror->finish;
+			if ($mirror_count > 0) {
+				print '</ul></td></tr>';
+			}
+		}
+		$rc = $sth->finish;
+		warn $DBI::errstr if $DBI::err;
+
+		if ($copy_count > 0) {
+			print "</TBODY>\n</TABLE>\n";
+		} else {
+			print qq{<p>No copies known to be online. Please read the <a href="/manx/help#COPIES">Help</a> before emailing me about this.</p>};
+		}
+		
+	} else {
+		html_header($logged_in, $user_username, '');
+		print qq{<DIV CLASS="det"><P>No matches. Please try other words.</P>\n};
+	}
+
+	print qq{<div class="navbot"><hr>Manx is no longer maintained</div></div></body></html>\n};
+	
+} else { # null query
+	print header(-status => '400 Bad Request');
+	
+	html_header($logged_in, $user_username, '');
+
+	print qq{<H1>Bad Request</H1>\n};
+	print qq{<P>details: pn [id] [cn]</P>};
+	print qq{</BODY></HTML>\n};
+}
+
+$dbh->disconnect() if $dbh;
+exit;
+
+# utf8_to_html
+#
+# Does what html_encode() does, but also adds support for subscript numbers (U+2080..U+2089)
+# Failing on TOC of EK-11005-TM-003 (turning 1/2 into two characters), so not using now.
+
+sub utf8_to_html($) {
+	my $str = shift || '';
+	my @c = unpack('U*', $str);
+	my @o;
+	my $insub = 0;
+	my $eversub = 0;
+	foreach (@c) {
+		if (($_ >= 0x2080) && ($_ <= 0x2089)) {
+			if (!$insub) {
+				push @o, unpack('U*', '<SUB>');
+				$insub = 1;
+				$eversub = 1;
+			}
+			push @o, $_ - 0x2080 + 0x0030;
+		} else {
+			if ($insub) {
+				push @o, unpack('U*', '</SUB>');
+				$insub = 0;
+			}
+			if ($_ == ord('&')) {
+				push @o, unpack('U*', '&amp;');
+			} elsif ($_ == ord('>')) {
+				push @o, unpack('U*', '&gt;');
+			} elsif ($_ == ord('<')) {
+				push @o, unpack('U*', '&lt;');
+			} else {
+				push @o, $_;
+			}
+		}
+	}
+	$str = pack("U*", @o);
+	$str .= '</SUB>' if $insub;
+	return $str;
+}
+
+sub html_header($$$) {
+	my ($logged_in, $username, $title) = @_;
+	$title ||= 'Manx';
+
+	print qq{<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">\n},
+		qq{<html lang="en">\n<head>\n<title>$title</title>\n},
+		qq{<link rel="stylesheet" type="text/css" href="/manx/manx-style.css">\n},
+		qq{<link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">\n};
+
+	print qq{<body id="VT100-NET">\n};
+	print qq{<div id="AUTH">}, html_encode($username), ' | ';
+	if ($logged_in) {
+		print qq{<a href="/manx/login?LOGO=1">Logout</a></div>};
+	} else {
+		my $redirloc = CGI::escape(url(-full => 1, -query => 1));
+		print qq{<a href="/manx/login?redirect=$redirloc">Login</a></div>};
+	}
+	print qq{<div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>};
+
+	# Menu
+	print qq{<div id="MENU">},
+		qq{<a class="first" href="/manx/search">Search</a><span class="nodisp"> | </span>},
+		qq{<a href="/manx/about">About</a><span class="nodisp"> | </span>},
+		qq{<a href="/manx/help">Help</a>},
+		qq{</div>\n};
+}
+
+sub neat_list {
+	my $s = qq{"$_[0]"};
+	my $t = qq{ and "$_[-1]"} if @_ > 1;
+	foreach (@_[1 .. $#_-1]) {
+		$s .= qq{, "$_"};
+	}
+	return $s . $t;
+}
+
+sub neat_list_plain {
+	my $s = $_[0];
+	my $t = qq{ and $_[-1]} if @_ > 1;
+	foreach (@_[1 .. $#_-1]) {
+		$s .= qq{, $_};
+	}
+	return $s . $t;
+}
+
+sub format_doc_ref($) {
+	my $ref = shift;
+	my $out = qq{<a href="$DETAILSURL/$ref->{ph_company},$ref->{ph_pub}"><cite>} . html_encode($ref->{ph_title}) . '</cite></a>';
+	$out = html_encode($ref->{ph_part}) . ', ' . $out if defined($ref->{ph_part});
+	return $out;
+}

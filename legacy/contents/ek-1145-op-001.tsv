@@ -1,0 +1,58 @@
+#PART	EK-1145-OP-001
+#TITLE	PDP-11/45, 11/50, and 11/55 System User's Manual
+1	Chapter 1	General Description
+2	1.1	Basic System Description
+3	1.1.1	Physical Characteristics
+3	1.1.2	General Power Requirements and Electrical Specifications
+4	1.1.2.1	Internal Option Power Requirements
+4	1.1.2.2	Determining Option Power and Line Current Requirements
+3	1.1.3	H7420 Power Supply Characteristics
+3	1.1.4	H742 Power Supply Characteristics
+3	1.1.5	Voltage Regulator Characteristics
+3	1.1.6	Interface Specifications
+3	1.1.7	Environmental Specifications
+2	1.2	System Configurations and Options
+2	1.3	Expansion Cabinet Option
+2	1.4	Reference Documents
+2	1.5	Engineering Drawings
+2	1.6	Drawing Conventions
+1	Chapter 2	System Installation
+2	2.1	General
+2	2.2	Site Preparation
+3	2.2.1	Physical Dimensions
+3	2.2.2	Fire and Safety Precautions
+3	2.2.3	Environmental Requirements
+4	2.2.3.1	Humidity and Temperature
+4	2.2.3.2	Air Conditioning
+4	2.2.3.3	Acoustical Damping
+4	2.2.3.4	Lighting
+4	2.2.3.5	Special Mounting Conditions
+4	2.2.3.6	Static Electricity
+3	2.2.4	Electrical Requirements
+2	2.3	Installation and Inspection
+3	2.3.1	Unpacking
+3	2.3.2	Inspection
+3	2.3.3	Cabinet Installation
+3	2.3.4	AC Power Connections
+3	2.3.5	Intercabinet Connections
+4	2.3.5.1	Unibus Connections
+4	2.3.5.2	Remote Power Connections
+4	2.3.5.3	Ground Strapping
+4	2.3.5.4	Wire Trough Cabling
+2	2.4	Initial Power Turn-On
+1	Chapter 3	Power System
+2	3.1	Overall System Description
+2	3.2	115 Vac and 230 Vac Models
+2	3.3	Different Power System Versions
+1	Chapter 4	Plug-In Card Options
+2	4.1	FP11-B, C Floating-Point Processor
+3	4.1.1	Installation
+1	Chapter 5	System Unit Options
+2	5.1	System Units
+2	5.2	Expansion Cabinets
+2	5.3	DC Power Distribution
+3	5.3.1	CPU Cabinet
+3	5.3.2	Expansion Cabinets
+2	5.4	MF11 Core Memory
+2	5.5	Installation of System Unit
+1	Appendix A	Summary of Equipment Specifications

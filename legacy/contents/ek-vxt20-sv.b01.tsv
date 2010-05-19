@@ -1,0 +1,77 @@
+#PART EK-VXT20-SV.B01
+#TITLE VXT 2000 Windowing Terminal and DECimage 2000 Option Service Guide (May 1992)
+1	1	A Look at the Terminal
+2	1.1	Product Description
+2	1.2	Terminal Components
+3	1.2.1	Monitor
+3	1.2.2	Keyboard
+3	1.2.3	Mouse
+3	1.2.4	System Box
+2	1.3	Operating Features
+3	1.3.1	X Window Sessions and Terminal Window Sessions
+3	1.3.2	Network Communications Protocols
+3	1.3.3	Terminal Software
+3	1.3.4	Customizing the Terminal
+3	1.3.5	Checking the Terminal's System Configuration
+2	1.4	Site Requirements
+3	1.4.1	Network Hardware Support
+3	1.4.2	Memory Requirements
+3	1.4.3	Hardware Configurations
+3	1.4.4	System Software Support
+3	1.4.5	System Software Support for the DECimage 2000 Module
+1	2	Installing the Terminal
+2	2.1	Installation Steps
+3	2.1.1	Unpack and check the contents of each carton
+3	2.1.2	Install any optional memory, network, or image module first
+3	2.1.3	Place the system box and monitor in position
+3	2.1.4	Connect the cables to the system box
+3	2.1.5	If you installed a DECimage 2000 module
+3	2.1.6	Final steps
+1	3	Testing
+2	3.1	Self-Tests
+3	3.1.1	Running Self-Tests in Console Mode
+3	3.1.2	Checking the Self-Test Results
+3	3.1.3	Diagnostic LED Power-Up Sequence
+2	3.2	Displaying the Software Version Number
+2	3.3	Network Service Failure Messages
+2	3.4	Checking for Memory Errors
+3	3.4.1	Memory Status Messages
+3	3.4.2	Soft Error Messages
+2	3.5	Screen Alignment Patterns
+1	4	Troubleshooting
+2	4.1	Troubleshooting Sequence
+2	4.2	Before You Start
+2	4.3	Hard and Soft Errors
+3	4.3.1	Entering Console Mode After a Hard Error
+2	4.4	Troubleshooting Soft Memory Errors
+3	4.4.1	Troubleshooting Soft Memory Errors by LEDs
+2	4.5	Troubleshooting Hard Errors
+2	4.6	LED Error Codes
+2	4.7	Troubleshooting General Problems
+1	5	Removing and Replacing FRUs
+2	5.1	System Box Cover
+2	5.2	Memory Controller Module
+2	5.3	Memory Modules
+3	5.3.1	Removing Memory Modules
+3	5.3.2	Installing Memory Modules
+2	5.4	Network Module
+2	5.5	DECimage 2000 Module
+2	5.6	Video Module
+2	5.7	System Logic Module
+2	5.8	Power Supply
+2	5.9	Fan
+2	5.10	Keyboard, Mouse, and Printer
+1	6	Starting a Session
+2	6.1	Terminal Manager Window
+2	6.2	Choosing the Display Language
+2	6.3	Choosing the Correct Keyboard Type
+2	6.4	Starting a Session on Your Host System
+3	6.4.1	Creating an IP X Window or TELNET Terminal Window Session
+3	6.4.2	Creating a LAT X Window or Terminal Window Session
+3	6.4.3	Starting a Terminal Window Session on the Serial Port
+2	6.5	Using the Keyboard Instead of the Mouse
+2	6.6	Ending a Session
+1	A	Related Documents
+2	A.1	Ordering Information
+1	B	Recommended Spares List
+1	C	Self-Test Error Descriptions

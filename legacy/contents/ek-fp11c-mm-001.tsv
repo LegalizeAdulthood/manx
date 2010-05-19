@@ -1,0 +1,272 @@
+#PART	EK-FP11C-MM-001
+#TITLE	FP11-C Floating-Point Processor Maintenance Manual
+1	Chapter 1	Introduction
+2	1.1	General
+2	1.2	Floating-Point Numbers
+2	1.3	Normalization
+2	1.4	Excess 200 Notation
+2	1.5	Floating-Point Addition and Subtraction
+2	1.6	Floating-Point Multiplication and Division
+2	1.7	Floating-Point Features
+2	1.8	Simplified Block Diagram Description
+2	1.9	Memory/FP11-C Word Relationships
+3	1.9.1	FP11-C Hidden Bit
+2	1.10	FP11-C Physical Description
+1	Chapter 2	Interface
+2	2.1	Introduction
+2	2.2	Interface Signals
+2	2.3	CPU/FP11-C Interface Diagram Description
+2	2.4	CPU/FP11-C Interface Flow Diagram Description
+3	2.4.1	Load Instruction Class
+3	2.4.2	Store Instruction Class
+3	2.4.3	FP11-C Busy
+3	2.4.4	Interrupt Operation
+3	2.4.5	Floating-Pause Operation
+3	2.4.6	Destination Mode 0 Operation
+3	2.4.7	Destination Mode 0 with Interrupt Sequence
+1	Chapter 3	Data and Data Formats
+2	3.1	FP11-C Data Formats
+3	3.1.1	FP11-C Integer Format
+3	3.1.2	FP11-C Floating-Point Formats
+3	3.1.3	Floating-Point Fraction
+3	3.1.4	Transfer of Operands
+3	3.1.5	Floating-Point Exponent
+3	3.1.6	Interpretation of a Floating-Point Number
+2	3.2	FP11-C Program Status Register
+2	3.3	Processing of Floating-Point Exceptions
+2	3.4	FP11-C Instruction Formats
+2	3.5	Instruction Set
+3	3.5.1	Arithmetic Instructions
+3	3.5.2	Floating Modulo Instruction
+3	3.5.3	Load Instruction
+3	3.5.4	Store Instruction
+3	3.5.5	Load Convert (Double-to-Floating, Floating-to-Double) Instructions
+3	3.5.6	Store Convert (Double-to-Floating, Floating-to-Double) Instructions
+3	3.5.7	Clear Instruction
+3	3.5.8	Test Instruction
+3	3.5.9	Absolute Instruction
+3	3.5.10	Negate Instruction
+3	3.5.11	Load Exponent Instruction
+3	3.5.12	Load Convert Integer to Floating Instruction
+3	3.5.13	Store Exponent Instruction
+3	3.5.14	Store Convert Floating-to-Integer Instruction
+3	3.5.15	Load FP11's Program Status
+3	3.5.16	Store FP11's Program Status
+3	3.5.17	Store FP11's Status
+3	3.5.18	Copy Floating Condition Codes
+3	3.5.19	Set Floating Mode
+3	3.5.20	Set Double Mode
+3	3.5.21	Set Integer Mode
+3	3.5.22	Set Long Integer Mode
+3	3.5.23	Maintenance Shift Instruction
+3	3.5.24	Store AR in AC0
+3	3.5.25	Load Microbreak (Load Ubreak) Register
+3	3.5.26	Store QR in AC0
+2	3.6	FP11-C Programming Examples
+1	Chapter 4	Control ROM
+2	4.1	Introduction
+3	4.1.1	Floating Instruction Register A (FIRA)
+3	4.1.2	Floating Instruction Register B (FIRB)
+3	4.1.3	Floating Data Register (FDR)
+3	4.1.4	Floating Point Address (FPA) Register
+3	4.1.5	Floating Exception Address (FEA) Register
+3	4.1.6	Data Out Multiplexer (DOMX)
+3	4.1.7	Data In Multiplexer (DIMX)
+3	4.1.8	Accumulator Multiplexer (ACMX)
+3	4.1.9	Exponent A (EXPA) and Exponent B (EXPB) Scratchpads
+3	4.1.10	Condition Codes
+3	4.1.11	A Multiplexer (AMX)
+3	4.1.12	B Multiplexer (BMX)
+3	4.1.13	Exponent Arithmetic Logic Unit (EALU)
+3	4.1.14	Step Counter (SC)
+3	4.1.15	E Register (EREG)
+3	4.1.16	Fraction Accumulator (AC7:0)
+3	4.1.17	Accumulator Out Multiplexer (ACOMX)
+3	4.1.18	Fraction Multiplexer (FMX)
+3	4.1.19	Fraction Arithmetic Logic Unit (FALU)
+3	4.1.20	Accumulator Register (AREG)
+3	4.1.21	Accumulator Shifter (ASHFR)
+3	4.1.22	Q Multiplexer (QMX)
+3	4.1.23	Q Register (QREG)
+3	4.1.24	Q Shifter (QSHFR)
+2	4.2	Data Path Routing for Load Instruction
+2	4.3	Control ROM
+3	4.3.1	ROM Field Descriptions
+3	4.3.2	Masking Out Branch Conditions
+3	4.3.3	Detailed Analysis of ROM Word
+3	4.3.4	Control ROM Flow Diagram
+1	Chapter 5	Arithmetic Algorithms
+2	5.1	Introduction
+2	5.2	Floating-Point Addition and Subtraction
+3	5.2.1	Description of Sign Processing
+3	5.2.2	Relative Magnitude
+3	5.2.3	Testing for Normalization
+3	5.2.4	Floating-Point Addition
+4	5.2.4.1	Hardware Implementation of Addition
+4	5.2.4.2	Out-of-Range Flag
+4	5.2.4.3	Shift-Within-Range Flag
+4	5.2.4.4	Normalizing the Result
+4	5.2.4.5	Truncate or Rounding
+4	5.2.4.6	Adjusting Exponent During Normalization
+3	5.2.5	Floating-Point Subtraction
+4	5.2.5.1	Negative Exponent Difference
+4	5.2.5.2	Determining Exponent Difference
+4	5.2.5.3	Positive Exponent Difference
+2	5.3	Floating-Point Multiplication
+3	5.3.1	Fundamental Concepts
+3	5.3.2	Hardware Implementation of Multiplication
+3	5.3.3	Example 1 of Multiplication Algorithm
+3	5.3.4	Example 2 of Multiplication Algorithm
+2	5.4	Floating-Point Division
+3	5.4.1	Adding or Subtracting Divisor to Divident
+3	5.4.2	Forming Quotient Bits
+3	5.4.3	Shifting of AR and QR
+3	5.4.4	Termination of Divide
+3	5.4.5	Divide Flow Diagram Description
+3	5.4.6	Example 1 of Division Algorithm
+3	5.4.7	Example 2 of Division Algorithm
+3	5.4.8	Example 3 of Division Algorithm
+1	Chapter 6	FP11-C Logic Diagram Descriptions
+2	6.1	Introduction
+2	6.2	Detailed Logic Diagram Descriptions
+2	6.3	FXPA Logic Diagram
+3	6.3.1	Floating-Point Address Register (FPA)
+3	6.3.2	Floating Data Register (FDR)
+3	6.3.3	ROM with AD1, AD2 Constants
+2	6.4	FXPB Logic Diagram
+3	6.4.1	Floating Instruction Register A (FIRA)
+3	6.4.2	IR Decode
+3	6.4.3	Immediate Mode Decoder
+3	6.4.4	Miscellaneous Instructions
+2	6.5	FXPC Logic Diagram
+3	6.5.1	Floating Instruction Register B (FIRB)
+3	6.5.2	IR Decode ROMs
+3	6.5.3	Illegal Accumulator
+3	6.5.4	Illegal Op Code
+3	6.5.5	Floating Condition Code Load Enable
+3	6.5.6	Microbreak Register
+2	6.6	FXPD Logic Diagram
+3	6.6.1	Data Out Multiplexer (DOMX)
+3	6.6.2	DOMX Select Logic
+3	6.6.3	Store FP Status
+2	6.7	FXPE Logic Diagram
+3	6.7.1	OBUF Register
+3	6.7.2	Floating Exception Address (FEA)
+2	6.8	Logic Diagram FXPF
+3	6.8.1	Data In Multiplexer (DIMX)
+3	6.8.2	DIMX Select Logic
+2	6.9	Logic Diagram FXPH
+3	6.9.1	BMX
+3	6.9.2	EALU
+3	6.9.3	Carry Look-Ahead Circuitry
+2	6.10	Logic Diagram FXPJ
+3	6.10.1	A Multiplier (AMX)
+3	6.10.2	EALU
+3	6.10.3	Shift Control
+3	6.10.4	Shift Within Range
+2	6.11	Logic Diagram FXPK
+3	6.11.1	ACMX
+3	6.11.2	EXPA and EXPB Scratchpads
+2	6.12	FXPL Logic Diagram
+3	6.12.1	Zero Checkers
+3	6.12.2	Decode of ACMX
+3	6.12.3	Branch Condition Negative
+3	6.12.4	Sign Scratchpads
+2	6.13	Logic Diagram FXPM
+3	6.13.1	Control ROM
+3	6.13.2	ROM Buffer Register
+2	6.14	Logic Diagram FXPN
+3	6.14.1	Source Scratchpad
+3	6.14.2	Destination Scratchpad
+2	6.15	FXPP Logic Diagram
+3	6.15.1	Exponent Register (ER)
+3	6.15.2	Step Counter (SC)
+3	6.15.3	Negative Absolute Value ROM
+2	6.16	Logic Diagram FRMA
+3	6.16.1	Branching Multiplexers
+3	6.16.2	ROM Address Gating
+3	6.16.3	Branch and Trap Conditions
+2	6.17	Logic Diagram FRMB
+3	6.17.1	ROM Address Register
+3	6.17.2	Floating Minus 0 Trap
+3	6.17.3	Microbreak Trap
+3	6.17.4	Branch Condition Logic
+3	6.17.5	ROM Buffer Register
+2	6.18	Logic Diagram FRMC
+3	6.18.1	Time State Generator
+3	6.18.2	INIT Synchronizer
+3	6.18.3	Restart Logic
+3	6.18.4	Maintenance Stop Flip-Flop
+2	6.19	Logic Diagrams FRMD, FRME
+2	6.20	Logic Diagram FRMF
+3	6.20.1	FP REQ Control
+3	6.20.2	Sign Processor
+3	6.20.3	Branch Conditions
+3	6.20.4	FN Circuitry
+3	6.20.5	EALU Control
+2	6.21	Logic Diagram FRMH
+3	6.21.1	Scratchpad Write Pulse Logic
+3	6.21.2	Register Clocking
+3	6.21.3	FALU Control
+2	6.22	Logic Diagram FRMJ
+3	6.22.1	FCC Clock
+3	6.22.2	FD Clock, IL Clock
+3	6.22.3	FPS Register Clock
+3	6.22.4	Multiplexer
+3	6.22.5	FID and FER Flip-Flops
+3	6.22.6	Zero Checkers
+3	6.22.7	FP PRESENT, FPADR INC Signals
+2	6.23	Logic Diagram FRHA
+3	6.23.1	ACMX
+3	6.23.2	Fraction Scratchpads
+3	6.23.3	QMX
+3	6.23.4	FMX
+2	6.24	Logic Diagram FRHB
+2	6.25	Logic Diagram FRHC
+3	6.25.1	Round Logic
+3	6.25.2	FALU
+2	6.26	Logic Diagram FRHD
+3	6.26.1	FALU
+3	6.26.2	Disable FMX, QMC Logic
+2	6.27	Logic Diagrams FRHE, FRHF
+3	6.27.1	A Register
+3	6.27.2	ASHFR
+3	6.27.3	AR FILL Logic
+2	6.28	Logic Diagram FRHH, FRHJ
+3	6.28.1	QR
+3	6.28.2	QSHFR
+3	6.28.3	QFILL Logic
+2	6.29	Logic Diagram FRHK
+3	6.29.1	Priority Encoders
+3	6.29.2	Multiply Encoder
+3	6.29.3	Divide Termination Logic
+2	6.30	Logic Diagram FRHL
+3	6.30.1	Divide Termination Logic
+3	6.30.2	Shift Control Logic
+3	6.30.3	FORCE ZERO AR SHIFT, FORCE ZERO QR SHIFT
+3	6.30.4	Miscellaneous Latch Logic
+4	6.30.4.1	Shift Within Range
+4	6.30.4.2	Divide Done
+4	6.30.4.3	Sign Extend During Multiply
+2	6.31	Logic Diagrams FRLA, FRLB
+2	6.32	Logic Diagrams FRLC
+2	6.33	Logic Diagrams FRLD, FRLE
+2	6.34	Logic Diagrams FRLF, FRLH
+2	6.35	Logic Diagrams FRLJ, FRLK, FRLL
+2	6.36	Logic Diagram FRLM
+2	6.37	Logic Diagram FRLN
+1	Chapter 7	Maintenance
+2	7.1	Introduction
+2	7.2	Maintenance Module
+3	7.2.1	Time Margining Using Maintenance Module
+2	7.3	Special Maintenance Instructions
+3	7.3.1	LDUB -- Load Microbreak Register (170003)
+3	7.3.2	STA0 -- Store AR in AC0 (170005)
+3	7.3.3	STQ0 -- Store QR in AC0 (170007)
+3	7.3.4	MSN -- Maintenance Shift by N (170004)
+2	7.4	Power Sequence
+2	7.5	Diagnostics
+3	7.5.1	MAINDEC-11-DEFPA, B
+2	7.6	Use of Maintenance Module For Debugging
+2	7.7	Use of Microbreak Register
+1	Appendix A	Integrated Circuit Data

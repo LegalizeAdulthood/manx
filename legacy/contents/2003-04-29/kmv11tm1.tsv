@@ -1,0 +1,143 @@
+#PART EK-KMV11-TM-001
+1	Chapter 1	Introduction
+2	1.1	Scope
+2	1.2	KMV11 General Description
+2	1.3	Host KMV11 Communication
+2	1.4	Modes of Operation
+3	1.4.1	Application Mode
+3	1.4.2	Maintenance Mode
+2	1.5	General Specification
+3	1.5.1	Power Requirements
+3	1.5.2	Environmental Requirements
+3	1.5.3	Bus Loading
+3	1.5.4	Performance Specifications
+3	1.5.5	Modem Signal Supported
+1	Chapter 2	Installation
+2	2.1	Scope
+2	2.2	Unpacking and Checkout
+2	2.3	Installation Phases
+2	2.4	Preinstallation Considerations
+3	2.4.1	Mounting Space
+3	2.4.2	Power Requirements
+3	2.4.3	Modem Cable Assembly Requirements
+2	2.5	M7500 Installation
+3	2.5.1	Voltage Check
+3	2.5.2	Switch Settings
+4	2.5.2.1	Address Switches
+4	2.5.2.2	Vector Switches
+3	2.5.3	Jumper Configurations
+3	2.5.4	Standard Switch Setting and Jumper Configuration for KMV11-A
+3	2.5.5	M7500 Insertion
+2	2.6	Modem Cable Assembly Installation
+3	2.6.1	BC55H/BC55U/BC55P Considerations
+3	2.6.2	BC55H, BC55U, and BC55P Installation on the H349 Panel
+3	2.6.3	BC55H, BC55U, and BC55P Installation Without H349 Panel
+2	2.7	KMV11 System Testing
+3	2.7.1	Functional Diagnostic Testing
+3	2.7.2	DECX-11 System Exerciser
+3	2.7.3	Final Cable Connections
+2	2.8	KMV11 Installation Checkoff List
+1	Chapter 3	Programming
+2	3.1	Scope
+2	3.2	Introduction
+2	3.3	Control and Status Register Description
+2	3.4	Control and Status Register Layout
+2	3.5	Control and Status Register Byte 1 Layout
+2	3.6	Initialization and Mode Selection
+2	3.7	Application Mode Programming
+3	3.7.1	Application Firmware Loading
+3	3.7.2	Application Firmware Unloading
+3	3.7.3	Application Firmware Starting
+1	Chapter 4	Functional Description
+2	4.1	Scope
+2	4.2	Architecture
+2	4.3	Hardware Components
+3	4.3.1	Q-Bus Transceivers and Address Decoders
+3	4.3.2	Q-Bus Protocol Logic
+3	4.3.3	CSR RAM
+3	4.3.4	DCT11 Microprocessor
+3	4.3.5	DCT11 Microprocessor Interrupt System
+3	4.3.6	Microprocessor Implementation
+3	4.3.7	Front-End Processor Address Space
+3	4.3.8	I/O Register Assignment
+3	4.3.9	Line Controller and Clock
+3	4.3.10	Multiport Chip and Q-Control
+3	4.3.11	Line Receivers and Drivers
+2	4.4	Firmware Components
+3	4.4.1	Power-up Initialization
+3	4.4.2	Mode Control
+3	4.4.3	Diagnostic Firmware
+1	Chapter 5	Service
+2	5.1	Scope
+2	5.2	Maintenance Philosophy
+2	5.3	Maintenance Tools and Features
+3	5.3.1	LED Indicators
+3	5.3.2	Self-Test
+3	5.3.3	Line Clock and Loopback Connectors
+4	5.3.3.1	Line Clock
+4	5.3.3.2	Real-Time Clock
+4	5.3.3.3	Loopback Connectors/Tests
+2	5.4	Diagnostics
+3	5.4.1	VKMA Logic Diagnostics
+3	5.4.2	VKMB Line Controller Diagnostic
+3	5.4.3	VKMC Functional Diagnostic
+3	5.4.4	XKMD DECX-11 Exerciser Module
+2	5.5	Preventive Maintenance
+2	5.6	Corrective Maintenance
+1	Appendix A	Basic HDLC/SDLC Framing Firmware
+2	A.1	General Introduction
+2	A.2	CSR Description
+3	A.2.1	BSEL0 and BSEL2 Definitions
+3	A.2.2	Definitions of BSEL3 to BSEL7
+2	A.3	Input Commands
+2	A.4	Output Responses
+2	A.5	Examples of CSR Handshaking
+2	A.6	Basic HDLC Framing Firmware Commands and Responses
+2	A.7	Modem Control
+3	A.7.1	Modem Control for Full Duplex, Data Leads Only
+3	A.7.2	Modem Control for Full Duplex, Full Modem Control
+3	A.7.3	Configurate
+4	A.7.3.1	Configurate Command
+4	A.7.3.2	Action
+4	A.7.3.3	Configurate Response
+3	A.7.4	Deconfigurate
+4	A.7.4.1	Deconfigurate Command
+4	A.7.4.2	Action
+4	A.7.4.3	Deconfigurate Response
+3	A.7.5	Modem Change Response
+4	A.7.5.1	Action
+4	A.7.5.2	Modem Change Response
+3	A.7.6	Transmit Buffer
+4	A.7.6.1	Transmit Buffer Command
+4	A.7.6.2	Action
+4	A.7.6.3	Transmit Buffer Response
+3	A.7.7	Receive Buffer
+4	A.7.7.1	Receive Buffer Command
+4	A.7.7.2	Action
+4	A.7.7.3	Receive Buffer Response
+3	A.7.8	Transmit Abort
+4	A.7.8.1	Transmit Abort Command
+4	A.7.8.2	Action
+4	A.7.8.3	Transmit Abort Response
+3	A.7.9	Receive Abort
+4	A.7.9.1	Receive Abort Command
+4	A.7.9.2	Action
+4	A.7.9.3	Receive Abort Response
+3	A.7.10	Read Modem
+4	A.7.10.1	Read Modem Command
+4	A.7.10.2	Action
+4	A.7.10.3	Read Modem Response
+3	A.7.11	Enable Modem Survey
+4	A.7.11.1	Enable Modem Survey Command
+4	A.7.11.2	Action
+4	A.7.11.3	Enable Modem Survey Response
+3	A.7.12	Disable Modem Survey
+4	A.7.12.1	Disable Modem Survey Command
+4	A.7.12.2	Action
+4	A.7.12.3	Disable Modem Survey Response
+3	A.7.13	Dummy Command
+4	A.7.13.1	Dummy Command
+4	A.7.13.2	Action
+4	A.7.13.3	Dummy Response
+2	A.8	KMV11-A Command and Response Format
+2	A.9	KMV11-A Possible Status Returns

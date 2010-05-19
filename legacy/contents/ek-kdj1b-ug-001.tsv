@@ -1,0 +1,511 @@
+#PART	EK-KDJ1B-UG-001
+#TITLE	KDJ11-B CPU Module User's Guide
+1	Chapter 1	Architecture
+2	1.1	Description
+2	1.2	DCJ11-A Features
+3	1.2.1	Stack Limit Protection
+3	1.2.2	Kernel Protection
+3	1.2.3	General Registers
+3	1.2.4	Stack Pointer
+3	1.2.5	Program Counter
+3	1.2.6	Processor Status Word (17 777 776)
+3	1.2.7	CPU Error Register (17 777 766)
+3	1.2.8	Program Interrupt Request Register (17 777 772)
+2	1.3	Interrupts
+3	1.3.1	Sunset Loops
+3	1.3.2	Red Stack Aborts
+3	1.3.3	Addressing Errors
+3	1.3.4	Bus Timeout Errors
+3	1.3.5	Interrupt Vector Timeouts
+3	1.3.6	No SACK Timeouts
+2	1.4	Memory Management
+3	1.4.1	Memory Mapping
+4	1.4.1.1	16-Bit Mapping
+4	1.4.1.2	18-Bit Mapping
+4	1.4.1.3	22-Bit Mapping
+3	1.4.2	Compatibility
+3	1.4.3	Virtual Addressing
+3	1.4.4	Interrupts Under Memory Management
+3	1.4.5	Construction of a Physical Address
+3	1.4.6	Memory Management Registers
+4	1.4.6.1	Page Address Register
+4	1.4.6.2	Page Descriptor Register
+3	1.4.7	Fault Recovery Registers
+4	1.4.7.1	Memory Management Register 0 (17 777 572)
+4	1.4.7.2	Memory Management Register 1 (17 777 574)
+4	1.4.7.3	Memory Management Register 2 (17 777 576)
+4	1.4.7.4	Memory Management Register 3 (17 772 516)
+4	1.4.7.5	Instruction Back-Up/Restart Recovery
+4	1.4.7.6	Clearing Status Registers Following Abort
+4	1.4.7.7	Multiple Faults
+3	1.4.8	Typical Usage Examples
+4	1.4.8.1	Typical Memory Page
+4	1.4.8.2	Nonconsecutive Memory Pages
+4	1.4.8.3	Stack Memory Pages
+3	1.4.9	Transparency
+2	1.5	Cache Memory
+3	1.5.1	Parity
+4	1.5.1.1	Parity Errors
+4	1.5.1.2	Multiple Cache Parity Errors
+3	1.5.2	Memory System Errors
+4	1.5.2.1	Cache Control Register (17 777 746)
+4	1.5.2.2	Hit/Miss Register (17 777 752)
+4	1.5.2.3	Memory System Error Register (17 777 744)
+2	1.6	Private Memory Interconnect
+3	1.6.1	PMI Protocol
+4	1.6.1.1	Bus Device NPR
+4	1.6.1.2	Bus Device Interrupt
+3	1.6.2	PMI Data Transfers
+4	1.6.2.1	Data In/Data In Phase
+4	1.6.2.2	Block Data In
+4	1.6.2.3	Data Out/Data Out Byte
+2	1.7	Terminal Interface
+3	1.7.1	Receiver Control/Status Register (17 777 560)
+3	1.7.2	Receiver Buffer Register (17 777 562)
+3	1.7.3	Transmitter Control/Status Register (17 777 564)
+3	1.7.4	Transmitter Buffer Register (17 777 566)
+2	1.8	Boot and Diagnostic Facility
+3	1.8.1	Control/Status Register (17 777 520)
+3	1.8.2	Page Control Register (17 777 522)
+3	1.8.3	Configuration and Display Register (17 777 524)
+4	1.8.3.1	Boot and Diagnostic Configuration Register
+4	1.8.3.2	Boot and Diagnostic Display Register
+3	1.8.4	Maintenance Register (17 777 750)
+2	1.9	Line Time Clock
+3	1.9.1	Line Time Clock Register (17 777 546)
+1	Chapter 2	Configuration
+2	2.1	Introduction
+2	2.2	Module Configuration
+3	2.2.1	Jumper Wires
+4	2.2.1.1	W10 Jumper
+4	2.2.1.2	W20 Jumper
+4	2.2.1.3	W40 Jumper
+3	2.2.2	Switchpack
+4	2.2.2.1	Baud Rate Selection
+4	2.2.2.2	Dialog Mode
+4	2.2.2.3	Device Bootstrap Programs
+4	2.2.2.4	Console Enable
+3	2.2.3	Diagnostic LEDs
+2	2.3	EEPROM Configuration Parameters
+3	2.3.1	Enable Halt-on-Break
+3	2.3.2	Disable User Friendly Format
+3	2.3.3	ANSI Video Terminal
+3	2.3.4	Power-Up Modes
+4	2.3.4.1	Dialog Mode
+4	2.3.4.2	Automatic Mode
+4	2.3.4.3	ODT Mode
+4	2.3.4.4	Mode 24
+3	2.3.5	Restart
+3	2.3.6	Ignore Battery
+3	2.3.7	PMG Count
+3	2.3.8	Disable Clock CSR
+3	2.3.9	Force Clock Interrupts
+3	2.3.10	Clock Select
+3	2.3.11	Enable ECC Test
+3	2.3.12	Disable Long Memory Test
+3	2.3.13	Disable ROM
+3	2.3.14	Enable Trap-on-Halt
+3	2.3.15	Allow Alternate Book Block
+3	2.3.16	Disable Setup Mode
+3	2.3.17	Disable All Testing
+3	2.3.18	Enable Unibus Memory Test
+3	2.3.19	Disable UBA ROM
+3	2.3.20	Enable UBA Cache
+3	2.3.21	Enable 18-Bit Mode
+2	2.4	System Installation
+3	2.4.1	LSI-11 Based Systems
+3	2.4.2	Restricted LSI-11 Systems
+3	2.4.3	Unibus Based Systems
+2	2.5	Module Contact Finger Identification
+2	2.6	Module Installation Procedure
+2	2.7	Specifications
+1	Chapter 3	Console On-Line Debugging Technique (ODT)
+2	3.1	Introduction
+3	3.1.1	Terminal Interface
+2	3.2	ODT Operation of the Console Serial Line Interface
+3	3.2.1	Console ODT Input Sequence
+3	3.2.2	Console ODT Output Sequence
+2	3.3	Console ODT Entry Commands
+2	3.4	Console ODT Command Set
+3	3.4.1	/ (ASCII 057) -- Slash
+3	3.4.2	<CR> (ASCII 15) -- Carriage Return
+3	3.4.3	<LF> (ASCII 12) -- Line Feed
+3	3.4.4	$ (ASCII 044) or R (ASCII 122) -- Internal Register Designator
+3	3.4.5	S (ASCII 123) -- Processor Status Word Designator
+3	3.4.6	G (ASCII 107) -- Go
+3	3.4.7	P (ASCII 120) -- Proceed
+3	3.4.8	<CTRL> <SHIFT> S (ASCII 23) -- Binary Dump
+2	3.5	KDJ11-B Address Specification
+3	3.5.1	Processor I/O Addresses
+3	3.5.2	Stack Pointer Selection
+3	3.5.3	Entering Octal Digits
+3	3.5.4	ODT Timeout
+3	3.5.5	General Registers
+1	Chapter 4	Boot ROMs and Diagnostics
+2	4.1	Introduction
+2	4.2	Power-Up or Restart
+3	4.2.1	Dialog (Mode 0)
+3	4.2.2	Automatic (Mode 1)
+3	4.2.3	ODT (Mode 2)
+3	4.2.4	24/26 (Mode 3)
+2	4.3	Forced Dialog Mode
+2	4.4	Help Command
+2	4.5	Boot Command
+2	4.6	List Command
+2	4.7	Setup Mode
+3	4.7.1	Exit (1)
+3	4.7.2	Select Configuration Parameters (2)
+3	4.7.3	Select Bootstrap Translations (3)
+3	4.7.4	Select Automatic Boot Sequence (4)
+3	4.7.5	Select Console Message (5)
+3	4.7.6	Define Switchpack Boot Selections (6)
+3	4.7.7	List Available Bootstrap Programs (7)
+3	4.7.8	Setup Table Initialization (8)
+3	4.7.9	Save the Setup Table in the EEPROM (9)
+3	4.7.10	Load EEPROM Data Into the Setup Table (10)
+3	4.7.11	Delete a Boot Program From the EEPROM (11)
+3	4.7.12	Load an EEPROM Boot Program Into Memory (12)
+3	4.7.13	Edit or Create a Boot Program in the EEPROM (13)
+3	4.7.14	Save a Boot Program in the EEPROM (14)
+3	4.7.15	Enter ROM ODT (15)
+2	4.8	Map Command
+2	4.9	Test Command
+2	4.10	Diagnostic Tests
+3	4.10.1	CPU or Halt Switch (Test 77)
+3	4.10.2	CPU and MMU (Test 76)
+3	4.10.3	Turn on MMU, Run CPU and MMU (Test 75)
+3	4.10.4	Turn on PMI, Check UBA Reboot Bit (Test 74)
+3	4.10.5	Power-Up to Mode 2: ODT (Test 73)
+3	4.10.6	Power-Up to Mode 3: 24 (Test 72)
+3	4.10.7	EEPROM Checksum (Test 71)
+3	4.10.8	CPU ROM Checksum and PCR (Test 70)
+3	4.10.9	Miscellaneous CPU and EIS (Test 67)
+3	4.10.10	Console SLU Test 1 (Test 66)
+3	4.10.11	Console SLU Test 2 (Test 65)
+3	4.10.12	Console SLU Test 3 (Test 64)
+3	4.10.13	MMU Aborts (Test 63)
+3	4.10.14	Cache Memory (Test 62)
+3	4.10.15	Line Clock (Test 61)
+3	4.10.16	Floating-Point Instruction (Test 60)
+3	4.10.17	Reserved (Test 57)
+3	4.10.18	Exit Standalone Mode (Test 56)
+3	4.10.19	UBA Register Response (Test 55)
+3	4.10.20	Memory Sizing Routine (Test 54)
+3	4.10.21	Memory Location 0 (Test 53)
+3	4.10.22	Memory Locations 0 to 4K Words (Test 52)
+3	4.10.23	Cache Operation With Memory (Test 51)
+3	4.10.24	Complete Memory Data/Byte Exercise (Test 50)
+3	4.10.25	Memory Parity/ECC (Test 47)
+3	4.10.26	Memory Address Shorts (Test 46)
+3	4.10.27	UBA Boot ROM (Test 45)
+3	4.10.28	UBA Map Registers Data Path (Test 44)
+3	4.10.29	UBA Unmapped Diagnostic Data (Test 43)
+3	4.10.30	UBA Mapped Diagnostic Data (Test 42)
+3	4.10.31	UBA Floating Address/Data (Test 41)
+3	4.10.32	UBA Address Overflow (Test 40)
+3	4.10.33	UBA Cache Data (Test 37)
+3	4.10.34	UBA Cache LRU (Test 36)
+3	4.10.35	UBA Cache Tag Store (Test 35)
+3	4.10.36	UBA Cache Parity Error (Test 34)
+3	4.10.37	Unibus Memory Data/Byte Exercise (Test 33)
+3	4.10.38	Unibus Memory Parity (Test 32)
+3	4.10.39	Unibus Memory Address Shorts (Test 31)
+3	4.10.40	Exit (Test 30)
+2	4.11	Diagnostic Test Error Messages
+3	4.11.1	Test Number
+3	4.11.2	Address of the Error
+3	4.11.3	Register Set 1
+3	4.11.4	Optional User Commands
+4	4.11.4.1	Rerun Test
+4	4.11.4.2	Loop on Test
+4	4.11.4.3	Map Memory and I/O Page
+4	4.11.4.4	Advance to the Next Test
+3	4.11.5	Typical Displays
+2	4.12	ROM Code Boot Programs
+3	4.12.1	Error Messages for Bootstrap Programs
+3	4.12.2	LSI Bus Selected Error Messages
+2	4.13	Message Display Constraints
+1	Chapter 5	Functional Theory
+2	5.1	Introduction
+2	5.2	DCJ11-A Microprocessor
+3	5.2.1	Initialization
+3	5.2.2	Output Signals
+4	5.2.2.1	Address Input/Output (MAIO <3:0> H)
+4	5.2.2.2	Bank Select (MBS1 H, MBS0 H)
+4	5.2.2.3	Address Latch Enable (MALE L)
+4	5.2.2.4	Stretch Control (MSCTL L)
+4	5.2.2.5	Strobe (MSTRB L)
+4	5.2.2.6	Buffer Control (MBUFCTL L)
+4	5.2.2.7	Predecode Strobe (MPRDC L)
+4	5.2.2.8	I/O Map Enable (JMAP L)
+4	5.2.2.9	Clock (MCLK H)
+3	5.2.3	Input Signals
+4	5.2.3.1	MMISS L
+4	5.2.3.2	Data Valid (MDV L)
+4	5.2.3.3	Continue (MCONT L)
+4	5.2.3.4	DMA Request (MDMR L)
+4	5.2.3.5	MIRQ <7:4> H
+4	5.2.3.6	MHALT H
+4	5.2.3.7	MEVNT H
+4	5.2.3.8	MPWR FAIL L
+4	5.2.3.9	MPARITY L
+4	5.2.3.10	MABORT L
+4	5.2.3.11	FPA FPE L
+3	5.2.4	MDAL <21:01>
+3	5.2.5	DCJ11-A Transactions
+4	5.2.5.1	NOP
+4	5.2.5.2	Bus Read
+4	5.2.5.3	Bus Write
+4	5.2.5.4	General Purpose Read
+4	5.2.5.5	General Purpose Write
+4	5.2.5.6	IACK
+2	5.3	Bus Arbitrator
+3	5.3.1	PMI Cycle Request
+2	5.4	Data Path Controller
+3	5.4.1	Cycle Encoder
+3	5.4.2	Oscillator
+3	5.4.3	Next Address MUX
+4	5.4.3.1	Default
+4	5.4.3.2	External Read/Write
+4	5.4.3.3	LSI/Unibus
+4	5.4.3.4	Interrupt Vector
+4	5.4.3.5	DC350/394 Accesses
+4	5.4.3.6	Byte Allocation
+4	5.4.3.7	DMA Monitor
+4	5.4.3.8	Standalone Mode
+3	5.4.4	Control Store
+2	5.5	Cache Memory and DMA Store
+3	5.5.1	Cache Memory
+3	5.5.2	Cache Tag Store
+3	5.5.3	Cache Data Parity Logic
+3	5.5.4	Valid Tag Bit
+3	5.5.5	DMA Tag Store
+3	5.5.6	Cache Control
+2	5.6	DC350/394 Gate Array
+3	5.6.1	A-Multiplexer
+3	5.6.2	Cache Data Path
+3	5.6.3	Parity Interrupt and Abort
+3	5.6.4	Address Decode
+3	5.6.5	Cycle Decoder
+3	5.6.6	Miscellaneous
+2	5.7	DC351 Gate Array
+3	5.7.1	DMA Tag Data Path
+3	5.7.2	Clock Start Logic
+3	5.7.3	Flush Counter
+3	5.7.4	Main Memory Parity Error
+2	5.8	Timeout
+3	5.8.1	DMA Requests
+3	5.8.2	NXM or Interrupt Requests
+2	5.9	Bus Distribution
+3	5.9.1	Internal Bus Control
+3	5.9.2	LSI-11 Bus Control
+3	5.9.3	PMI Bus Control
+2	5.10	Console Serial Line Unit
+3	5.10.1	Halt-on-Break
+3	5.10.2	Console Interrupt Arbitration
+2	5.11	Configuration and Display
+2	5.12	Boot and Diagnostic ROMs
+2	5.13	Configuration EEPROM
+2	5.14	Floating-Point Accelerator
+3	5.14.1	FPA Operation
+1	Chapter 6	Extended LSI-11 Bus
+2	6.1	Introduction
+2	6.2	Bus Signal Nomenclature
+2	6.3	Data Transfer Bus Cycles
+3	6.3.1	Bus Cycle Protocol
+4	6.3.1.1	Device Addressing
+4	6.3.1.2	DATI
+4	6.3.1.3	DATO(B)
+4	6.3.1.4	DATIO(B)
+2	6.4	Direct Memory Access
+2	6.5	Interrupts
+3	6.5.1	Device Priority
+3	6.5.2	Interrupt Protocol
+3	6.5.3	4-Level Interrupt Configurations
+2	6.6	Control Functions
+3	6.6.1	Memory Refresh
+3	6.6.2	Halt
+3	6.6.3	Initialization
+3	6.6.4	Power Status
+4	6.6.4.1	BDCOK H
+4	6.6.4.2	BPOK H
+4	6.6.4.3	Power-Up
+4	6.6.4.4	Power-Down
+3	6.6.5	BEVNT L
+2	6.7	Bus Electrical Characteristics
+3	6.7.1	Signal Level Specification
+3	6.7.2	AC Bus Load Definition
+3	6.7.3	DC Bus Load Definition
+3	6.7.4	120 Ohm LSI-11 Bus
+3	6.7.5	Bus Drivers
+3	6.7.6	Bus Receivers
+3	6.7.7	KDJ11-B Bus Termination
+4	6.7.7.1	Bus Interconnection Wiring
+4	6.7.7.2	Backplane Wiring
+4	6.7.7.3	Intrabackplane Bus Wiring
+4	6.7.7.4	Power and Ground
+4	6.7.7.5	Maintenance and Spare Pins
+2	6.8	System Configurations
+3	6.8.1	Rules for Configuring Single-Backplane Systems
+3	6.8.2	Rules for Configuring Multiple-Backplane Systems
+3	6.8.3	Power Supply Loading
+1	Chapter 7	Private Memory Interconnect Bus
+2	7.1	Description
+2	7.2	PMI Interface
+3	7.2.1	PMI Bus Master Signals
+3	7.2.2	PMI Slave Signals
+3	7.2.3	PMI Unibus Adapter Signals
+3	7.2.4	LSI Bus Signals
+2	7.3	PMI Operation In an LSI-11 System
+2	7.4	PMI Operation In a Unibus System
+3	7.4.1	Bus Device NPR or DMA
+3	7.4.2	PMI Bus Device Interrupt
+2	7.5	PMI Data Transfers
+3	7.5.1	PMI Data In/Data In Phase
+3	7.5.2	PMI Block Data In
+3	7.5.3	PMI Data Out/Data Out Byte
+2	7.6	PMI Interrupt Protcol
+2	7.7	PMI Power-Up/Power-Down
+1	Chapter 8	Addressing Modes
+2	8.1	Introduction
+2	8.2	Addressing Modes
+3	8.2.1	Single-Operand Addressing
+3	8.2.2	Double-Operand Addressing
+3	8.2.3	Direct Addressing
+4	8.2.3.1	Register Mode
+4	8.2.3.2	Autoincrement Mode [OPR (Rn)+]
+4	8.2.3.3	Autodecrement Mode [OPR -(Rn)]
+4	8.2.3.4	Index Mode [OPR X(Rn)]
+3	8.2.4	Deferred (Indirect) Addressing
+3	8.2.5	Use of the PC as a General Purpose Register
+4	8.2.5.1	Immediate Mode [OPR #n,DD]
+4	8.2.5.2	Absolute Mode [OPR @#A]
+4	8.2.5.3	Relative Addressing Mode [OPR A or OPR X(PC)]
+4	8.2.5.4	Relative-Deferred Addressing Mode [OPR @A or OPA @X(PC)]
+3	8.2.6	Use of the General Purpose Registers as a Stack Pointer
+1	Chapter 9	Base Instruction Set
+2	9.1	Instruction Set
+2	9.2	Instruction Formats
+2	9.3	Byte Instructions
+2	9.4	List of Instructions
+2	9.5	Single-Operand Instructions
+3	9.5.1	General
+3	9.5.2	Shifts and Rotates
+3	9.5.3	Multiple-Precision
+3	9.5.4	PSW Operators
+2	9.6	Double-Operand Instructions
+3	9.6.1	General
+3	9.6.2	Logical
+2	9.7	Program Control Instructions
+3	9.7.1	Branches
+3	9.7.2	Signed Conditional Branches
+3	9.7.3	Unsigned Conditional Branches
+3	9.7.4	Jump and Subroutine Instructions
+3	9.7.5	Traps
+3	9.7.6	Miscellaneous Program Controls
+3	9.7.7	Reserved Instruction Traps
+3	9.7.8	Trace Trap
+2	9.8	Miscellaneous Instructions
+2	9.9	Condition Code Operators
+1	Chapter 10	Floating-Point Arithmetic
+2	10.1	Introduction
+2	10.2	Floating-Point Data Formats
+3	10.2.1	Nonvanishing Float-Point Numbers
+3	10.2.2	Floating-Point Zero
+3	10.2.3	Undefined Variables
+3	10.2.4	Floating-Point Data
+2	10.3	Floating-Point Status Register (FPS)
+2	10.4	Floating Exception Code and Address Registers
+2	10.5	Floating-Point Instruction Addressing
+2	10.6	Accuracy
+2	10.7	Floating-Point Instructions
+1	Chapter 11	Programming Techniques
+2	11.1	Introduction
+2	11.2	Position-Independent Code
+3	11.2.1	Use of Addressing Modes in the Construction of Position-Independent Code
+3	11.2.2	Comparison of Position-Dependent and Position-Independent Code
+2	11.3	Stacks
+3	11.3.1	Pushing onto a Stack
+3	11.3.2	Popping from a Stack
+3	11.3.3	Deleting Items from a Stack
+3	11.3.4	Stack Uses
+3	11.3.5	Stack Use Examples
+3	11.3.6	Subroutine Linkage
+4	11.3.6.1	Return from a Subroutine
+4	11.3.6.2	Subroutine Advantages
+3	11.3.7	Interrupts
+4	11.3.7.1	Interrupt Service Register
+4	11.3.7.2	Nesting
+3	11.3.8	Reentrancy
+4	11.3.8.1	Reentrant Code
+4	11.3.8.2	Writing Reentrant Code
+3	11.3.9	Coroutines
+4	11.3.9.1	Coroutine Calls
+4	11.3.9.2	Coroutines Versus Subroutines
+4	11.3.9.3	Using Coroutines
+3	11.3.10	Recursion
+3	11.3.11	Processor Traps
+4	11.3.11.1	Trap Instructions
+4	11.3.11.2	Use of Macro Calls
+3	11.3.12	Conversion Routines
+2	11.4	Programming the Processor Status Word
+2	11.5	Programming Peripherals
+2	11.6	PDP-11 Programming Examples
+2	11.7	Looping Techniques
+1	Appendix A	ROM Code Differences
+2	A.1	General
+2	A.2	V6.0 and V7.0 Differences
+3	A.2.1	Boot Support for Tape MSCP Devices (TK50/TU81)
+3	A.2.2	Disk MSCP Automatic Boot Routine
+3	A.2.3	Dialog Mode Boot Command for Disk MSCP Boot
+3	A.2.4	Disk MSCP Boot (DU)
+3	A.2.5	8-Unit Restriction for MSCP Automatic Boot
+3	A.2.6	Irregular Monitoring of Keyboard During Automatic Boot Sequence
+3	A.2.7	Addition of Single-Letter Mnemonic in Automatic Boot List
+3	A.2.8	Setup Mode Disable
+3	A.2.9	Disable All Testing Parameter
+3	A.2.10	Edit/Create Command
+3	A.2.11	Initialize Command for the PMG Counter
+3	A.2.12	PMG Parameter Warning
+3	A.2.13	Setup Command 4 Printout
+3	A.2.14	MU (TK50/TU81) Device
+3	A.2.15	Setup Command 5
+3	A.2.16	Memory Initialization at Power-Up
+3	A.2.17	Power-Up Option Set to 3 with Battery Backed Up Memory
+3	A.2.18	Halt-on-Break
+3	A.2.19	Local Language Support
+3	A.2.20	Addition of Map Command Feature
+3	A.2.21	EEPROM Load Error Before Dialog Mode
+3	A.2.22	Test Command Decimal Numbers
+3	A.2.23	Test Command Execution of a Single Test
+3	A.2.24	Test Errors in Tests 72 to 75
+3	A.2.25	Bypass Error for Test Failures
+3	A.2.26	Test 76 and 75 Error Messages
+3	A.2.27	Starting Automatic Boot Sequence Message
+3	A.2.28	Device Name and Number After Message
+3	A.2.29	Incorrect Message for Invalid Unit Number
+3	A.2.30	Dialog Mode Header Message
+3	A.2.31	Map Command Message
+3	A.2.32	List Device Descriptions
+3	A.2.33	Loss of the First Line in a List Header
+3	A.2.34	<CTRL> R and <CTRL> U Echo
+3	A.2.35	Power-Up or Restart Mode Set to 3 (LSI Bus Only)
+3	A.2.36	Automatic Boot Misleading Error Message (LSI Bus Only)
+3	A.2.37	APT Halt-on-Break Detect (LSI Bus Only)
+3	A.2.38	B Mnemonic for ROM Boots (Unibus Only)
+3	A.2.39	Error in List Command When Unknown ROM is Found (Unibus Only)
+3	A.2.40	Power-Up or Restart Mode Set to 3 (Unibus Only)
+3	A.2.41	Saving KMCR Bits <5:0> in the EEPROM (Unibus Only)
+2	A.3	V7.0 and V8.0 Differences
+3	A.3.1	M9312 MultiROM Bootstrap Support (PDP-11/84 Only)
+3	A.3.2	Small Memory Automatic Boot Problem for RQDX3
+3	A.3.3	RAnn Disk Spinup Time Delay for Automatic Boot
+3	A.3.4	Addition of RESET Instruction at Beginning of Code
+3	A.3.5	Addition of New Setup Command 5
+3	A.3.6	Memory Test Coverage Problem
+3	A.3.7	List Command Device Descriptions
+3	A.3.8	Manufacturing Test Loop Problem
+1	Appendix B	Setup Parameter Worksheets
+2	B.1	Purpose
+2	B.2	Function
+1	Appendix C	Mnemonics

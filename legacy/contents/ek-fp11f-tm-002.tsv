@@ -1,0 +1,106 @@
+#PART	EK-FP11F-TM-002
+#TITLE	FP11-F Floating-Point Processor Technical Manual
+1	Chapter 1	Introduction
+2	1.1	General
+2	1.2	Features
+3	1.2.1	Floating-Point Instruction Set Features
+3	1.2.2	FP11-F Features
+2	1.3	Architecture
+2	1.4	Physical Description
+2	1.5	Related Documentations
+1	Chapter 2	Data Formats
+2	2.1	Introduction
+2	2.2	FP11-F Integer Formats
+2	2.3	FP11-F Floating-Point Formats
+3	2.3.1	FP11-F Floating-Point Data Word
+4	2.3.1.1	Floating-Point Fraction
+4	2.3.1.2	Floating-Point Exponent
+2	2.4	FP11-F Program Status Register
+2	2.5	Processing of Floating-Point Exceptions
+1	Chapter 3	Interfacing
+2	3.1	General
+2	3.2	Initial Operation
+2	3.3	Microcode Generation
+1	Chapter 4	Arithmetic Algorithms
+2	4.1	Introduction
+2	4.2	Floating-Point Addition and Subtraction
+3	4.2.1	Description of Sign Processing
+3	4.2.2	Relative Magnitude
+3	4.2.3	Testing for Normalization
+3	4.2.4	Floating-Point Addition
+4	4.2.4.1	Hardware Implementation of Addition
+4	4.2.4.2	Align
+4	4.2.4.3	Normalize
+4	4.2.4.4	Truncate or Rounding
+4	4.2.4.5	Adjusting Exponent During Normalization
+3	4.2.5	Floating-Point Subtraction
+4	4.2.5.1	Negative Exponent Difference
+4	4.2.5.2	Determining Exponent Difference
+4	4.2.5.3	Positive Exponent Difference
+2	4.3	Floating-Point Multiplication
+3	4.3.1	Basic Concepts
+3	4.3.2	Hardware Implementation of Multiplication
+2	4.4	Floating-Point Division
+3	4.4.1	Basic Concepts
+3	4.4.2	Nonrestoring Division (Hardware Method)
+1	Chapter 5	Theory of Operation
+2	5.1	General
+2	5.2	Data Manipulation Logic
+3	5.2.1	Microprocessor
+4	5.2.1.1	Data Sectors
+4	5.2.1.2	Data Bytes
+4	5.2.1.3	Data Manipulation
+4	5.2.1.4	Status Bits
+3	5.2.2	Carry Look-Ahead Logic
+2	5.3	Control Store
+3	5.3.1	Floating-Point Instruction Starting Code
+3	5.3.2	Sector Control
+3	5.3.3	Shift and Designation Control
+3	5.3.4	RAM A/B Port Control
+3	5.3.5	Fraction, Exponent Control
+3	5.3.6	Miscellaneous Control
+3	5.3.7	Constants Generation
+3	5.3.8	Byte Control
+3	5.3.9	Branch Under Test Control
+2	5.4	Instruction Decoding
+2	5.5	Data Buffering and Storage
+3	5.5.1	Data Buffering
+3	5.5.2	Data Storage
+1	Chapter 6	Floating-Point Instructions
+2	6.1	Floating-Point Accumulators
+2	6.2	Instruction Formats
+2	6.3	Instruction Set
+3	6.3.1	Arithmetic Instructions
+3	6.3.2	Floating-Module Instruction
+3	6.3.3	Load Instruction
+3	6.3.4	Store Instruction
+3	6.3.5	Load Convert (Double-to-Floating, Floating-to-Double) Instructions
+3	6.3.6	Store Convert (Double-to-Floating, Floating-to-Double) Instructions
+3	6.3.7	Clear Instruction
+3	6.3.8	Test Instruction
+3	6.3.9	Absolute Instruction
+3	6.3.10	Negate Instruction
+3	6.3.11	Load Exponent Instruction
+3	6.3.12	Load Convert Integer-to-Floating Instruction
+3	6.3.13	Store Exponent Instruction
+3	6.3.14	Store Convert Floating-to-Integer Instruction
+3	6.3.15	Load FP11's Program Status
+3	6.3.16	Store FP11's Program Status
+3	6.3.17	Store FP11's Status
+3	6.3.18	Copy Floating Condition Codes
+3	6.3.19	Set Floating Mode
+3	6.3.20	Set Double Mode
+3	6.3.21	Set Integer Mode
+3	6.3.22	Set Long-Integer Mode
+2	6.4	FP11-F Programming Examples
+1	Chapter 7	Installation and Checkout
+2	7.1	Installation
+2	7.2	Checkout
+1	Chapter 8	Maintenance
+2	8.1	Introduction
+2	8.2	FP11-F Diagnostics
+3	8.2.1	MAINDEC CKFPAA
+3	8.2.2	MAINDEC CKFPBA
+3	8.2.3	MAINDEC CKFPCA
+2	8.3	ASCII Programmer's Console
+2	8.4	FP11-F Flow Diagrams

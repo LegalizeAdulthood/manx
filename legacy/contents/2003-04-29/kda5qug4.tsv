@@ -1,0 +1,61 @@
+#PART EK-KDA5Q-UG-004
+1	Chapter 1	General Information
+2	1.1	Overview
+2	1.2	Digital Storage Architecture
+2	1.3	Mass Storage Control Protocol
+2	1.4	KDA50 Modules
+3	1.4.1	SDI Modules
+3	1.4.2	Processor Module
+2	1.5	KDA50 Functional Microcode
+3	1.5.1	Q-bus Control Stream
+3	1.5.2	Drive Control Stream
+2	1.6	KDA50 Specifications
+2	1.7	Digital Customer Service Contract Options
+3	1.7.1	Hardware Services
+3	1.7.2	Software Services
+2	1.8	Related Documentation
+1	Chapter 2	Installation
+2	2.1	Introduction
+2	2.2	KDA50 Installation Overview
+2	2.3	Module Preparation and Installation
+3	2.3.1	I/O Page Address Switches and Jumpers
+3	2.3.2	Bus Grant Jumpers
+3	2.3.3	Q-bus Tuning
+4	2.3.3.1	Q-bus Device Positions
+4	2.3.3.2	KDA50 Burst Rate Parameter
+3	2.3.4	M7164 Intermodule Cable Installation
+3	2.3.5	M7164 Module Installation
+3	2.3.6	M7165 SDI Cable Installation and Initial M7165 Insertion
+3	2.3.7	M7165 Intermodule Cable Installation
+3	2.3.8	Final M7165 Installation
+2	2.4	Installation Packages
+3	2.4.1	KDA50-QA -- Standard Installation Package
+3	2.4.2	I/O Bulkhead Installation
+4	2.4.2.1	Internal SDI Cables Installation
+4	2.4.2.2	External SDI Cables Installation
+3	2.4.3	KDA50-QB -- Alternate Installation Package
+4	2.4.3.3	Mounting the Alternate Bulkhead Assembly
+4	2.4.3.4	Alternate Internal SDI Cable Installation
+4	2.4.3.5	Alternate External SDI Cable Installation
+1	Chapter 3	Field Acceptance Test Procedure
+2	3.1	Overview
+2	3.2	Diagnostics
+3	3.2.1	Drive-Resident Diagnostics
+3	3.2.2	PDP-11 Subsystem Diagnostics
+4	3.2.2.1	Sample CZUDH Prompts
+4	3.2.2.2	Sample CZUDI Prompts
+4	3.2.2.3	Sample CZUDJ Prompts
+4	3.2.2.4	Sample CZUDM Prompts
+3	3.2.3	MicroVAX Subsystem Diagnostics
+3	3.2.4	Running MDM
+4	3.2.4.1	Choice 1---Test the System
+4	3.2.4.2	Choice 2---Display System Configuration and Devices
+4	3.2.4.3	Choice 3---Display the Utilities Menu
+4	3.2.4.4	Choice 4---Display the Service Menu
+4	3.2.4.5	Choice 5---Exit MicroVAX Maintenance System
+2	3.3	System and Software Considerations
+3	3.3.1	System Clock or Timer
+3	3.3.2	Error Logs
+3	3.3.3	Drive Numbering
+1	Chapter 4	KDA50 Programmer Information
+2	4.1	KDA50 Specific Programming Information

@@ -1,0 +1,34 @@
+#PART EK-283AA-AD-001
+1	1	Introduction
+1	2	Physical Description
+2	2.1	DSH32 Controller Module
+2	2.2	DSH32 Driver/Receiver Modules
+2	2.3	Electrical Characteristics
+2	2.4	Environmental Specifications
+1	3	DSH32 Controller Module Input/Output Connectors
+1	4	Functional Description
+2	4.1	Interface Subsystem
+2	4.2	Asynchronous Communication Subsystem
+3	4.2.1	Control and Status Register
+3	4.2.2	Receive Buffer Register
+3	4.2.3	Receive Timer Register
+3	4.2.4	Line Parameter Register
+3	4.2.5	Transmit FIFO Data Register
+3	4.2.6	Transmit FIFO Size Register
+3	4.2.7	Line Status Register
+3	4.2.8	Line Control Register
+3	4.2.9	Transmit Enable Register
+2	4.3	Synchronous Communication Subsystem
+3	4.3.1	I/O Bus Interface
+3	4.3.2	DMA Controller
+3	4.3.3	Modes of Operation
+3	4.3.4	Interrupts
+3	4.3.5	Registers
+1	5	Internal Diagnostics
+2	5.1	Power-up Test
+2	5.2	Self-Test
+3	5.2.1	Power-Up and Self-Test Error Codes
+2	5.3	System Exerciser
+3	5.3.1	System Exerciser Error Codes
+2	5.4	Option Diagnostic ROM
+2	5.5	Base System ROM

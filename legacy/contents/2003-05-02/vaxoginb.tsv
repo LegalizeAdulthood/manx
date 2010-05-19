@@ -1,0 +1,165 @@
+#PART EK-VAXOG-IN.B01
+1	1	Your VAXstation 4000 Model 90 System
+2		System Capabilities
+3		Overview of Features
+3		The VAXstation 4000 Model 90 System
+2		System Components
+3		Components Shipped
+3		System Components
+3		Front of System Unit
+3		Front Components
+3		Back of System Unit
+3		Component Descriptions
+2		Available Options
+3		Options
+3		Ordering Options
+3		Installing Options
+1	2	Installing Your VAXstation 4000
+2		Installing Your System
+3		Installation Overview
+3		Assemble the T-connector
+3		Attach the Loopback and T-connector
+3		Connect the Mouse and Keyboard
+3		Attach the Monitor Cables
+3		Recommended Power Source
+3		Universal Strain Relief Strap
+3		Attach the Monitor Video Cable
+3		Video In/Video Out Connectors
+3		Attach the Monitor Power Cord
+3		Factory Installed Software Sticker
+3		Connect the System Power Cord
+3		Turn On Your System
+3		Successful Start-Up Display
+2		Putting Your System in Console Mode
+3		Console Mode
+3		Halt Button
+2		Recording Information About Your System
+3		Why Record Information?
+3		Where to Find Information
+3		Attaching the Network Label
+1	3	Connecting Your System to the Network
+2		Verifying the Ethernet Subsystem
+3		Steps to Verify
+2		Connecting to the Network
+3		Connecting to Standard Ethernet
+3		Connecting to ThinWire Ethernet
+2		Verifying the Ethernet Connection
+3		Verify Command
+2		Removing a System from ThinWire Ethernet
+3		Caution: Follow Shutdown Procedures
+3		Removal Steps
+1	4	Using Your System
+2		Turning Your Workstation On and Off
+3		Turning On the Monitor
+3		Turning On Your System
+3		Adjusting Your Monitor
+3		Turning Your System Off
+2		Starting Your System
+3		Enter the Boot Command
+2		Reviewing Your System Configuration
+3		Console Mode
+3		The SHOW CONFIG Command
+3		Error Messages
+2		Using Console Commands
+3		Using HELP
+3		SHOW Commands
+3		SET Commands
+3		TEST Commands
+2		Using the Password Security Feature
+3		Restricted Access
+3		Privileged Console Commands
+3		Nonprivileged Console Commands
+3		Choosing a Security Password
+3		Setting Your Password
+3		Enabling the Security Feature
+3		Disabling the Security Feature
+3		Changing the Password
+2		Moving Your System
+3		Shutting Down
+3		Turning Off the Monitor
+3		Packing Material
+3		Reconnecting Your System
+1	5	Testing System Components
+2		Interpreting System Start-Up Displays
+3		Start-Up Display
+3		Start-Up Display with Error Message
+3		1 The ID Number
+3		2 and 3 The Faulty Component
+3		4 The Error Message Number
+2		Interpreting Diagnostic Lights
+3		Where the Lights Are
+3		What the Lights Mean
+2		Testing System Components
+3		Testing a Single Component
+3		Example
+3		Testing Several Components
+3		Example
+3		Testing All Components
+3		Testing All Components Simultaneously
+3		Using the System Exerciser
+3		Interrupting the System Exerciser
+3		Successful Test
+3		Unsuccessful Test
+3		Requesting a Test Summary
+3		Requesting No Test Summary Display
+3		After Any Testing
+2		Resuming Normal Operation After Testing
+3		Two Ways to Reboot
+3		Device Mnemonic
+3		Example
+1	6	Handling Problems
+2		Checking Cable Connections
+3		Shut Down the System
+3		Check Cable Connections
+3		Turn System Back On
+2		Troubleshooting System Components
+3		Troubleshooting Overview
+3		System Unit
+3		Monitor
+3		Mouse/Tablet
+3		Keyboard
+3		Network
+3		Audio
+2		Reporting Problems to Your Digital Service Representative
+3		Before You Call
+1	A	Alternate Start-Up Procedures
+2		Changing the Keyboard Language
+3		Turning Off Your System
+3		Steps to Change Keyboard Language
+2		Setting the Default Boot Device
+3		The Default Boot Device
+3		Changing the Boot Device
+3		Example
+3		Short-Cut
+2		Changing the Default Recovery Action
+3		Default Recovery Options
+3		Changing Default Recovery Action
+2		Setting the Default Boot Flags
+3		Who Should Set the Boot Flag
+3		Setting the Boot Flag
+2		Using the Alternate Console Feature
+3		If Monitor Screen Is Blank
+3		Connecting a Terminal as an Alternate Console
+1	B	DSW21 Synchronous Communications Adapter Installation Information for the United Kingdom
+2		Cables
+3		Approval
+3		Safety Warning Conditions
+2		Equipment Between the DSW21 Adapter and a Digital Circuit
+3		Equipment Requirements
+2		Host Power Rating
+3		Module Power
+2		Approved Service Specifications
+3		UK Compliance
+2		BABT Host-Independent Approvals
+3		Approval Criteria
+3		Clearance
+3		Checking Creepage Distances
+3		Warning: Approval Invalidated
+1	C	Model 90 System Specifications
+2		System Specifications
+3		Dimensions
+3		Electrical Specifications
+3		General Specifications
+3		Storage Specifications
+3		Operating Conditions
+3		Nonoperating Conditions

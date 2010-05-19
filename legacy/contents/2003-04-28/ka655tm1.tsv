@@ -1,0 +1,252 @@
+#PART EK-KA655-TM-001
+1	1	Overview
+2	1.1	KA655 Central Processor Module
+2	1.2	Clock Functions
+2	1.3	Central Processing Unit
+2	1.4	Floating-Point Accelerator
+2	1.5	Cache Memory
+2	1.6	Memory Controller
+2	1.7	MicroVAX System Support Functions
+2	1.8	Resident Firmware
+2	1.9	Q22-bus Interface
+2	1.10	MS650-BA Memory Modules
+1	2	Installation and Configuration
+2	2.1	Installing the KA655
+2	2.2	Configuring the KA655
+2	2.3	KA655 Connectors
+3	2.3.1	Console SLU Connector (J1)
+3	2.3.2	Configuration and Display Connector (J2)
+3	2.3.3	Memory Expansion Connector (J3)
+2	2.4	H3600-SA CPU Cover Panel
+2	2.5	KA630CNF Configuration Board
+1	3	Architecture
+2	3.1	Central Processor
+3	3.1.1	Processor State
+4	3.1.1.1	General Purpose Registers
+4	3.1.1.2	Processor Status Longword
+4	3.1.1.3	Internal Processor Registers
+3	3.1.2	Data Types
+3	3.1.3	Instruction Set
+3	3.1.4	Memory Management
+4	3.1.4.1	Translation Buffer
+4	3.1.4.2	Memory Management Control Registers
+3	3.1.5	Exceptions and Interrupts
+4	3.1.5.1	Interrupts
+4	3.1.5.2	Exceptions
+4	3.1.5.3	Information Saved on a Machine Check Exception
+4	3.1.5.4	System Control Block
+4	3.1.5.5	Hardware Detected Errors
+4	3.1.5.6	Hardware Halt Procedure
+3	3.1.6	System Identification
+3	3.1.7	CPU References
+4	3.1.7.1	Instruction-Stream Read References
+4	3.1.7.2	Data-Stream Read References
+4	3.1.7.3	Write References
+2	3.2	Floating-Point Accelerator
+3	3.2.1	Floating-Point Accelerator Instructions
+3	3.2.2	Floating-Point Accelerator Data Types
+2	3.3	Cache Memory
+3	3.3.1	Cacheable References
+3	3.3.2	First-Level Cache
+4	3.3.2.1	First-Level Cache Organization
+4	3.3.2.2	First-Level Cache Address Translation
+4	3.3.2.3	First-Level Cache Data Block Allocation
+4	3.3.2.4	First-Level Cache Behavior on Writes
+4	3.3.2.5	Cache Disable Register
+4	3.3.2.6	Memory System Error Register
+4	3.3.2.7	First-Level Cache Error Detection
+3	3.3.3	Second-Level Cache
+4	3.3.3.1	Second-Level Cache Organization
+4	3.3.3.2	Second-Level Cache Address Translation
+4	3.3.3.3	Second-Level Cache Data Block Allocation
+4	3.3.3.4	Second-Level Cache Behavior on Writes
+4	3.3.3.5	Cache Control Register
+4	3.3.3.6	Second-Level Cache Error Detection
+4	3.3.3.7	Second-Level Cache as Fast Memory
+2	3.4	Main Memory System
+3	3.4.1	Main Memory Organization
+3	3.4.2	Main Memory Addressing
+3	3.4.3	Main Memory Behavior on Writes
+3	3.4.4	Main Memory Error Status Register
+3	3.4.5	Main Memory Control and Diagnostic Status Register
+3	3.4.6	Main Memory Error Detection and Correction
+2	3.5	Console Serial Line
+3	3.5.1	Console Registers
+4	3.5.1.1	Console Receiver Control/Status Register
+4	3.5.1.2	Console Receiver Data Buffer
+4	3.5.1.3	Console Transmitter Control/Status Register
+4	3.5.1.4	Console Transmitter Data Buffer
+3	3.5.2	Break Response
+3	3.5.3	Baud Rate
+3	3.5.4	Console Interrupt Specifications
+2	3.6	Time-of-Year Clock and Timers
+3	3.6.1	Time-of-Year Clock
+3	3.6.2	Interval Timer
+3	3.6.3	Programmable Timers
+4	3.6.3.1	Timer Control Registers
+4	3.6.3.2	Timer Interval Registers
+4	3.6.3.3	Timer Next Interval Registers
+4	3.6.3.4	Timer Interrupt Vector Registers
+2	3.7	Boot and Diagnostic Facility
+3	3.7.1	Boot and Diagnostic Register
+3	3.7.2	Diagnostic LED Register
+3	3.7.3	ROM Memory
+4	3.7.3.1	ROM Socket
+4	3.7.3.2	ROM Address Space
+4	3.7.3.3	Resident Firmware Operation
+3	3.7.4	Battery Backed-Up RAM
+3	3.7.5	KA655 Initialization
+4	3.7.5.1	Power-Up Initialization
+4	3.7.5.2	Hardware Reset
+4	3.7.5.3	I/O Bus Initialization
+4	3.7.5.4	I/O Bus Reset Register
+4	3.7.5.5	Processor Initialization
+2	3.8	Q22-bus Interface
+3	3.8.1	Q22-bus to Main Memory Address Translation
+4	3.8.1.1	Q22-bus Map Registers
+4	3.8.1.2	Accessing the Q22-bus Map Registers
+4	3.8.1.3	Q22-bus Map Cache
+3	3.8.2	CDAL Bus to Q22-bus Address Translation
+3	3.8.3	Interprocessor Communication Register
+3	3.8.4	Q22-bus Interrupt Handling
+3	3.8.5	Configuring the Q22-bus Map
+4	3.8.5.1	Q22-bus Map Base Address Register
+3	3.8.6	System Configuration Register
+3	3.8.7	DMA System Error Register
+3	3.8.8	Q22-bus Error Address Register
+3	3.8.9	DMA Error Address Register
+3	3.8.10	Error Handling
+1	4	KA655 Firmware
+2	4.1	KA655 Firmware Features
+3	4.1.1	Halt Entry, Exit, and Dispatch
+4	4.1.1.1	Halt Entry -- Saving Processor State
+4	4.1.1.2	Halt Exit -- Restoring Processor State
+4	4.1.1.3	Halt Dispatch
+4	4.1.1.4	External Halts
+3	4.1.2	Power-Up
+4	4.1.2.1	Initial Power-Up Test
+4	4.1.2.2	Locating a Console Device
+3	4.1.3	Mode Switch Set to Test
+3	4.1.4	Mode Switch Set to Query
+3	4.1.5	Mode Switch Set to Normal
+3	4.1.6	LED Codes
+2	4.2	Console Service
+3	4.2.1	Console Control Characters
+3	4.2.2	Console Command Syntax
+3	4.2.3	Console Command Keywords
+3	4.2.4	Console Command Qualifiers
+3	4.2.5	Console Address Specifiers
+3	4.2.6	References to Processor Registers and Memory
+3	4.2.7	Console Commands
+4	4.2.7.1	BOOT
+4	4.2.7.2	CONFIGURE
+4	4.2.7.3	CONTINUE
+4	4.2.7.4	DEPOSIT
+4	4.2.7.5	EXAMINE
+4	4.2.7.6	FIND
+4	4.2.7.7	HALT
+4	4.2.7.8	HELP
+4	4.2.7.9	INITIALIZE
+4	4.2.7.10	MOVE
+4	4.2.7.11	NEXT
+4	4.2.7.12	REPEAT
+4	4.2.7.13	SEARCH
+4	4.2.7.14	SET
+4	4.2.7.15	SHOW
+4	4.2.7.16	START
+4	4.2.7.17	TEST
+4	4.2.7.18	UNJAM
+4	4.2.7.19	X -- Binary Load and Unload
+4	4.2.7.20	! -- Comment
+3	4.2.8	Conventions for Tables 4-5 and 4-6
+2	4.3	Bootstrapping
+3	4.3.1	Boot Devices
+3	4.3.2	Boot Flags
+3	4.3.3	Preparing for the Bootstrap
+3	4.3.4	Primary Bootstrap, VMB
+3	4.3.5	Device-Dependent Bootstrap Procedures
+4	4.3.5.1	Disk and Tape Bootstrap Procedure
+4	4.3.5.2	PROM Bootstrap Procedure
+4	4.3.5.3	Network Bootstrap Procedure
+4	4.3.5.4	Network Listening
+2	4.4	Diagnostics
+3	4.4.1	Error Reporting
+3	4.4.2	Diagnostic Interdependencies
+3	4.4.3	Areas not Covered
+2	4.5	Operating System Restart
+3	4.5.1	Locating the RPB
+2	4.6	Machine State on Power-Up
+3	4.6.1	Main Memory Layout and State
+4	4.6.1.1	Reserved Main Memory
+4	4.6.1.2	PFN Bitmap
+4	4.6.1.3	Scatter/Gather Map
+4	4.6.1.4	Contents of Main Memory
+3	4.6.2	CMCTL Registers
+3	4.6.3	First Level Cache
+3	4.6.4	Translation Buffer
+3	4.6.5	Second Level Cache
+3	4.6.6	Halt Protected Space
+2	4.7	Public Data Structures and Entry Points
+3	4.7.1	Firmware EPROM Layout
+3	4.7.2	Call-Back Entry Points
+4	4.7.2.1	CP$GETCHAR_R4
+4	4.7.2.2	CP$MSG_OUT_NOLF_R4
+4	4.7.2.3	CP$READ_WITH_PRMPT_R4
+3	4.7.3	SSC RAM Layout
+4	4.7.3.1	Public Data Structures
+4	4.7.3.2	Firmware Stack
+4	4.7.3.3	Diagnostic State
+4	4.7.3.4	USER Area
+2	4.8	Error Messages
+3	4.8.1	Halt Code Messages
+3	4.8.2	Console Error Messages
+3	4.8.3	VMB Error Messages
+1	A	KA655 Specifications
+2	A.1	Physical Specifications
+2	A.2	Electrical Specifications
+2	A.3	Environmental Specifications
+1	B	Address Assignments
+2	B.1	General Local Address Space Map
+2	B.2	Detailed Local Address Space Map
+2	B.3	External IPRs
+2	B.4	Global Q22-bus Address Space Map
+1	C	Q22-bus Specification
+2	C.1	Introduction
+3	C.1.1	Master/Slave Relationship
+2	C.2	Q22-bus Signal Assignments
+2	C.3	Data Transfer Bus Cycles
+3	C.3.1	Bus Cycle Protocol
+3	C.3.2	Device Addressing
+2	C.4	Direct Memory Access
+3	C.4.1	DMA Protocol
+3	C.4.2	Block Mode DMA
+4	C.4.2.1	DATBI Bus Cycle
+4	C.4.2.2	DATBO Bus Cycle
+3	C.4.3	DMA Guidelines
+2	C.5	Interrupts
+3	C.5.1	Device Priority
+3	C.5.2	Interrupt Protocol
+3	C.5.3	Q22-bus Four-Level Interrupt Configurations
+2	C.6	Control Functions
+3	C.6.1	Memory Refresh
+3	C.6.2	Halt
+3	C.6.3	Initialization
+3	C.6.4	Power Status
+3	C.6.5	BDCOK H
+3	C.6.6	BPOK H
+3	C.6.7	Power-Up and Power-Down Protocol
+2	C.7	Q22-bus Electrical Characteristics
+3	C.7.1	Signal Level Specifications
+3	C.7.2	Load Definition
+3	C.7.3	120-Ohn Q22-bus
+3	C.7.4	Bus Drivers
+3	C.7.5	Bus Receivers
+3	C.7.6	Bus Termination
+3	C.7.7	Bus Interconnecting Wiring
+4	C.7.7.1	Backplane Wiring
+4	C.7.7.2	Intrabackplane Bus Wiring
+4	C.7.7.3	Power and Ground
+2	C.8	System Configurations
+3	C.8.1	Power Supply Loading
+2	C.9	Module Contact Finger Identification
+1	D	Acronyms

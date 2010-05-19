@@ -1,0 +1,219 @@
+#PART	EK-DCJ11-UG-PRE
+#TITLE	DCJ11 Microprocessor User's Guide
+1	Chapter 1	Architecture
+2	1.1	Introduction
+2	1.2	General-Purpose Registers
+2	1.3	Processor Status Word
+3	1.3.1	Processor Modes
+3	1.3.2	Priority Levels
+3	1.3.3	The Trace/Trap Bit
+3	1.3.4	Condition Codes
+3	1.3.5	Processor Status (PS) Protection
+2	1.4	Interrupts and Traps
+2	1.5	Halting DCJ11 Operation
+2	1.6	Program Interrupt Request Register
+2	1.7	CPU Error Register
+2	1.8	Stack Protection
+2	1.9	Floating-Point Arithmetic
+2	1.10	Memory System Registers
+2	1.11	Direct-Memory Access (DMA) Mechanism
+1	Chapter 2	Pin Description
+2	2.1	Introduction
+2	2.2	Data/Address Lines (DAL<21:00>)
+3	2.2.1	Upper Data/Address Lines (DAL<21:16>)
+3	2.2.2	Lower Data/Address Lines (DAL<15:00>)
+2	2.3	System Control Lines
+3	2.3.1	Bank Select (BS<1:0>)
+3	2.3.2	Address Input/Output (AIO<3:0>)
+3	2.3.3	Buffer Control (BUFCTL)
+3	2.3.4	Continue (CONT)
+3	2.3.5	Data Valid (DV)
+2	2.4	Timing Signals
+3	2.4.1	Address Latch Enable (ALE)
+3	2.4.2	Stretch Control (SCTL)
+3	2.4.3	Strobe (STRB)
+3	2.4.4	Clock 1 (CLK)
+3	2.4.5	Clock 2 (CLK2)
+2	2.5	Start/Stop Control
+3	2.5.1	Initialize (INIT)
+3	2.5.2	Halt (HALT)
+2	2.6	Status Signals
+3	2.6.1	Cache Miss (MISS)
+3	2.6.2	Parity Error (PARITY)
+3	2.6.3	Abort (ABORT)
+3	2.6.4	Map Enable (MAP)
+3	2.6.5	Predecode (PRDC)
+2	2.7	Interrupt and DMA Control
+3	2.7.1	Interrupt Request (IRQ<3:0>)
+3	2.7.2	Direct-Memory Access Request (DMR)
+3	2.7.3	Power Fail (PWRF)
+3	2.7.4	Floating-Point Exception (FPE)
+3	2.7.5	Event (EVENT)
+2	2.8	Test Pins
+3	2.8.1	Test 1 (TEST1)
+3	2.8.2	Test 2 (TEST2)
+2	2.9	Oscillator Pins
+3	2.9.1	XTALI and XTALO Generation
+2	2.10	Power Pins
+3	2.10.1	Power (Vcc)
+3	2.10.2	Ground (GND)
+2	2.11	Pin Description Summary)
+1	Chapter 3	Bus Cycles
+2	3.1	Introduction
+2	3.2	Duration of Bus Cycles
+2	3.3	Bus Cycles Parts
+2	3.4	Non-I/O (NIO) Cycle
+2	3.5	Bus Read Cycle
+2	3.6	Bus Write Cycle
+2	3.7	General-Purpose (GP) Read Cycle
+2	3.8	General-Purpose (GP) Write Cycle
+2	3.9	Interrupt Acknowledge Cycle
+2	3.10	DMA Requests and Grants
+1	Chapter 4	Memory Management
+2	4.1	Introduction
+2	4.2	Addressing
+2	4.3	I Space and D Space
+2	4.4	Construction of a Physical Address
+2	4.5	Management Registers
+3	4.5.1	Page Address Registers (PARs)
+3	4.5.2	Page Description Registers (PDRs)
+4	4.5.2.1	Bypass Cache
+4	4.5.2.2	Page Length Field (PLF)
+4	4.5.2.3	Page Written
+4	4.5.2.4	Expansion Direction (ED)
+4	4.5.2.5	Access Control Field
+4	4.5.2.6	Reserved Bits
+2	4.6	Interrupt Conditions Under Memory Management Control
+2	4.7	Fault Recovery Registers
+3	4.7.1	Memory Management Register #0 (MMR0)
+4	4.7.1.1	Error Flags
+5	4.7.1.1.1	Abort -- Non-Resident
+5	4.7.1.1.2	Abort -- Page Length
+5	4.7.1.1.3	Abort -- Read Only
+4	4.7.1.2	Reserved Bits
+4	4.7.1.3	Processor Mode
+4	4.7.1.4	Page Address Space
+4	4.7.1.5	Page Number
+4	4.7.1.6	Enable Relocation
+3	4.7.2	Memory Management Register #1 (MMR1)
+3	4.7.3	Memory Management Register #2 (MMR2)
+3	4.7.4	Memory Management Register #3 (MMR3)
+4	4.7.4.1	Reserved Bits
+4	4.7.4.2	Enable I/O Map
+4	4.7.4.3	Enable 22-Bit Mapping
+4	4.7.4.4	Enable Call To Supervisor Mode Instructions
+4	4.7.4.5	Kernel, Supervisor, and User Mode D Space Bits
+3	4.7.5	Instruction Back-Up/Restart Recovery
+3	4.7.6	Clearing Status Registers Following Abort
+3	4.7.7	Multiple Faults
+2	4.8	MMU Implementation
+3	4.8.1	Typical Memory Page
+3	4.8.2	Non-Consecutive Memory Pages
+3	4.8.3	Stack Memory Pages
+3	4.8.4	Transparency
+2	4.9	Memory Management Unit -- Register Map
+1	Chapter 5	Special Features
+2	5.1	Introduction
+2	5.2	Cache Memory Status and Control Registers
+3	5.2.1	Cache Control Register
+4	5.2.1.1	Unconditional Cache Bypass (R/W)
+4	5.2.1.2	Force Cache Miss (R/W)
+4	5.2.1.3	Uninterpreted Bits
+3	5.2.2	Hit/Miss Register
+3	5.2.3	General Operation
+3	5.2.4	Cache Memory In A Multiprocessor Environment
+3	5.2.5	Sample Implementation
+2	5.3	Console ODT
+3	5.3.1	Terminal Interface
+4	5.3.1.1	Receiver Control/Status Register (RCSR)
+4	5.3.1.2	Receiver Buffer Register (RBUF)
+4	5.3.1.3	Transmitter Control and Status Register (XSCR)
+4	5.3.1.4	Transmitter Buffer Register (XBUF)
+3	5.3.2	Console ODT Operation
+4	5.3.2.1	Console ODT Initialization
+4	5.3.2.2	Console ODT Output Sequence
+3	5.3.3	Console ODT Command Set
+4	5.3.3.1	(ASCII 057) Slash
+4	5.3.3.2	<CR> (ASCII 015) Carriage Return
+4	5.3.3.3	<LF> (ASCII 012) Line Feed
+4	5.3.3.4	$ (ASCII 044) Or R (ASCII 122)
+4	5.3.3.5	S (ASCII 123) Processor Status Word
+4	5.3.3.6	G (ASCII 107) Go
+4	5.3.3.7	P (ASCII 120) Proceed
+4	5.3.3.8	Control-Shift-S (ASCII 023)
+3	5.3.4	Address Specification
+4	5.3.4.1	General Registers
+4	5.3.4.2	Stack Pointers
+4	5.3.4.3	Floating-Point Accumulators
+3	5.3.5	Entering Octal Digits
+3	5.3.6	ODT Timeout
+3	5.3.7	Invalid Characters
+2	5.4	DCJ11 Pipeline Processing
+3	5.4.1	Pipeline Flow Example
+1	Chapter 6	Addressing Modes and Base Instruction Set
+2	6.1	Introduction
+2	6.2	Addressing Modes
+3	6.2.1	Single-Operand Addressing
+3	6.2.2	Double-Operand Addressing
+3	6.2.3	Direct Addressing
+4	6.2.3.1	Register Mode
+4	6.2.3.2	Autoincrement Mode
+4	6.2.3.3	Autodecrement Mode
+4	6.2.3.4	Index Mode
+3	6.2.4	Deferred (Indirect) Addressing
+3	6.2.5	Use of the PC As a General-Purpose Register
+4	6.2.5.1	Immediate Mode
+4	6.2.5.2	Absolute Addressing
+4	6.2.5.3	Relative Addressing
+4	6.2.5.4	Relative-Deferred Addressing
+3	6.2.6	Use of the Stack Pointer As a General-Purpose Register
+2	6.3	Instruction Set
+3	6.3.1	Instruction Formats
+3	6.3.2	Byte Instructions
+3	6.3.3	List of Instructions
+3	6.3.4	Single-Operand Instructions
+4	6.3.4.1	General
+4	6.3.4.2	Shifts and Rotates
+4	6.3.4.3	Multiple-Precision
+4	6.3.4.4	PS Word Operations
+3	6.3.5	Double-Operand Instructions
+4	6.3.5.1	General
+4	6.3.5.2	Logical
+3	6.3.6	Program Control Instructions
+4	6.3.6.1	Branches
+4	6.3.6.2	Signed Conditional Branches
+4	6.3.6.3	Unsigned Conditional Branches
+4	6.3.6.4	Jump and Subroutine Instructions
+4	6.3.6.5	Traps
+4	6.3.6.6	Miscellaneous Program Control
+4	6.3.6.7	Reserved Instruction Traps
+4	6.3.6.8	Trace Trap
+5	6.3.6.8.1	Special Cases Of The T-Bit
+3	6.3.7	Miscellaneous Instructions
+3	6.3.8	Condition Code Operators
+1	Chapter 7	Floating-Point Arithmetic
+2	7.1	Introduction
+2	7.2	Floating-Point Data Formats
+3	7.2.1	Non-Vanishing Floating-Point Numbers
+3	7.2.2	Floating-Point Zero
+3	7.2.3	Undefined Variables
+3	7.2.4	Floating-Point Data
+2	7.3	Floating-Point Status Register
+2	7.4	Floating Exception Code and Address Registers
+2	7.5	Floating-Point Instruction Addressing
+2	7.6	Accuracy
+2	7.7	Floating-Point Instructions
+1	Chapter 8	Interfacing
+2	8.1	Introduction
+2	8.2	General-Purpose (GP) Codes
+2	8.3	Power-Up and Initialization
+3	8.3.1	Initialization Timing
+3	8.3.2	Initialization Microroutine
+3	8.3.3	Power-Up Configuration
+3	8.3.4	Power-Up Circuit
+2	8.4	Other Microroutines
+1	Appendix A	DC Characteristics
+1	Appendix B	AC Characteristics
+1	Appendix C	Hardware and Software Differences
+1	Appendix D	Instruction Timing
+1	Appendix E	Glossary

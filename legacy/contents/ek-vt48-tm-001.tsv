@@ -1,0 +1,177 @@
+#PART	EK-VT48-TM-001
+#TITLE	VT48 Display Processor Unit Technical Manual
+1	Chapter 1	General Description
+2	1.1	Introduction
+2	1.2	Physical Description
+2	1.3	Functional Description
+2	1.4	Related Documents
+2	1.5	Specifications
+1	Chapter 2	VT48 Display Processor Unit Installation
+2	2.1	Unpacking
+2	2.2	H7070 Power Supply Mounting Procedure
+2	2.3	VT48 Display Processor Unit Mounting
+2	2.4	VT48 Display Processor Unit Checkout
+3	2.4.1	Instruction Processing Checkout
+3	2.4.2	VT48 Analog (Vector Generator and Chapter Generator) Checkout
+1	Chapter 3	VT48 Operation and Programming
+2	3.1	Introduction
+2	3.2	Power Application
+2	3.3	VT48 Instruction Set
+2	3.4	Load Status Instructions
+2	3.5	Set Graphic Mode Instruction
+2	3.6	Graphic Entity Instructions
+2	3.7	Branch Instructions
+2	3.8	VT48 Addressable Registers
+2	3.9	Image Generation and Manipulation
+3	3.9.1	Display File Make-up and Refresh Considerations
+3	3.9.2	Visible and Virtual Display File Entities
+3	3.9.3	Windowing Through Use of Point and Offset Capabilities
+3	3.9.4	Advantages of "Windowing"
+3	3.9.5	Image Scaling and Scissoring
+3	3.9.6	Subpictures and Methods of Generation
+3	3.9.7	Subroutine Nesting Through Use of Stack Memory
+3	3.9.8	Stack Status Byte Map
+3	3.9.9	Display File Searching Through Use of Name Matching Techniques
+2	3.10	Interrupt Handling
+3	3.10.1	General
+3	3.10.2	Reinitiating Display File Processing Following Interrupt Handling Routines
+2	3.11	Special Features
+3	3.11.1	Dual Console Operation
+3	3.11.2	Use of Relocate Register in Systems Exceeding 32K of Memory
+3	3.11.3	Character String Escape
+1	Chapter 4	Theory of Operation
+2	4.1	VT48 Overall Block Diagram
+3	4.1.1	General
+3	4.1.2	VT48 Startup Processing
+3	4.1.3	Processing Sequences per Instruction Category
+4	4.1.3.1	Load Status Instruction
+4	4.1.3.2	Set Graphic Mode Instructions
+4	4.1.3.3	Graphic Entity Instructions
+4	4.1.3.4	Processing from BDB Register Through the Stack/Silo Control Logic
+4	4.1.3.5	Processing by the Graphics Calculation Logic
+4	4.1.3.6	Processing by the Vector Generator/Character Generator
+4	4.1.3.7	Branch Instructions
+3	4.1.4	Read Status Multiplexer and Register Addressing
+2	4.2	Detailed Descriptions
+3	4.2.1	Vector Data Flow (Transfer Path)
+3	4.2.2	Character Data Flow (Transfer Path)
+3	4.2.3	Display Instruction Control and Time Pulse Generator Block Diagram Discussion
+4	4.2.3.1	Basic Display Instruction Control Processing Cycle
+4	4.2.3.2	Implementation of NPR Cycle
+4	4.2.3.3	Operation Finished Detect Logic
+3	4.2.4	Instruction Decoding Circuits, Block Diagram Discussion
+4	4.2.4.1	Control Instruction Decoding
+4	4.2.4.2	Set Graphic Mode Instruction Decoding
+4	4.2.4.3	Graphic Data Instruction Decoding
+3	4.2.5	VT48 Status/Parameter Data Routing
+4	4.2.5.1	Routing of Status/Parameter Data During Initial/Setup Operations
+4	4.2.5.2	Routing of Status/Parameter Data on Generation of Display Surface Related Interrupts
+4	4.2.5.3	Routing of Status/Parameter Data on Execution of JSR and POP Restore Instructions
+3	4.2.6	Display Program Counter Input/Output Flow
+4	4.2.6.1	Start DPC Address Routing
+4	4.2.6.2	DPC Normal Update
+4	4.2.6.3	Routing During Display Surface Related Interrupts
+4	4.2.6.4	Routing During Execution of Jump Relative and Jump to Subroutine Relative Instructions
+4	4.2.6.5	Routing During Execution of Jump Absolute and JSR Absolute Instructions
+4	4.2.6.6	Routing on Execution of POP Restore Instructions
+4	4.2.6.7	Routing on Loading of Relocate Register
+3	4.2.7	Graphics Calculation Logic
+3	4.2.8	Control Logic
+4	4.2.8.1	Microprogram Sequencing Startup
+4	4.2.8.2	Internal Microprogram Sequencing and Branch-on Microtest Addressing
+4	4.2.8.3	Asynchronous Loading of the Next Graphic Entity
+4	4.2.8.4	Temporary Halts in Microprogram Sequencing
+4	4.2.8.5	Microprogram Sequencing Shut Down
+4	4.2.8.6	Successive Approximation Register Input Control
+4	4.2.8.7	Vector Generator D/A Converter Update Control Logic
+4	4.2.8.8	Control Logic Asynchronous Interactive Control Signals
+3	4.2.9	Graphics Calculation Arithmetic Unit
+4	4.2.9.1	Overview of Arithmetic Operations and Related Flow Drawings
+3	4.2.10	Absolute Point Processing
+4	4.2.10.1	ON-to-ON Point Processing
+4	4.2.10.2	ON-to-OFF Point Processing
+4	4.2.10.3	OFF-to-ON Point Processing
+4	4.2.10.4	OFF-to-OFF Point Processing
+3	4.2.11	Relative Vector Processing
+4	4.2.11.1	ON-to-ON Vector Processing
+4	4.2.11.2	Tangent Calculation
+4	4.2.11.3	ON-to-ON Vector Processing Following Tangent Calculation
+4	4.2.11.4	ON-to-OFF Vector Processing
+4	4.2.11.5	ON-to-OFF (Scissored) Vector Tangent Calculation
+4	4.2.11.6	OFF-to-ON Vector Processing
+4	4.2.11.7	OFF-to-OFF Vector Processing
+3	4.2.12	Absolute Vector Processing
+4	4.2.12.1	ON-to-ON Absolute Vector Processing
+4	4.2.12.2	ON-to-OFF, OFF-to-ON, and OFF-to-OFF Absolute Vector Processing
+3	4.2.13	Relative Point/Graphplot Processing
+3	4.2.14	Character Processing
+4	4.2.14.1	Processing Drawable Characters
+4	4.2.14.2	Processing Control Characters Other than Carriage Return
+4	4.2.14.3	Carriage Return Processing
+3	4.2.15	Light Pen Hit Processing
+4	4.2.15.1	Processing Objectives
+4	4.2.15.2	ROM Starting Address Setup
+4	4.2.15.3	Example of Light Pen Hit Calculations
+4	4.2.15.4	Light Pen Hit Flow Sequence
+3	4.2.16	Edge Interrupt Processing
+4	4.2.16.1	Edge Interrupt Processing for ON-to-OFF Screen Vectors
+4	4.2.16.2	Edge Interrupt Processing for OFF-to-ON and OFF-to-OFF Vectors
+3	4.2.17	Vector Generator Simplified Block Diagram Discussion
+4	4.2.17.1	Ramp Generation
+4	4.2.17.2	Ramp Slope Control
+4	4.2.17.3	Tangent Register and Multiplying D/A Converter Circuit
+4	4.2.17.4	Multiplexer Control Register and X/Y Multiplexer Switching Logic
+4	4.2.17.5	X/Y Position DAC Registers and X/Y D/A Converters
+4	4.2.17.6	Menu Area Selection
+3	4.2.18	Character Generator Simplified Block Diagram Discussion
+3	4.2.19	Stack/Silo Addressing and Control Logic
+4	4.2.19.1	Stack Memory Control Logic
+4	4.2.19.2	Stack Memory Addressing from the Unibus
+4	4.2.19.3	Silo Addressing Control Logic
+3	4.2.20	Read Status Multiplexer
+3	4.2.21	Unibus Transfer Timing
+3	4.2.22	Control Instruction Flow Diagrams
+3	4.2.23	Vector Generation Circuits, Detailed Block Diagram Description
+4	4.2.23.1	Types of Input Signals
+4	4.2.23.2	X and Y Initial Position Determination
+4	4.2.23.3	Vector Determination
+4	4.2.23.4	Major and Minor Axis Outputs
+4	4.2.23.5	Z Axis (Intensity) Circuits
+4	4.2.23.6	Voltage Regulators
+3	4.2.24	Character Generator Detailed Block Diagram Discussion
+4	4.2.24.1	Character Generator Startup
+4	4.2.24.2	Character ROM Outputs
+4	4.2.24.3	Interpreter ROM
+4	4.2.24.4	D/A Converters
+4	4.2.24.5	X/Y Integrators
+4	4.2.24.6	Examples of Character Strokes
+4	4.2.24.7	Scaling Circuits and Drivers
+1	Chapter 5	VT48 Display Processor Unit Diagnostics, Preventive Maintenance, and Alignment Procedures
+2	5.1	Introduction
+2	5.2	Diagnostic Maintenance Programs
+3	5.2.1	Instruction Test Diagnostics Load and Run Procedures
+4	5.2.1.1	Instruction Test Part I (11-DZVSA)
+4	5.2.1.2	Instruction Test Part II (11-DZVSB)
+4	5.2.1.3	Instruction Test Part III (11-DZVSC)
+3	5.2.2	Visual Test Diagnostic Load and Run Routine
+2	5.3	Maintenance Switch Purposes
+2	5.4	Preventive Maintenance
+3	5.4.1	Mechanical Checks
+3	5.4.2	VT48 Alignment Procedures
+3	5.4.3	Vector Generator (A322) Adjustments
+4	5.4.3.1	Minor Axis (+) Offset Adjustment (R135, on A322 Module)
+4	5.4.3.2	Minor Axis (-) Offset Adjustment (R33, on A322 Module)
+4	5.4.3.3	Major Axis (-) Offset Adjustment
+4	5.4.3.4	Major Axis (+) Offset Adjustment
+4	5.4.3.5	X-Y Phase Adjustment
+4	5.4.3.6	Delta Length Adjustment
+4	5.4.3.7	X Position Gain
+4	5.4.3.8	Y Position Gain
+4	5.4.3.9	Minor Axis Gain
+4	5.4.3.10	Major-Minor Phase Adjustment
+4	5.4.3.11	Dynamic Offset Adjustment
+4	5.4.3.12	Light Pen Start Coordinate Adjustment
+4	5.4.3.13	Light Pen End Coordinate
+3	5.4.4	Sync Clock Adjustments
+3	5.4.5	Character Generator Adjustments
+1	Appendix A	Character Stroke Patterns

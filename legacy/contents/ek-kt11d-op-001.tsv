@@ -1,0 +1,48 @@
+#PART EK-KT11D-OP-001
+#TITLE KT11-D Memory Management Option User's Manual
+1	Chapter 1	General Description
+2	1.1	Purpose and Use of KT11-D Option
+3	1.1.1	Memory Expansion
+3	1.1.2	Virtual Address Space
+3	1.1.3	Minimal Memory Fragmentation
+3	1.1.4	Memory Protection
+3	1.1.5	Operating Mode Control
+3	1.1.6	Memory Management
+2	1.2	KT11-D Memory Management Unit Specifications
+2	1.3	Reference Literature
+1	Chapter 2	Installation Information
+1	Chapter 3	Operating and Programming
+2	3.1	Memory Management System Introduction
+2	3.2	Memory Relocation
+3	3.2.1	Program Relocation
+3	3.2.2	Extended Memory Addressing
+2	3.3	Memory Management
+3	3.3.1	Program Relocation
+3	3.3.2	Dynamic Memory Allocations
+3	3.3.3	Memory Management Statistics
+3	3.3.4	Memory Management Instructions
+2	3.4	Memory Protection
+3	3.4.1	Inaccessible Memory
+3	3.4.2	Read-Only Memory
+3	3.4.3	Multiple Address Space
+3	3.4.4	Mode Description
+2	3.5	PAR/PDR Registers
+3	3.5.1	Page Address Registers (PAR)
+3	3.5.2	Page Descriptor Registers (PDR)
+4	3.5.2.1	Access Control Field (ACF)
+4	3.5.2.2	Expansion Direction (ED)
+4	3.5.2.3	Written Into (W)
+4	3.5.2.4	Page Length Field (PLF)
+3	3.5.3	PLF for an Upward Expandable Page
+3	3.5.4	PLF for a Downward Expandable Page
+2	3.6	Memory Management Status Registers
+3	3.6.1	Status Register 0 (SR0)
+4	3.6.1.1	Abort-Nonresident
+4	3.6.1.2	Abort -- Page Length
+4	3.6.1.3	Abort-Read Only
+4	3.6.1.4	Maintenance/Destination Mode
+4	3.6.1.5	Mode of Operation
+4	3.6.1.6	Page Number
+4	3.6.1.7	Enable KT11-D
+3	3.6.2	Status Register 2 (SR2)
+2	3.7	Determining the Program Physical Address

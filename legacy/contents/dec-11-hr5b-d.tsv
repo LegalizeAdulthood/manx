@@ -1,0 +1,42 @@
+#PART	DEC-11-HR5B-D
+#TITLE	H720 Power Supply and Mounting Box Manual
+1	Chapter 1	Introduction
+1	Chapter 2	Power Supply
+2	2.1	Introduction
+2	2.2	General Description
+3	2.2.1	AC Power Distribution
+3	2.2.2	Unregulated DC Supply
+2	2.3	Block Diagram Description
+3	2.3.1	Switching Mode Regulation
+3	2.3.2	Basic Regulators
+3	2.3.3	+5V Regulator
+4	2.3.3.1	Overcurrent Protection
+4	2.3.3.2	Overvoltage Sensing and Crowbar
+3	2.3.4	-15V Regulator
+3	2.3.5	AC LO Circuit
+3	2.3.6	DC LO Circuit
+2	2.4	Detailed Description
+3	2.4.1	+5V Regulator
+4	2.4.1.1	Overcurrent Protection
+4	2.4.1.2	Overvoltage Crowbar Circuit
+3	2.4.2	-15V Regulator
+4	2.4.2.1	Driver
+4	2.4.2.2	Differential Amplifier
+4	2.4.2.3	Overcurrent Protection
+4	2.4.2.4	-15V Crowbar Circuit
+3	2.4.3	AC LO Circuit
+3	2.4.4	DC LO Circuit
+1	Chapter 3	Mounting Box
+2	3.1	Scope
+2	3.2	Description
+2	3.3	Models
+1	Chapter 4	Installation
+2	4.1	Introduction
+2	4.2	System Configurations
+2	4.3	Installation Planning
+3	4.3.1	Space Requirements
+3	4.3.2	Environmental Requirements
+3	4.3.3	Power Requirements
+3	4.3.4	Cable Requirements
+2	4.4	Installation
+2	4.5	Data Sheets

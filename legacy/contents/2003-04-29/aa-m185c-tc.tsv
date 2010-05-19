@@ -1,0 +1,31 @@
+#PART AA-M185C-TC
+1	1	Introduction
+2	1.1	Scope of Manual
+2	1.2	UDA50 Field Replaceable Parts
+2	1.3	UDA50 Maintenance Features
+2	1.4	UDA50 Address Switches and Jumpers
+2	1.5	UNIBUS Tuning
+3	1.5.1	UNIBUS Device Positions
+3	1.5.2	UDA NPR Priority Jumper
+2	1.6	UDA50 Priority Plug
+2	1.7	Installation of Bootstrap ROM
+2	1.8	Related Documentation
+1	2	UDA50 Fault Isolation
+2	2.1	UDA50-Resident Diagnostics
+3	2.1.1	UDA50 LED Error Codes
+3	2.1.2	Status/Address Register Error Codes
+2	2.2	UDA50 Subsystem Diagnostics
+3	2.2.1	PDP-11 Subsystem Diagnostics
+4	2.2.1.1	CZUDE
+4	2.2.1.2	CZUDC
+4	2.2.1.3	CXDUB
+3	2.2.2	VAX Subsystem Diagnostics
+4	2.2.2.1	ZZ-EVRLB
+4	2.2.2.2	ZZ-EVRLA
+2	2.3	UDA50 Subsystem Troubleshooting
+3	2.3.1	UDA50-Resident Diagnostics
+3	2.3.2	UDA50 Host-Resident Diagnostic
+3	2.3.3	Subsystem Error Message Information
+4	2.3.3.1	Real-Time Drive State Message Interpretation
+4	2.3.3.2	Status Message Bytes
+4	2.3.3.3	Status Message Interpretation

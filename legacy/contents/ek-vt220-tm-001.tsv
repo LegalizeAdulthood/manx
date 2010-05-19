@@ -1,0 +1,173 @@
+#PART EK-VT220-TM-001
+#TITLE VT220 Technical Manual
+1	Chapter 1	System Introduction
+2	1.1	General
+2	1.2	Physical Description
+3	1.2.1	Monitor Assembly (VT220)
+3	1.2.2	Keyboard (LK201)
+3	1.2.3	Modem Module Option (VT22X-AA)
+2	1.3	Display Characteristics and Capabilities
+2	1.4	Communication Environment
+2	1.5	Major Operating States
+2	1.6	Operating Modes
+3	1.6.1	VT100 Mode
+3	1.6.2	VT200 Mode, 7-Bit Controls
+3	1.6.3	VT200 Mode, 8-Bit Controls
+3	1.6.4	VT52 Mode
+1	Chapter 2	Controls, Indicators, and Connectors
+2	2.1	General
+2	2.2	Monitor Assembly (VT220)
+2	2.3	Keyboard (LK201)
+3	2.3.1	Main Keypad
+3	2.3.2	Editing Keypad
+3	2.3.3	Auxiliary Keypad
+3	2.3.4	Top-Row Function Keys
+3	2.3.5	Visual Indicators
+3	2.3.6	Audible Indicators
+4	2.3.6.1	Audible Keyclick
+4	2.3.6.2	Bell
+3	2.3.7	Connector Cable
+2	2.4	Modem Option (VT22X-AA)
+1	Chapter 3	System Overview
+2	3.1	General
+2	3.2	Operating States
+3	3.2.1	Set-Up
+3	3.2.2	Local
+3	3.2.3	On-Line
+2	3.3	System Architecture
+3	3.3.1	CPU Logic
+3	3.3.2	Video Logic
+3	3.3.3	System Communication Logic
+3	3.3.4	Modem Option (VT22X-AA)
+3	3.3.5	Power Supply
+3	3.3.6	Keyboard
+3	3.3.7	Monitor Components
+2	3.4	System Interaction
+1	Chapter 4	CPU Logic
+2	4.1	General
+2	4.2	Major Circuits and Components
+3	4.2.1	Central Processor Unit (CPU)
+4	4.2.1.1	8051 CPU Internal Circuits
+4	4.2.1.2	8051 CPU Transactions
+3	4.2.2	Address Latch
+3	4.2.3	Read Only Memory (ROM)
+3	4.2.4	Data Buffer
+3	4.2.5	Screen RAM
+3	4.2.6	Attribute RAM
+3	4.2.7	Select Decoder
+3	4.2.8	Keyboard Interface (I/F)
+3	4.2.9	Nonvolatile RAM (NVR)
+3	4.2.10	Configuration Register
+2	4.3	Signal Descriptions
+2	4.4	Schematic Reference Information
+1	Chapter 5	System Communication Logic
+2	5.1	General
+2	5.2	Major Circuits and Components
+3	5.2.1	Dual Asynchronous Receiver/Transmitter (DUART)
+4	5.2.1.1	2681 DUART Internal Circuits
+4	5.2.1.2	2681 DUART Addresses
+4	5.2.1.3	2681 DUART Timing Diagrams
+3	5.2.2	Host Data Mux
+3	5.2.3	Printer Interface (I/F)
+3	5.2.4	EIA Host Interface (I/F)
+3	5.2.5	20 mA Interface (I/F)
+2	5.3	Signal Descriptions
+2	5.4	Schematic Reference Information
+1	Chapter 6	Video Logic
+2	6.1	General
+2	6.2	Major Circuits and Components
+3	6.2.1	CRT Controller
+4	6.2.1.1	9007 VPAC Internal Circuits
+4	6.2.1.2	9007 VPAC Addresses
+4	6.2.1.3	9007 VPAC Transactions
+3	6.2.2	Timing Generator
+3	6.2.3	Blank Circuits
+3	6.2.4	Character Generator
+4	6.2.4.1	Access Mux
+4	6.2.4.2	Line Buffer
+4	6.2.4.3	Character Output Circuit
+3	6.2.5	Attribute Circuits
+3	6.2.6	Video Converter
+4	6.2.6.1	Conversion Control
+4	6.2.6.2	Parallel-to-Serial (P/S) Converter
+3	6.2.7	Video Output
+2	6.3	Signal Descriptions
+2	6.4	Schematic Reference Information
+1	Chapter 7	Keyboard (LK201)
+2	7.1	Introduction
+2	7.2	Physical Description
+2	7.3	Functional Description
+3	7.3.1	Keyboard Operation Overview
+4	7.3.1.1	Keyboard Scanning
+4	7.3.1.2	Controls of Audio Transducer and Indicators
+3	7.3.2	Keyboard Firmware Functions
+4	7.3.2.1	Functions Not Changed By CPU Instructions
+4	7.3.2.2	Functions Changed By CPU Instructions
+4	7.3.2.3	Firmware Functions Changed By CPU Instructions
+2	7.4	Detailed Keyboard Circuit Description
+3	7.4.1	Keyboard Matrix Scanning
+3	7.4.2	Audio Transducer Control Circuit
+3	7.4.3	Indicator (LED) Control Circuit
+3	7.4.4	Keyboard Communication
+4	7.4.4.1	Keyboard Transmit Mode
+4	7.4.4.2	Keyboard Receive Mode
+3	7.4.5	Reset Signal for 8051 Microprocessor
+3	7.4.6	Hardware Keyboard Identification (ID)
+3	7.4.7	Voltage Supplies
+2	7.5	Keyboard Programming
+3	7.5.1	Keyboard Layout and Key Identification
+3	7.5.2	Modes
+4	7.5.2.1	Special Considerations Regarding Autorepeat
+4	7.5.2.2	Special Considerations Regarding Down/Up Mode
+4	7.5.2.3	Autorepeat Rates
+3	7.5.3	Keyboard Peripherals
+4	7.5.3.1	Audio
+4	7.5.3.2	Indicators (LEDs)
+3	7.5.4	Keyboard-to-System Module Protocol
+4	7.5.4.1	Keycode Transmission
+4	7.5.4.2	Special Code Transmissions
+4	7.5.4.3	Power-Up Transmission
+3	7.5.5	System Module to Keyboard Protocol
+4	7.5.5.1	Commands
+4	7.5.5.2	Parameters
+4	7.5.5.3	Peripheral Commands
+4	7.5.5.4	Mode Set Commands
+3	7.5.6	Special Considerations
+4	7.5.6.1	Error Handling
+4	7.5.6.2	Keyboard Locked Condition
+4	7.5.6.3	Reserved Code
+4	7.5.6.4	Test Mode
+4	7.5.6.5	Future Expansion
+3	7.5.7	Default Conditions
+4	7.5.7.1	Audio Volume
+2	7.6	Specifications
+1	Chapter 8	Monitor Circuits
+2	8.1	General
+2	8.2	Major Circuits and Components
+3	8.2.1	Video Amplifier (Amp) Circuit
+3	8.2.2	Horizontal Deflection Circuit
+4	8.2.2.1	Horizontal Processor Circuit
+4	8.2.2.2	Horizontal Driver Circuit
+4	8.2.2.3	Horizontal Output Circuit
+3	8.2.3	Flyback Transformer Circuit
+3	8.2.4	Vertical Deflection Circuit
+4	8.2.4.1	Vertical Processor Circuit
+4	8.2.4.2	Vertical Output Circuit
+3	8.2.5	Dynamic Focus
+3	8.2.6	Brightness Control
+3	8.2.7	CRT Device
+1	Chapter 9	Power Supply
+2	9.1	General
+2	9.2	Major Circuits and Components
+3	9.2.1	AC Input Components
+3	9.2.2	AC Conversion Circuits
+4	9.2.2.1	+12 V Start Up Circuit
+4	9.2.2.2	Input Rectification Circuit
+4	9.2.2.3	DC Output Circuits
+4	9.2.2.4	Overcurrent Protect Circuit
+4	9.2.2.5	Pulse Width Modulator Circuit
+3	9.2.3	DC OK Circuit
+3	9.2.4	DC Input Components
+1	Appendix A	Specifications
+1	Appendix B	VT220/VT102 Differences
+1	Appendix C	Register Bit Values

@@ -1,0 +1,134 @@
+#PART EK-DUP11-MM-003
+1	Chapter 1	Introduction
+2	1.1	Scope
+2	1.2	DUP11 General Description
+2	1.3	SDLC and DDCMP Protocols
+3	1.3.1	Introduction
+3	1.3.2	General Information
+3	1.3.3	SDLC Protocol Description
+4	1.3.3.1	Message Format
+4	1.3.3.2	Abort Sequence
+3	1.3.4	DDCMP Protocol
+4	1.3.4.1	Controlling Data Transfers
+4	1.3.4.2	Error Checking and Recovery
+4	1.3.4.3	Character Coding
+4	1.3.4.4	Data Transparency
+4	1.3.4.5	Data Channel Utilization
+4	1.3.4.6	Synchronization
+4	1.3.4.7	Bootstrapping
+2	1.4	Basics of Cycle Redundancy Checking
+3	1.4.1	Mathematical Background
+3	1.4.2	Hardware Implementation of CRC
+3	1.4.3	CRC Operation in DDCMP Protocol
+3	1.4.4	CRC Operation in SDLC Protocol
+1	Chapter 2	Installation
+2	2.1	Scope
+2	2.2	Unpacking and Inspection
+2	2.3	Tools Required for Installation
+2	2.4	Preinstallation Set-Up Procedures
+2	2.5	Installation
+3	2.5.1	M7867 Module Installation
+3	2.5.2	H3001 Distribution Panel Installation
+4	2.5.2.1	H3001 Installation in an I/O Bulkhead
+4	2.5.2.2	H3001 Installation in Cabinets Without an I/O Bulkhead
+2	2.6	Verification of Hardware Operation
+2	2.7	Compatibility
+2	2.8	Power Requirements
+2	2.9	Device Addresses
+3	2.9.1	Introduction
+3	2.9.2	Floating Device Address Assignment
+3	2.9.3	Device Address Selection
+2	2.10	Vector Addresses
+3	2.10.1	Introduction
+3	2.10.2	Floating Vector Address Assignment
+3	2.10.3	Vector Address Selection
+1	Chapter 3	Register Descriptions and Programming Information
+2	3.1	Introduction
+2	3.2	DUP11 Registers and Device Address Selection
+2	3.3	Interrupt Vectors
+2	3.4	Priority Selection
+2	3.5	Register Bit Assignments
+2	3.6	Typical Test Programs
+1	Chapter 4	Theory of Operation
+2	4.1	Introduction
+2	4.2	Functional Description
+3	4.2.1	Logic Description
+4	4.2.1.1	Registers
+4	4.2.1.2	Device Reset Logic
+4	4.2.1.3	Address Selection Logic
+4	4.2.1.4	Unibus Receivers and Drivers
+4	4.2.1.5	Transmitter Logic
+4	4.2.1.6	Receiver Logic
+4	4.2.1.7	CRC Logic
+4	4.2.1.8	Interrupt Control Logic
+4	4.2.1.9	Data Set Interface Logic
+3	4.2.2	Major Operating Features
+4	4.2.2.1	Introduction
+4	4.2.2.2	Modem Control
+4	4.2.2.3	Transmitter Section
+4	4.2.2.4	Receiver Section
+2	4.3	Detailed Description
+3	4.3.1	Introduction
+3	4.3.2	Registers
+4	4.3.2.1	Receiver Control and Status Register (RXCSR)
+4	4.3.2.2	Receiver Data Buffer Register (RXDBUF)
+4	4.3.2.3	Parameter Control and Status Register (PARCSR)
+4	4.3.2.4	Transmitter Control and Status Register (TXCSR)
+4	4.3.2.5	Transmitter Data Buffer Register (TXDBUF)
+3	4.3.3	Device Reset Logic (Logic Sheet BSI1)
+3	4.3.4	Address Selection Logic (Logic Sheet BSI6)
+4	4.3.4.1	Address Assignments and Format
+4	4.3.4.2	Address Decoding
+3	4.3.5	Unibus Registers and Multiplexed Unibus Drivers (Logic Sheet BSI8)
+3	4.3.6	Transmitter Logic (Logic Sheet BSI2)
+4	4.3.6.1	ROMs and Bit Sync Buffer
+4	4.3.6.2	Clock Logic
+4	4.3.6.3	TXDAT Flip-Flop and T1BC Counter
+4	4.3.6.4	Transmitter Character Serialization Counter (TCSC)
+4	4.3.6.5	Transmitter Shift Register
+3	4.3.7	Receiver Logic
+4	4.3.7.1	ROMs and RX Control Flags
+4	4.3.7.2	Clock Logic
+4	4.3.7.3	EN R1BC Flip-Flop and R1BC Counter
+4	4.3.7.4	Character Serialization Counter
+4	4.3.7.5	Receiver Shift Register and Data Buffer
+3	4.3.8	CRC Logic
+4	4.3.8.1	General
+4	4.3.8.2	Error Detection Logic
+4	4.3.8.3	Transmitter CRC Register
+4	4.3.8.4	Receiver CRC Register
+4	4.3.8.5	Typical CRC Accumulation
+3	4.3.9	Interrupt Control Logic
+4	4.3.9.1	General
+4	4.3.9.2	Generation of the Vector Address
+4	4.3.9.3	BR Priority Selector Card
+4	4.3.9.4	Typical Interrupt Transaction
+4	4.3.9.5	NPR Latency Improvement Circuit
+3	4.3.10	Data Set Interface Logic
+4	4.3.10.1	General
+4	4.3.10.2	Logic for Signals from Data Set
+4	4.3.10.3	Logic for Signals to Data Set
+4	4.3.10.4	Logic for Transmitted Data and External Maintenance Clock
+3	4.3.11	Typical Operations
+4	4.3.11.1	Introduction
+4	4.3.11.2	Typical Transmit Operation (SDLC)
+4	4.3.11.3	Typical Receive Operation (SDLC)
+1	Chapter 5	Maintenance
+2	5.1	Scope
+2	5.2	Maintenance Philosophy
+2	5.3	Preventive Maintenance
+2	5.4	Test Equipment Required
+2	5.5	Corrective Maintenance
+3	5.5.1	Maintenance Modes
+4	5.5.1.1	Internal Maintenance
+4	5.5.1.2	System Test
+4	5.5.1.3	External Maintenance
+3	5.5.2	Diagnostic
+1	Appendix A	PDP-11 Memory Organization and Addressing Conventions
+1	Appendix B	Logic Symbology
+2	B.1	Introduction
+2	B.2	Unibus Signal Levels
+2	B.3	Equivalent Gate Symbols
+2	B.4	4-Output Terminal Flip-Flop Symbology
+2	B.5	Redefined 4-Output Terminal Flip-Flops
+1	Appendix C	Integrated Circuit Descriptions
