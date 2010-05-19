@@ -127,7 +127,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\manx.mspx"
+				>
+			</File>
+			<File
 				RelativePath=".\manx.png"
+				>
+			</File>
+			<File
+				RelativePath=".\schema.sql"
 				>
 			</File>
 		</Filter>
