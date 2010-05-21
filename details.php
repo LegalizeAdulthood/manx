@@ -14,7 +14,7 @@
 <div id="HEADER">
 <div id="AUTH">Guest | <?php $manx->renderLoginLink($page); ?></div>
 <div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
-<div id="MENU"><a class="first" href="../default.php">Search</a><span class="nodisp">
+<div id="MENU"><a class="first" href="../search.php">Search</a><span class="nodisp">
 | </span><a href="../about.php">About</a><span class="nodisp">
 | </span><a href="../help.php">Help</a></div>
 </div>
@@ -50,3 +50,4 @@
 <tr valign="top"><td>Mirrors:</td><td><ul style="list-style-type:none;margin:0;padding:0"><li style="margin:0;padding:0"><a href="http://bitsavers.trailing-edge.com/pdf/dec/pdp11/1170/1170_StudentHandouts.pdf">http://bitsavers.trailing-edge.com/pdf/dec/pdp11/1170/1170_StudentHandouts.pdf</a></li><li style="margin:0;padding:0"><a href="http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/pdp11/1170/1170_StudentHandouts.pdf">http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/pdp11/1170/1170_StudentHandouts.pdf</a></li><li style="margin:0;padding:0"><a href="http://www.textfiles.com/bitsavers/pdf/dec/pdp11/1170/1170_StudentHandouts.pdf">http://www.textfiles.com/bitsavers/pdf/dec/pdp11/1170/1170_StudentHandouts.pdf</a></li><li style="margin:0;padding:0"><a href="http://computer-refuge.org/bitsavers/pdf/dec/pdp11/1170/1170_StudentHandouts.pdf">http://computer-refuge.org/bitsavers/pdf/dec/pdp11/1170/1170_StudentHandouts.pdf</a></li><li style="margin:0;padding:0"><a href="http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/pdp11/1170/1170_StudentHandouts.pdf">http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/pdp11/1170/1170_StudentHandouts.pdf</a></li></ul></td></tr></tbody>
 </table>
 </div></body></html>
+

@@ -56,7 +56,7 @@ class ProductionManx implements IManx
 			$i = 0;
 			foreach ($this->_db->query("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`") as $row)
 			{
-				print '<a href="default.php?cp=' . $row['id'] . '">' . htmlspecialchars($row['name']) . '</a>';
+				print '<a href="search.php?cp=' . $row['id'] . '">' . htmlspecialchars($row['name']) . '</a>';
 				$i++;
 				if ($i < $count)
 				{
@@ -98,7 +98,7 @@ class ProductionManx implements IManx
 	public function renderDefaultSearchResults()
 	{
 		return '<div class="resbar">Showing all documents. Results <b>1 - 10</b> of <b>9688</b>.</div>
-<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=10;cp=1">2</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=20;cp=1">3</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=30;cp=1">4</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=40;cp=1">5</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=50;cp=1">6</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=60;cp=1">7</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=70;cp=1">8</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=80;cp=1">9</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=90;cp=1">10</a>&nbsp;&nbsp;<a href="default.php?q=;start=10;cp=1"><b>Next</b></a></div>
+<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=10;cp=1">2</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=20;cp=1">3</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=30;cp=1">4</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=40;cp=1">5</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=50;cp=1">6</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=60;cp=1">7</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=70;cp=1">8</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=80;cp=1">9</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=90;cp=1">10</a>&nbsp;&nbsp;<a href="search.php?q=;start=10;cp=1"><b>Next</b></a></div>
 <table class="restable"><thead><tr><th>Part</th><th>Date</th><th>Title</th><th class="last">Status</th></tr></thead><tbody><tr valign="top">
 <td></td>
 <td></td>
@@ -159,12 +159,12 @@ class ProductionManx implements IManx
 <td><a href="details.php/1,4301">KA8/I Positive I/O Bus Option Description</a></td>
 <td>&nbsp;</td>
 </tr>
-</tbody></table><div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=10;cp=1">2</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=20;cp=1">3</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=30;cp=1">4</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=40;cp=1">5</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=50;cp=1">6</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=60;cp=1">7</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=70;cp=1">8</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=80;cp=1">9</a>&nbsp;&nbsp;<a class="navpage" href="default.php?q=;start=90;cp=1">10</a>&nbsp;&nbsp;<a href="default.php?q=;start=10;cp=1"><b>Next</b></a></div>';
+</tbody></table><div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=10;cp=1">2</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=20;cp=1">3</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=30;cp=1">4</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=40;cp=1">5</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=50;cp=1">6</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=60;cp=1">7</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=70;cp=1">8</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=80;cp=1">9</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=90;cp=1">10</a>&nbsp;&nbsp;<a href="search.php?q=;start=10;cp=1"><b>Next</b></a></div>';
 	}
 
 	function renderSearchResults()
 	{
-		print '<div id="Div1"><form action="default.php" method="get" name="f"><div class="field">Company: ';
+		print '<div id="Div1"><form action="search.php" method="get" name="f"><div class="field">Company: ';
 		$this->renderDefaultCompanies();
 		print 'Keywords: <input id="Text1" name="q" value="" size="20" maxlength="256" />
 Online only: <input type="checkbox" name="on" />

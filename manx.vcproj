@@ -71,10 +71,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\default.php"
-				>
-			</File>
-			<File
 				RelativePath=".\details.php"
 				>
 			</File>
@@ -100,6 +96,10 @@
 			</File>
 			<File
 				RelativePath=".\ProductionManx.php"
+				>
+			</File>
+			<File
+				RelativePath=".\search.php"
 				>
 			</File>
 		</Filter>

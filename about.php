@@ -13,7 +13,7 @@
 <div id="HEADER">
 <div id="AUTH">Guest | <?php $manx->renderLoginLink('about.php'); ?></div>
 <div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
-<div id="MENU"><a class="first" href="default.php">Search</a><span class="nodisp">
+<div id="MENU"><a class="first" href="search.php">Search</a><span class="nodisp">
 | </span><a class="on">About</a><span class="nodisp">
 | </span><a href="help.php">Help</a></div></div>
 <div class="det"><h1>About Manx</h1>

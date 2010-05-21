@@ -54,7 +54,7 @@
 			$this->assertTrue($db->queryCalled);
 			$output = ob_get_contents();
 			ob_end_clean();
-			$this->assertEquals('<a href="default.php?cp=1">DEC</a>, <a href="default.php?cp=2">HP</a>', $output);
+			$this->assertEquals('<a href="search.php?cp=1">DEC</a>, <a href="search.php?cp=2">HP</a>', $output);
 		}
 		
 		public function testRenderSiteList()
@@ -71,7 +71,8 @@
 			ob_end_clean();
 			$this->assertTrue($db->queryCalled);
 			$this->assertEquals("SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`", $db->queryLastStatement);
-			$this->assertEquals('<ul><li><a href="http://www.dec.com">DEC</a></li><li><a href="http://www.hp.com">HP</a> <span class="warning">(Low Bandwidth)</span></li></ul>', $output);
+			$this->assertEquals('<ul><li><a href="http://www.dec.com">DEC</a></li>'
+				. '<li><a href="http://www.hp.com">HP</a> <span class="warning">(Low Bandwidth)</span></li></ul>', $output);
 		}
 	}
 ?>
