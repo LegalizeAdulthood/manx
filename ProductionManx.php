@@ -31,7 +31,7 @@ class ProductionManx implements IManx
 		try
 		{
 			print '<ul>';
-			foreach ($this->_db->query("SELECT `url`,`description`,`low` FROM `SITE` ORDER BY `siteid`") as $row)
+			foreach ($this->_db->query("SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`") as $row)
 			{
 				print '<li><a href="' . $row['url'] . '">' . htmlspecialchars($row['description']) . '</a>';
 				if ('Y' == $row['low'])

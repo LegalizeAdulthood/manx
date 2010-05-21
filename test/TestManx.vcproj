@@ -75,6 +75,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FakeStatement.php"
+				>
+			</File>
+			<File
 				RelativePath="TestManx.php"
 				>
 			</File>
