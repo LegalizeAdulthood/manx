@@ -1,6 +1,7 @@
 <?php
 
 require_once 'PDODatabaseAdapter.php';
+require_once 'Searcher.php';
 require_once 'IManx.php';
 
 class ProductionManx implements IManx
@@ -83,18 +84,6 @@ class ProductionManx implements IManx
 		print '<a href="login.php?redirect=http%3A%2F%2Fvt100.net%2F' . $page . '">Login</a>';
 	}
 	
-	public function renderDefaultCompanies()
-	{
-		print '<select id="CP" name="cp">';
-		$defaultId = 1; // Digital Equipment Corporation
-		foreach ($this->_db->query("SELECT `id`,`name` FROM `COMPANY` ORDER BY `sort_name`") as $row)
-		{
-			$id = $row['id'];
-			print '<option value="' . $id . ($id == $defaultId ? ' selected' : '') . '>' . htmlspecialchars($row['name']) . '</option>';
-		}
-		print '</select>';
-	}
-	
 	public function renderDefaultSearchResults()
 	{
 		return '<div class="resbar">Showing all documents. Results <b>1 - 10</b> of <b>9688</b>.</div>
@@ -164,6 +153,7 @@ class ProductionManx implements IManx
 
 	function renderSearchResults()
 	{
+		$searcher = Searcher::getInstance($this->_db);
 		print '<div id="Div1"><form action="search.php" method="get" name="f"><div class="field">Company: ';
 		$this->renderDefaultCompanies();
 		print 'Keywords: <input id="Text1" name="q" value="" size="20" maxlength="256" />

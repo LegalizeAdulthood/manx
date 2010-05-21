@@ -87,6 +87,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ISearcher.php"
+				>
+			</File>
+			<File
 				RelativePath=".\login.php"
 				>
 			</File>
@@ -100,6 +104,10 @@
 			</File>
 			<File
 				RelativePath=".\search.php"
+				>
+			</File>
+			<File
+				RelativePath=".\Searcher.php"
 				>
 			</File>
 		</Filter>

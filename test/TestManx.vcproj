@@ -35,7 +35,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Running unit tests..."
-				CommandLine="F:&#x0D;&#x0A;cd \Code\manx\trunk&#x0D;&#x0A;phpunit test\TestManx.php&#x0D;&#x0A;"
+				CommandLine="cd &quot;$(SolutionDir)&quot;&#x0D;&#x0A;phpunit test\AllTests.php"
 			/>
 		</Configuration>
 		<Configuration
@@ -58,7 +58,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Running unit tests..."
-				CommandLine="F:&#x0D;&#x0A;cd \Code\manx\trunk&#x0D;&#x0A;phpunit test\TestManx.php&#x0D;&#x0A;"
+				CommandLine="cd &quot;$(SolutionDir)&quot;&#x0D;&#x0A;phpunit test\AllTests.php"
 			/>
 		</Configuration>
 	</Configurations>
@@ -71,6 +71,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\AllTests.php"
+				>
+			</File>
+			<File
 				RelativePath="FakeDatabase.php"
 				>
 			</File>
@@ -80,6 +84,10 @@
 			</File>
 			<File
 				RelativePath="TestManx.php"
+				>
+			</File>
+			<File
+				RelativePath=".\TestSearcher.php"
 				>
 			</File>
 		</Filter>
