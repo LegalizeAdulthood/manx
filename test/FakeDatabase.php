@@ -5,12 +5,14 @@
 	{
 		public function __construct()
 		{
-			$queryCalled = false;
-			$queryFakeResults = array();
-			$queryLastStatement = '';
+			$this->queryCalled = false;
+			$this->queryFakeResults = array();
+			$this->queryFakeResultsForQuery = array();
+			$this->queryLastStatement = '';
 		}
 		
 		public $queryFakeResults;
+		public $queryFakeResultsForQuery;
 		public $queryLastStatement;
 		public $queryCalled;
 		
@@ -18,6 +20,10 @@
 		{
 			$this->queryCalled = true;
 			$this->queryLastStatement = $statement;
+			if (array_key_exists($statement, $this->queryFakeResultsForQuery))
+			{
+				return $this->queryFakeResultsForQuery[$statement];
+			}
 			return $this->queryFakeResults;
 		}
 	}	

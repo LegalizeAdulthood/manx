@@ -73,7 +73,7 @@ class ProductionManx implements IManx
 	{
 		$rows = $this->_db->query("SELECT COUNT(*) FROM `PUB`")->fetch();
 		print $rows[0] . ' manuals, ';
-		$rows = $this->_db->query("SELECT COUNT(*) FROM `PUB` WHERE `pub_has_online_copies` = 1")->fetch();
+		$rows = $this->_db->query("SELECT COUNT(DISTINCT `pub`) FROM `COPY`")->fetch();
 		print $rows[0] . ' of which are online, at ';
 		$rows = $this->_db->query("SELECT COUNT(*) FROM `SITE`")->fetch();
 		print $rows[0] . ' websites';
