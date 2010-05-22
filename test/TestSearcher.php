@@ -100,7 +100,7 @@
 		
 		public function testCleanSqlWordPercent()
 		{
-			$this->assertEquals('percent\%Word', Searcher::cleanSqlWord('percent%Word'));
+			$this->assertEquals('percent\\%Word', Searcher::cleanSqlWord('percent%Word'));
 		}
 		
 		public function testCleanSqlWordQuote()
@@ -110,7 +110,7 @@
 		
 		public function testCleanSqlWordUnderline()
 		{
-			$this->assertEquals('underline\_Word', Searcher::cleanSqlWord('underline_Word'));
+			$this->assertEquals('underline\\_Word', Searcher::cleanSqlWord('underline_Word'));
 		}
 		
 		public function testCleanSqlWordBackslash()
