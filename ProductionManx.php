@@ -155,7 +155,7 @@ class ProductionManx implements IManx
 	{
 		$searcher = Searcher::getInstance($this->_db);
 		print '<div id="Div1"><form action="search.php" method="get" name="f"><div class="field">Company: ';
-		$this->renderDefaultCompanies();
+		$searcher->renderCompanies(1);
 		print 'Keywords: <input id="Text1" name="q" value="" size="20" maxlength="256" />
 Online only: <input type="checkbox" name="on" />
 <input id="Submit1" type="submit" value="Search" /></div></form></div>';
