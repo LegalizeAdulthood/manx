@@ -83,6 +83,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IFormatter.php"
+				>
+			</File>
+			<File
 				RelativePath=".\IManx.php"
 				>
 			</File>

@@ -4,7 +4,8 @@
 	
 	class Searcher implements ISearcher
 	{
-		
+		private $_searchWords;
+		private $_ignoredWords;
 		private $_db;
 
 		public static function getInstance(IDatabase $db)
@@ -42,8 +43,8 @@
 		
 		public function matchClauseForKeywords($keywords)
 		{
-			$searchWords = array();
-			$ignoredWords = array();
+			$this->_searchWords = array();
+			$this->_ignoredWords = array();
 			foreach (explode(' ', $keywords) as $keyword)
 			{
 				$keyword = trim($keyword);
@@ -51,22 +52,22 @@
 				{
 					if (strlen($keyword) > 2)
 					{
-						array_push($searchWords, $keyword);
+						array_push($this->_searchWords, $keyword);
 					}
 					else
 					{
-						array_push($ignoredWords, $keyword);
+						array_push($this->_ignoredWords, $keyword);
 					}
 				}
 			}
 			
 			$matchClause = '';
 			$matchCond = ' AND ';
-			if (count($searchWords) > 0)
+			if (count($this->_searchWords) > 0)
 			{
 				$matchClause .= ' AND (';
 				$ordWord = 0;
-				foreach ($searchWords as $word)
+				foreach ($this->_searchWords as $word)
 				{
 					if (++$ordWord > 1)
 					{
@@ -110,8 +111,35 @@
 			return str_replace('_', '\_', str_replace('%', '\%', str_replace("'", "\\'", str_replace('\\', '\\\\', $word))));
 		}
 				
-		public function renderSearchResults($company, $keywords, $online)
+		public function renderSearchResults(IFormatter $formatter, $company, $keywords, $online)
 		{
+			$stmt = '';
+			$rows = array();
+			$matchClause = $this->matchClauseForKeywords($keywords);
+			$rows = $this->_db->query("SELECT `pub_id`, `ph_part`, `ph_title`,"
+				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
+				. " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
+				. " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `PUB`"
+				. " JOIN `PUBHISTORY` ON `pub_history` = `ph_id`"
+				. " WHERE `pub_has_online_copies` $matchClause"
+				. " AND `ph_company`=$company"
+				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`")->fetchAll();
+			$total = count($rows);
+			$params = $this->parameterSource($_GET, $_POST);
+			if (array_key_exists('start', $params))
+			{
+				$start = $params['start'];
+			}
+			else
+			{
+				$start = 0;
+			}
+			$rowsPerPage = 10;
+			$end = min($total, $start + $rowsPerPage);
+			$formatter->renderResultsBar($this->_ignoredWords, $this->_searchWords, $start, $end, $total);
+			$formatter->renderPageSelectionBar($start, $total, $rowsPerPage);
+			$formatter->renderResultsPage($rows, $start, $end);
+			$formatter->renderPageSelectionBar($start, $total, $rowsPerPage);
 		}
 	}
 ?>

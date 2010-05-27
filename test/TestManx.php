@@ -6,13 +6,20 @@
 	
 	class TestManx extends PHPUnit_Framework_TestCase
 	{
+		private function fakeStatementFetchResults($results)
+		{
+			$stmt = new FakeStatement();
+			$stmt->fetchFakeResult = $results;
+			return $stmt;
+		}
+		
 		public function testRenderDocumentSummary()
 		{
 			$db = new FakeDatabase();
 			$db->queryFakeResultsForQuery = array(
-				"SELECT COUNT(*) FROM `PUB`" => new FakeStatement(array(12)),
-				"SELECT COUNT(DISTINCT `pub`) FROM `COPY`" => new FakeStatement(array(24)),
-				"SELECT COUNT(*) FROM `SITE`" => new FakeStatement(array(43))
+				"SELECT COUNT(*) FROM `PUB`" => $this->fakeStatementFetchResults(array(12)),
+				"SELECT COUNT(DISTINCT `pub`) FROM `COPY`" => $this->fakeStatementFetchResults(array(24)),
+				"SELECT COUNT(*) FROM `SITE`" => $this->fakeStatementFetchResults(array(43))
 				);
 			$manx = ProductionManx::getInstanceForDatabase($db);
 			ob_start();
@@ -27,7 +34,7 @@
 		{
 			$db = new FakeDatabase();
 			$db->queryFakeResultsForQuery = array(
-				"SELECT COUNT(*) FROM `COMPANY` WHERE `display` = 'Y'" => new FakeStatement(array(2)),
+				"SELECT COUNT(*) FROM `COMPANY` WHERE `display` = 'Y'" => $this->fakeStatementFetchResults(array(2)),
 				"SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`" =>
 					array(array('id' => 1, 'name' => "DEC"),
 						array('id' => 2, 'name' => "HP"))

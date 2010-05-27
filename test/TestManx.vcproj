@@ -79,6 +79,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FakeFormatter.php"
+				>
+			</File>
+			<File
 				RelativePath=".\FakeStatement.php"
 				>
 			</File>

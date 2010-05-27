@@ -1,8 +1,10 @@
 <?php
+	require_once 'IFormatter.php';
+	
 	interface ISearcher
 	{
 		function renderCompanies($selected);
-		function renderSearchResults($company, $keywords, $online);
+		function renderSearchResults(IFormatter $formatter, $company, $keywords, $online);
 		function matchClauseForKeywords($keywords);
 	}
 ?>
