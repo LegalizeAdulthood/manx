@@ -85,5 +85,21 @@
 				. '</div>',
 				$output);
 		}
+		
+		public function testRenderPageSelectionBarPageTwoOfThree()
+		{
+			$formatter = HtmlFormatter::getInstance();
+			ob_start();
+			$formatter->renderPageSelectionBar(11, 30, 10, array('q' => 'vt220 terminal', 'cp' => 1, 'start' => 10));
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt220+terminal;start=0;cp=1"><b>Previous</b></a>&nbsp;&nbsp;'
+				. '<a class="navpage" href="search.php?q=vt220+terminal;start=0;cp=1">1</a>&nbsp;&nbsp;'
+				. '<b class="currpage">2</b>&nbsp;&nbsp;'
+				. '<a class="navpage" href="search.php?q=vt220+terminal;start=20;cp=1">3</a>&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt220+terminal;start=20;cp=1"><b>Next</b></a></div>',
+				$output);
+		}
 	}
 ?>
