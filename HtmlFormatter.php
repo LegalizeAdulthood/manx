@@ -92,9 +92,72 @@
 			print '</div>';
 		}
 		
+		private function replaceNullWithEmptyString($row)
+		{
+			foreach (array_keys($row) as $key)
+			{
+				if (is_null($row[$key]))
+				{
+					$row[$key] = '';
+				}
+			}
+			return $row;
+		}
+		
 		public function renderResultsPage($rows, $start, $end)
 		{
-			throw new Exception("renderResultsPage: not implemented");
+			print '<table class="restable"><thead><tr><th>Part</th><th>Date</th><th>Title</th><th class="last">Status</th></tr></thead><tbody>';
+			for ($i = $start; $i <= $end; $i++)
+			{
+				$row = $this->replaceNullWithEmptyString($rows[$i]);
+				print '<tr valign="top">';
+				print '<td>' . htmlspecialchars(trim($row['ph_part'] . ' ' . $row['ph_revision']));
+				if ($row['ph_alt_part'] != '')
+				{
+					print '<br/><small>' . htmlspecialchars($row['ph_alt_part']) . '</small>';
+				}
+				print '</td><td>' . htmlspecialchars($row['ph_pubdate']) . '</td>';
+				print '<td><a';
+				if ($row['pub_superseded'] || $row['ph_pubtype'] == 'A')
+				{
+					print ' class="ss"';
+				}
+				printf(' href="details.php/%s,%s">%s</a>', $row['ph_company'], $row['pub_id'], htmlspecialchars($row['ph_title']));
+				if (count($row['tags']) > 0)
+				{
+					echo '<br /><small><b>OS:</b> ',
+						htmlspecialchars(implode(', ', $row['tags'])), '</small>';
+				}
+				print '</td>';
+				print '<td>';
+				$flags = array();
+				if ($row['pub_has_online_copies'])
+				{
+					array_push($flags, 'Online');
+				}
+				if ($row['pub_superseded'])
+				{
+					array_push($flags, 'Superseded');
+				}
+				if ($row['ph_pubtype'] == 'A')
+				{
+					array_push($flags, 'Amendment');
+				}
+				if ($row['pub_has_toc'])
+				{
+					array_push($flags, 'ToC');
+				}
+				if (count($flags) > 0)
+				{
+					print implode(', ', $flags);
+				}
+				else
+				{
+					print '&nbsp;';
+				}
+				print '</td></tr>';
+			}
+			print '</tbody></table>';
 		}
 	}
 ?>

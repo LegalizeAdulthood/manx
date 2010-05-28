@@ -144,5 +144,63 @@
 				. '</div>',
 				$output);
 		}
+		
+		private function createResultRowsForColumns($columns, $data)
+		{
+			$rows = array();
+			foreach ($data as $item)
+			{
+				$row = array();
+				for ($i = 0; $i < count($columns); $i++)
+				{
+					$row[$columns[$i]] = $item[$i];
+				}
+				array_push($rows, $row);
+			}
+			return $rows;
+		}
+		
+		public function testRenderResultsPage()
+		{
+			$formatter = HtmlFormatter::getInstance();
+			$rows = $this->createResultRowsForColumns(
+				array('pub_id', 'ph_part', 'ph_title', 'pub_has_online_copies',
+					'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pubdate',
+					'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pubtype', 'tags'),
+				array(
+					array(1, 'AA-4949A-TC', 'VT55 Programming Manual', 1, NULL, 1, 0, '1977-02', '', 1, NULL, 'D', array()),
+					array(3014, 'EK-VT55E-TM-001', "VT55-D,E,H,J DECgraphic Scope Users' Manual", 1, NULL, 1, 0, '1976-12', '', 1, NULL, 'D', array()),
+					array(9206, 'MP-00098-00', 'VT55 Field Maintenance Print Set', 0, NULL, 0, 0, NULL, '', 1, NULL, 'D', array())
+					));
+			ob_start();
+			$formatter->renderResultsPage($rows, 0, 2);
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals('<table class="restable">'
+				. '<thead>'
+					. '<tr><th>Part</th><th>Date</th><th>Title</th><th class="last">Status</th></tr>'
+				. '</thead>'
+				. '<tbody>'
+				. '<tr valign="top">'
+					. '<td>AA-4949A-TC</td>'
+					. '<td>1977-02</td>'
+					. '<td><a href="details.php/1,1">VT55 Programming Manual</a></td>'
+					. '<td>Online, ToC</td>'
+				. '</tr>'
+				. '<tr valign="top">'
+					. '<td>EK-VT55E-TM-001</td><td>1976-12</td>'
+					. '<td><a href="details.php/1,3014">VT55-D,E,H,J DECgraphic Scope Users\' Manual</a></td>'
+					. '<td>Online, ToC</td>'
+				. '</tr>'
+				. '<tr valign="top">'
+					. '<td>MP-00098-00</td>'
+					. '<td></td>'
+					. '<td><a href="details.php/1,9206">VT55 Field Maintenance Print Set</a></td>'
+					. '<td>&nbsp;</td>'
+				. '</tr>'
+				. '</tbody>'
+				. '</table>',
+				$output);
+		}
 	}
 ?>
