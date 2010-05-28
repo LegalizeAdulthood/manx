@@ -13,7 +13,22 @@
 		
 		public function renderResultsBar($ignoredWords, $searchWords, $start, $end, $total)
 		{
-			throw new Exception("renderResultsBar: not implemented");
+			/*
+			if (scalar @ignored_words > 0) {
+				print '<P CLASS="warning">Ignoring ', neat_quoted_list(@ignored_words),
+					'. All search words must be at least three letters long.</P>';
+			}
+
+			if (scalar @search_words) {
+				print qq{<DIV CLASS="resbar">Searching for }, neat_quoted_list(@search_words), '.';
+			} else {
+				print qq{<DIV CLASS="resbar">Showing all documents.};
+			}
+
+			print qq{ Results <B>$start - $end</B> of <B>$total_matches</B>.</DIV>\n};
+			*/
+			print '<div class="resbar">Showing all documents.';
+			print ' Results <b>' . ($start + 1) . ' - ' . ($end + 1) . '</b> of <b>' . $total . '</b>.</div>';
 		}
 		public function renderPageSelectionBar($start, $total, $rowsPerPage)
 		{
