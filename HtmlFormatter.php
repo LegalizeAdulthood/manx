@@ -11,6 +11,19 @@
 		{
 		}
 		
+		public static function neatQuotedList($words)
+		{
+			if (count($words) > 1)
+			{
+				return '"' . implode('", "', array_slice($words, 0, count($words) - 1))
+					. '" and "' . $words[count($words) - 1] . '"';
+			}
+			else
+			{
+				return '"' . $words[0] . '"';
+			}
+		}
+		
 		public function renderResultsBar($ignoredWords, $searchWords, $start, $end, $total)
 		{
 			/*
@@ -18,16 +31,16 @@
 				print '<P CLASS="warning">Ignoring ', neat_quoted_list(@ignored_words),
 					'. All search words must be at least three letters long.</P>';
 			}
-
-			if (scalar @search_words) {
-				print qq{<DIV CLASS="resbar">Searching for }, neat_quoted_list(@search_words), '.';
-			} else {
-				print qq{<DIV CLASS="resbar">Showing all documents.};
-			}
-
-			print qq{ Results <B>$start - $end</B> of <B>$total_matches</B>.</DIV>\n};
 			*/
-			print '<div class="resbar">Showing all documents.';
+			print '<div class="resbar">';
+			if (count($searchWords) > 0)
+			{
+				print 'Searching for ' . $this->neatQuotedList($searchWords) . '.';
+			}
+			else
+			{
+				print 'Showing all documents.';
+			}
 			print ' Results <b>' . $start . ' - ' . $end . '</b> of <b>' . $total . '</b>.</div>';
 		}
 		public function renderPageSelectionBar($start, $total, $rowsPerPage)
