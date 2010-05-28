@@ -54,7 +54,7 @@
 			$searcher = Searcher::getInstance($db);
 			$clause = $searcher->matchClauseForKeywords($keyword);
 			$this->assertEquals(" AND ((`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
-				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` like '%TERMINAL%'))", $clause);
+				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
 		}
 		
 		public function testMatchClauseForMultipleKeywords()
@@ -64,9 +64,9 @@
 			$searcher = Searcher::getInstance($db);
 			$clause = $searcher->matchClauseForKeywords($keyword);
 			$this->assertEquals(" AND ((`ph_title` LIKE '%graphics%' OR `ph_keywords` LIKE '%graphics%' "
-				. "OR `ph_match_part` LIKE '%GRAPHICS%' OR `ph_match_alt_part` like '%GRAPHICS%') "
+				. "OR `ph_match_part` LIKE '%GRAPHICS%' OR `ph_match_alt_part` LIKE '%GRAPHICS%') "
 				. "AND (`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
-				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` like '%TERMINAL%'))", $clause);
+				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
 		}
 		
 		public function testNormalizePartNumberNotString()

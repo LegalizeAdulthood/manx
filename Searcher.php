@@ -79,7 +79,7 @@
 					$matchClause .= "(`ph_title` LIKE '%$cleanWord%' OR `ph_keywords` LIKE '%$cleanWord%'";
 					if (strlen($normalizedWord) > 2)
 					{
-						$matchClause .= " OR `ph_match_part` LIKE '%$normalizedWord%' OR `ph_match_alt_part` like '%$normalizedWord%'";
+						$matchClause .= " OR `ph_match_part` LIKE '%$normalizedWord%' OR `ph_match_alt_part` LIKE '%$normalizedWord%'";
 					}
 					$matchClause .= ')';
 				}
