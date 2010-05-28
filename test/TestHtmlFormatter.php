@@ -60,5 +60,16 @@
 				. '<div class="resbar">Searching for "graphics" and "terminal". Results <b>1 - 1</b> of <b>1</b>.</div>',
 				$output);
 		}
+		
+		public function testRenderPageSelectionBarOnePage()
+		{
+			$formatter = HtmlFormatter::getInstance();
+			ob_start();
+			$formatter->renderPageSelectionBar(0, 5, 10);
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>',
+				$output);
+		}
 	}
 ?>
