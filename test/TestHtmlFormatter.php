@@ -101,5 +101,34 @@
 				. '<a href="search.php?q=vt220+terminal;start=20;cp=1"><b>Next</b></a></div>',
 				$output);
 		}
+		
+		public function testRenderPageSelectionBarPageThreeOfThree()
+		{
+			$formatter = HtmlFormatter::getInstance();
+			ob_start();
+			$formatter->renderPageSelectionBar(21, 30, 10, array('q' => 'vt100 terminal', 'cp' => 1, 'start' => 20));
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt100+terminal;start=10;cp=1"><b>Previous</b></a>&nbsp;&nbsp;'
+				. '<a class="navpage" href="search.php?q=vt100+terminal;start=0;cp=1">1</a>&nbsp;&nbsp;'
+				. '<a class="navpage" href="search.php?q=vt100+terminal;start=10;cp=1">2</a>&nbsp;&nbsp;'
+				. '<b class="currpage">3</b>&nbsp;&nbsp;</div>',
+				$output);
+		}
+		
+		public function testRenderPageSelectionBarPageOneOfTwoOnline()
+		{
+			$formatter = HtmlFormatter::getInstance();
+			ob_start();
+			$formatter->renderPageSelectionBar(1, 20, 10, array('q' => 'vt220 terminal', 'cp' => 1, 'on' => 'on'));
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
+				. '<a class="navpage" href="search.php?q=vt220+terminal;start=10;on=on;cp=1">2</a>&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt220+terminal;start=10;on=on;cp=1"><b>Next</b></a>'
+				. '</div>',
+				$output);
+		}
 	}
 ?>
