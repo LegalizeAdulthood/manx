@@ -130,5 +130,19 @@
 				. '</div>',
 				$output);
 		}
+		
+		public function testRenderPageSelectionBarPageOneOfTwoFivePerPage()
+		{
+			$formatter = HtmlFormatter::getInstance();
+			ob_start();
+			$formatter->renderPageSelectionBar(1, 10, 5, array('q' => 'vt220 terminal', 'cp' => 1, 'on' => 'on', 'num' => 5));
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
+				. '<a class="navpage" href="search.php?q=vt220+terminal;start=5;num=5;on=on;cp=1">2</a>&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt220+terminal;start=5;num=5;on=on;cp=1"><b>Next</b></a>'
+				. '</div>',
+				$output);
+		}
 	}
 ?>
