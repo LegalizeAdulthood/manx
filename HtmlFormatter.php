@@ -49,8 +49,6 @@
 			$encodedQuery = urlencode(array_key_exists('q', $params) ? $params['q'] : '');
 			print '<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;';
 			$linkOptions = ($rowsPerPage != DEFAULT_ROWS_PER_PAGE ? ';num=' . $rowsPerPage : '')
-				. (array_key_exists('debug', $params) ? ';debug=1' : '')
-				. (array_key_exists('disposition', $params) ? ';disposition=1' : '')
 				. (array_key_exists('on', $params) && ($params['on'] == 'on') ? ';on=on' : '')
 				. (array_key_exists('cp', $params) ? ';cp=' . $params['cp'] : '');
 			if ($start != 0)
