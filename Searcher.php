@@ -132,10 +132,10 @@
 			}
 			else
 			{
-				$start = 0;
+				$start = 1;
 			}
 			$rowsPerPage = 10;
-			$end = min($total, $start + $rowsPerPage);
+			$end = min($total, $start + $rowsPerPage - 1);
 			$formatter->renderResultsBar($this->_ignoredWords, $this->_searchWords, $start, $end, $total);
 			$formatter->renderPageSelectionBar($start, $total, $rowsPerPage);
 			$formatter->renderResultsPage($rows, $start, $end);

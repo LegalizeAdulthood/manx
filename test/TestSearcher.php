@@ -158,16 +158,16 @@
 			$this->assertTrue($formatter->renderResultsBarCalled);
 			$this->assertEquals(array(), $formatter->renderResultsBarLastIgnoredWords);
 			$this->assertEquals(array('graphics', 'terminal'), $formatter->renderResultsBarLastSearchWords);
-			$this->assertEquals(0, $formatter->renderResultsBarLastStart);
+			$this->assertEquals(1, $formatter->renderResultsBarLastStart);
 			$this->assertEquals(1, $formatter->renderResultsBarLastEnd);
 			$this->assertEquals(1, $formatter->renderResultsBarLastTotal);
 			$this->assertTrue($formatter->renderPageSelectionBarCalled);
-			$this->assertEquals(0, $formatter->renderPageSelectionBarLastStart);
+			$this->assertEquals(1, $formatter->renderPageSelectionBarLastStart);
 			$this->assertEquals(1, $formatter->renderPageSelectionBarLastTotal);
 			$this->assertEquals(10, $formatter->renderPageSelectionBarLastRowsPerPage);
 			$this->assertTrue($formatter->renderResultsPageCalled);
 			$this->assertEquals($stmt->fetchAllFakeResult, $formatter->renderResultsPageLastRows);
-			$this->assertEquals(0, $formatter->renderResultsPageLastStart);
+			$this->assertEquals(1, $formatter->renderResultsPageLastStart);
 			$this->assertEquals(1, $formatter->renderResultsPageLastEnd);
 			$this->assertEquals(2, $formatter->renderPageSelectionBarCallCount);
 /*

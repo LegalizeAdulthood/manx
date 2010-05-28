@@ -15,7 +15,7 @@
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderResultsBar(array(), array(), 0, 0, 1);
+			$formatter->renderResultsBar(array(), array(), 1, 1, 1);
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="resbar">Showing all documents. Results <b>1 - 1</b> of <b>1</b>.</div>',

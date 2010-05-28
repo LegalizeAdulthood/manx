@@ -28,7 +28,7 @@
 			print qq{ Results <B>$start - $end</B> of <B>$total_matches</B>.</DIV>\n};
 			*/
 			print '<div class="resbar">Showing all documents.';
-			print ' Results <b>' . ($start + 1) . ' - ' . ($end + 1) . '</b> of <b>' . $total . '</b>.</div>';
+			print ' Results <b>' . $start . ' - ' . $end . '</b> of <b>' . $total . '</b>.</div>';
 		}
 		public function renderPageSelectionBar($start, $total, $rowsPerPage)
 		{
