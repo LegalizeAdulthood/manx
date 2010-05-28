@@ -1,6 +1,7 @@
 <?php
 	require_once 'IDatabase.php';
 	require_once 'ISearcher.php';
+	require_once 'IFormatter.php';
 	
 	class Searcher implements ISearcher
 	{
@@ -134,12 +135,12 @@
 			{
 				$start = 1;
 			}
-			$rowsPerPage = 10;
+			$rowsPerPage = DEFAULT_ROWS_PER_PAGE;
 			$end = min($total, $start + $rowsPerPage - 1);
 			$formatter->renderResultsBar($this->_ignoredWords, $this->_searchWords, $start, $end, $total);
-			$formatter->renderPageSelectionBar($start, $total, $rowsPerPage);
+			$formatter->renderPageSelectionBar($start, $total, $rowsPerPage, $params);
 			$formatter->renderResultsPage($rows, $start, $end);
-			$formatter->renderPageSelectionBar($start, $total, $rowsPerPage);
+			$formatter->renderPageSelectionBar($start, $total, $rowsPerPage, $params);
 		}
 	}
 ?>

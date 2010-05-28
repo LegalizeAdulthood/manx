@@ -30,13 +30,15 @@
 		public $renderPageSelectionBarLastStart;
 		public $renderPageSelectionBarLastTotal;
 		public $renderPageSelectionBarLastRowsPerPage;
-		public function renderPageSelectionBar($start, $total, $rowsPerPage)
+		public $renderPageSelectionBarLastParams;
+		public function renderPageSelectionBar($start, $total, $rowsPerPage, $params)
 		{
 			$this->renderPageSelectionBarCalled = true;
 			$this->renderPageSelectionBarCallCount++;
 			$this->renderPageSelectionBarLastStart = $start;
 			$this->renderPageSelectionBarLastTotal = $total;
 			$this->renderPageSelectionBarLastRowsPerPage = $rowsPerPage;
+			$this->renderPageSelectionBarLastParams = $params;
 		}
 		public $renderResultsPageCalled;
 		public $renderResultsPageLastRows;

@@ -60,15 +60,29 @@
 				. '<div class="resbar">Searching for "graphics" and "terminal". Results <b>1 - 1</b> of <b>1</b>.</div>',
 				$output);
 		}
-		
+
 		public function testRenderPageSelectionBarOnePage()
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderPageSelectionBar(0, 5, 10);
+			$formatter->renderPageSelectionBar(1, 5, 10, array());
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>',
+				$output);
+		}
+		
+		public function testRenderPageSelectionBarPageOneOfTwo()
+		{
+			$formatter = HtmlFormatter::getInstance();
+			ob_start();
+			$formatter->renderPageSelectionBar(1, 20, 10, array('q' => 'vt220 terminal', 'cp' => 1));
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
+				. '<a class="navpage" href="search.php?q=vt220+terminal;start=10;cp=1">2</a>&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt220+terminal;start=10;cp=1"><b>Next</b></a>'
+				. '</div>',
 				$output);
 		}
 	}

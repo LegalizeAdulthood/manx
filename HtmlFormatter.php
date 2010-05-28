@@ -43,19 +43,9 @@
 			print ' Results <b>' . $start . ' - ' . $end . '</b> of <b>' . $total . '</b>.</div>';
 		}
 		
-		public function renderPageSelectionBar($start, $total, $rowsPerPage)
+		public function renderPageSelectionBar($start, $total, $rowsPerPage, $params)
 		{
 		/*
-			--$start; # zero-based again
-			$page_links = '<DIV CLASS="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;';
-			# Remember to fully parenthesise options here, as '.' has higher priority than '?:'
-			my $link_options =
-				(($num_per_page != $DEFAULTNUMPERPAGE) ? ";num=$num_per_page" : '') .
-				(defined(param('debug')) ? ';debug=1' : '') .
-				(defined(param('disposition')) ? ';disposition=1' : '') .
-				((defined(param('on')) && param('on')) ? ';on=on' : '') .
-				';cp=' . param('cp');
-
 			if ($start != 0) {
 				$page_links .= qq{<A HREF="${SEARCHURL}?q=} . CGI::escape($param_q) . qq{;start=} .
 					($start - $num_per_page) . $link_options . qq{"><B>Previous</B></A>&nbsp;&nbsp;};
@@ -89,8 +79,51 @@
 
 			print $page_links;
 		*/
+			--$start;
 			print '<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;';
-			print '<b class="currpage">1</b>&nbsp;&nbsp;';
+			$linkOptions = ($rowsPerPage != DEFAULT_ROWS_PER_PAGE ? ';num=' . $rowsPerPage : '')
+				. (array_key_exists('debug', $params) ? ';debug=1' : '')
+				. (array_key_exists('disposition', $params) ? ';disposition=1' : '')
+				. (array_key_exists('on', $params) && ($params['on'] == 'on') ? ';on=on' : '')
+				. (array_key_exists('cp', $params) ? ';cp=' . $params['cp'] : '');
+			if ($start != 0)
+			{
+				print '<a href="search.php?q=' . urlencode($params['q']) . ';start='
+					. ($start - $rowsPerPage) . $linkOptions . '"><b>Previous</b></a>&nbsp;&nbsp;';
+			}
+
+			$firstPage = intval($start /(10*$rowsPerPage))*10 + 1;
+			$lastPageNum = intval(($total + $rowsPerPage - 1)/$rowsPerPage);
+			$lastPageStart = ($lastPageNum - 1)*$rowsPerPage;
+			$currPageNum = $firstPage;
+			$currPageStart = ($currPageNum - 1)*$rowsPerPage;
+			$startPageNum = intval($start/$rowsPerPage) + 1;
+
+			$numIndices = 0;
+			while ($numIndices++ < 10)
+			{
+				if ($start == $currPageStart)
+				{
+					print '<b class="currpage">' . $currPageNum . '</b>&nbsp;&nbsp;';
+				}
+				else
+				{
+					print '<a class="navpage" href="search.php?q='
+						. urlencode($params['q']) . ';start=' . $currPageStart . $linkOptions
+						. '">' . $currPageNum . '</a>&nbsp;&nbsp;';
+				}
+				++$currPageNum;
+				$currPageStart += $rowsPerPage;
+				if ($currPageStart > $lastPageStart)
+				{
+					break;
+				}
+			}
+			if ($start != $lastPageStart)
+			{
+				print '<a href="search.php?q=' . urlencode($params['q'])
+					. ';start=' . ($start + $rowsPerPage) . $linkOptions . '"><b>Next</b></a>';
+			}
 			print '</div>';
 		}
 		
