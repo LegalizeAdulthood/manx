@@ -35,7 +35,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Running unit tests..."
-				CommandLine="cd &quot;$(SolutionDir)&quot;&#x0D;&#x0A;phpunit test\AllTests.php"
+				CommandLine="cd &quot;$(SolutionDir)&quot;&#x0D;&#x0A;phpunit test\AllTests.php&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -58,7 +58,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Running unit tests..."
-				CommandLine="cd &quot;$(SolutionDir)&quot;&#x0D;&#x0A;phpunit test\AllTests.php"
+				CommandLine="cd &quot;$(SolutionDir)&quot;&#x0D;&#x0A;phpunit test\AllTests.php&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -84,6 +84,10 @@
 			</File>
 			<File
 				RelativePath=".\FakeStatement.php"
+				>
+			</File>
+			<File
+				RelativePath=".\TestHtmlFormatter.php"
 				>
 			</File>
 			<File

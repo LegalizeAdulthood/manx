@@ -79,6 +79,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\HtmlFormatter.php"
+				>
+			</File>
+			<File
 				RelativePath=".\IDatabase.php"
 				>
 			</File>
