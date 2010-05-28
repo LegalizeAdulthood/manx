@@ -26,16 +26,15 @@
 		
 		public function renderResultsBar($ignoredWords, $searchWords, $start, $end, $total)
 		{
-			/*
-			if (scalar @ignored_words > 0) {
-				print '<P CLASS="warning">Ignoring ', neat_quoted_list(@ignored_words),
-					'. All search words must be at least three letters long.</P>';
+			if (count($ignoredWords) > 0)
+			{
+				print '<p class="warning">Ignoring ' . HtmlFormatter::neatQuotedList($ignoredWords)
+					. '.  All search words must be at least three letters long.</p>';
 			}
-			*/
 			print '<div class="resbar">';
 			if (count($searchWords) > 0)
 			{
-				print 'Searching for ' . $this->neatQuotedList($searchWords) . '.';
+				print 'Searching for ' . HtmlFormatter::neatQuotedList($searchWords) . '.';
 			}
 			else
 			{
