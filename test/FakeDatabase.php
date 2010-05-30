@@ -9,19 +9,21 @@
 			$this->queryFakeResults = array();
 			$this->queryFakeResultsForQuery = array();
 			$this->queryLastStatement = '';
+			$this->queryCalledForStatement = array();
 		}
 		
 		public $queryFakeResults;
 		public $queryFakeResultsForQuery;
 		public $queryLastStatement;
 		public $queryCalled;
-		
+		public $queryCalledForStatement;
 		public function query($statement)
 		{
 			$this->queryCalled = true;
 			$this->queryLastStatement = $statement;
 			if (array_key_exists($statement, $this->queryFakeResultsForQuery))
 			{
+				$this->queryCalledForStatement[$statement] = true;
 				return $this->queryFakeResultsForQuery[$statement];
 			}
 			return $this->queryFakeResults;

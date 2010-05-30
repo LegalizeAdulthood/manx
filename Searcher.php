@@ -137,6 +137,15 @@
 			}
 			$rowsPerPage = DEFAULT_ROWS_PER_PAGE;
 			$end = min($total, $start + $rowsPerPage - 1);
+			for ($i = $start; $i <= $end; $i++)
+			{
+				$tags = array();
+				foreach ($this->_db->query("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` and `TAG`.`class` = 'os' AND `PUB`=" . $i)->fetchAll() as $tag)
+				{
+					array_push($tags, $tag['tag_text']);
+				}
+				$rows[$i - 1]['tags'] = $tags;
+			}
 			$formatter->renderResultsBar($this->_ignoredWords, $this->_searchWords, $start, $end, $total);
 			$formatter->renderPageSelectionBar($start, $total, $rowsPerPage, $params);
 			$formatter->renderResultsPage($rows, $start, $end);
