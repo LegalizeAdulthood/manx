@@ -7,8 +7,8 @@
 </head>
 <body id="VT100-NET">
 <?php
-	require_once 'ProductionManx.php';
-	$manx = ProductionManx::getInstance();
+	require_once 'Manx.php';
+	$manx = Manx::getInstance();
 ?>
 <div id="HEADER">
 <div id="AUTH">Guest | <?php $manx->renderLoginLink(); ?></div>

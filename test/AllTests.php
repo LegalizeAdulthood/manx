@@ -8,7 +8,7 @@
 	{
 		public static function suite()
 		{
-			$suite = new PHPUnit_Framework_TestSuite('Manx');
+			$suite = new PHPUnit_Framework_TestSuite('ManxTests');
 			$suite->addTestSuite('TestManx');
 			$suite->addTestSuite('TestSearcher');
 			$suite->addTestSuite('TestHtmlFormatter');

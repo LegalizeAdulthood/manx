@@ -103,11 +103,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PDODatabaseAdapter.php"
+				RelativePath=".\Manx.php"
 				>
 			</File>
 			<File
-				RelativePath=".\ProductionManx.php"
+				RelativePath=".\PDODatabaseAdapter.php"
 				>
 			</File>
 			<File

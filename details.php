@@ -7,8 +7,8 @@
 </head>
 <body id="VT100-NET">
 <?php
-	require_once 'ProductionManx.php';
-	$manx = ProductionManx::getInstance();
+	require_once 'Manx.php';
+	$manx = Manx::getInstance();
 	$page = 'details.php%3Fcp%3D1%3Bid%3D3129%3Bcn%3D1%3Bpn%3D0';
 ?>
 <div id="HEADER">

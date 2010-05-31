@@ -1,6 +1,6 @@
 <?php
 	require_once 'PHPUnit/Framework.php';
-	require_once 'ProductionManx.php';
+	require_once 'Manx.php';
 	require_once 'test/FakeDatabase.php';
 	require_once 'test/FakeStatement.php';
 	
@@ -21,7 +21,7 @@
 				"SELECT COUNT(DISTINCT `pub`) FROM `COPY`" => $this->fakeStatementFetchResults(array(24)),
 				"SELECT COUNT(*) FROM `SITE`" => $this->fakeStatementFetchResults(array(43))
 				);
-			$manx = ProductionManx::getInstanceForDatabase($db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderDocumentSummary();
 			$this->assertTrue($db->queryCalled);
@@ -39,7 +39,7 @@
 					array(array('id' => 1, 'name' => "DEC"),
 						array('id' => 2, 'name' => "HP"))
 				);
-			$manx = ProductionManx::getInstanceForDatabase($db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderCompanyList();
 			$this->assertTrue($db->queryCalled);
@@ -55,7 +55,7 @@
 					array('url' => 'http://www.dec.com', 'description' => 'DEC', 'low' => false),
 					array('url' => 'http://www.hp.com', 'description' => 'HP', 'low' => true)
 				);
-			$manx = ProductionManx::getInstanceForDatabase($db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderSiteList();
 			$output = ob_get_contents();
