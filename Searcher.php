@@ -126,7 +126,7 @@
 				. " AND `ph_company`=$company"
 				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`")->fetchAll();
 			$total = count($rows);
-			$params = $this->parameterSource($_GET, $_POST);
+			$params = Searcher::parameterSource($_GET, $_POST);
 			if (array_key_exists('start', $params))
 			{
 				$start = $params['start'];

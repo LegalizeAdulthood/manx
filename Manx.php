@@ -84,82 +84,24 @@ class Manx implements IManx
 		print '<a href="login.php?redirect=http%3A%2F%2Fvt100.net%2F' . $page . '">Login</a>';
 	}
 	
-	public function renderDefaultSearchResults()
-	{
-		return '<div class="resbar">Showing all documents. Results <b>1 - 10</b> of <b>9688</b>.</div>
-<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=10;cp=1">2</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=20;cp=1">3</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=30;cp=1">4</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=40;cp=1">5</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=50;cp=1">6</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=60;cp=1">7</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=70;cp=1">8</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=80;cp=1">9</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=90;cp=1">10</a>&nbsp;&nbsp;<a href="search.php?q=;start=10;cp=1"><b>Next</b></a></div>
-<table class="restable"><thead><tr><th>Part</th><th>Date</th><th>Title</th><th class="last">Status</th></tr></thead><tbody><tr valign="top">
-<td></td>
-<td></td>
-<td><a href="details.php/1,3129">PDP-11/70 Hardware Student Handouts</a></td>
-<td>Online</td>
-</tr>
-<tr valign="top">
-<td></td>
-<td></td>
-<td><a href="details.php/1,3230">FP11-B Floating-Point Processor Engineering Drawings</a></td>
-<td>Online</td>
-</tr>
-<tr valign="top">
-<td></td>
-<td></td>
-<td><a href="details.php/1,3311">XVM Upgrades</a></td>
-<td>Online</td>
-</tr>
-<tr valign="top">
-<td></td>
-<td></td>
-<td><a href="details.php/1,3329">RL11/01 Disk Sub-System Training Handout</a></td>
-<td>Online</td>
-</tr>
-<tr valign="top">
-<td></td>
-<td></td>
-<td><a href="details.php/1,3874">Prioris MX 6200 Server-Specific Information</a></td>
-<td>Online</td>
-</tr>
-<tr valign="top">
-<td></td>
-<td></td>
-<td><a href="details.php/1,3875">Prioris MX 6000 Servers Product Change Information</a></td>
-<td>Online</td>
-</tr>
-<tr valign="top">
-<td></td>
-<td></td>
-<td><a href="details.php/1,3953">DW08 Schematics</a></td>
-<td>Online</td>
-</tr>
-<tr valign="top">
-<td></td>
-<td></td>
-<td><a href="details.php/1,3999">TU77 Field Change Orders (FCOs)</a></td>
-<td>Online</td>
-</tr>
-<tr valign="top">
-<td></td>
-<td></td>
-<td><a href="details.php/1,4300">KP8/I Power Failure Option Function Description</a></td>
-<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-<td></td>
-<td></td>
-<td><a href="details.php/1,4301">KA8/I Positive I/O Bus Option Description</a></td>
-<td>&nbsp;</td>
-</tr>
-</tbody></table><div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=10;cp=1">2</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=20;cp=1">3</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=30;cp=1">4</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=40;cp=1">5</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=50;cp=1">6</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=60;cp=1">7</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=70;cp=1">8</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=80;cp=1">9</a>&nbsp;&nbsp;<a class="navpage" href="search.php?q=;start=90;cp=1">10</a>&nbsp;&nbsp;<a href="search.php?q=;start=10;cp=1"><b>Next</b></a></div>';
-	}
-
 	function renderSearchResults()
 	{
 		$searcher = Searcher::getInstance($this->_db);
 		print '<div id="Div1"><form action="search.php" method="get" name="f"><div class="field">Company: ';
-		$searcher->renderCompanies(1);
-		print 'Keywords: <input id="Text1" name="q" value="" size="20" maxlength="256" />
-Online only: <input type="checkbox" name="on" />
-<input id="Submit1" type="submit" value="Search" /></div></form></div>';
-		print $this->renderDefaultSearchResults();
+		$params = Searcher::parameterSource($_GET, $_POST);
+		$company = (array_key_exists($params, 'cp') ? $params['cp'] : 1);
+		$keywords = urldecode(array_key_exists($params, 'q') ? $params['q'] : '');
+		$searcher->renderCompanies($company);
+		print 'Keywords: <input id="Text1" name="q" value="" size="20" maxlength="256" '
+			. (array_key_exists($params, 'q') ? ' value="' . $keywords . '"' : '')
+			. '/> '
+			. 'Online only: <input type="checkbox" name="on" '
+			. (array_key_exists($params, 'on') ? ' checked' : '')
+			. '/> '
+			. '<input id="Submit1" type="submit" value="Search" /></div></form></div>';
+		$formatter = HtmlFormatter::getInstance();
+		$online = array_key_exists($params, 'on') && ($params['on'] != '0');
+		$searcher->renderSearchResults($formatter, $company, $keywords, $online);
 	}
 }
 
