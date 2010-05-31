@@ -40,7 +40,7 @@
 			{
 				print 'Showing all documents.';
 			}
-			print ' Results <b>' . $start . ' - ' . $end . '</b> of <b>' . $total . '</b>.</div>';
+			print ' Results <b>' . ($start + 1) . ' - ' . ($end + 1) . '</b> of <b>' . $total . '</b>.</div>';
 		}
 		
 		public function renderPageSelectionBar($start, $total, $rowsPerPage, $params)

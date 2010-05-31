@@ -114,37 +114,39 @@
 				
 		public function renderSearchResults(IFormatter $formatter, $company, $keywords, $online)
 		{
+			$params = Searcher::parameterSource($_GET, $_POST);
 			$stmt = '';
 			$rows = array();
 			$matchClause = $this->matchClauseForKeywords($keywords);
-			$rows = $this->_db->query("SELECT `pub_id`, `ph_part`, `ph_title`,"
+			$onlineClause = $online ? "`pub_has_online_copies`" : '1=1';
+			$mainQuery = "SELECT `pub_id`, `ph_part`, `ph_title`,"
 				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
 				. " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
 				. " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `PUB`"
 				. " JOIN `PUBHISTORY` ON `pub_history` = `ph_id`"
-				. " WHERE `pub_has_online_copies` $matchClause"
+				. " WHERE $onlineClause $matchClause"
 				. " AND `ph_company`=$company"
-				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`")->fetchAll();
+				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
+			$rows = $this->_db->query($mainQuery)->fetchAll();
 			$total = count($rows);
-			$params = Searcher::parameterSource($_GET, $_POST);
 			if (array_key_exists('start', $params))
 			{
-				$start = $params['start'];
+				$start = $params['start'] - 1;
 			}
 			else
 			{
-				$start = 1;
+				$start = 0;
 			}
 			$rowsPerPage = DEFAULT_ROWS_PER_PAGE;
-			$end = min($total, $start + $rowsPerPage - 1);
+			$end = min($total - 1, $start + $rowsPerPage - 1);
 			for ($i = $start; $i <= $end; $i++)
 			{
 				$tags = array();
-				foreach ($this->_db->query("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` and `TAG`.`class` = 'os' AND `PUB`=" . $i)->fetchAll() as $tag)
+				foreach ($this->_db->query("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` and `TAG`.`class` = 'os' AND `PUB`=" . $rows[$i]['pub_id'])->fetchAll() as $tag)
 				{
 					array_push($tags, $tag['tag_text']);
 				}
-				$rows[$i - 1]['tags'] = $tags;
+				$rows[$i]['tags'] = $tags;
 			}
 			$formatter->renderResultsBar($this->_ignoredWords, $this->_searchWords, $start, $end, $total);
 			$formatter->renderPageSelectionBar($start, $total, $rowsPerPage, $params);

@@ -1,6 +1,7 @@
 <?php
 
 require_once 'PDODatabaseAdapter.php';
+require_once 'HtmlFormatter.php';
 require_once 'Searcher.php';
 require_once 'IManx.php';
 
