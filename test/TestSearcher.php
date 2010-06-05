@@ -29,6 +29,7 @@
 			$post = array();
 			$source = Searcher::parameterSource($get, $post);
 			$this->assertEquals($get, $source);
+			$this->assertTrue(array_key_exists('cp', $source));
 		}
 		
 		public function testParameterSourceHttpPost()
@@ -37,6 +38,7 @@
 			$post = array('cp' => 1);
 			$source = Searcher::parameterSource($get, $post);
 			$this->assertEquals($post, $source);
+			$this->assertTrue(array_key_exists('cp', $source));
 		}
 		
 		public function testParameterSourceDefaultGet()
@@ -45,6 +47,7 @@
 			$post = array();
 			$source = Searcher::parameterSource($get, $post);
 			$this->assertEquals($get, $source);
+			$this->assertTrue(array_key_exists('q', $source));
 		}
 		
 		public function testMatchClauseForKeyword()
