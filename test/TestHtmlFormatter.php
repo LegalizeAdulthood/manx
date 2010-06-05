@@ -15,7 +15,7 @@
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderResultsBar(array(), array(), 1, 1, 1);
+			$formatter->renderResultsBar(array(), array(), 0, 0, 1);
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="resbar">Showing all documents. Results <b>1 - 1</b> of <b>1</b>.</div>',
@@ -42,7 +42,7 @@
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderResultsBar(array(), array('graphics', 'terminal'), 1, 1, 1);
+			$formatter->renderResultsBar(array(), array('graphics', 'terminal'), 0, 0, 1);
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="resbar">Searching for "graphics" and "terminal". Results <b>1 - 1</b> of <b>1</b>.</div>',
@@ -53,7 +53,7 @@
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderResultsBar(array('a', 'an', 'it'), array('graphics', 'terminal'), 1, 1, 1);
+			$formatter->renderResultsBar(array('a', 'an', 'it'), array('graphics', 'terminal'), 0, 0, 1);
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<p class="warning">Ignoring "a", "an" and "it".  All search words must be at least three letters long.</p>'
