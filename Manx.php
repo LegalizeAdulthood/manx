@@ -87,21 +87,21 @@ class Manx implements IManx
 	
 	function renderSearchResults()
 	{
+		$params = Searcher::parameterSource($_GET, $_POST);
 		$searcher = Searcher::getInstance($this->_db);
 		print '<div id="Div1"><form action="search.php" method="get" name="f"><div class="field">Company: ';
-		$params = Searcher::parameterSource($_GET, $_POST);
-		$company = (array_key_exists($params, 'cp') ? $params['cp'] : 1);
-		$keywords = urldecode(array_key_exists($params, 'q') ? $params['q'] : '');
+		$company = (array_key_exists('cp', $params) ? $params['cp'] : 1);
+		$keywords = urldecode(array_key_exists('q', $params) ? $params['q'] : '');
 		$searcher->renderCompanies($company);
-		print 'Keywords: <input id="Text1" name="q" value="" size="20" maxlength="256" '
-			. (array_key_exists($params, 'q') ? ' value="' . $keywords . '"' : '')
+		print 'Keywords: <input id="q" name="q" size="20" maxlength="256" '
+			. (array_key_exists('q', $params) ? ' value="' . $keywords . '"' : '')
 			. '/> '
 			. 'Online only: <input type="checkbox" name="on" '
-			. (array_key_exists($params, 'on') ? ' checked' : '')
+			. (array_key_exists('on', $params) ? ' checked' : '')
 			. '/> '
 			. '<input id="Submit1" type="submit" value="Search" /></div></form></div>';
 		$formatter = HtmlFormatter::getInstance();
-		$online = array_key_exists($params, 'on') && ($params['on'] != '0');
+		$online = array_key_exists('on', $params) && ($params['on'] != '0');
 		$searcher->renderSearchResults($formatter, $company, $keywords, $online);
 	}
 }
