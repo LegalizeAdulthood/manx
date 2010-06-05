@@ -45,7 +45,6 @@
 		
 		public function renderPageSelectionBar($start, $total, $rowsPerPage, $params)
 		{
-			--$start;
 			$encodedQuery = urlencode(array_key_exists('q', $params) ? $params['q'] : '');
 			print '<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;';
 			$linkOptions = ($rowsPerPage != DEFAULT_ROWS_PER_PAGE ? ';num=' . $rowsPerPage : '')

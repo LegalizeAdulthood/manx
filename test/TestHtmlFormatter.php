@@ -65,7 +65,7 @@
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderPageSelectionBar(1, 5, 10, array());
+			$formatter->renderPageSelectionBar(0, 4, 10, array());
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>',
@@ -76,7 +76,7 @@
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderPageSelectionBar(1, 20, 10, array('q' => 'vt220 terminal', 'cp' => 1));
+			$formatter->renderPageSelectionBar(0, 19, 10, array('q' => 'vt220 terminal', 'cp' => 1));
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
@@ -90,7 +90,7 @@
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderPageSelectionBar(11, 30, 10, array('q' => 'vt220 terminal', 'cp' => 1, 'start' => 10));
+			$formatter->renderPageSelectionBar(10, 29, 10, array('q' => 'vt220 terminal', 'cp' => 1, 'start' => 10));
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;'
@@ -106,7 +106,7 @@
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderPageSelectionBar(21, 30, 10, array('q' => 'vt100 terminal', 'cp' => 1, 'start' => 20));
+			$formatter->renderPageSelectionBar(20, 29, 10, array('q' => 'vt100 terminal', 'cp' => 1, 'start' => 20));
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;'
@@ -121,7 +121,7 @@
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderPageSelectionBar(1, 20, 10, array('q' => 'vt220 terminal', 'cp' => 1, 'on' => 'on'));
+			$formatter->renderPageSelectionBar(0, 19, 10, array('q' => 'vt220 terminal', 'cp' => 1, 'on' => 'on'));
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
@@ -135,7 +135,7 @@
 		{
 			$formatter = HtmlFormatter::getInstance();
 			ob_start();
-			$formatter->renderPageSelectionBar(1, 10, 5, array('q' => 'vt220 terminal', 'cp' => 1, 'on' => 'on', 'num' => 5));
+			$formatter->renderPageSelectionBar(0, 9, 5, array('q' => 'vt220 terminal', 'cp' => 1, 'on' => 'on', 'num' => 5));
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
