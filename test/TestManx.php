@@ -273,7 +273,7 @@
 			$this->assertEquals('', $output);
 		}
 		
-		public function XtestRenderDetail()
+		public function testRenderDetail()
 		{
 			$db = new FakeDatabase();
 			$statement = new FakeStatement();
@@ -291,13 +291,13 @@
 				. 'WHERE 1=1 AND `pub_id`=3';
 			$db->queryFakeResultsForQuery[$detailQuery] = $statement;
 			
-			$manx = new ManxRenderDetailTester($db);
+			$manx = new ManxRenderDetailsTester($db);
 			ob_start();
 			$manx->renderDetails('/1,3');
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertTrue($db->queryCalled);
-			$this->assertEquals($amendmentQuery, $db->queryLastStatement);
+			$this->assertEquals($detailQuery, $db->queryLastStatement);
 			$this->assertTrue($manx->renderLanguageCalled);
 			$this->assertEquals('+en', $manx->renderLanguageLastLanguage);
 			$this->assertTrue($manx->renderAmendmentsCalled);
@@ -314,14 +314,14 @@
 			$this->assertEquals(3, $manx->renderTableOfContentsLastPubId);
 			$this->assertTrue($manx->renderCopiesCalled);
 			$this->assertEquals(3, $manx->renderCopiesLastPubId);
-			$this->assertEquals('<div class="det"><h1>GIGI/ReGIS Handbook</h1>
-<table><tbody><tr><td>Company:</td><td>Digital Equipment Corporation</td></tr>
-<tr><td>Part:</td><td>AA-K336A-TK</td></tr>
-<tr><td>Date:</td><td></td></tr>
-<tr><td>Keywords:</td><td>VK100</td></tr>
-</tbody>
-</table>
-', $output);
+			$this->assertEquals("<div class=\"det\"><h1>GIGI/ReGIS Handbook</h1>\n"
+				. "<table><tbody><tr><td>Company:</td><td>Digital Equipment Corporation</td></tr>\n"
+				. "<tr><td>Part:</td><td>AA-K336A-TK</td></tr>\n"
+				. "<tr><td>Date:</td><td></td></tr>\n"
+				. "<tr><td>Keywords:</td><td>VK100</td></tr>\n"
+				. "</tbody>\n"
+				. "</table>\n"
+				. "</div>\n", $output);
 		}
 	}
 ?>

@@ -474,7 +474,7 @@ class Manx implements IManx
 				. 'JOIN `COMPANY` ON `ph_company`=`COMPANY`.`id` '
 				. 'WHERE %s AND `pub_id`=%d',
 			'1=1', $params['id']);
-		$rows = $this->_db->query($query)->fetch();
+		$rows = $this->_db->query($query)->fetchAll();
 		$row = $rows[0];
 		echo '<div class="det"><h1>', $row['ph_title'], "</h1>\n";
 		echo '<table><tbody>';
@@ -489,11 +489,16 @@ class Manx implements IManx
 		$this->renderLongDescription($pubId);
 		$this->renderCitations($pubId);
 		$this->renderSupersessions($pubId);
-		$this->printTableRowFromDatabaseRow($row, 'Text', 'ph_abstract');
+		$abstract = $row['ph_abstract'];
+		$abstract = is_null($abstract) ? '' : trim($abstract);
+		if (strlen($abstract) > 0)
+		{
+			$this->printTableRow('Text', $abstract);
+		}
 		echo "</tbody>\n</table>\n";
 		$this->renderTableOfContents($pubId);
 		$this->renderCopies($pubId);
-		echo '</div>';
+		print "</div>\n";
 	}
 }
 
