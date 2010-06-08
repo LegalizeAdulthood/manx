@@ -13,7 +13,7 @@ interface IManx
 	public function renderLongDescription($pubId);
 	public function renderCitations($pubId);
 	public function renderSupersessions($pubId);
-	public function renderTableOfContents($pubId);
+	public function renderTableOfContents($pubIdm, $fullContents);
 	public function renderCopies($pubId);
 }
 

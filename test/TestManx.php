@@ -61,11 +61,12 @@
 			$this->renderSupersessionsLastPubId = $pubId;
 		}
 		
-		public $renderTableOfContentsCalled, $renderTableOfContentsLastPubId;
-		public function renderTableOfContents($pubId)
+		public $renderTableOfContentsCalled, $renderTableOfContentsLastPubId, $renderTableOfContentsLastFullContents;
+		public function renderTableOfContents($pubId, $fullContents)
 		{
 			$this->renderTableOfContentsCalled = true;
 			$this->renderTableOfContentsLastPubId = $pubId;
+			$this->renderTableOfContentsLastFullContents = $fullContents;
 		}
 		
 		public $renderCopiesCalled, $renderCopiesLastPubId;
@@ -311,6 +312,322 @@
 				. "</ul></td></tr>\n", $output);
 		}
 		
+		public function testRenderTableOfContents()
+		{
+			$db = new FakeDatabase();
+			$statement = new FakeStatement();
+			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
+				array('level', 'label', 'name'),
+				array(
+					array(1, 'Chapter 1', 'KA655 CPU and Memory Subsystem'),
+					array(2, '1.1', 'Introduction'),
+					array(2, '1.2', 'KA655 CPU Features'),
+					array(3, '1.2.1', 'Central Processing Unit (CPU)'),
+					array(3, '1.2.2', 'Clock Functions'),
+					array(3, '1.2.3', 'Floating Point Accelerator'),
+					array(3, '1.2.4', 'Cache Memory'),
+					array(3, '1.2.5', 'Memory Controller'),
+					array(3, '1.2.6', 'MicroVAX System Support Functions'),
+					array(3, '1.2.7', 'Resident Firmware'),
+					array(3, '1.2.8', 'Q22-Bus Interface'),
+					array(2, '1.3', 'KA655 Connectors'),
+					array(2, '1.4', 'H3600-SA CPU I/O Panel'),
+					array(2, '1.5', 'MS650-BA Memory'),
+					array(1, 'Chapter 2', 'Configuration'),
+					array(2, '2.1', 'Introduction'),
+					array(2, '2.2', 'General Module Order'),
+					array(3, '2.2.1', 'Module Order Rules for KA655 Systems'),
+					array(3, '2.2.2', 'Recommended Module Order for KA655 Systems'),
+					array(2, '2.3', 'Module Configuration'),
+					array(2, '2.4', 'DSSI Configuration'),
+					array(3, '2.4.1', 'Changing RF-Series ISE Parameters'),
+					array(3, '2.4.2', 'Changing the Unit Number'),
+					array(3, '2.4.3', 'Changing the Allocation Class'),
+					array(3, '2.4.4', 'DSSI Cabling'),
+					array(4, '2.4.4.1', 'DSSI Bus Termination and Length'),
+					array(3, '2.4.5', 'Dual-Host Capability'),
+					array(3, '2.4.6', 'Limitations to Dual-Host Configurations'),
+					array(2, '2.5', 'Configuration Worksheet'),
+					array(1, 'Chapter 3', 'KA655 Firmware'),
+					array(2, '3.1', 'Introduction'),
+					array(2, '3.2', 'KA655 Firmware Features'),
+					array(2, '3.3', 'Halt Entry, Exit, and Dispatch Code'),
+					array(2, '3.4', 'External Halts'),
+					array(2, '3.5', 'Power-Up Sequence'),
+					array(3, '3.5.1', 'Mode Switch Set to Test'),
+					array(3, '3.5.2', 'Mode Switch Set to Language Inquiry'),
+					array(3, '3.5.3', 'Mode Switch Set to Normal'),
+					array(2, '3.6', 'Bootstrap'),
+					array(3, '3.6.1', 'Bootstrap Initialization Sequence'),
+					array(3, '3.6.2', 'VMB Boot Flags'),
+					array(3, '3.6.3', 'Supported Boot Devices'),
+					array(3, '3.6.4', 'Autoboot'),
+					array(2, '3.7', 'Operating System Restart'),
+					array(3, '3.7.1', 'Restart Sequence'),
+					array(3, '3.7.2', 'Locating the RPB'),
+					array(2, '3.8', 'Console I/O Mode'),
+					array(3, '3.8.1', 'Command Syntax'),
+					array(3, '3.8.2', 'Address Specifiers'),
+					array(3, '3.8.3', 'Symbolic Addresses'),
+					array(3, '3.8.4', 'Console Command Qualifiers'),
+					array(3, '3.8.5', 'Console Command Keywords'),
+					array(2, '3.9', 'Console Commands'),
+					array(3, '3.9.1', 'BOOT'),
+					array(3, '3.9.2', 'CONFIGURE'),
+					array(3, '3.9.3', 'CONTINUE'),
+					array(3, '3.9.4', 'DEPOSIT'),
+					array(3, '3.9.5', 'EXAMINE'),
+					array(3, '3.9.6', 'FIND'),
+					array(3, '3.9.7', 'HALT'),
+					array(3, '3.9.8', 'HELP'),
+					array(3, '3.9.9', 'INITIALIZE'),
+					array(3, '3.9.10', 'MOVE'),
+					array(3, '3.9.11', 'NEXT'),
+					array(3, '3.9.12', 'REPEAT'),
+					array(3, '3.9.13', 'SEARCH'),
+					array(3, '3.9.14', 'SET'),
+					array(3, '3.9.15', 'SHOW'),
+					array(3, '3.9.16', 'START'),
+					array(3, '3.9.17', 'TEST'),
+					array(3, '3.9.18', 'UNJAM'),
+					array(3, '3.9.19', 'X---Binary Load and Unload'),
+					array(3, '3.9.20', '! (Comment)'),
+					array(1, 'Chapter 4', 'Troubleshooting and Diagnostics'),
+					array(2, '4.1', 'Introduction'),
+					array(2, '4.2', 'General Procedures'),
+					array(2, '4.3', 'KA655 ROM-Based Diagnostics'),
+					array(3, '4.3.1', 'Diagnostic Tests'),
+					array(3, '4.3.2', 'Scripts'),
+					array(3, '4.3.3', 'Script Calling Sequence'),
+					array(3, '4.3.4', 'Creating Scripts'),
+					array(3, '4.3.5', 'Console Displays'),
+					array(3, '4.3.6', 'System Halt Messages'),
+					array(3, '4.3.7', 'Console Error Messages'),
+					array(3, '4.3.8', 'VMB Error Messages'),
+					array(2, '4.4', 'Acceptance Testing'),
+					array(2, '4.5', 'Troubleshooting'),
+					array(3, '4.5.1', 'FE Utility'),
+					array(3, '4.5.2', 'Isolating Memory Failures'),
+					array(3, '4.5.3', 'Additional Troubleshooting Suggestions'),
+					array(2, '4.6', 'Loopback Tests'),
+					array(3, '4.6.1', 'Testing the Console Port'),
+					array(2, '4.7', 'Module Self-Tests'),
+					array(2, '4.8', 'RF-Series ISE Troubleshooting and Diagnostics'),
+					array(3, '4.8.1', 'DRVTST'),
+					array(3, '4.8.2', 'DRVEXR'),
+					array(3, '4.8.3', 'HISTRY'),
+					array(3, '4.8.4', 'ERASE'),
+					array(3, '4.8.5', 'PARAMS'),
+					array(4, '4.8.5.1', 'EXIT'),
+					array(4, '4.8.5.2', 'HELP'),
+					array(4, '4.8.5.3', 'SET'),
+					array(4, '4.8.5.4', 'SHOW'),
+					array(4, '4.8.5.5', 'STATUS'),
+					array(4, '4.8.5.6', 'WRITE'),
+					array(2, '4.9', 'Diagnostic Error Codes'),
+					array(1, 'Appendix A', 'Configuring the KFQSA'),
+					array(2, 'A.1', 'KFQSA Overview'),
+					array(3, 'A.1.1', 'Dual-Host Configuration'),
+					array(2, 'A.2', 'Configuring the KFQSA at Installation'),
+					array(3, 'A.2.1', 'Entering Console I/O Mode'),
+					array(3, 'A.2.2', 'Displaying Current Addresses'),
+					array(3, 'A.2.3', 'Running the Configure Utility'),
+					array(2, 'A.3', 'Programming the KFQSA'),
+					array(2, 'A.4', 'Reprogramming the KFQSA'),
+					array(2, 'A.5', 'Changing the ISE Allocation Class and Unit Number'),
+					array(1, 'Appendix B', 'KA655 CPU Address Assignments'),
+					array(2, 'B.1', 'General Local Address Space Map'),
+					array(2, 'B.2', 'Detailed Local Address Space Map'),
+					array(2, 'B.3', 'Internal Processor Registers'),
+					array(3, 'B.3.1', 'KA655 VAX Standard IPRs'),
+					array(3, 'B.3.2', 'KA655 Unique IPRs'),
+					array(2, 'B.4', 'Global Q22-Bus Address Space Map'),
+					array(1, 'Appendix C', 'Related Documentation')));
+			$query = "SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=123 ORDER BY `line`";
+
+			$db->queryFakeResultsForQuery[$query] = $statement;
+			$manx = Manx::getInstanceForDatabase($db);
+			ob_start();
+			$manx->renderTableOfContents(123, true);
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertTrue($db->queryCalled);
+			$this->assertEquals("<h2>Table of Contents</h2>\n"
+				. "<div class=\"toc\">\n"
+				. "<ul>\n"
+				. "<li class=\"level1\"><span class=\"level1\">Chapter 1</span> KA655 CPU and Memory Subsystem\n"
+				. "<ul>\n"
+				. "<li class=\"level2\"><span>1.1</span> Introduction</li>\n"
+				. "<li class=\"level2\"><span>1.2</span> KA655 CPU Features\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>1.2.1</span> Central Processing Unit (CPU)</li>\n"
+				. "<li class=\"level3\"><span>1.2.2</span> Clock Functions</li>\n"
+				. "<li class=\"level3\"><span>1.2.3</span> Floating Point Accelerator</li>\n"
+				. "<li class=\"level3\"><span>1.2.4</span> Cache Memory</li>\n"
+				. "<li class=\"level3\"><span>1.2.5</span> Memory Controller</li>\n"
+				. "<li class=\"level3\"><span>1.2.6</span> MicroVAX System Support Functions</li>\n"
+				. "<li class=\"level3\"><span>1.2.7</span> Resident Firmware</li>\n"
+				. "<li class=\"level3\"><span>1.2.8</span> Q22-Bus Interface</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>1.3</span> KA655 Connectors</li>\n"
+				. "<li class=\"level2\"><span>1.4</span> H3600-SA CPU I/O Panel</li>\n"
+				. "<li class=\"level2\"><span>1.5</span> MS650-BA Memory</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level1\"><span class=\"level1\">Chapter 2</span> Configuration\n"
+				. "<ul>\n"
+				. "<li class=\"level2\"><span>2.1</span> Introduction</li>\n"
+				. "<li class=\"level2\"><span>2.2</span> General Module Order\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>2.2.1</span> Module Order Rules for KA655 Systems</li>\n"
+				. "<li class=\"level3\"><span>2.2.2</span> Recommended Module Order for KA655 Systems</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>2.3</span> Module Configuration</li>\n"
+				. "<li class=\"level2\"><span>2.4</span> DSSI Configuration\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>2.4.1</span> Changing RF-Series ISE Parameters</li>\n"
+				. "<li class=\"level3\"><span>2.4.2</span> Changing the Unit Number</li>\n"
+				. "<li class=\"level3\"><span>2.4.3</span> Changing the Allocation Class</li>\n"
+				. "<li class=\"level3\"><span>2.4.4</span> DSSI Cabling\n"
+				. "<ul>\n"
+				. "<li class=\"level4\"><span>2.4.4.1</span> DSSI Bus Termination and Length</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level3\"><span>2.4.5</span> Dual-Host Capability</li>\n"
+				. "<li class=\"level3\"><span>2.4.6</span> Limitations to Dual-Host Configurations</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>2.5</span> Configuration Worksheet</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level1\"><span class=\"level1\">Chapter 3</span> KA655 Firmware\n"
+				. "<ul>\n"
+				. "<li class=\"level2\"><span>3.1</span> Introduction</li>\n"
+				. "<li class=\"level2\"><span>3.2</span> KA655 Firmware Features</li>\n"
+				. "<li class=\"level2\"><span>3.3</span> Halt Entry, Exit, and Dispatch Code</li>\n"
+				. "<li class=\"level2\"><span>3.4</span> External Halts</li>\n"
+				. "<li class=\"level2\"><span>3.5</span> Power-Up Sequence\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>3.5.1</span> Mode Switch Set to Test</li>\n"
+				. "<li class=\"level3\"><span>3.5.2</span> Mode Switch Set to Language Inquiry</li>\n"
+				. "<li class=\"level3\"><span>3.5.3</span> Mode Switch Set to Normal</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>3.6</span> Bootstrap\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>3.6.1</span> Bootstrap Initialization Sequence</li>\n"
+				. "<li class=\"level3\"><span>3.6.2</span> VMB Boot Flags</li>\n"
+				. "<li class=\"level3\"><span>3.6.3</span> Supported Boot Devices</li>\n"
+				. "<li class=\"level3\"><span>3.6.4</span> Autoboot</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>3.7</span> Operating System Restart\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>3.7.1</span> Restart Sequence</li>\n"
+				. "<li class=\"level3\"><span>3.7.2</span> Locating the RPB</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>3.8</span> Console I/O Mode\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>3.8.1</span> Command Syntax</li>\n"
+				. "<li class=\"level3\"><span>3.8.2</span> Address Specifiers</li>\n"
+				. "<li class=\"level3\"><span>3.8.3</span> Symbolic Addresses</li>\n"
+				. "<li class=\"level3\"><span>3.8.4</span> Console Command Qualifiers</li>\n"
+				. "<li class=\"level3\"><span>3.8.5</span> Console Command Keywords</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>3.9</span> Console Commands\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>3.9.1</span> BOOT</li>\n"
+				. "<li class=\"level3\"><span>3.9.2</span> CONFIGURE</li>\n"
+				. "<li class=\"level3\"><span>3.9.3</span> CONTINUE</li>\n"
+				. "<li class=\"level3\"><span>3.9.4</span> DEPOSIT</li>\n"
+				. "<li class=\"level3\"><span>3.9.5</span> EXAMINE</li>\n"
+				. "<li class=\"level3\"><span>3.9.6</span> FIND</li>\n"
+				. "<li class=\"level3\"><span>3.9.7</span> HALT</li>\n"
+				. "<li class=\"level3\"><span>3.9.8</span> HELP</li>\n"
+				. "<li class=\"level3\"><span>3.9.9</span> INITIALIZE</li>\n"
+				. "<li class=\"level3\"><span>3.9.10</span> MOVE</li>\n"
+				. "<li class=\"level3\"><span>3.9.11</span> NEXT</li>\n"
+				. "<li class=\"level3\"><span>3.9.12</span> REPEAT</li>\n"
+				. "<li class=\"level3\"><span>3.9.13</span> SEARCH</li>\n"
+				. "<li class=\"level3\"><span>3.9.14</span> SET</li>\n"
+				. "<li class=\"level3\"><span>3.9.15</span> SHOW</li>\n"
+				. "<li class=\"level3\"><span>3.9.16</span> START</li>\n"
+				. "<li class=\"level3\"><span>3.9.17</span> TEST</li>\n"
+				. "<li class=\"level3\"><span>3.9.18</span> UNJAM</li>\n"
+				. "<li class=\"level3\"><span>3.9.19</span> X---Binary Load and Unload</li>\n"
+				. "<li class=\"level3\"><span>3.9.20</span> ! (Comment)</li>\n"
+				. "</ul></li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level1\"><span class=\"level1\">Chapter 4</span> Troubleshooting and Diagnostics\n"
+				. "<ul>\n"
+				. "<li class=\"level2\"><span>4.1</span> Introduction</li>\n"
+				. "<li class=\"level2\"><span>4.2</span> General Procedures</li>\n"
+				. "<li class=\"level2\"><span>4.3</span> KA655 ROM-Based Diagnostics\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>4.3.1</span> Diagnostic Tests</li>\n"
+				. "<li class=\"level3\"><span>4.3.2</span> Scripts</li>\n"
+				. "<li class=\"level3\"><span>4.3.3</span> Script Calling Sequence</li>\n"
+				. "<li class=\"level3\"><span>4.3.4</span> Creating Scripts</li>\n"
+				. "<li class=\"level3\"><span>4.3.5</span> Console Displays</li>\n"
+				. "<li class=\"level3\"><span>4.3.6</span> System Halt Messages</li>\n"
+				. "<li class=\"level3\"><span>4.3.7</span> Console Error Messages</li>\n"
+				. "<li class=\"level3\"><span>4.3.8</span> VMB Error Messages</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>4.4</span> Acceptance Testing</li>\n"
+				. "<li class=\"level2\"><span>4.5</span> Troubleshooting\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>4.5.1</span> FE Utility</li>\n"
+				. "<li class=\"level3\"><span>4.5.2</span> Isolating Memory Failures</li>\n"
+				. "<li class=\"level3\"><span>4.5.3</span> Additional Troubleshooting Suggestions</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>4.6</span> Loopback Tests\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>4.6.1</span> Testing the Console Port</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>4.7</span> Module Self-Tests</li>\n"
+				. "<li class=\"level2\"><span>4.8</span> RF-Series ISE Troubleshooting and Diagnostics\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>4.8.1</span> DRVTST</li>\n"
+				. "<li class=\"level3\"><span>4.8.2</span> DRVEXR</li>\n"
+				. "<li class=\"level3\"><span>4.8.3</span> HISTRY</li>\n"
+				. "<li class=\"level3\"><span>4.8.4</span> ERASE</li>\n"
+				. "<li class=\"level3\"><span>4.8.5</span> PARAMS\n"
+				. "<ul>\n"
+				. "<li class=\"level4\"><span>4.8.5.1</span> EXIT</li>\n"
+				. "<li class=\"level4\"><span>4.8.5.2</span> HELP</li>\n"
+				. "<li class=\"level4\"><span>4.8.5.3</span> SET</li>\n"
+				. "<li class=\"level4\"><span>4.8.5.4</span> SHOW</li>\n"
+				. "<li class=\"level4\"><span>4.8.5.5</span> STATUS</li>\n"
+				. "<li class=\"level4\"><span>4.8.5.6</span> WRITE</li>\n"
+				. "</ul></li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>4.9</span> Diagnostic Error Codes</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level1\"><span class=\"level1\">Appendix A</span> Configuring the KFQSA\n"
+				. "<ul>\n"
+				. "<li class=\"level2\"><span>A.1</span> KFQSA Overview\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>A.1.1</span> Dual-Host Configuration</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>A.2</span> Configuring the KFQSA at Installation\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>A.2.1</span> Entering Console I/O Mode</li>\n"
+				. "<li class=\"level3\"><span>A.2.2</span> Displaying Current Addresses</li>\n"
+				. "<li class=\"level3\"><span>A.2.3</span> Running the Configure Utility</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>A.3</span> Programming the KFQSA</li>\n"
+				. "<li class=\"level2\"><span>A.4</span> Reprogramming the KFQSA</li>\n"
+				. "<li class=\"level2\"><span>A.5</span> Changing the ISE Allocation Class and Unit Number</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level1\"><span class=\"level1\">Appendix B</span> KA655 CPU Address Assignments\n"
+				. "<ul>\n"
+				. "<li class=\"level2\"><span>B.1</span> General Local Address Space Map</li>\n"
+				. "<li class=\"level2\"><span>B.2</span> Detailed Local Address Space Map</li>\n"
+				. "<li class=\"level2\"><span>B.3</span> Internal Processor Registers\n"
+				. "<ul>\n"
+				. "<li class=\"level3\"><span>B.3.1</span> KA655 VAX Standard IPRs</li>\n"
+				. "<li class=\"level3\"><span>B.3.2</span> KA655 Unique IPRs</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level2\"><span>B.4</span> Global Q22-Bus Address Space Map</li>\n"
+				. "</ul></li>\n"
+				. "<li class=\"level1\"><span class=\"level1\">Appendix C</span> Related Documentation</li>\n"
+				. "</ul></div>", $output);
+		}
+		
 		public function testRenderDetail()
 		{
 			$db = new FakeDatabase();
@@ -350,6 +667,7 @@
 			$this->assertEquals(3, $manx->renderSupersessionsLastPubId);
 			$this->assertTrue($manx->renderTableOfContentsCalled);
 			$this->assertEquals(3, $manx->renderTableOfContentsLastPubId);
+			$this->assertEquals(true, $manx->renderTableOfContentsLastFullContents);
 			$this->assertTrue($manx->renderCopiesCalled);
 			$this->assertEquals(3, $manx->renderCopiesLastPubId);
 			$this->assertEquals('<div style="float:right; margin: 10px"><img src="gigi_regis_handbook.png" alt="" /></div>'

@@ -308,67 +308,60 @@ class Manx implements IManx
 	*/
 	}
 
-	public function renderTableOfContents($pubId)
+	public function renderTableOfContents($pubId, $fullContents)
 	{
-	/*
-		my $started_contents = 0;
-
-		$smt = 'select level,label,name from TOC where pub=?';
-		if (!$full_contents) {
-			$smt .= ' and level<2';
+		$query = sprintf("SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=%d", $pubId);
+		if (!$fullContents)
+		{
+			$query .= ' AND `level` < 2';
 		}
-		$smt .= ' order by line';
-	
-		$sth = $dbh->prepare($smt);
-		warn $DBI::errstr if $DBI::err;
-		$rv = $sth->execute($pub);
-		warn $DBI::errstr if $DBI::err;
-
-		my $currlevel = 0;
-		while (@rowary = $sth->fetchrow_array) {
-			if (!$started_contents) {
-				if ($path_trump) {
-					print qq{<H2>Table of Contents</H2>\n};
-				} elsif ($full_contents) {
-					param('cn','0');
-					print qq{<H2>Full Contents [<A HREF="}, html_encode(self_url()), qq{">Mini</A>]</H2>\n};
-				} else {
-					param('cn','1');
-					print qq{<H2>Mini Contents [<A HREF="}, html_encode(self_url()), qq{">Full</A>]</H2>\n};
+		$query .= ' ORDER BY `line`';
+		$currentLevel = 0;
+		$startedContents = false;
+		foreach ($this->_db->query($query)->fetchAll() as $row)
+		{
+			if (!$startedContents)
+			{
+				print "<h2>Table of Contents</h2>\n";
+				print '<div class="toc">';
+				$startedContents = true;
+			}
+			$rowLevel = $row['level'];
+			$rowLabel = $row['label'];
+			$rowName = $row['name'];
+			if ($rowLevel > $currentLevel)
+			{
+				++$currentLevel;
+				print "\n<ul>\n";
+			}
+			else if ($rowLevel < $currentLevel)
+			{
+				print "</li>\n";
+				while ($rowLevel < $currentLevel)
+				{
+					print "</ul></li>\n";
+					--$currentLevel;
 				}
-				print qq{<DIV CLASS="toc">};
-				$started_contents = 1;
 			}
-
-			my ($rowlevel, $rowlabel, $rowname) = @rowary;
-			if ($rowlevel > $currlevel) {
-				++$currlevel;
-				print "\n<UL>\n";
-			} elsif ($rowlevel < $currlevel) {
-				print "</LI>\n";
-				while ($rowlevel < $currlevel) {
-					print "</UL></LI>\n";
-					--$currlevel;
-				}
-			} else {
-				print "</LI>\n";
+			else
+			{
+				print "</li>\n";
 			}
-			$rowlabel ||= '&nbsp;' if $currlevel > 1;
-			print qq{<LI CLASS="level$currlevel"><SPAN}, ($currlevel == 1 ? ' CLASS="level1"' : ''), qq{>$rowlabel</SPAN> }, html_encode($rowname);
-			
-			#print "Row: $rowlevel, Label: $rowlabel, Name: $rowname<br>\n";
+			if (is_null($rowLabel) && $currentLevel > 1)
+			{
+				$rowLabel = '&nbsp;';
+			}
+			printf('<li class="level%d"><span%s>%s</span> %s',
+				$currentLevel, ($currentLevel == 1 ? ' class="level1"' : ''), $rowLabel, htmlspecialchars($rowName));
 		}
-
-		$rc = $sth->finish;
-		warn $DBI::errstr if $DBI::err;
-
-		if ($started_contents) {
-			while (0 < $currlevel--) {
-				print "</LI>\n</UL>";
+		if ($startedContents)
+		{
+			while (0 < $currentLevel--)
+			{
+				print "</li>\n</ul>";
 			}
-			print "</DIV>";
+			print '</div>';
 		}
-	*/
 	}
 	
 	public function renderCopies($pubId)
@@ -510,7 +503,8 @@ class Manx implements IManx
 			$this->printTableRow('Text', $abstract);
 		}
 		echo "</tbody>\n</table>\n";
-		$this->renderTableOfContents($pubId);
+		$fullContents = array_key_exists('cn', $params) && ($params['cn'] == 1);
+		$this->renderTableOfContents($pubId, $fullContents);
 		$this->renderCopies($pubId);
 		print "</div>\n";
 	}
