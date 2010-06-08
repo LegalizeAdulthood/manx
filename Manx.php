@@ -366,101 +366,138 @@ class Manx implements IManx
 	
 	public function renderCopies($pubId)
 	{
-	/*
-		# COPIES
-		#              0       1         2      3     4          5         6                 7               8         9
-		$smt = 'select format, COPY.url, notes, size, SITE.name, SITE.url as site_url, SITE.description, SITE.copy_base, SITE.low, COPY.md5,' .
-		#         10                 11
-			' COPY.amend_serial, COPY.credits, copyid' .
-			' from COPY,SITE where COPY.site=SITE.siteid and pub=? order by SITE.display_order,SITE.siteid';
-		$sth = $dbh->prepare($smt);
-		warn $DBI::errstr if $DBI::err;
-		$rv = $sth->execute($pub);
-		warn $DBI::errstr if $DBI::err;
-
+		$query = sprintf("SELECT `format`,`COPY`.`url`,`notes`,`size`,"
+			. "`SITE`.`name`,`SITE`.`url` AS `site_url`,`SITE`.`description`,"
+			. "`SITE`.`copy_base`,`SITE`.`low`,`COPY`.`md5`,`COPY`.`amend_serial`,"
+			. "`COPY`.`credits`,`copyid`"
+			. " FROM `COPY`,`SITE`"
+			. " WHERE `COPY`.`site`=`SITE`.`siteid` AND PUB=%d"
+			. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`", $pubId);
 		print "<h2>Copies</h2>\n";
-		my $copy_count = 0;
-		while (my $rcopy = $sth->fetchrow_hashref) {
-			if (++$copy_count == 1) {
-				print "<TABLE>\n<TBODY>";
-			} else {
-				print qq{<TR>\n<TD COLSPAN="2">&nbsp;</TD>\n</TR>\n};
+		$copyCount = 0;
+		foreach ($this->_db->query($query)->fetchAll() as $row)
+		{
+			if (++$copyCount == 1)
+			{
+				print "<table>\n<tbody>";
 			}
+			else
+			{
+				print "<tr>\n<td colspan=\"2\">&nbsp;</td>\n</tr>\n";
+			}
+			
+			print "<tr>\n<td>Address:</td>\n<td>";
+			$copyUrl = $row['url'];
+			if (substr($copyUrl, 0, 1) == '+')
+			{
+				$copyUrl = $row['copy_base'] . substr($copyUrl, 1);
+			}
+			printf("<a href=\"%s\">%s</a></td>\n</tr>\n", $copyUrl, $copyUrl);
+			printf("<tr>\n<td>Site:</td>\n<td><a href=\"%s\">%s</a>", htmlspecialchars($row['site_url']), htmlspecialchars($row['description']));
+			if ($row['low'] != 'N')
+			{
+				print ' <span class="warning">(Low Bandwidth)</span>';
+			}
+			print "</td>\n</tr>\n";
+			printf("<tr>\n<td>Format:</td>\n<td>%s</td>\n</tr>\n", htmlspecialchars($row['format']));
+			$size = $row['size'];
+			if ($size > 0)
+			{
+				printf("<tr>\n<td>Size:</td>\n<td>%d bytes", $size);
+				$sizeMegabytes = $size/(1024*1024);
+				$sizeKilobytes = $size/1024;
+				if ($sizeMegabytes > 1.0)
+				{
+					printf(" (%.1f MiB)", $sizeMegabytes);
+				}
+				else if ($sizeKilobytes > 1.0)
+				{
+					printf(" (%.0f KiB)", $sizeKilobytes);
+				}
+				print "</td>\n</tr>\n";
+			}
+			$md5 = $row['md5'];
+			$md5 = is_null($md5) ? '' : trim($md5);
+			if (strlen($md5) > 0)
+			{
+				printf("<tr>\n<td>MD5:</td>\n<td>%s</td>\n</tr>\n", htmlspecialchars($md5));
+			}
+			$notes = $row['notes'];
+			$notes = is_null($notes) ? '' : trim($notes);
+			if (strlen($notes) > 0)
+			{
+				printf("<tr>\n<td>Notes:</td>\n<td>%s</td>\n</tr>\n", htmlspecialchars($notes));
+			}
+			$credits = $row['credits'];
+			$credits = is_null($credits) ? '' : trim($credits);
+			if (strlen($credits) > 0)
+			{
+				printf("<tr>\n<td>Credits:</td><td>%s</td>\n</tr>\n", htmlspecialchars($credits));
+			}
+			$amendSerial = $row['amend_serial'];
+			if (!is_null($amendSerial))
+			{
+				$amendQuery = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pubdate`"
+						. " FROM `PUB` JOIN `PUBHISTORY` ON `pub_history`=`ph_id`"
+						. " WHERE `ph_amend_pub`=%d AND `ph_amend_serial`=%d",
+					$pubId, $amendSerial);
+				$amendRows = $this->_db->query($amendQuery)->fetch();
+				$amendRow = $amendRows[0];
+				$amend = sprintf("<a href=\"../details.php/%d,%d\"><cite>%s</cite></a>",
+					$amendRow['ph_company'], $amendRow['pub_id'], htmlspecialchars($amendRow['ph_title']));
+				$part = $amendRow['ph_part'];
+				$part = is_null($part) ? '' : trim($part);
+				if (strlen($part) > 0)
+				{
+					$amend = htmlspecialchars($part) . ', ' . $amend;
+				}
+				$pubDate = $amendRow['ph_pubdate'];
+				if (!is_null($pubDate))
+				{
+					$amend .= ' (' . htmlspecialchars($pubDate) . ')';
+				}
 
-			my $copy_url;
-			print "<TR>\n<TD>Address:</TD>\n<TD>";
-			if ($rcopy->{url} =~ /^\+/) {
-				$copy_url = $rcopy->{copy_base} . substr($rcopy->{url}, 1);
-			} else {
-				$copy_url = $rcopy->{url};
-			}
-			print qq{<A HREF="$copy_url">$copy_url</A></TD>\n</TR>\n};
-			print qq{<TR>\n<TD>Site:</TD>\n<TD><A HREF="}, html_encode($rcopy->{site_url}), qq{">}, html_encode($rcopy->{description}),'</A>';
-			print ' <SPAN CLASS="warning">(Low Bandwidth)</SPAN>' if $rcopy->{low} ne 'N';
-			print qq{</TD>\n</TR>\n};
-			print qq{<TR>\n<TD>Format:</TD>\n<TD>}, html_encode($rcopy->{format}), qq{</TD>\n</TR>\n};
-			if ($rcopy->{size}) {
-				print qq{<TR>\n<TD>Size:</TD>\n<TD>$rcopy->{size} bytes};
-				my $size_mib = $rcopy->{size} / (1024 * 1024);
-				my $size_kib = $rcopy->{size} / 1024;
-				if ($size_mib > 1.0) {
-					printf " (%.1f MiB)", $size_mib;
-				} elsif ($size_kib > 1.0) {
-					printf " (%.0f KiB)", $size_kib;
+				$tagQuery = sprintf("SELECT `tag_text` FROM `TAG`,`PUBTAG`"
+						. " WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=%d",
+					$amendRow['pub_id']);
+				$tags = array();
+				foreach ($this->_db->query($tagQuery)->fetchAll() as $tag)
+				{
+					array_push($tags, $tag);
 				}
-				print qq{</TD>\n</TR>\n};
-			}
-			if ($rcopy->{md5}) {
-				print qq{<TR>\n<TD>MD5:</TD>\n<TD>}, html_encode($rcopy->{md5}), qq{</TD>\n</TR>\n}; # shouldn't be anything to escape in md5!
-			}
-			if ($rcopy->{notes}) {
-				print qq{<TR>\n<TD>Notes:</TD>\n<TD>}, html_encode($rcopy->{notes}), "</TD>\n</TR>\n";
-			}
-			if ($rcopy->{credits}) {
-				print qq{<tr>\n<td>Credits:</td>\n<td>}, html_encode($rcopy->{credits}), "</td>\n</tr>\n";
-			}
-			if ($rcopy->{amend_serial}) {
-				my $ramend = $dbh->selectrow_hashref('select ph_company,pub_id,ph_part,ph_title,ph_pubdate from PUB join PUBHISTORY on pub_history = ph_id where ph_amend_pub=? and ph_amend_serial=?', undef, $pub, $rcopy->{amend_serial});
-				my $amend = qq{<a href="$DETAILSURL/$ramend->{ph_company},$ramend->{pub_id}"><cite>} . html_encode($ramend->{ph_title}) . qq{</cite></a>};
-				$amend = html_encode($ramend->{ph_part}) . ', ' . $amend if defined($ramend->{ph_part});
-				$amend .= ' (' . html_encode($ramend->{ph_pubdate}) . ')' if defined($ramend->{ph_pubdate});
-				# Retrieve OS tags for amendments (see DEC-11-ORUGA-* for example)
-				my $sthos = $dbh->prepare('select tag_text from TAG,PUBTAG where TAG.id=PUBTAG.tag and TAG.class="os" and pub=?');
-				$sthos->execute($ramend->{pub_id});
-				my (@rowtag, @tags);
-				while (@rowtag = $sthos->fetchrow_array) {
-					push @tags,$rowtag[0];
+				if (count($tags) > 0)
+				{
+					$amend .= ' <b>OS:</b> ' . htmlspecialchars(implode(', ', $tags));
 				}
-				$sthos->finish;
-				if (scalar @tags) {
-					$amend .= ' <b>OS:</b> ' . html_encode(join(', ', @tags));
-				}
-				print qq{<tr>\n<td>Amended to:</td>\n<td>$amend</td>\n</tr>\n};
+				printf("<tr>\n<td>Amended to:</td>\n<td>%s</td>\n</tr>\n", $amend);
 			}
-
-			my $sthmirror = $dbh->prepare('select replace(url,original_stem,copy_stem) as mirror_url from COPY join mirror on COPY.site=mirror.site where copyid=? order by rank desc');
-			$sthmirror->execute($rcopy->{copyid});
-			my $mirror_count = 0;
-			while (my $rmirror = $sthmirror->fetchrow_hashref) {
-				if (++$mirror_count == 1) {
-					print '<tr valign="top"><td>Mirrors:</td><td><ul style="list-style-type:none;margin:0;padding:0">';
+			
+			$mirrorQuery = sprintf("SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
+					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
+					. " WHERE `copyid`=%d ORDER BY rank desc'", $row['copyid']);
+			$mirrorCount = 0;
+			// TODO: mirror table is missing from data dump!
+			foreach (array() /*$this->_db->query($mirrorQuery)->fetchAll()*/ as $mirrorRow)
+			{
+				if (++$mirrorCount == 1)
+				{
+					print '<tr valign="top"><td>Mirrors:</td><td><ul style="list-style-type:none; margin:0; padding:0">';
 				}
-				print '<li style="margin:0;padding:0"><a href="', html_encode($rmirror->{mirror_url}), '">', html_encode($rmirror->{mirror_url}), '</a></li>';
+				printf("<li style=\"margin: 0; padding: 0\"><a href=\"%s\">%s</a></li>", urlencode($mirrorRow['mirror_url']), htmlspecialchars($mirrorRow['mirror_url']));
 			}
-			$sthmirror->finish;
-			if ($mirror_count > 0) {
+			if ($mirrorCount > 0)
+			{
 				print '</ul></td></tr>';
 			}
 		}
-		$rc = $sth->finish;
-		warn $DBI::errstr if $DBI::err;
-
-		if ($copy_count > 0) {
-			print "</TBODY>\n</TABLE>\n";
-		} else {
-			print qq{<p>No copies known to be online. Please read the <a href="/manx/help#COPIES">Help</a> before emailing me about this.</p>};
+		if ($copyCount > 0)
+		{
+			print "</tbody>\n</table>\n";
 		}
-	*/
+		else
+		{
+			print '<p>No copies are known to be online.  Please read the <a href="../help.php#COPIES">Help</a> before emailing the administrator.</p>';
+		}
 	}
 	
 	function renderDetails($pathInfo)

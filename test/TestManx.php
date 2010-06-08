@@ -628,6 +628,89 @@
 				. "</ul></div>", $output);
 		}
 		
+		public function testRenderCopies()
+		{
+			$db = new FakeDatabase();
+			
+			$statement = new FakeStatement();
+			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
+				array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copyid'),
+				array(
+					array('PDF', 'http://vt100.net/mirror/hcps/306aamg1.pdf', NULL, 49351262, 'VT100.net', 'http://vt100.net/', "Paul Williams' VT100.net", 'http://vt100.net/', 'N', NULL, NULL, NULL, 7165),
+					array('PDF', 'http://bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf', 'Missing page 4-49', 12023683, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '15a565c18a743c558203f776ee3d6d87', NULL, NULL, 9214)
+					));
+			$query = "SELECT `format`,`COPY`.`url`,`notes`,`size`,"
+				. "`SITE`.`name`,`SITE`.`url` AS `site_url`,`SITE`.`description`,"
+				. "`SITE`.`copy_base`,`SITE`.`low`,`COPY`.`md5`,`COPY`.`amend_serial`,"
+				. "`COPY`.`credits`,`copyid`"
+				. " FROM `COPY`,`SITE`"
+				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND PUB=123"
+				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`";
+			$db->queryFakeResultsForQuery[$query] = $statement;
+			$manx = Manx::getInstanceForDatabase($db);
+			ob_start();
+			$manx->renderCopies(123);
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals(
+				"<h2>Copies</h2>\n"
+				. "<table>\n"
+				. "<tbody><tr>\n"
+				. "<td>Address:</td>\n"
+				. "<td><a href=\"http://vt100.net/mirror/hcps/306aamg1.pdf\">http://vt100.net/mirror/hcps/306aamg1.pdf</a></td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Site:</td>\n"
+				. "<td><a href=\"http://vt100.net/\">Paul Williams' VT100.net</a></td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Format:</td>\n"
+				. "<td>PDF</td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Size:</td>\n"
+				. "<td>49351262 bytes (47.1 MiB)</td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td colspan=\"2\">&nbsp;</td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Address:</td>\n"
+				. "<td><a href=\"http://bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf\">http://bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf</a></td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Site:</td>\n"
+				. "<td><a href=\"http://bitsavers.org/\">Al Kossow's Bitsavers</a></td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Format:</td>\n"
+				. "<td>PDF</td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Size:</td>\n"
+				. "<td>12023683 bytes (11.5 MiB)</td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>MD5:</td>\n"
+				. "<td>15a565c18a743c558203f776ee3d6d87</td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Notes:</td>\n"
+				. "<td>Missing page 4-49</td>\n"
+				. "</tr>\n"
+				/* TODO: mirrors table is missing!
+				. "<tr valign=\"top\"><td>Mirrors:</td>"
+				. "<td><ul style=\"list-style-type:none;margin:0;padding:0\">"
+				. "<li style=\"margin:0;padding:0\"><a href=\"http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf\">http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf</a></li>"
+				. "<li style=\"margin:0;padding:0\"><a href=\"http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf\">http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf</a></li>"
+				. "<li style=\"margin:0;padding:0\"><a href=\"http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf\">http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf</a></li>"
+				. "<li style=\"margin:0;padding:0\"><a href=\"http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf\">http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf</a></li>"
+				. "<li style=\"margin:0;padding:0\"><a href=\"http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf\">http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf</a></li></ul></td></tr>"
+				*/
+				. "</tbody>\n"
+				. "</table>\n", $output);
+		}
+		
 		public function testRenderDetail()
 		{
 			$db = new FakeDatabase();
