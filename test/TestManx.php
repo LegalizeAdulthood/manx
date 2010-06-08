@@ -273,6 +273,44 @@
 			$this->assertEquals('', $output);
 		}
 		
+		public function testFormatDocRefNoPart()
+		{
+			$row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => NULL);
+			$this->assertEquals('<a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>',
+				Manx::formatDocRef($row));
+		}
+		
+		public function testFormatDocRefWithPart()
+		{
+			$row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => 'FECGAPR');
+			$this->assertEquals('FECGAPR, <a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>',
+				Manx::formatDocRef($row));
+		}
+		
+		public function testRenderCitations()
+		{
+			$db = new FakeDatabase();
+			
+			$statement = new FakeStatement();
+			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
+				array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
+				array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance')));
+			$query = 'SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` '
+				. 'FROM `CITEPUB` `C`'
+				. ' JOIN `PUB` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=72)'
+				. ' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`';
+			$db->queryFakeResultsForQuery[$query] = $statement;
+			$manx = Manx::getInstanceForDatabase($db);
+			ob_start();
+			$manx->renderCitations(72);
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals('<tr valign="top"><td>Cited by:</td>'
+				. '<td><ul class="citelist">'
+					. '<li>EK-306AA-MG-001, <a href="../details.php/1,123"><cite>KA655 CPU System Maintenance</cite></a></li>'
+				. "</ul></td></tr>\n", $output);
+		}
+		
 		public function testRenderDetail()
 		{
 			$db = new FakeDatabase();

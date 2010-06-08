@@ -244,24 +244,20 @@ class Manx implements IManx
 		}
 	}
 	
+	public static function formatDocRef($row)
+	{
+		$out = sprintf('<a href="../details.php/%d,%d"><cite>%s</cite></a>', $row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
+		$part = $row['ph_part'];
+		if (!is_null($part))
+		{
+			$out = htmlspecialchars($part) . ', ' . $out;
+		}
+		return $out;
+	}
+	
 	public function renderCitations($pubId)
 	{
-	/*
-		# Citations from other documents (only really important when there are no copies online)
-		$sth = $dbh->prepare('select ph_company,ph_pub,ph_part,ph_title' .
-			' from CITEPUB C' .
-			' join PUB on (C.pub = pub_id and C.mentions_pub = ?)' .
-			' join PUBHISTORY on pub_history = ph_id');
-		$sth->execute($pub);
-		my @citations;
-		while (my $rc = $sth->fetchrow_hashref) {
-			push @citations, format_doc_ref($rc); 
-		}
-		$sth->finish;
-		if (scalar @citations) {
-			print qq{<tr valign="top"><td>Cited by:</td><td><ul class="citelist"><li>}, join('</li><li>', @citations), qq{</li></ul></td></tr>\n};
-		}
-	*/
+		// Citations from other documents (only really important when there are no copies online)
 		$citations = array();
 		$query = sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`"
 			. " FROM `CITEPUB` `C`"
