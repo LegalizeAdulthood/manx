@@ -279,7 +279,7 @@
 			$statement = new FakeStatement();
 			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
-				array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, NULL, '+en', 'VK100')));
+				array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
 			$detailQuery = 'SELECT `pub_id`, `COMPANY`.`name`, '
 				. 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pubdate`, '
 				. '`ph_title`, `ph_abstract`, '
@@ -314,7 +314,8 @@
 			$this->assertEquals(3, $manx->renderTableOfContentsLastPubId);
 			$this->assertTrue($manx->renderCopiesCalled);
 			$this->assertEquals(3, $manx->renderCopiesLastPubId);
-			$this->assertEquals("<div class=\"det\"><h1>GIGI/ReGIS Handbook</h1>\n"
+			$this->assertEquals('<div style="float:right; margin: 10px"><img src="gigi_regis_handbook.png" alt="" /></div>'
+				. "<div class=\"det\"><h1>GIGI/ReGIS Handbook</h1>\n"
 				. "<table><tbody><tr><td>Company:</td><td>Digital Equipment Corporation</td></tr>\n"
 				. "<tr><td>Part:</td><td>AA-K336A-TK</td></tr>\n"
 				. "<tr><td>Date:</td><td></td></tr>\n"

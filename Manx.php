@@ -262,6 +262,19 @@ class Manx implements IManx
 			print qq{<tr valign="top"><td>Cited by:</td><td><ul class="citelist"><li>}, join('</li><li>', @citations), qq{</li></ul></td></tr>\n};
 		}
 	*/
+		$citations = array();
+		$query = sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`"
+			. " FROM `CITEPUB` `C`"
+			. " JOIN `PUB` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=%d)"
+			. " JOIN `PUBHISTORY` ON `pub_history`=`ph_id`", $pubId);
+		foreach ($this->_db->query($query)->fetchAll() as $row)
+		{
+			array_push($citations, Manx::formatDocRef($row));
+		}
+		if (count($citations) > 0)
+		{
+			echo '<tr valign="top"><td>Cited by:</td><td><ul class="citelist"><li>', implode('</li><li>', $citations), "</li></ul></td></tr>\n";
+		}
 	}
 	
 	public function renderSupersessions($pubId)
@@ -476,6 +489,11 @@ class Manx implements IManx
 			'1=1', $params['id']);
 		$rows = $this->_db->query($query)->fetchAll();
 		$row = $rows[0];
+		$coverImage = $row['ph_cover_image'];
+		if (!is_null($coverImage))
+		{
+			echo '<div style="float:right; margin: 10px"><img src="', urlencode($coverImage), '" alt="" /></div>';
+		}
 		echo '<div class="det"><h1>', $row['ph_title'], "</h1>\n";
 		echo '<table><tbody>';
 		$this->printTableRowFromDatabaseRow($row, 'Company', 'name');
