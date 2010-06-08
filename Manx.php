@@ -19,7 +19,7 @@ class Manx implements IManx
 	{
 		return new Manx($db);
 	}
-	private function __construct($db)
+	protected function __construct($db)
 	{
 		$this->_db = $db;
 	}
@@ -246,18 +246,219 @@ class Manx implements IManx
 	
 	public function renderCitations($pubId)
 	{
+	/*
+		# Citations from other documents (only really important when there are no copies online)
+		$sth = $dbh->prepare('select ph_company,ph_pub,ph_part,ph_title' .
+			' from CITEPUB C' .
+			' join PUB on (C.pub = pub_id and C.mentions_pub = ?)' .
+			' join PUBHISTORY on pub_history = ph_id');
+		$sth->execute($pub);
+		my @citations;
+		while (my $rc = $sth->fetchrow_hashref) {
+			push @citations, format_doc_ref($rc); 
+		}
+		$sth->finish;
+		if (scalar @citations) {
+			print qq{<tr valign="top"><td>Cited by:</td><td><ul class="citelist"><li>}, join('</li><li>', @citations), qq{</li></ul></td></tr>\n};
+		}
+	*/
 	}
 	
 	public function renderSupersessions($pubId)
 	{
+	/*
+		# Supersession information. Because documents can be merged in later revisions, or expand to become more than one, there may
+		# be more than one document that preceded or superseded this one.
+		my @supers;
+		$sth = $dbh->prepare('select ph_company,ph_pub,ph_part,ph_title from SUPERSESSION' .
+			' join PUB on (old_pub = pub_id and new_pub=?)' .
+			' join PUBHISTORY on pub_history = ph_id');
+		$sth->execute($pub);
+		while (my $rs = $sth->fetchrow_hashref) {
+			push @supers, format_doc_ref($rs);
+		}
+		$sth->finish;
+		if (scalar @supers) {
+			print qq{<tr valign="top"><td>Supersedes:</td><td><ul class="citelist">},
+				(map {"<li>$_</li>"} @supers), qq{</ul></td></tr>\n};
+		}
+
+		@supers = ();
+		$sth = $dbh->prepare('select ph_company,ph_pub,ph_part,ph_title from SUPERSESSION' .
+			' join PUB on (new_pub = pub_id and old_pub = ?)' .
+			' join PUBHISTORY on pub_history = ph_id');
+		$sth->execute($pub);
+		while (my $rs = $sth->fetchrow_hashref) {
+			push @supers, format_doc_ref($rs);
+		}
+		$sth->finish;
+		if (scalar @supers) {
+			print qq{<tr valign="top"><td>Superseded by:</td><td><ul class="citelist">},
+				(map {"<li>$_</li>"} @supers), qq{</ul></td></tr>\n};
+		}
+	*/
 	}
-	
+
 	public function renderTableOfContents($pubId)
 	{
+	/*
+		my $started_contents = 0;
+
+		$smt = 'select level,label,name from TOC where pub=?';
+		if (!$full_contents) {
+			$smt .= ' and level<2';
+		}
+		$smt .= ' order by line';
+	
+		$sth = $dbh->prepare($smt);
+		warn $DBI::errstr if $DBI::err;
+		$rv = $sth->execute($pub);
+		warn $DBI::errstr if $DBI::err;
+
+		my $currlevel = 0;
+		while (@rowary = $sth->fetchrow_array) {
+			if (!$started_contents) {
+				if ($path_trump) {
+					print qq{<H2>Table of Contents</H2>\n};
+				} elsif ($full_contents) {
+					param('cn','0');
+					print qq{<H2>Full Contents [<A HREF="}, html_encode(self_url()), qq{">Mini</A>]</H2>\n};
+				} else {
+					param('cn','1');
+					print qq{<H2>Mini Contents [<A HREF="}, html_encode(self_url()), qq{">Full</A>]</H2>\n};
+				}
+				print qq{<DIV CLASS="toc">};
+				$started_contents = 1;
+			}
+
+			my ($rowlevel, $rowlabel, $rowname) = @rowary;
+			if ($rowlevel > $currlevel) {
+				++$currlevel;
+				print "\n<UL>\n";
+			} elsif ($rowlevel < $currlevel) {
+				print "</LI>\n";
+				while ($rowlevel < $currlevel) {
+					print "</UL></LI>\n";
+					--$currlevel;
+				}
+			} else {
+				print "</LI>\n";
+			}
+			$rowlabel ||= '&nbsp;' if $currlevel > 1;
+			print qq{<LI CLASS="level$currlevel"><SPAN}, ($currlevel == 1 ? ' CLASS="level1"' : ''), qq{>$rowlabel</SPAN> }, html_encode($rowname);
+			
+			#print "Row: $rowlevel, Label: $rowlabel, Name: $rowname<br>\n";
+		}
+
+		$rc = $sth->finish;
+		warn $DBI::errstr if $DBI::err;
+
+		if ($started_contents) {
+			while (0 < $currlevel--) {
+				print "</LI>\n</UL>";
+			}
+			print "</DIV>";
+		}
+	*/
 	}
 	
 	public function renderCopies($pubId)
 	{
+	/*
+		# COPIES
+		#              0       1         2      3     4          5         6                 7               8         9
+		$smt = 'select format, COPY.url, notes, size, SITE.name, SITE.url as site_url, SITE.description, SITE.copy_base, SITE.low, COPY.md5,' .
+		#         10                 11
+			' COPY.amend_serial, COPY.credits, copyid' .
+			' from COPY,SITE where COPY.site=SITE.siteid and pub=? order by SITE.display_order,SITE.siteid';
+		$sth = $dbh->prepare($smt);
+		warn $DBI::errstr if $DBI::err;
+		$rv = $sth->execute($pub);
+		warn $DBI::errstr if $DBI::err;
+
+		print "<h2>Copies</h2>\n";
+		my $copy_count = 0;
+		while (my $rcopy = $sth->fetchrow_hashref) {
+			if (++$copy_count == 1) {
+				print "<TABLE>\n<TBODY>";
+			} else {
+				print qq{<TR>\n<TD COLSPAN="2">&nbsp;</TD>\n</TR>\n};
+			}
+
+			my $copy_url;
+			print "<TR>\n<TD>Address:</TD>\n<TD>";
+			if ($rcopy->{url} =~ /^\+/) {
+				$copy_url = $rcopy->{copy_base} . substr($rcopy->{url}, 1);
+			} else {
+				$copy_url = $rcopy->{url};
+			}
+			print qq{<A HREF="$copy_url">$copy_url</A></TD>\n</TR>\n};
+			print qq{<TR>\n<TD>Site:</TD>\n<TD><A HREF="}, html_encode($rcopy->{site_url}), qq{">}, html_encode($rcopy->{description}),'</A>';
+			print ' <SPAN CLASS="warning">(Low Bandwidth)</SPAN>' if $rcopy->{low} ne 'N';
+			print qq{</TD>\n</TR>\n};
+			print qq{<TR>\n<TD>Format:</TD>\n<TD>}, html_encode($rcopy->{format}), qq{</TD>\n</TR>\n};
+			if ($rcopy->{size}) {
+				print qq{<TR>\n<TD>Size:</TD>\n<TD>$rcopy->{size} bytes};
+				my $size_mib = $rcopy->{size} / (1024 * 1024);
+				my $size_kib = $rcopy->{size} / 1024;
+				if ($size_mib > 1.0) {
+					printf " (%.1f MiB)", $size_mib;
+				} elsif ($size_kib > 1.0) {
+					printf " (%.0f KiB)", $size_kib;
+				}
+				print qq{</TD>\n</TR>\n};
+			}
+			if ($rcopy->{md5}) {
+				print qq{<TR>\n<TD>MD5:</TD>\n<TD>}, html_encode($rcopy->{md5}), qq{</TD>\n</TR>\n}; # shouldn't be anything to escape in md5!
+			}
+			if ($rcopy->{notes}) {
+				print qq{<TR>\n<TD>Notes:</TD>\n<TD>}, html_encode($rcopy->{notes}), "</TD>\n</TR>\n";
+			}
+			if ($rcopy->{credits}) {
+				print qq{<tr>\n<td>Credits:</td>\n<td>}, html_encode($rcopy->{credits}), "</td>\n</tr>\n";
+			}
+			if ($rcopy->{amend_serial}) {
+				my $ramend = $dbh->selectrow_hashref('select ph_company,pub_id,ph_part,ph_title,ph_pubdate from PUB join PUBHISTORY on pub_history = ph_id where ph_amend_pub=? and ph_amend_serial=?', undef, $pub, $rcopy->{amend_serial});
+				my $amend = qq{<a href="$DETAILSURL/$ramend->{ph_company},$ramend->{pub_id}"><cite>} . html_encode($ramend->{ph_title}) . qq{</cite></a>};
+				$amend = html_encode($ramend->{ph_part}) . ', ' . $amend if defined($ramend->{ph_part});
+				$amend .= ' (' . html_encode($ramend->{ph_pubdate}) . ')' if defined($ramend->{ph_pubdate});
+				# Retrieve OS tags for amendments (see DEC-11-ORUGA-* for example)
+				my $sthos = $dbh->prepare('select tag_text from TAG,PUBTAG where TAG.id=PUBTAG.tag and TAG.class="os" and pub=?');
+				$sthos->execute($ramend->{pub_id});
+				my (@rowtag, @tags);
+				while (@rowtag = $sthos->fetchrow_array) {
+					push @tags,$rowtag[0];
+				}
+				$sthos->finish;
+				if (scalar @tags) {
+					$amend .= ' <b>OS:</b> ' . html_encode(join(', ', @tags));
+				}
+				print qq{<tr>\n<td>Amended to:</td>\n<td>$amend</td>\n</tr>\n};
+			}
+
+			my $sthmirror = $dbh->prepare('select replace(url,original_stem,copy_stem) as mirror_url from COPY join mirror on COPY.site=mirror.site where copyid=? order by rank desc');
+			$sthmirror->execute($rcopy->{copyid});
+			my $mirror_count = 0;
+			while (my $rmirror = $sthmirror->fetchrow_hashref) {
+				if (++$mirror_count == 1) {
+					print '<tr valign="top"><td>Mirrors:</td><td><ul style="list-style-type:none;margin:0;padding:0">';
+				}
+				print '<li style="margin:0;padding:0"><a href="', html_encode($rmirror->{mirror_url}), '">', html_encode($rmirror->{mirror_url}), '</a></li>';
+			}
+			$sthmirror->finish;
+			if ($mirror_count > 0) {
+				print '</ul></td></tr>';
+			}
+		}
+		$rc = $sth->finish;
+		warn $DBI::errstr if $DBI::err;
+
+		if ($copy_count > 0) {
+			print "</TBODY>\n</TABLE>\n";
+		} else {
+			print qq{<p>No copies known to be online. Please read the <a href="/manx/help#COPIES">Help</a> before emailing me about this.</p>};
+		}
+	*/
 	}
 	
 	function renderDetails($pathInfo)
@@ -288,9 +489,10 @@ class Manx implements IManx
 		$this->renderLongDescription($pubId);
 		$this->renderCitations($pubId);
 		$this->renderSupersessions($pubId);
+		$this->printTableRowFromDatabaseRow($row, 'Text', 'ph_abstract');
+		echo "</tbody>\n</table>\n";
 		$this->renderTableOfContents($pubId);
 		$this->renderCopies($pubId);
-		echo '</tbody></table>';
 		echo '</div>';
 	}
 }

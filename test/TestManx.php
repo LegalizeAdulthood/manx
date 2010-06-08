@@ -4,6 +4,78 @@
 	require_once 'test/FakeDatabase.php';
 	require_once 'test/FakeStatement.php';
 	
+	class ManxRenderDetailsTester extends Manx
+	{
+		public function __construct($db)
+		{
+			Manx::__construct($db);
+			$this->renderLanguageCalled = false;
+			$this->renderAmendmentsCalled = false;
+			$this->renderOSTagsCalled = false;
+			$this->renderLongDecriptionCalled = false;
+			$this->renderCitationsCalled = false;
+			$this->renderSupersessionsCalled = false;
+			$this->renderTableOfContentsCalled = false;
+			$this->renderCopiesCalled = false;
+		}
+		
+		public $renderLanguageCalled, $renderLanguageLastLanguage;
+		public function renderLanguage($lang)
+		{
+			$this->renderLanguageCalled = true;
+			$this->renderLanguageLastLanguage = $lang;
+		}
+		
+		public $renderAmendmentsCalled, $renderAmendmentsLastPubId;
+		public function renderAmendments($pubId)
+		{
+			$this->renderAmendmentsCalled = true;
+			$this->renderAmendmentsLastPubId = $pubId;
+		}
+		
+		public $renderOSTagsCalled, $renderOSTagsLastPubId;
+		public function renderOSTags($pubId)
+		{
+			$this->renderOSTagsCalled = true;
+			$this->renderOSTagsLastPubId = $pubId;
+		}
+		
+		public $renderLongDescriptionCalled, $renderLongDescriptionLastPubId;
+		public function renderLongDescription($pubId)
+		{
+			$this->renderLongDescriptionCalled = true;
+			$this->renderLongDescriptionLastPubId = $pubId;
+		}
+		
+		public $renderCitationsCalled, $renderCitationsLastPubId;
+		public function renderCitations($pubId)
+		{
+			$this->renderCitationsCalled = true;
+			$this->renderCitationsLastPubId = $pubId;
+		}
+		
+		public $renderSupersessionsCalled, $renderSupersessionsLastPubId;
+		public function renderSupersessions($pubId)
+		{
+			$this->renderSupersessionsCalled = true;
+			$this->renderSupersessionsLastPubId = $pubId;
+		}
+		
+		public $renderTableOfContentsCalled, $renderTableOfContentsLastPubId;
+		public function renderTableOfContents($pubId)
+		{
+			$this->renderTableOfContentsCalled = true;
+			$this->renderTableOfContentsLastPubId = $pubId;
+		}
+		
+		public $renderCopiesCalled, $renderCopiesLastPubId;
+		public function renderCopies($pubId)
+		{
+			$this->renderCopiesCalled = true;
+			$this->renderCopiesLastPubId = $pubId;
+		}
+	}
+	
 	class TestManx extends PHPUnit_Framework_TestCase
 	{
 		private function fakeStatementFetchResults($results)
@@ -218,23 +290,30 @@
 				. 'JOIN `COMPANY` ON `ph_company`=`COMPANY`.`id` '
 				. 'WHERE 1=1 AND `pub_id`=3';
 			$db->queryFakeResultsForQuery[$detailQuery] = $statement;
-
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
-				array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pubdate'),
-				array());
-			$amendmentQuery = "SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
-				. "FROM `PUB` JOIN `PUBHISTORY` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
-			$db->queryFakeResultsForQuery[$amendmentQuery] = $statement;
 			
-			$manx = Manx::getInstanceForDatabase($db);
+			$manx = new ManxRenderDetailTester($db);
 			ob_start();
 			$manx->renderDetails('/1,3');
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertTrue($db->queryCalled);
 			$this->assertEquals($amendmentQuery, $db->queryLastStatement);
-			/*
+			$this->assertTrue($manx->renderLanguageCalled);
+			$this->assertEquals('+en', $manx->renderLanguageLastLanguage);
+			$this->assertTrue($manx->renderAmendmentsCalled);
+			$this->assertEquals(3, $manx->renderAmendmentsLastPubId);
+			$this->assertTrue($manx->renderOSTagsCalled);
+			$this->assertEquals(3, $manx->renderOSTagsLastPubId);
+			$this->assertTrue($manx->renderLongDescriptionCalled);
+			$this->assertEquals(3, $manx->renderLongDescriptionLastPubId);
+			$this->assertTrue($manx->renderCitationsCalled);
+			$this->assertEquals(3, $manx->renderCitationsLastPubId);
+			$this->assertTrue($manx->renderSupersessionsCalled);
+			$this->assertEquals(3, $manx->renderSupersessionsLastPubId);
+			$this->assertTrue($manx->renderTableOfContentsCalled);
+			$this->assertEquals(3, $manx->renderTableOfContentsLastPubId);
+			$this->assertTrue($manx->renderCopiesCalled);
+			$this->assertEquals(3, $manx->renderCopiesLastPubId);
 			$this->assertEquals('<div class="det"><h1>GIGI/ReGIS Handbook</h1>
 <table><tbody><tr><td>Company:</td><td>Digital Equipment Corporation</td></tr>
 <tr><td>Part:</td><td>AA-K336A-TK</td></tr>
@@ -242,31 +321,7 @@
 <tr><td>Keywords:</td><td>VK100</td></tr>
 </tbody>
 </table>
-<h2>Copies</h2>
-<table>
-<tbody><tr>
-<td>Address:</td>
-<td><a href="http://bitsavers.org/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf">http://bitsavers.org/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf</a></td>
-</tr>
-<tr>
-<td>Site:</td>
-<td><a href="http://bitsavers.org/">Al Kossow\'s Bitsavers</a></td>
-</tr>
-<tr>
-<td>Format:</td>
-<td>PDF</td>
-</tr>
-<tr>
-<td>Size:</td>
-<td>14579688 bytes (13.9 MiB)</td>
-</tr>
-<tr>
-<td>MD5:</td>
-<td>662b5b3c78d875ebc39228aa04d4e721</td>
-</tr>
-<tr valign="top"><td>Mirrors:</td><td><ul style="list-style-type:none;margin:0;padding:0"><li style="margin:0;padding:0"><a href="http://bitsavers.trailing-edge.com/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf">http://bitsavers.trailing-edge.com/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf</a></li><li style="margin:0;padding:0"><a href="http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf">http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf</a></li><li style="margin:0;padding:0"><a href="http://www.textfiles.com/bitsavers/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf">http://www.textfiles.com/bitsavers/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf</a></li><li style="margin:0;padding:0"><a href="http://computer-refuge.org/bitsavers/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf">http://computer-refuge.org/bitsavers/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf</a></li><li style="margin:0;padding:0"><a href="http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf">http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/terminal/gigi/AA-K336A-TK_GIGI_ReGIS_Handbook_Jun81.pdf</a></li></ul></td></tr></tbody>
-</table>', $output);
-			*/
+', $output);
 		}
 	}
 ?>
