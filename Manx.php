@@ -221,6 +221,24 @@ class Manx implements IManx
 	
 	public function renderLongDescription($pubId)
 	{
+		// The Manx database dump doesn't contain a table called "LONG_DESC"; so do nothing for now.
+		return;
+
+		$query = sprintf("SELECT 'html_text' FROM `LONG_DESC` WHERE `pub`=%d ORDER BY `line`", $pubId);
+		$startedDesc = false;
+		foreach ($this->_db->query($query)->fetchAll() as $row)
+		{
+			if (!$startedDesc)
+			{
+				echo '<tr valign="top"><td>Description:</td><td>';
+				$startedDesc = true;
+			}
+			print $row['html_text'];
+		}
+		if ($startedDesc)
+		{
+			echo '</td></tr>';
+		}
 	}
 	
 	public function renderCitations($pubId)

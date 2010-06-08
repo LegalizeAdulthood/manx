@@ -190,6 +190,17 @@
 			$this->assertEquals("<tr><td>Operating System:</td><td>RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</td></tr>\n", $output);
 		}
 		
+		public function testRenderLongDescriptionDoesNothing()
+		{
+			$db = new FakeDatabase();
+			$manx = Manx::getInstanceForDatabase($db);
+			ob_start();
+			$manx->renderLongDescription(3);
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals('', $output);
+		}
+		
 		public function XtestRenderDetail()
 		{
 			$db = new FakeDatabase();
