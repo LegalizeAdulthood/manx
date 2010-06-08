@@ -145,25 +145,10 @@
 				$output);
 		}
 		
-		private function createResultRowsForColumns($columns, $data)
-		{
-			$rows = array();
-			foreach ($data as $item)
-			{
-				$row = array();
-				for ($i = 0; $i < count($columns); $i++)
-				{
-					$row[$columns[$i]] = $item[$i];
-				}
-				array_push($rows, $row);
-			}
-			return $rows;
-		}
-		
 		public function testRenderResultsPage()
 		{
 			$formatter = HtmlFormatter::getInstance();
-			$rows = $this->createResultRowsForColumns(
+			$rows = FakeDatabase::createResultRowsForColumns(
 				array('pub_id', 'ph_part', 'ph_title', 'pub_has_online_copies',
 					'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pubdate',
 					'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pubtype', 'tags'),
