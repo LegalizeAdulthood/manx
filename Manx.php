@@ -143,6 +143,9 @@ class Manx implements IManx
 	
 	public function renderLanguage($lang)
 	{
+		// TODO: the original Manx implementation relied on a table called LANGUAGE which doesn't
+		// exist in the database dump.
+		// Eventually, move this to a table, but for now use a hard coded list.
 		if (!is_null($lang) && $lang != '+en')
 		{
 			$displayLanguage = array('en' => 'English', 'de' => 'German',
