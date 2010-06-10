@@ -13,6 +13,8 @@
 			$this->getDisplayLanguageCalled = false;
 			$this->getDisplayLanguageLastLanguage = array();
 			$this->getDisplayLanguageFakeResult = array();
+			$this->getOSTagsForPubCalled = false;
+			$this->getOSTagsForPubFakeResult = array();
 		}
 
 		public $getDocumentCountCalled, $getDocumentCountFakeResult;
@@ -56,6 +58,14 @@
 			$this->getDisplayLanguageCalled = true;
 			$this->getDisplayLanguageLastLanguageCode[$languageCode] = true;
 			return $this->getDisplayLanguageFakeResult[$languageCode];
+		}
+		
+		public $getOSTagsForPubCalled, $getOSTagsForPubLastPubId, $getOSTagsForPubFakeResult;
+		public function getOSTagsForPub($pubId)
+		{
+			$this->getOSTagsForPubCalled = true;
+			$this->getOSTagsForPubLastPubId = $pubId;
+			return $this->getOSTagsForPubFakeResult;
 		}
 	}
 ?>

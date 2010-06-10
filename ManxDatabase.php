@@ -52,5 +52,16 @@
 			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'";
 			return $this->_db->query(sprintf($query, $languageCode))->fetch();
 		}
+		
+		public function getOSTagsForPub($pubId)
+		{
+			$query = sprintf("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=%d", $pubId);
+			$tags = array();
+			foreach ($this->_db->query($query)->fetchAll() as $tagRow)
+			{
+				array_push($tags, trim($tagRow['tag_text']));
+			}
+			return $tags;
+		}
 	}
 ?>

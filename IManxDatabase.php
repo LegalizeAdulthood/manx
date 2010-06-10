@@ -7,5 +7,6 @@
 		function getSiteList();
 		function getCompanyList();
 		function getDisplayLanguage($languageCode);
+		function getOSTagsForPub($pubId);
 	}
 ?>

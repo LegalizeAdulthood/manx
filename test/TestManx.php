@@ -211,10 +211,17 @@
 			$this->assertEquals("<tr><td>Languages:</td><td>English, French and German</td></tr>\n", $output);
 		}
 
+		private function assertGetOSTagsForPubCalledForPubId(FakeManxDatabase $db, $pubId)
+		{
+			$this->assertTrue($db->getOSTagsForPubCalled);
+			$this->assertEquals($pubId, $db->getOSTagsForPubLastPubId);
+		}
+		
 		public function testRenderAmendments()
 		{
 			$db = new FakeDatabase();
 
+			$pubId = 3;
 			$statement = new FakeStatement();
 			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pubdate'),
@@ -224,19 +231,15 @@
 				. "FROM `PUB` JOIN `PUBHISTORY` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
 			$db->queryFakeResultsForQuery[$amendmentQuery] = $statement;
 
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
-				array('tag_text'),
-				array(array('RSX-11M Version 4.0'),
-					array('RSX-11M-PLUS Version 2.0')));
-			$tagQuery = "SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=3";
-			$db->queryFakeResultsForQuery[$tagQuery] = $statement;
+			$manxDb = new FakeManxDatabase();
+			$manxDb->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
 
-			$manx = Manx::getInstanceForDatabase($db);
+			$manx = Manx::getInstanceForDatabases($db, $manxDb);
 			ob_start();
-			$manx->renderAmendments(3);
+			$manx->renderAmendments($pubId);
 			$output = ob_get_contents();
 			ob_end_clean();
+			$this->assertGetOSTagsForPubCalledForPubId($manxDb, $pubId);
 			$this->assertEquals('<tr valign="top"><td>Amended&nbsp;by:</td>'
 				. '<td><ul class="citelist"><li>DEC-15-YWZA-DN1, <a href="../details.php/1,4496"><cite>DDT (Dynamic Debugging Technique) Utility Program</cite></a> (1970-04) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'
 				. '<li>DEC-15-YWZA-DN3, <a href="../details.php/1,3301"><cite>SGEN System Generator Utility Program</cite></a> (1970-09) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'
@@ -245,35 +248,27 @@
 
 		public function testRenderOSTagsEmpty()
 		{
-			$db = new FakeDatabase();
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
-				array('tag_text'),
-				array());
-			$db->queryFakeResults = $statement;
-			$manx = Manx::getInstanceForDatabase($db);
+			$db = new FakeManxDatabase();
+			$db->getOSTagsForPubFakeResult = array();
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
 			ob_start();
 			$manx->renderOSTags(3);
 			$output = ob_get_contents();
 			ob_end_clean();
+			$this->assertGetOSTagsForPubCalledForPubId($db, 3);
 			$this->assertEquals('', $output);
 		}
 
 		public function testRenderOSTagsTwoTags()
 		{
-			$db = new FakeDatabase();
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
-				array('tag_text'),
-				array(array('RSX-11M Version 4.0'),
-					array('RSX-11M-PLUS Version 2.0')));
-			$tagQuery = "SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=3";
-			$db->queryFakeResultsForQuery[$tagQuery] = $statement;
-			$manx = Manx::getInstanceForDatabase($db);
+			$db = new FakeManxDatabase();
+			$db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
 			ob_start();
 			$manx->renderOSTags(3);
 			$output = ob_get_contents();
 			ob_end_clean();
+			$this->assertGetOSTagsForPubCalledForPubId($db, 3);
 			$this->assertEquals("<tr><td>Operating System:</td><td>RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</td></tr>\n", $output);
 		}
 

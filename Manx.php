@@ -163,20 +163,9 @@ class Manx implements IManx
 		}
 	}
 
-	private function getOSTagsForPub($pubId)
-	{
-		$query = sprintf("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=%d", $pubId);
-		$tags = array();
-		foreach ($this->_db->query($query)->fetchAll() as $tagRow)
-		{
-			array_push($tags, trim($tagRow['tag_text']));
-		}
-		return $tags;
-	}
-	
 	private function renderOSTagsForPub($pubId)
 	{
-		$tags = $this->getOSTagsForPub($pubId);
+		$tags = $this->_manxDb->getOSTagsForPub($pubId);
 		if (count($tags) > 0)
 		{
 			return ' <b>OS:</b> ' . htmlspecialchars(implode(', ', $tags));
@@ -226,7 +215,7 @@ class Manx implements IManx
 
 	public function renderOSTags($pubId)
 	{
-		$tags = $this->getOSTagsForPub($pubId);
+		$tags = $this->_manxDb->getOSTagsForPub($pubId);
 		if (count($tags) > 0)
 		{
 			echo '<tr><td>Operating System:</td><td>', htmlspecialchars(implode(', ', $tags)), "</td></tr>\n";

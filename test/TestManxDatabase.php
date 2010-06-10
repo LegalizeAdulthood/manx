@@ -83,6 +83,21 @@
 			$this->assertEquals('French', $display);
 		}
 		
+		public function testGetOSTagsForPub()
+		{
+			$this->createInstance();
+			$query = "SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=5";
+			$this->configureStatementFetchAllResults($query,
+				FakeDatabase::createResultRowsForColumns(array('tag_text'),
+					array(array('RSX-11M Version 4.0'), array('RSX-11M-PLUS Version 2.0'))));
+			$tags = $this->_manxDb->getOSTagsForPub(5);
+			$this->assertQueryCalledForSql($query);
+			$this->assertTrue(is_array($tags));
+			$this->assertEquals(2, count($tags));
+			$this->assertEquals('RSX-11M Version 4.0', $tags[0]);
+			$this->assertEquals('RSX-11M-PLUS Version 2.0', $tags[1]);
+		}
+		
 		private function createInstance()
 		{
 			$this->_db = new FakeDatabase();
