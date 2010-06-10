@@ -34,6 +34,7 @@ class Manx implements IManx
 	public function __destruct()
 	{
 		$this->_db = null;
+		$this->_manxDb = null;
 	}
 
 	function renderSiteList()

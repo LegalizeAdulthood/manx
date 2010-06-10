@@ -12,6 +12,10 @@
 		{
 			$this->_db = $db;
 		}
+		public function __destruct()
+		{
+			$this->_db = null;
+		}
 		private $_db;
 
 		function getDocumentCount()
