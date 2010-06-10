@@ -3,7 +3,7 @@
 	require_once 'ManxDatabase.php';
 	require_once 'test/FakeDatabase.php';
 	require_once 'test/FakeStatement.php';
-	
+
 	class TestManxDatabase extends PHPUnit_Framework_TestCase
 	{
 		public function testConstruct()
@@ -13,6 +13,29 @@
 			$this->assertTrue(!is_null($manxDb) && is_object($manxDb));
 		}
 		
+		public function testGetDocumentCount()
+		{
+			$db = new FakeDatabase();
+			$statement = new FakeStatement();
+			$statement->fetchFakeResult = array(2);
+			$query = "SELECT COUNT(*) FROM `PUB`";
+			$db->queryFakeResultsForQuery[$query] = $statement;
+			$manxDb = ManxDatabase::getInstanceForDatabase($db);
+			$count = $manxDb->getDocumentCount();
+			$this->assertTrue($db->queryCalled);
+			$this->assertEquals($query, $db->queryLastStatement);
+			$this->assertTrue($statement->fetchCalled);
+			$this->assertEquals(2, $count);
+		}
+		
+		public function testGetOnlineDocumentCount()
+		{
+		}
+		
+		public function testGetSiteCount()
+		{
+		}
+
 		public function testGetSiteList()
 		{
 			$db = new FakeDatabase();
@@ -30,14 +53,14 @@
 			$this->assertEquals('http://www.dec.com', $sites[0]['url']);
 			$this->assertEquals('http://www.hp.com', $sites[1]['url']);
 		}
-		
+
 		private function fakeStatementFetchResults($results)
 		{
 			$stmt = new FakeStatement();
 			$stmt->fetchFakeResult = $results;
 			return $stmt;
 		}
-		
+
 		public function testGetCompanyList()
 		{
 			$db = new FakeDatabase();

@@ -13,12 +13,28 @@
 			$this->_db = $db;
 		}
 		private $_db;
-		
+
+		function getDocumentCount()
+		{
+			$rows = $this->_db->query("SELECT COUNT(*) FROM `PUB`")->fetch();
+			return $rows[0];
+		}
+
+		function getOnlineDocumentCount()
+		{
+			throw new Exception("getOnlineDocumentCount not implemented");
+		}
+
+		function getSiteCount()
+		{
+			throw new Exception("getSiteCount not implemented");
+		}
+
 		public function getSiteList()
 		{
 			return $this->_db->query("SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`")->fetchAll();
 		}
-		
+
 		public function getCompanyList()
 		{
 			return $this->_db->query("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`")->fetchAll();

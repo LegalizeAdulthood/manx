@@ -71,7 +71,7 @@ class Manx implements IManx
 				if ($i < $count)
 				{
 					print ', ';
-				}	
+				}
 			}
 		}
 		catch (Exception $e)
@@ -81,8 +81,7 @@ class Manx implements IManx
 	}
 	function renderDocumentSummary()
 	{
-		$rows = $this->_db->query("SELECT COUNT(*) FROM `PUB`")->fetch();
-		print $rows[0] . ' manuals, ';
+		print $this->_manxDb->getDocumentCount() . ' manuals, ';
 		$rows = $this->_db->query("SELECT COUNT(DISTINCT `pub`) FROM `COPY`")->fetch();
 		print $rows[0] . ' of which are online, at ';
 		$rows = $this->_db->query("SELECT COUNT(*) FROM `SITE`")->fetch();
@@ -92,7 +91,7 @@ class Manx implements IManx
 	{
 		print '<a href="login.php?redirect=http%3A%2F%2Fvt100.net%2F' . $page . '">Login</a>';
 	}
-	
+
 	function renderSearchResults()
 	{
 		$params = Searcher::parameterSource($_GET, $_POST);
@@ -112,7 +111,7 @@ class Manx implements IManx
 		$online = array_key_exists('on', $params) && ($params['on'] != '0');
 		$searcher->renderSearchResults($formatter, $company, $keywords, $online);
 	}
-	
+
 	public static function detailParamsForPathInfo($pathInfo)
 	{
 		$matches = array();
@@ -126,17 +125,17 @@ class Manx implements IManx
 		}
 		return $params;
 	}
-	
+
 	private function printTableRow($name, $value)
 	{
 		echo '<tr><td>', $name, ':</td><td>', htmlspecialchars(trim($value)), "</td></tr>\n";
 	}
-	
+
 	private function printTableRowFromDatabaseRow($row, $name, $key)
 	{
 		$this->printTableRow($name, $row[$key]);
 	}
-	
+
 	public static function neatListPlain($values)
 	{
 		if (count($values) > 1)
@@ -148,7 +147,7 @@ class Manx implements IManx
 			return $values[0];
 		}
 	}
-	
+
 	public function renderLanguage($lang)
 	{
 		if (!is_null($lang) && $lang != '+en')
@@ -163,10 +162,10 @@ class Manx implements IManx
 			if (count($languages) > 0)
 			{
 				echo '<tr><td>Language', (count($languages) > 1) ? 's' : '', ':</td><td>', Manx::neatListPlain($languages), "</td></tr>\n";
-			}			
+			}
 		}
 	}
-	
+
 	public function renderAmendments($pubId)
 	{
 		$amendments = array();
@@ -205,7 +204,7 @@ class Manx implements IManx
 			echo '<tr valign="top"><td>Amended&nbsp;by:</td><td><ul class="citelist"><li>', implode('</li><li>', $amendments), "</li></ul></td></tr>\n";
 		}
 	}
-	
+
 	public function renderOSTags($pubId)
 	{
 		$tags = array();
@@ -219,7 +218,7 @@ class Manx implements IManx
 			echo '<tr><td>Operating System:</td><td>', htmlspecialchars(implode(', ', $tags)), "</td></tr>\n";
 		}
 	}
-	
+
 	public function renderLongDescription($pubId)
 	{
 		// The Manx database dump doesn't contain a table called "LONG_DESC"; so do nothing for now.
@@ -241,7 +240,7 @@ class Manx implements IManx
 			echo '</td></tr>';
 		}
 	}
-	
+
 	public static function formatDocRef($row)
 	{
 		$out = sprintf('<a href="../details.php/%d,%d"><cite>%s</cite></a>', $row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
@@ -252,7 +251,7 @@ class Manx implements IManx
 		}
 		return $out;
 	}
-	
+
 	public function renderCitations($pubId)
 	{
 		// Citations from other documents (only really important when there are no copies online)
@@ -270,7 +269,7 @@ class Manx implements IManx
 			echo '<tr valign="top"><td>Cited by:</td><td><ul class="citelist"><li>', implode('</li><li>', $citations), "</li></ul></td></tr>\n";
 		}
 	}
-	
+
 	public function renderSupersessions($pubId)
 	{
 	/*
@@ -361,7 +360,7 @@ class Manx implements IManx
 			print '</div>';
 		}
 	}
-	
+
 	public function renderCopies($pubId)
 	{
 		$query = sprintf("SELECT `format`,`COPY`.`url`,`notes`,`size`,"
@@ -383,7 +382,7 @@ class Manx implements IManx
 			{
 				print "<tr>\n<td colspan=\"2\">&nbsp;</td>\n</tr>\n";
 			}
-			
+
 			print "<tr>\n<td>Address:</td>\n<td>";
 			$copyUrl = $row['url'];
 			if (substr($copyUrl, 0, 1) == '+')
@@ -469,7 +468,7 @@ class Manx implements IManx
 				}
 				printf("<tr>\n<td>Amended to:</td>\n<td>%s</td>\n</tr>\n", $amend);
 			}
-			
+
 			$mirrorQuery = sprintf("SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
 					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
 					. " WHERE `copyid`=%d ORDER BY `rank` DESC'", $row['copyid']);
@@ -496,7 +495,7 @@ class Manx implements IManx
 			print '<p>No copies are known to be online.  Please read the <a href="../help.php#COPIES">Help</a> before emailing the administrator.</p>';
 		}
 	}
-	
+
 	function renderDetails($pathInfo)
 	{
 		$params = Manx::detailParamsForPathInfo($pathInfo);

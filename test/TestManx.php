@@ -4,7 +4,7 @@
 	require_once 'test/FakeDatabase.php';
 	require_once 'test/FakeStatement.php';
 	require_once 'test/FakeManxDatabase.php';
-	
+
 	class ManxRenderDetailsTester extends Manx
 	{
 		public function __construct($db, $manxDb)
@@ -19,49 +19,49 @@
 			$this->renderTableOfContentsCalled = false;
 			$this->renderCopiesCalled = false;
 		}
-		
+
 		public $renderLanguageCalled, $renderLanguageLastLanguage;
 		public function renderLanguage($lang)
 		{
 			$this->renderLanguageCalled = true;
 			$this->renderLanguageLastLanguage = $lang;
 		}
-		
+
 		public $renderAmendmentsCalled, $renderAmendmentsLastPubId;
 		public function renderAmendments($pubId)
 		{
 			$this->renderAmendmentsCalled = true;
 			$this->renderAmendmentsLastPubId = $pubId;
 		}
-		
+
 		public $renderOSTagsCalled, $renderOSTagsLastPubId;
 		public function renderOSTags($pubId)
 		{
 			$this->renderOSTagsCalled = true;
 			$this->renderOSTagsLastPubId = $pubId;
 		}
-		
+
 		public $renderLongDescriptionCalled, $renderLongDescriptionLastPubId;
 		public function renderLongDescription($pubId)
 		{
 			$this->renderLongDescriptionCalled = true;
 			$this->renderLongDescriptionLastPubId = $pubId;
 		}
-		
+
 		public $renderCitationsCalled, $renderCitationsLastPubId;
 		public function renderCitations($pubId)
 		{
 			$this->renderCitationsCalled = true;
 			$this->renderCitationsLastPubId = $pubId;
 		}
-		
+
 		public $renderSupersessionsCalled, $renderSupersessionsLastPubId;
 		public function renderSupersessions($pubId)
 		{
 			$this->renderSupersessionsCalled = true;
 			$this->renderSupersessionsLastPubId = $pubId;
 		}
-		
+
 		public $renderTableOfContentsCalled, $renderTableOfContentsLastPubId, $renderTableOfContentsLastFullContents;
 		public function renderTableOfContents($pubId, $fullContents)
 		{
@@ -69,7 +69,7 @@
 			$this->renderTableOfContentsLastPubId = $pubId;
 			$this->renderTableOfContentsLastFullContents = $fullContents;
 		}
-		
+
 		public $renderCopiesCalled, $renderCopiesLastPubId;
 		public function renderCopies($pubId)
 		{
@@ -77,7 +77,7 @@
 			$this->renderCopiesLastPubId = $pubId;
 		}
 	}
-	
+
 	class TestManx extends PHPUnit_Framework_TestCase
 	{
 		private function fakeStatementFetchResults($results)
@@ -86,16 +86,17 @@
 			$stmt->fetchFakeResult = $results;
 			return $stmt;
 		}
-		
+
 		public function testRenderDocumentSummary()
 		{
 			$db = new FakeDatabase();
 			$db->queryFakeResultsForQuery = array(
-				"SELECT COUNT(*) FROM `PUB`" => $this->fakeStatementFetchResults(array(12)),
 				"SELECT COUNT(DISTINCT `pub`) FROM `COPY`" => $this->fakeStatementFetchResults(array(24)),
 				"SELECT COUNT(*) FROM `SITE`" => $this->fakeStatementFetchResults(array(43))
 				);
-			$manx = Manx::getInstanceForDatabase($db);
+			$manxDb = new FakeManxDatabase();
+			$manxDb->getDocumentCountFakeResult = 12;
+			$manx = Manx::getInstanceForDatabases($db, $manxDb);
 			ob_start();
 			$manx->renderDocumentSummary();
 			$this->assertTrue($db->queryCalled);
@@ -103,7 +104,7 @@
 			ob_end_clean();
 			$this->assertEquals("12 manuals, 24 of which are online, at 43 websites", $output);
 		}
-		
+
 		public function testRenderCompanyList()
 		{
 			$db = new FakeManxDatabase();
@@ -118,7 +119,7 @@
 			$this->assertTrue($db->getCompanyListCalled);
 			$this->assertEquals('<a href="search.php?cp=1">DEC</a>, <a href="search.php?cp=2">HP</a>', $output);
 		}
-		
+
 		public function testRenderSiteList()
 		{
 			$db = new FakeManxDatabase();
@@ -136,7 +137,7 @@
 			$this->assertEquals('<ul><li><a href="http://www.dec.com">DEC</a></li>'
 				. '<li><a href="http://www.hp.com">HP</a> <span class="warning">(Low Bandwidth)</span></li></ul>', $output);
 		}
-		
+
 		public function testDetailParamsForPathInfoCompanyAndId()
 		{
 			$params = Manx::detailParamsForPathInfo('/1,2');
@@ -146,22 +147,22 @@
 			$this->assertEquals(1, $params['cn']);
 			$this->assertEquals(0, $params['pn']);
 		}
-		
+
 		public function testNeatListPlainOneItem()
 		{
 			$this->assertEquals('English', Manx::neatListPlain(array('English')));
 		}
-		
+
 		public function testNeatListPlainTwoItems()
 		{
 			$this->assertEquals('English and French', Manx::neatListPlain(array('English', 'French')));
 		}
-		
+
 		public function testNeatListPlainThreeItems()
 		{
 			$this->assertEquals('English, French and German', Manx::neatListPlain(array('English', 'French', 'German')));
 		}
-		
+
 		public function testRenderLanguageEnglishGivesNoOutput()
 		{
 			$db = new FakeDatabase();
@@ -173,7 +174,7 @@
 			$this->assertFalse($db->queryCalled);
 			$this->assertEquals('', $output);
 		}
-		
+
 		private function createLanguageLookup($db, $code, $display)
 		{
 			$query = sprintf("SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'",
@@ -182,7 +183,7 @@
 			$statement->fetchFakeResult = $display;
 			$db->queryFakeResultsForQuery[$query] = $statement;
 		}
-		
+
 		public function testRenderLanguageFrench()
 		{
 			$db = new FakeDatabase();
@@ -195,7 +196,7 @@
 			$this->assertTrue($db->queryCalled);
 			$this->assertEquals("<tr><td>Language:</td><td>French</td></tr>\n", $output);
 		}
-		
+
 		public function testRenderLanguageEnglishFrenchGerman()
 		{
 			$db = new FakeDatabase();
@@ -209,7 +210,7 @@
 			ob_end_clean();
 			$this->assertEquals("<tr><td>Languages:</td><td>English, French and German</td></tr>\n", $output);
 		}
-		
+
 		public function testRenderAmendments()
 		{
 			$db = new FakeDatabase();
@@ -241,7 +242,7 @@
 				. '<li>DEC-15-YWZA-DN3, <a href="../details.php/1,3301"><cite>SGEN System Generator Utility Program</cite></a> (1970-09) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'
 				. "</ul></td></tr>\n", $output);
 		}
-		
+
 		public function testRenderOSTagsEmpty()
 		{
 			$db = new FakeDatabase();
@@ -257,7 +258,7 @@
 			ob_end_clean();
 			$this->assertEquals('', $output);
 		}
-		
+
 		public function testRenderOSTagsTwoTags()
 		{
 			$db = new FakeDatabase();
@@ -275,7 +276,7 @@
 			ob_end_clean();
 			$this->assertEquals("<tr><td>Operating System:</td><td>RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</td></tr>\n", $output);
 		}
-		
+
 		public function testRenderLongDescriptionDoesNothing()
 		{
 			$db = new FakeDatabase();
@@ -286,25 +287,25 @@
 			ob_end_clean();
 			$this->assertEquals('', $output);
 		}
-		
+
 		public function testFormatDocRefNoPart()
 		{
 			$row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => NULL);
 			$this->assertEquals('<a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>',
 				Manx::formatDocRef($row));
 		}
-		
+
 		public function testFormatDocRefWithPart()
 		{
 			$row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => 'FECGAPR');
 			$this->assertEquals('FECGAPR, <a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>',
 				Manx::formatDocRef($row));
 		}
-		
+
 		public function testRenderCitations()
 		{
 			$db = new FakeDatabase();
-			
+
 			$statement = new FakeStatement();
 			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
@@ -324,7 +325,7 @@
 					. '<li>EK-306AA-MG-001, <a href="../details.php/1,123"><cite>KA655 CPU System Maintenance</cite></a></li>'
 				. "</ul></td></tr>\n", $output);
 		}
-		
+
 		public function testRenderTableOfContents()
 		{
 			$db = new FakeDatabase();
@@ -640,11 +641,11 @@
 				. "<li class=\"level1\"><span class=\"level1\">Appendix C</span> Related Documentation</li>\n"
 				. "</ul></div>", $output);
 		}
-		
+
 		public function testRenderCopies()
 		{
 			$db = new FakeDatabase();
-			
+
 			$statement = new FakeStatement();
 			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copyid'),
@@ -660,7 +661,7 @@
 				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND PUB=123"
 				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`";
 			$db->queryFakeResultsForQuery[$query] = $statement;
-			
+
 			$statement = new FakeStatement();
 			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('mirror_url'), array());
@@ -668,7 +669,7 @@
 					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
 					. " WHERE `copyid`=7165 ORDER BY `rank` DESC'";
 			$db->queryFakeResultsForQuery[$query] = $statement;
-			
+
 			$statement = new FakeStatement();
 			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('mirror_url'),
@@ -745,7 +746,7 @@
 				. "</tbody>\n"
 				. "</table>\n", $output);
 		}
-		
+
 		public function testRenderDetail()
 		{
 			$db = new FakeDatabase();
@@ -763,7 +764,7 @@
 				. 'JOIN `COMPANY` ON `ph_company`=`COMPANY`.`id` '
 				. 'WHERE 1=1 AND `pub_id`=3';
 			$db->queryFakeResultsForQuery[$detailQuery] = $statement;
-			
+
 			$manx = new ManxRenderDetailsTester($db, null);
 			ob_start();
 			$manx->renderDetails('/1,3');
