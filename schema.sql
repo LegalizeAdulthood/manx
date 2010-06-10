@@ -1,20 +1,3 @@
--- MySQL dump 10.11
---
--- Host: localhost    Database: frixxon_manx
--- ------------------------------------------------------
--- Server version	5.0.41-log
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
 --
 -- Table structure for table `CITEPUB`
 --
@@ -61,6 +44,32 @@ CREATE TABLE `COPY` (
   KEY `pub` (`pub`),
   KEY `url` (`url`)
 ) ENGINE=MyISAM AUTO_INCREMENT=15239 DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `LANGUAGE`
+--
+
+DROP TABLE IF EXISTS `LANGUAGE`;
+CREATE TABLE `LANGUAGE` (
+  `lang_alpha_3` char(3) NOT NULL,
+  `lang_alpha_2` char(2) default NULL,
+  `eng_lang_name` varchar(40) default NULL,
+  PRIMARY KEY  (`lang_alpha_3`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `mirror`
+--
+
+DROP TABLE IF EXISTS `mirror`;
+CREATE TABLE `mirror` (
+  `mirror_id` smallint(6) NOT NULL auto_increment,
+  `site` smallint(6) NOT NULL,
+  `original_stem` varchar(200) NOT NULL default '',
+  `copy_stem` varchar(200) NOT NULL default '',
+  `rank` smallint(6) NOT NULL default '0',
+  PRIMARY KEY  (`mirror_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `PART`
@@ -221,13 +230,3 @@ CREATE TABLE `TOC` (
   `name` varchar(255) NOT NULL default '',
   KEY `pub` (`pub`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2009-10-05 18:43:05
