@@ -73,6 +73,16 @@
 			$this->assertEquals('HP', $companies[1]['name']);
 		}
 		
+		public function testGetDisplayLanguage()
+		{
+			$this->createInstance();
+			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='fr'";
+			$this->configureStatementFetchResult($query, 'French');
+			$display = $this->_manxDb->getDisplayLanguage('fr');
+			$this->assertQueryCalledForSql($query);
+			$this->assertEquals('French', $display);
+		}
+		
 		private function createInstance()
 		{
 			$this->_db = new FakeDatabase();
@@ -83,8 +93,7 @@
 		private function configureCountForQuery($expectedCount, $query)
 		{
 			$this->createInstance();
-			$this->_statement->fetchFakeResult = array($expectedCount);
-			$this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
+			$this->configureStatementFetchResult($query, array($expectedCount));
 		}
 		
 		private function assertCountForQuery($expectedCount, $count, $query)
@@ -100,6 +109,12 @@
 			$this->assertEquals($sql, $this->_db->queryLastStatement);
 		}
 
+		private function configureStatementFetchResult($query, $result)
+		{
+			$this->_statement->fetchFakeResult = $result;
+			$this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
+		}
+		
 		private function configureStatementFetchAllResults($query, $results)
 		{
 			$this->_statement->fetchAllFakeResult = $results;

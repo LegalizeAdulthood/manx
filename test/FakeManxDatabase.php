@@ -7,6 +7,12 @@
 		{
 			$this->getSiteListCalled = false;
 			$this->getCompanyListCalled = false;
+			$this->getDocumentCountCalled = false;
+			$this->getOnlineDocumentCountCalled = false;
+			$this->getSiteCountCalled = false;
+			$this->getDisplayLanguageCalled = false;
+			$this->getDisplayLanguageLastLanguage = array();
+			$this->getDisplayLanguageFakeResult = array();
 		}
 
 		public $getDocumentCountCalled, $getDocumentCountFakeResult;
@@ -42,6 +48,14 @@
 		{
 			$this->getCompanyListCalled = true;
 			return $this->getCompanyListFakeResult;
+		}
+
+		public $getDisplayLanguageCalled, $getDisplayLanguageLastLanguageCode, $getDisplayLanguageFakeResult;
+		public function getDisplayLanguage($languageCode)
+		{
+			$this->getDisplayLanguageCalled = true;
+			$this->getDisplayLanguageLastLanguageCode[$languageCode] = true;
+			return $this->getDisplayLanguageFakeResult[$languageCode];
 		}
 	}
 ?>

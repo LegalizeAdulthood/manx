@@ -152,11 +152,9 @@ class Manx implements IManx
 		if (!is_null($lang) && $lang != '+en')
 		{
 			$languages = array();
-			// Avoid second name of language, if provided (after ';')
-			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'";
 			foreach (array_slice(explode('+', $lang), 1) as $languageCode)
 			{
-				array_push($languages, $this->_db->query(sprintf($query, $languageCode))->fetch());
+				array_push($languages, $this->_manxDb->getDisplayLanguage($languageCode));
 			}
 			if (count($languages) > 0)
 			{

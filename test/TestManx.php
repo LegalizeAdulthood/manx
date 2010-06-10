@@ -185,28 +185,29 @@
 
 		public function testRenderLanguageFrench()
 		{
-			$db = new FakeDatabase();
-			$this->createLanguageLookup($db, 'fr', 'French');
-			$manx = Manx::getInstanceForDatabase($db);
+			$db = new FakeManxDatabase();
+			$db->getDisplayLanguageFakeResult['fr'] = 'French';
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
 			ob_start();
 			$manx->renderLanguage('+fr');
 			$output = ob_get_contents();
 			ob_end_clean();
-			$this->assertTrue($db->queryCalled);
+			$this->assertTrue($db->getDisplayLanguageCalled);
 			$this->assertEquals("<tr><td>Language:</td><td>French</td></tr>\n", $output);
 		}
 
 		public function testRenderLanguageEnglishFrenchGerman()
 		{
-			$db = new FakeDatabase();
-			$this->createLanguageLookup($db, 'en', 'English');
-			$this->createLanguageLookup($db, 'fr', 'French');
-			$this->createLanguageLookup($db, 'de', 'German');
-			$manx = Manx::getInstanceForDatabase($db);
+			$db = new FakeManxDatabase();
+			$db->getDisplayLanguageFakeResult['en'] = 'English';
+			$db->getDisplayLanguageFakeResult['fr'] = 'French';
+			$db->getDisplayLanguageFakeResult['de'] = 'German';
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
 			ob_start();
 			$manx->renderLanguage('+en+fr+de');
 			$output = ob_get_contents();
 			ob_end_clean();
+			$this->assertTrue($db->getDisplayLanguageCalled);
 			$this->assertEquals("<tr><td>Languages:</td><td>English, French and German</td></tr>\n", $output);
 		}
 

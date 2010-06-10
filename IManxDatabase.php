@@ -6,5 +6,6 @@
 		function getSiteCount();
 		function getSiteList();
 		function getCompanyList();
+		function getDisplayLanguage($languageCode);
 	}
 ?>

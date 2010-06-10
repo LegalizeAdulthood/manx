@@ -45,5 +45,12 @@
 		{
 			return $this->_db->query("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`")->fetchAll();
 		}
+		
+		public function getDisplayLanguage($languageCode)
+		{
+			// Avoid second name of language, if provided (after ';')
+			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'";
+			return $this->_db->query(sprintf($query, $languageCode))->fetch();
+		}
 	}
 ?>
