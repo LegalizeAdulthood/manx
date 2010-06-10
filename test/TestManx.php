@@ -106,19 +106,16 @@
 		
 		public function testRenderCompanyList()
 		{
-			$db = new FakeDatabase();
-			$db->queryFakeResultsForQuery = array(
-				"SELECT COUNT(*) FROM `COMPANY` WHERE `display` = 'Y'" => $this->fakeStatementFetchResults(array(2)),
-				"SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`" =>
-					array(array('id' => 1, 'name' => "DEC"),
-						array('id' => 2, 'name' => "HP"))
-				);
-			$manx = Manx::getInstanceForDatabase($db);
+			$db = new FakeManxDatabase();
+			$db->getCompanyListFakeResult = array(
+				array('id' => 1, 'name' => "DEC"),
+				array('id' => 2, 'name' => "HP"));
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
 			ob_start();
 			$manx->renderCompanyList();
-			$this->assertTrue($db->queryCalled);
 			$output = ob_get_contents();
 			ob_end_clean();
+			$this->assertTrue($db->getCompanyListCalled);
 			$this->assertEquals('<a href="search.php?cp=1">DEC</a>, <a href="search.php?cp=2">HP</a>', $output);
 		}
 		

@@ -61,10 +61,10 @@ class Manx implements IManx
 	{
 		try
 		{
-			$rows = $this->_db->query("SELECT COUNT(*) FROM `COMPANY` WHERE `display` = 'Y'")->fetch();
-			$count = $rows[0];
+			$rows = $this->_manxDb->getCompanyList();
+			$count = count($rows);
 			$i = 0;
-			foreach ($this->_db->query("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`") as $row)
+			foreach ($rows as $row)
 			{
 				print '<a href="search.php?cp=' . $row['id'] . '">' . htmlspecialchars($row['name']) . '</a>';
 				$i++;

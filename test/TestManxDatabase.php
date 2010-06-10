@@ -30,5 +30,31 @@
 			$this->assertEquals('http://www.dec.com', $sites[0]['url']);
 			$this->assertEquals('http://www.hp.com', $sites[1]['url']);
 		}
+		
+		private function fakeStatementFetchResults($results)
+		{
+			$stmt = new FakeStatement();
+			$stmt->fetchFakeResult = $results;
+			return $stmt;
+		}
+		
+		public function testGetCompanyList()
+		{
+			$db = new FakeDatabase();
+			$query = "SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`";
+			$statement = new FakeStatement();
+			$statement->fetchAllFakeResult = array(
+				array('id' => 1, 'name' => "DEC"),
+				array('id' => 2, 'name' => "HP"));
+			$db->queryFakeResultsForQuery[$query] = $statement;
+			$manxDb = ManxDatabase::getInstanceForDatabase($db);
+			$companies = $manxDb->getCompanyList();
+			$this->assertTrue($db->queryCalled);
+			$this->assertEquals(2, count($companies));
+			$this->assertEquals(1, $companies[0]['id']);
+			$this->assertEquals('DEC', $companies[0]['name']);
+			$this->assertEquals(2, $companies[1]['id']);
+			$this->assertEquals('HP', $companies[1]['name']);
+		}
 	}
 ?>

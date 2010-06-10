@@ -2,5 +2,6 @@
 	interface IManxDatabase
 	{
 		function getSiteList();
+		function getCompanyList();
 	}
 ?>

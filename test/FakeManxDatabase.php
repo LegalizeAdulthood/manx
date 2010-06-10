@@ -6,6 +6,7 @@
 		public function __construct()
 		{
 			$this->getSiteListCalled = false;
+			$this->getCompanyListCalled = false;
 		}
 		
 		public $getSiteListCalled, $getSiteListFakeResult;
@@ -13,6 +14,13 @@
 		{
 			$this->getSiteListCalled = true;
 			return $this->getSiteListFakeResult;
+		}
+		
+		public $getCompanyListCalled, $getCompanyListFakeResult;
+		public function getCompanyList()
+		{
+			$this->getCompanyListCalled = true;
+			return $this->getCompanyListFakeResult;
 		}
 	}
 ?>

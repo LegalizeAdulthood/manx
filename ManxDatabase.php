@@ -18,5 +18,10 @@
 		{
 			return $this->_db->query("SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`")->fetchAll();
 		}
+		
+		public function getCompanyList()
+		{
+			return $this->_db->query("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`")->fetchAll();
+		}
 	}
 ?>
