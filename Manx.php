@@ -194,6 +194,16 @@ class Manx implements IManx
 		return '';
 	}
 	
+	private static function formatPubDate($pubDate)
+	{
+		$pubDate = is_null($pubDate) ? '' : trim($pubDate);
+		if (strlen($pubDate) > 0)
+		{
+			return ' (' . htmlspecialchars($pubDate) . ')';
+		}
+		return '';
+	}
+	
 	public function renderAmendments($pubId)
 	{
 		$amendments = array();
@@ -204,12 +214,7 @@ class Manx implements IManx
 		{
 			$amend = sprintf('<a href="../details.php/%d,%d"><cite>%s</cite></a>', $row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
 			$amend = Manx::partPrefix($row['ph_part']) . $amend;
-			$pubDate = $row['ph_pubdate'];
-			$pubDate = is_null($pubDate) ? '' : trim($pubDate);
-			if (strlen($pubDate) > 0)
-			{
-				$amend .= ' (' . htmlspecialchars($pubDate) . ')';
-			}
+			$amend .= Manx::formatPubDate($row['ph_pubdate']);
 			$amend .= $this->renderOSTagsForPub($pubId);
 			array_push($amendments, $amend);
 		}
@@ -447,12 +452,7 @@ class Manx implements IManx
 				$amend = sprintf("<a href=\"../details.php/%d,%d\"><cite>%s</cite></a>",
 					$amendRow['ph_company'], $amendRow['pub_id'], htmlspecialchars($amendRow['ph_title']));
 				$amend = Manx::partPrefix($amendRow['ph_part']) . $amend;
-				$pubDate = $amendRow['ph_pubdate'];
-				if (!is_null($pubDate))
-				{
-					$amend .= ' (' . htmlspecialchars($pubDate) . ')';
-				}
-
+				$amend .= Manx::formatPubDate($amendRow['ph_pubdate']);
 				$amend .= $this->renderOSTagsForPub($amendRow['pub_id']);
 				printf("<tr>\n<td>Amended to:</td>\n<td>%s</td>\n</tr>\n", $amend);
 			}
