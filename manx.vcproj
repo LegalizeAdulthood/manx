@@ -95,6 +95,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IManxDatabase.php"
+				>
+			</File>
+			<File
 				RelativePath=".\ISearcher.php"
 				>
 			</File>
@@ -104,6 +108,10 @@
 			</File>
 			<File
 				RelativePath=".\Manx.php"
+				>
+			</File>
+			<File
+				RelativePath=".\ManxDatabase.php"
 				>
 			</File>
 			<File

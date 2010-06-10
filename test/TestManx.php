@@ -3,12 +3,13 @@
 	require_once 'Manx.php';
 	require_once 'test/FakeDatabase.php';
 	require_once 'test/FakeStatement.php';
+	require_once 'test/FakeManxDatabase.php';
 	
 	class ManxRenderDetailsTester extends Manx
 	{
-		public function __construct($db)
+		public function __construct($db, $manxDb)
 		{
-			Manx::__construct($db);
+			Manx::__construct($db, $manxDb);
 			$this->renderLanguageCalled = false;
 			$this->renderAmendmentsCalled = false;
 			$this->renderOSTagsCalled = false;
@@ -123,18 +124,18 @@
 		
 		public function testRenderSiteList()
 		{
-			$db = new FakeDatabase();
-			$db->queryFakeResults = array(
-					array('url' => 'http://www.dec.com', 'description' => 'DEC', 'low' => false),
-					array('url' => 'http://www.hp.com', 'description' => 'HP', 'low' => true)
-				);
-			$manx = Manx::getInstanceForDatabase($db);
+			$db = new FakeManxDatabase();
+			$db->getSiteListFakeResult = FakeDatabase::createResultRowsForColumns(
+				array('url', 'description', 'low'),
+				array(
+					array('http://www.dec.com', 'DEC', false),
+					array('http://www.hp.com', 'HP', true)
+				));
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
 			ob_start();
 			$manx->renderSiteList();
 			$output = ob_get_contents();
 			ob_end_clean();
-			$this->assertTrue($db->queryCalled);
-			$this->assertEquals("SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`", $db->queryLastStatement);
 			$this->assertEquals('<ul><li><a href="http://www.dec.com">DEC</a></li>'
 				. '<li><a href="http://www.hp.com">HP</a> <span class="warning">(Low Bandwidth)</span></li></ul>', $output);
 		}
@@ -766,7 +767,7 @@
 				. 'WHERE 1=1 AND `pub_id`=3';
 			$db->queryFakeResultsForQuery[$detailQuery] = $statement;
 			
-			$manx = new ManxRenderDetailsTester($db);
+			$manx = new ManxRenderDetailsTester($db, null);
 			ob_start();
 			$manx->renderDetails('/1,3');
 			$output = ob_get_contents();

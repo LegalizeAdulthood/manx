@@ -2,12 +2,15 @@
 
 require_once 'PDODatabaseAdapter.php';
 require_once 'HtmlFormatter.php';
+require_once 'ManxDatabase.php';
 require_once 'Searcher.php';
 require_once 'IManx.php';
+require_once 'IDatabase.php';
 
 class Manx implements IManx
 {
 	private $_db;
+	private $_manxDb;
 
 	public static function getInstance()
 	{
@@ -15,13 +18,18 @@ class Manx implements IManx
 		$db = PDODatabaseAdapter::getInstance(new PDO($config[0], $config[1], $config[2]));
 		return Manx::getInstanceForDatabase($db);
 	}
-	public static function getInstanceForDatabase($db)
+	public static function getInstanceForDatabase(IDatabase $db)
 	{
-		return new Manx($db);
+		return Manx::getInstanceForDatabases($db, ManxDatabase::getInstanceForDatabase($db));
 	}
-	protected function __construct($db)
+	public static function getInstanceForDatabases(IDatabase $db, IManxDatabase $manxDb)
+	{
+		return new Manx($db, $manxDb);
+	}
+	protected function __construct($db, $manxDb)
 	{
 		$this->_db = $db;
+		$this->_manxDb = $manxDb;
 	}
 	public function __destruct()
 	{
@@ -33,7 +41,7 @@ class Manx implements IManx
 		try
 		{
 			print '<ul>';
-			foreach ($this->_db->query("SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`") as $row)
+			foreach ($this->_manxDb->getSiteList() as $row)
 			{
 				print '<li><a href="' . $row['url'] . '">' . htmlspecialchars($row['description']) . '</a>';
 				if ('Y' == $row['low'])

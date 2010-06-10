@@ -83,6 +83,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FakeManxDatabase.php"
+				>
+			</File>
+			<File
 				RelativePath=".\FakeStatement.php"
 				>
 			</File>
@@ -92,6 +96,10 @@
 			</File>
 			<File
 				RelativePath="TestManx.php"
+				>
+			</File>
+			<File
+				RelativePath=".\TestManxDatabase.php"
 				>
 			</File>
 			<File

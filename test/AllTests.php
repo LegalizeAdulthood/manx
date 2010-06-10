@@ -3,6 +3,7 @@
 	require_once 'test/TestManx.php';
 	require_once 'test/TestSearcher.php';
 	require_once 'test/TestHtmlFormatter.php';
+	require_once 'test/TestManxDatabase.php';
 	
 	class AllTests
 	{
@@ -12,6 +13,7 @@
 			$suite->addTestSuite('TestManx');
 			$suite->addTestSuite('TestSearcher');
 			$suite->addTestSuite('TestHtmlFormatter');
+			$suite->addTestSuite('TestManxDatabase');
 			return $suite;
 		}
 	}
