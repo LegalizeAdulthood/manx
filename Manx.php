@@ -186,7 +186,7 @@ class Manx implements IManx
 	
 	private static function partPrefix($part)
 	{
-		$part = is_null($part) ? '' : trim($part);
+		$part = Manx::replaceNullWithEmptyStringOrTrim($part);
 		if (strlen($part) > 0)
 		{
 			return htmlspecialchars($part) . ', ';
@@ -196,7 +196,7 @@ class Manx implements IManx
 	
 	private static function formatPubDate($pubDate)
 	{
-		$pubDate = is_null($pubDate) ? '' : trim($pubDate);
+		$pubDate = Manx::replaceNullWithEmptyStringOrTrim($pubDate);
 		if (strlen($pubDate) > 0)
 		{
 			return ' (' . htmlspecialchars($pubDate) . ')';
@@ -422,20 +422,17 @@ class Manx implements IManx
 				}
 				print "</td>\n</tr>\n";
 			}
-			$md5 = $row['md5'];
-			$md5 = is_null($md5) ? '' : trim($md5);
+			$md5 = Manx::replaceNullWithEmptyStringOrTrim($row['md5']);
 			if (strlen($md5) > 0)
 			{
 				printf("<tr>\n<td>MD5:</td>\n<td>%s</td>\n</tr>\n", htmlspecialchars($md5));
 			}
-			$notes = $row['notes'];
-			$notes = is_null($notes) ? '' : trim($notes);
+			$notes = Manx::replaceNullWithEmptyStringOrTrim($row['notes']);
 			if (strlen($notes) > 0)
 			{
 				printf("<tr>\n<td>Notes:</td>\n<td>%s</td>\n</tr>\n", htmlspecialchars($notes));
 			}
-			$credits = $row['credits'];
-			$credits = is_null($credits) ? '' : trim($credits);
+			$credits = Manx::replaceNullWithEmptyStringOrTrim($row['credits']);
 			if (strlen($credits) > 0)
 			{
 				printf("<tr>\n<td>Credits:</td><td>%s</td>\n</tr>\n", htmlspecialchars($credits));
@@ -517,8 +514,7 @@ class Manx implements IManx
 		$this->renderLongDescription($pubId);
 		$this->renderCitations($pubId);
 		$this->renderSupersessions($pubId);
-		$abstract = $row['ph_abstract'];
-		$abstract = is_null($abstract) ? '' : trim($abstract);
+		$abstract = Manx::replaceNullWithEmptyStringOrTrim($row['ph_abstract']);
 		if (strlen($abstract) > 0)
 		{
 			$this->printTableRow('Text', $abstract);
@@ -528,6 +524,11 @@ class Manx implements IManx
 		$this->renderTableOfContents($pubId, $fullContents);
 		$this->renderCopies($pubId);
 		print "</div>\n";
+	}
+	
+	public static function replaceNullWithEmptyStringOrTrim($value)
+	{
+		return is_null($value) ? '' : trim($value);
 	}
 }
 

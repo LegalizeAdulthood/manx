@@ -799,5 +799,20 @@
 				. "</table>\n"
 				. "</div>\n", $output);
 		}
+		
+		public function testReplaceNullWithEmptyStringOrTrimForNull()
+		{
+			$this->assertEquals('', Manx::replaceNullWithEmptyStringOrTrim(null));
+		}
+		
+		public function testReplaceNullWithEmptyStringOrTrimForString()
+		{
+			$this->assertEquals('foo', Manx::replaceNullWithEmptyStringOrTrim('foo'));
+		}
+		
+		public function testReplaceNullWithEmptyStringOrTrimForWhitespace()
+		{
+			$this->assertEquals('foo', Manx::replaceNullWithEmptyStringOrTrim(" foo\t\r\n"));
+		}
 	}
 ?>
