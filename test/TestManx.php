@@ -176,13 +176,19 @@
 			$this->assertEquals('', $output);
 		}
 		
+		private function createLanguageLookup($db, $code, $display)
+		{
+			$query = sprintf("SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'",
+				$code);
+			$statement = new FakeStatement();
+			$statement->fetchFakeResult = $display;
+			$db->queryFakeResultsForQuery[$query] = $statement;
+		}
+		
 		public function testRenderLanguageFrench()
 		{
 			$db = new FakeDatabase();
-			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='fr'";
-			$statement = new FakeStatement();
-			$statement->fetchFakeResult = 'French';
-			$db->queryFakeResultsForQuery[$query] = $statement;
+			$this->createLanguageLookup($db, 'fr', 'French');
 			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderLanguage('+fr');
@@ -195,19 +201,9 @@
 		public function testRenderLanguageEnglishFrenchGerman()
 		{
 			$db = new FakeDatabase();
-			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='en'";
-			$statement = new FakeStatement();
-			$statement->fetchFakeResult = 'English';
-			$db->queryFakeResultsForQuery[$query] = $statement;
-			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='fr'";
-			$statement = new FakeStatement();
-			$statement->fetchFakeResult = 'French';
-			$db->queryFakeResultsForQuery[$query] = $statement;
-			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='de'";
-			$statement = new FakeStatement();
-			$statement->fetchFakeResult = 'German';
-			$db->queryFakeResultsForQuery[$query] = $statement;
-
+			$this->createLanguageLookup($db, 'en', 'English');
+			$this->createLanguageLookup($db, 'fr', 'French');
+			$this->createLanguageLookup($db, 'de', 'German');
 			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderLanguage('+en+fr+de');
