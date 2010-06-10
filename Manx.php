@@ -81,9 +81,8 @@ class Manx implements IManx
 	}
 	function renderDocumentSummary()
 	{
-		print $this->_manxDb->getDocumentCount() . ' manuals, ';
-		$rows = $this->_db->query("SELECT COUNT(DISTINCT `pub`) FROM `COPY`")->fetch();
-		print $rows[0] . ' of which are online, at ';
+		echo $this->_manxDb->getDocumentCount(), ' manuals, ',
+			$this->_manxDb->getOnlineDocumentCount(), ' of which are online, at ';
 		$rows = $this->_db->query("SELECT COUNT(*) FROM `SITE`")->fetch();
 		print $rows[0] . ' websites';
 	}

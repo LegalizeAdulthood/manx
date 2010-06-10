@@ -30,6 +30,16 @@
 		
 		public function testGetOnlineDocumentCount()
 		{
+			$db = new FakeDatabase();
+			$statement = new FakeStatement();
+			$statement->fetchFakeResult = array(12);
+			$query = "SELECT COUNT(DISTINCT `pub`) FROM `COPY`";
+			$db->queryFakeResultsForQuery[$query] = $statement;
+			$manxDb = ManxDatabase::getInstanceForDatabase($db);
+			$count = $manxDb->getOnlineDocumentCount();
+			$this->assertTrue($db->queryCalled);
+			$this->assertEquals($query, $db->queryLastStatement);
+			$this->assertEquals(12, $count);
 		}
 		
 		public function testGetSiteCount()

@@ -22,7 +22,8 @@
 
 		function getOnlineDocumentCount()
 		{
-			throw new Exception("getOnlineDocumentCount not implemented");
+			$rows = $this->_db->query("SELECT COUNT(DISTINCT `pub`) FROM `COPY`")->fetch();
+			return $rows[0];
 		}
 
 		function getSiteCount()

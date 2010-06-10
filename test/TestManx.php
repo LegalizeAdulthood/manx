@@ -91,11 +91,11 @@
 		{
 			$db = new FakeDatabase();
 			$db->queryFakeResultsForQuery = array(
-				"SELECT COUNT(DISTINCT `pub`) FROM `COPY`" => $this->fakeStatementFetchResults(array(24)),
 				"SELECT COUNT(*) FROM `SITE`" => $this->fakeStatementFetchResults(array(43))
 				);
 			$manxDb = new FakeManxDatabase();
 			$manxDb->getDocumentCountFakeResult = 12;
+			$manxDb->getOnlineDocumentCountFakeResult = 24;
 			$manx = Manx::getInstanceForDatabases($db, $manxDb);
 			ob_start();
 			$manx->renderDocumentSummary();
