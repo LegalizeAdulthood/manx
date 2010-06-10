@@ -1,6 +1,6 @@
 <?php
 	require_once 'IFormatter.php';
-	
+
 	interface ISearcher
 	{
 		function renderCompanies($selected);

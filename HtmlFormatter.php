@@ -1,6 +1,6 @@
 <?php
 	require_once 'IFormatter.php';
-	
+
 	class HtmlFormatter implements IFormatter
 	{
 		public static function getInstance()
@@ -10,7 +10,7 @@
 		private function __construct()
 		{
 		}
-		
+
 		public static function neatQuotedList($words)
 		{
 			if (count($words) > 1)
@@ -23,7 +23,7 @@
 				return '"' . $words[0] . '"';
 			}
 		}
-		
+
 		public function renderResultsBar($ignoredWords, $searchWords, $start, $end, $total)
 		{
 			if (count($ignoredWords) > 0)
@@ -42,7 +42,7 @@
 			}
 			print ' Results <b>' . ($start + 1) . ' - ' . ($end + 1) . '</b> of <b>' . $total . '</b>.</div>';
 		}
-		
+
 		public function renderPageSelectionBar($start, $total, $rowsPerPage, $params)
 		{
 			$encodedQuery = urlencode(array_key_exists('q', $params) ? $params['q'] : '');
@@ -90,7 +90,7 @@
 			}
 			print '</div>';
 		}
-		
+
 		private function replaceNullWithEmptyString($row)
 		{
 			foreach (array_keys($row) as $key)
@@ -102,7 +102,7 @@
 			}
 			return $row;
 		}
-		
+
 		public function renderResultsPage($rows, $start, $end)
 		{
 			print '<table class="restable"><thead><tr><th>Part</th><th>Date</th><th>Title</th><th class="last">Status</th></tr></thead><tbody>';

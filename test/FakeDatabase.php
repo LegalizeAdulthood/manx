@@ -11,7 +11,7 @@
 			$this->queryLastStatement = '';
 			$this->queryCalledForStatement = array();
 		}
-		
+
 		public $queryFakeResults;
 		public $queryFakeResultsForQuery;
 		public $queryLastStatement;
@@ -43,6 +43,6 @@
 			}
 			return $rows;
 		}
-		
-	}	
+
+	}
 ?>

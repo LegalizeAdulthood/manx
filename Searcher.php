@@ -2,7 +2,7 @@
 	require_once 'IDatabase.php';
 	require_once 'ISearcher.php';
 	require_once 'IFormatter.php';
-	
+
 	class Searcher implements ISearcher
 	{
 		private $_searchWords;
@@ -13,12 +13,12 @@
 		{
 			return new Searcher($db);
 		}
-		
+
 		private function __construct($db)
 		{
 			$this->_db = $db;
 		}
-		
+
 		public function renderCompanies($selected)
 		{
 			print '<select id="CP" name="cp">';
@@ -41,7 +41,7 @@
 				return $get;
 			}
 		}
-		
+
 		public function matchClauseForKeywords($keywords)
 		{
 			$this->_searchWords = array();
@@ -61,7 +61,7 @@
 					}
 				}
 			}
-			
+
 			$matchClause = '';
 			$matchCond = ' AND ';
 			if (count($this->_searchWords) > 0)
@@ -85,15 +85,15 @@
 				}
 				$matchClause .= ')';
 			}
-			
+
 			if (strlen(trim($matchClause)) == 0)
 			{
 				$matchClause = ' ';
 			}
-			
+
 			return $matchClause;
 		}
-		
+
 		public static function normalizePartNumber($word)
 		{
 			if (!is_string($word))
@@ -102,7 +102,7 @@
 			}
 			return str_replace('O', '0', preg_replace('/[^A-Z0-9]/', '', strtoupper($word)));
 		}
-		
+
 		public static function cleanSqlWord($word)
 		{
 			if (!is_string($word))
@@ -111,7 +111,7 @@
 			}
 			return str_replace('_', '\_', str_replace('%', '\%', str_replace("'", "\\'", str_replace('\\', '\\\\', $word))));
 		}
-				
+
 		public function renderSearchResults(IFormatter $formatter, $company, $keywords, $online)
 		{
 			$params = Searcher::parameterSource($_GET, $_POST);

@@ -10,7 +10,7 @@
 			$this->assertTrue(is_object($formatter));
 			$this->assertFalse(is_null($formatter));
 		}
-		
+
 		public function testRenderResultsBarAllDocumentsOneResult()
 		{
 			$formatter = HtmlFormatter::getInstance();
@@ -21,23 +21,23 @@
 			$this->assertEquals('<div class="resbar">Showing all documents. Results <b>1 - 1</b> of <b>1</b>.</div>',
 				$output);
 		}
-		
+
 		public function testNeatQuotedListOneWord()
 		{
 			$this->assertEquals('"graphics"', HtmlFormatter::neatQuotedList(array('graphics')));
 		}
-		
+
 		public function testNeatQuotedListTwoWords()
 		{
 			$this->assertEquals('"graphics" and "terminal"', HtmlFormatter::neatQuotedList(array('graphics', 'terminal')));
 		}
-		
+
 		public function testNeatQuotedListThreeWords()
 		{
 			$this->assertEquals('"graphics", "terminal" and "serial"',
 				HtmlFormatter::neatQuotedList(array('graphics', 'terminal', 'serial')));
 		}
-		
+
 		public function testRenderResultsBarSearchWordsOneResult()
 		{
 			$formatter = HtmlFormatter::getInstance();
@@ -48,7 +48,7 @@
 			$this->assertEquals('<div class="resbar">Searching for "graphics" and "terminal". Results <b>1 - 1</b> of <b>1</b>.</div>',
 				$output);
 		}
-		
+
 		public function testRenderResultsBarIgnoredWordsOneResult()
 		{
 			$formatter = HtmlFormatter::getInstance();
@@ -71,7 +71,7 @@
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>',
 				$output);
 		}
-		
+
 		public function testRenderPageSelectionBarPageOneOfTwo()
 		{
 			$formatter = HtmlFormatter::getInstance();
@@ -85,7 +85,7 @@
 				. '</div>',
 				$output);
 		}
-		
+
 		public function testRenderPageSelectionBarPageTwoOfThree()
 		{
 			$formatter = HtmlFormatter::getInstance();
@@ -101,7 +101,7 @@
 				. '<a href="search.php?q=vt220+terminal;start=20;cp=1"><b>Next</b></a></div>',
 				$output);
 		}
-		
+
 		public function testRenderPageSelectionBarPageThreeOfThree()
 		{
 			$formatter = HtmlFormatter::getInstance();
@@ -116,7 +116,7 @@
 				. '<b class="currpage">3</b>&nbsp;&nbsp;</div>',
 				$output);
 		}
-		
+
 		public function testRenderPageSelectionBarPageOneOfTwoOnline()
 		{
 			$formatter = HtmlFormatter::getInstance();
@@ -130,7 +130,7 @@
 				. '</div>',
 				$output);
 		}
-		
+
 		public function testRenderPageSelectionBarPageOneOfTwoFivePerPage()
 		{
 			$formatter = HtmlFormatter::getInstance();
@@ -144,7 +144,7 @@
 				. '</div>',
 				$output);
 		}
-		
+
 		public function testRenderResultsPage()
 		{
 			$formatter = HtmlFormatter::getInstance();

@@ -1,6 +1,6 @@
 <?php
 	require_once 'IDatabase.php';
-	
+
 	class PDODatabaseAdapter implements IDatabase
 	{
 		public static function getInstance($pdo)

@@ -4,7 +4,7 @@
 	require_once 'test/TestSearcher.php';
 	require_once 'test/TestHtmlFormatter.php';
 	require_once 'test/TestManxDatabase.php';
-	
+
 	class AllTests
 	{
 		public static function suite()

@@ -22,7 +22,7 @@
 			ob_end_clean();
 			$this->assertEquals('<select id="CP" name="cp"><option value="1" selected>DEC</option><option value="2">3Com</option></select>', $output);
 		}
-		
+
 		public function testParameterSourceHttpGet()
 		{
 			$get = array('cp' => 1);
@@ -31,7 +31,7 @@
 			$this->assertEquals($get, $source);
 			$this->assertTrue(array_key_exists('cp', $source));
 		}
-		
+
 		public function testParameterSourceHttpPost()
 		{
 			$get = array();
@@ -40,7 +40,7 @@
 			$this->assertEquals($post, $source);
 			$this->assertTrue(array_key_exists('cp', $source));
 		}
-		
+
 		public function testParameterSourceDefaultGet()
 		{
 			$get = array('q' => 'terminal');
@@ -49,7 +49,7 @@
 			$this->assertEquals($get, $source);
 			$this->assertTrue(array_key_exists('q', $source));
 		}
-		
+
 		public function testMatchClauseForKeyword()
 		{
 			$keyword = "terminal";
@@ -59,7 +59,7 @@
 			$this->assertEquals(" AND ((`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
 				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
 		}
-		
+
 		public function testMatchClauseForMultipleKeywords()
 		{
 			$keyword = "graphics terminal";
@@ -71,22 +71,22 @@
 				. "AND (`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
 				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
 		}
-		
+
 		public function testNormalizePartNumberNotString()
 		{
 			$this->assertEquals('', Searcher::normalizePartNumber(array()));
 		}
-		
+
 		public function testNormalizePartNumberLowerCase()
 		{
 			$this->assertEquals('UC', Searcher::normalizePartNumber('uc'));
 		}
-		
+
 		public function testNormalizePartNumberNonAlphaNumeric()
 		{
 			$this->assertEquals('UC122', Searcher::normalizePartNumber(' !u,c,1,2,2 ,./<>?;' . "'" . ':"[]{}\\|`~!@#$%^&*()'));
 		}
-		
+
 		public function testNormalizePartNumberLetterOhIsZero()
 		{
 			$this->assertEquals('UC1220', Searcher::normalizePartNumber(' !u,c,1,2,2,o ,./<>?;' . "'" . ':"[]{}\\|`~!@#$%^&*()'));
@@ -96,32 +96,32 @@
 		{
 			$this->assertEquals('', Searcher::cleanSqlWord(array()));
 		}
-				
+
 		public function testCleanSqlWordNoSpecials()
 		{
 			$this->assertEquals('cleanWord', Searcher::cleanSqlWord('cleanWord'));
 		}
-		
+
 		public function testCleanSqlWordPercent()
 		{
 			$this->assertEquals('percent\\%Word', Searcher::cleanSqlWord('percent%Word'));
 		}
-		
+
 		public function testCleanSqlWordQuote()
 		{
 			$this->assertEquals("quote\\'Word", Searcher::cleanSqlWord("quote'Word"));
 		}
-		
+
 		public function testCleanSqlWordUnderline()
 		{
 			$this->assertEquals('underline\\_Word', Searcher::cleanSqlWord('underline_Word'));
 		}
-		
+
 		public function testCleanSqlWordBackslash()
 		{
 			$this->assertEquals('backslash\\\\Word', Searcher::cleanSqlWord('backslash\\Word'));
 		}
-		
+
 		public function testSearchResultsSingleRow()
 		{
 			$db = new FakeDatabase();
