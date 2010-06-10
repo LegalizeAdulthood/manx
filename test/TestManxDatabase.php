@@ -6,98 +6,104 @@
 
 	class TestManxDatabase extends PHPUnit_Framework_TestCase
 	{
+		private $_db;
+		private $_manxDb;
+		private $_statement;
+		
 		public function testConstruct()
 		{
-			$db = new FakeDatabase();
-			$manxDb = ManxDatabase::getInstanceForDatabase($db);
-			$this->assertTrue(!is_null($manxDb) && is_object($manxDb));
+			$this->createInstance();
+			$this->assertTrue(!is_null($this->_manxDb) && is_object($this->_manxDb));
 		}
 		
 		public function testGetDocumentCount()
 		{
-			$db = new FakeDatabase();
-			$statement = new FakeStatement();
-			$statement->fetchFakeResult = array(2);
 			$query = "SELECT COUNT(*) FROM `PUB`";
-			$db->queryFakeResultsForQuery[$query] = $statement;
-			$manxDb = ManxDatabase::getInstanceForDatabase($db);
-			$count = $manxDb->getDocumentCount();
-			$this->assertTrue($db->queryCalled);
-			$this->assertEquals($query, $db->queryLastStatement);
-			$this->assertTrue($statement->fetchCalled);
-			$this->assertEquals(2, $count);
+			$this->configureCountForQuery(2, $query);
+			$count = $this->_manxDb->getDocumentCount();
+			$this->assertCountForQuery(2, $count, $query);
 		}
 		
 		public function testGetOnlineDocumentCount()
 		{
-			$db = new FakeDatabase();
-			$statement = new FakeStatement();
-			$statement->fetchFakeResult = array(12);
 			$query = "SELECT COUNT(DISTINCT `pub`) FROM `COPY`";
-			$db->queryFakeResultsForQuery[$query] = $statement;
-			$manxDb = ManxDatabase::getInstanceForDatabase($db);
-			$count = $manxDb->getOnlineDocumentCount();
-			$this->assertTrue($db->queryCalled);
-			$this->assertEquals($query, $db->queryLastStatement);
-			$this->assertEquals(12, $count);
+			$this->configureCountForQuery(12, $query);
+			$count = $this->_manxDb->getOnlineDocumentCount();
+			$this->assertCountForQuery(12, $count, $query);
 		}
 		
 		public function testGetSiteCount()
 		{
-			$db = new FakeDatabase();
-			$statement = new FakeStatement();
-			$statement->fetchFakeResult = array(43);
 			$query = "SELECT COUNT(*) FROM `SITE`";
-			$db->queryFakeResultsForQuery[$query] = $statement;
-			$manxDb = ManxDatabase::getInstanceForDatabase($db);
-			$count = $manxDb->getSiteCount();
-			$this->assertTrue($db->queryCalled);
-			$this->assertEquals($query, $db->queryLastStatement);
-			$this->assertEquals(43, $count);
+			$this->configureCountForQuery(43, $query);
+			$count = $this->_manxDb->getSiteCount();
+			$this->assertCountForQuery(43, $count, $query);
 		}
 
 		public function testGetSiteList()
 		{
-			$db = new FakeDatabase();
+			$this->createInstance();
 			$query = "SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`";
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
-				array('url', 'description', 'low'),
-				array(array('http://www.dec.com', 'DEC', false), array('http://www.hp.com', 'HP', true)));
-			$db->queryFakeResultsForQuery[$query] = $statement;
-			$manxDb = ManxDatabase::getInstanceForDatabase($db);
-			$sites = $manxDb->getSiteList();
-			$this->assertTrue($db->queryCalled);
-			$this->assertEquals($query, $db->queryLastStatement);
+			$this->configureStatementFetchAllResults($query,
+				FakeDatabase::createResultRowsForColumns(
+					array('url', 'description', 'low'),
+					array(array('http://www.dec.com', 'DEC', false), array('http://www.hp.com', 'HP', true))));
+			$this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
+			$sites = $this->_manxDb->getSiteList();
+			$this->assertQueryCalledForSql($query);
 			$this->assertEquals(2, count($sites));
 			$this->assertEquals('http://www.dec.com', $sites[0]['url']);
 			$this->assertEquals('http://www.hp.com', $sites[1]['url']);
 		}
-
-		private function fakeStatementFetchResults($results)
-		{
-			$stmt = new FakeStatement();
-			$stmt->fetchFakeResult = $results;
-			return $stmt;
-		}
-
+		
 		public function testGetCompanyList()
 		{
-			$db = new FakeDatabase();
+			$this->createInstance();
 			$query = "SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`";
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = array(
-				array('id' => 1, 'name' => "DEC"),
-				array('id' => 2, 'name' => "HP"));
-			$db->queryFakeResultsForQuery[$query] = $statement;
-			$manxDb = ManxDatabase::getInstanceForDatabase($db);
-			$companies = $manxDb->getCompanyList();
-			$this->assertTrue($db->queryCalled);
+			$this->configureStatementFetchAllResults($query,
+				array(
+					array('id' => 1, 'name' => "DEC"),
+					array('id' => 2, 'name' => "HP")));
+			$companies = $this->_manxDb->getCompanyList();
+			$this->assertQueryCalledForSql($query);
 			$this->assertEquals(2, count($companies));
 			$this->assertEquals(1, $companies[0]['id']);
 			$this->assertEquals('DEC', $companies[0]['name']);
 			$this->assertEquals(2, $companies[1]['id']);
 			$this->assertEquals('HP', $companies[1]['name']);
+		}
+		
+		private function createInstance()
+		{
+			$this->_db = new FakeDatabase();
+			$this->_manxDb = ManxDatabase::getInstanceForDatabase($this->_db);
+			$this->_statement = new FakeStatement();
+		}
+
+		private function configureCountForQuery($expectedCount, $query)
+		{
+			$this->createInstance();
+			$this->_statement->fetchFakeResult = array($expectedCount);
+			$this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
+		}
+		
+		private function assertCountForQuery($expectedCount, $count, $query)
+		{
+			$this->assertQueryCalledForSql($query);
+			$this->assertTrue($this->_statement->fetchCalled);
+			$this->assertEquals($expectedCount, $count);
+		}
+		
+		private function assertQueryCalledForSql($sql)
+		{
+			$this->assertTrue($this->_db->queryCalled);
+			$this->assertEquals($sql, $this->_db->queryLastStatement);
+		}
+
+		private function configureStatementFetchAllResults($query, $results)
+		{
+			$this->_statement->fetchAllFakeResult = $results;
+			$this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
 		}
 	}
 ?>
