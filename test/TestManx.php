@@ -229,7 +229,7 @@
 				array('tag_text'),
 				array(array('RSX-11M Version 4.0'),
 					array('RSX-11M-PLUS Version 2.0')));
-			$tagQuery = 'SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`="os" AND `pub`=3';
+			$tagQuery = "SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=3";
 			$db->queryFakeResultsForQuery[$tagQuery] = $statement;
 
 			$manx = Manx::getInstanceForDatabase($db);

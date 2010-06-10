@@ -163,6 +163,17 @@ class Manx implements IManx
 		}
 	}
 
+	private function getOSTagsForPub($pubId)
+	{
+		$query = sprintf("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=%d", $pubId);
+		$tags = array();
+		foreach ($this->_db->query($query)->fetchAll() as $tagRow)
+		{
+			array_push($tags, trim($tagRow['tag_text']));
+		}
+		return $tags;
+	}
+	
 	public function renderAmendments($pubId)
 	{
 		$amendments = array();
@@ -184,12 +195,7 @@ class Manx implements IManx
 			{
 				$amend .= ' (' . htmlspecialchars($pubDate) . ')';
 			}
-			$query = sprintf('SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`="os" AND `pub`=%d', $pubId);
-			$tags = array();
-			foreach ($this->_db->query($query)->fetchAll() as $tagRow)
-			{
-				array_push($tags, trim($tagRow['tag_text']));
-			}
+			$tags = $this->getOSTagsForPub($pubId);
 			if (count($tags) > 0)
 			{
 				$amend .= ' <b>OS:</b> ' . htmlspecialchars(implode(', ', $tags));
@@ -204,12 +210,7 @@ class Manx implements IManx
 
 	public function renderOSTags($pubId)
 	{
-		$tags = array();
-		$query = sprintf("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=%d", $pubId);
-		foreach ($this->_db->query($query)->fetchAll() as $row)
-		{
-			array_push($tags, $row['tag_text']);
-		}
+		$tags = $this->getOSTagsForPub($pubId);
 		if (count($tags) > 0)
 		{
 			echo '<tr><td>Operating System:</td><td>', htmlspecialchars(implode(', ', $tags)), "</td></tr>\n";
@@ -451,14 +452,7 @@ class Manx implements IManx
 					$amend .= ' (' . htmlspecialchars($pubDate) . ')';
 				}
 
-				$tagQuery = sprintf("SELECT `tag_text` FROM `TAG`,`PUBTAG`"
-						. " WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=%d",
-					$amendRow['pub_id']);
-				$tags = array();
-				foreach ($this->_db->query($tagQuery)->fetchAll() as $tag)
-				{
-					array_push($tags, $tag);
-				}
+				$tags = $this->getOSTagsForPub($amendRow['pub_id']);
 				if (count($tags) > 0)
 				{
 					$amend .= ' <b>OS:</b> ' . htmlspecialchars(implode(', ', $tags));
