@@ -196,10 +196,7 @@ class Manx implements IManx
 	public function renderAmendments($pubId)
 	{
 		$amendments = array();
-		$rows = $this->_db->query(sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
-			. "FROM `PUB` JOIN `PUBHISTORY` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=%d ORDER BY `ph_amend_serial`",
-			$pubId))->fetchAll();
-		foreach ($rows as $row)
+		foreach ($this->_manxDb->getAmendmentsForPub($pubId) as $row)
 		{
 			$amend = sprintf('<a href="../details.php/%d,%d"><cite>%s</cite></a>', $row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
 			$amend = Manx::partPrefix($row['ph_part']) . $amend;

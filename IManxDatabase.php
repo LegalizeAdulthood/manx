@@ -8,5 +8,6 @@
 		function getCompanyList();
 		function getDisplayLanguage($languageCode);
 		function getOSTagsForPub($pubId);
+		function getAmendmentsForPub($pubId);
 	}
 ?>

@@ -219,27 +219,22 @@
 		
 		public function testRenderAmendments()
 		{
-			$db = new FakeDatabase();
-
+			$db = new FakeManxDatabase();
 			$pubId = 3;
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
+			$db->getAmendmentsForPubFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pubdate'),
 				array(array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
 					array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09')));
-			$amendmentQuery = "SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
-				. "FROM `PUB` JOIN `PUBHISTORY` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
-			$db->queryFakeResultsForQuery[$amendmentQuery] = $statement;
+			$db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
 
-			$manxDb = new FakeManxDatabase();
-			$manxDb->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
-
-			$manx = Manx::getInstanceForDatabases($db, $manxDb);
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
 			ob_start();
 			$manx->renderAmendments($pubId);
 			$output = ob_get_contents();
 			ob_end_clean();
-			$this->assertGetOSTagsForPubCalledForPubId($manxDb, $pubId);
+			$this->assertGetOSTagsForPubCalledForPubId($db, $pubId);
+			$this->assertTrue($db->getAmendmentsForPubCalled);
+			$this->assertEquals($pubId, $db->getAmendmentsForPubLastPubId);
 			$this->assertEquals('<tr valign="top"><td>Amended&nbsp;by:</td>'
 				. '<td><ul class="citelist"><li>DEC-15-YWZA-DN1, <a href="../details.php/1,4496"><cite>DDT (Dynamic Debugging Technique) Utility Program</cite></a> (1970-04) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'
 				. '<li>DEC-15-YWZA-DN3, <a href="../details.php/1,3301"><cite>SGEN System Generator Utility Program</cite></a> (1970-09) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'

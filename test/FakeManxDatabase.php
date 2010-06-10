@@ -15,6 +15,8 @@
 			$this->getDisplayLanguageFakeResult = array();
 			$this->getOSTagsForPubCalled = false;
 			$this->getOSTagsForPubFakeResult = array();
+			$this->getAmendmentsForPubCalled = false;
+			$this->getAmendmentsForPubFakeResult = array();
 		}
 
 		public $getDocumentCountCalled, $getDocumentCountFakeResult;
@@ -66,6 +68,14 @@
 			$this->getOSTagsForPubCalled = true;
 			$this->getOSTagsForPubLastPubId = $pubId;
 			return $this->getOSTagsForPubFakeResult;
+		}
+		
+		public $getAmendmentsForPubCalled, $getAmendmentsForPubLastPubId, $getAmendmentsForPubFakeResult;
+		public function getAmendmentsForPub($pubId)
+		{
+			$this->getAmendmentsForPubCalled = true;
+			$this->getAmendmentsForPubLastPubId = $pubId;
+			return $this->getAmendmentsForPubFakeResult;
 		}
 	}
 ?>

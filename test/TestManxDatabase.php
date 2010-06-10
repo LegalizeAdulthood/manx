@@ -98,6 +98,25 @@
 			$this->assertEquals('RSX-11M-PLUS Version 2.0', $tags[1]);
 		}
 		
+		public function testGetAmendmentsForPub()
+		{
+			$this->createInstance();
+			$query = "SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
+				. "FROM `PUB` JOIN `PUBHISTORY` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
+			$pubId = 3;
+			$this->configureStatementFetchAllResults($query,
+				FakeDatabase::createResultRowsForColumns(
+					array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pubdate'),
+					array(array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
+						array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09'))));
+			$amendments = $this->_manxDb->getAmendmentsForPub($pubId);
+			$this->assertQueryCalledForSql($query);
+			$this->assertTrue(is_array($amendments));
+			$this->assertEquals(2, count($amendments));
+			$this->assertEquals(4496, $amendments[0]['ph_pub']);
+			$this->assertEquals(3301, $amendments[1]['ph_pub']);
+		}
+		
 		private function createInstance()
 		{
 			$this->_db = new FakeDatabase();
