@@ -44,6 +44,16 @@
 		
 		public function testGetSiteCount()
 		{
+			$db = new FakeDatabase();
+			$statement = new FakeStatement();
+			$statement->fetchFakeResult = array(43);
+			$query = "SELECT COUNT(*) FROM `SITE`";
+			$db->queryFakeResultsForQuery[$query] = $statement;
+			$manxDb = ManxDatabase::getInstanceForDatabase($db);
+			$count = $manxDb->getSiteCount();
+			$this->assertTrue($db->queryCalled);
+			$this->assertEquals($query, $db->queryLastStatement);
+			$this->assertEquals(43, $count);
 		}
 
 		public function testGetSiteList()

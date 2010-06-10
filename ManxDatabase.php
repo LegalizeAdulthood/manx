@@ -28,7 +28,8 @@
 
 		function getSiteCount()
 		{
-			throw new Exception("getSiteCount not implemented");
+			$rows = $this->_db->query("SELECT COUNT(*) FROM `SITE`")->fetch();
+			return $rows[0];
 		}
 
 		public function getSiteList()

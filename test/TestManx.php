@@ -89,19 +89,18 @@
 
 		public function testRenderDocumentSummary()
 		{
-			$db = new FakeDatabase();
-			$db->queryFakeResultsForQuery = array(
-				"SELECT COUNT(*) FROM `SITE`" => $this->fakeStatementFetchResults(array(43))
-				);
 			$manxDb = new FakeManxDatabase();
 			$manxDb->getDocumentCountFakeResult = 12;
 			$manxDb->getOnlineDocumentCountFakeResult = 24;
-			$manx = Manx::getInstanceForDatabases($db, $manxDb);
+			$manxDb->getSiteCountFakeResult = 43;
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $manxDb);
 			ob_start();
 			$manx->renderDocumentSummary();
-			$this->assertTrue($db->queryCalled);
 			$output = ob_get_contents();
 			ob_end_clean();
+			$this->assertTrue($manxDb->getDocumentCountCalled);
+			$this->assertTrue($manxDb->getOnlineDocumentCountCalled);
+			$this->assertTrue($manxDb->getSiteCountCalled);
 			$this->assertEquals("12 manuals, 24 of which are online, at 43 websites", $output);
 		}
 

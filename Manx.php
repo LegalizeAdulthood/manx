@@ -82,9 +82,8 @@ class Manx implements IManx
 	function renderDocumentSummary()
 	{
 		echo $this->_manxDb->getDocumentCount(), ' manuals, ',
-			$this->_manxDb->getOnlineDocumentCount(), ' of which are online, at ';
-		$rows = $this->_db->query("SELECT COUNT(*) FROM `SITE`")->fetch();
-		print $rows[0] . ' websites';
+			$this->_manxDb->getOnlineDocumentCount(), ' of which are online, at ',
+			$this->_manxDb->getSiteCount(), ' websites';
 	}
 	function renderLoginLink($page)
 	{
