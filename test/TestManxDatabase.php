@@ -117,6 +117,26 @@
 			$this->assertEquals(3301, $amendments[1]['ph_pub']);
 		}
 		
+		public function testGetLongDescriptionForPubDoesNothing()
+		{
+			$this->createInstance();
+			$pubId = 3;
+			$query = "SELECT 'html_text' FROM `LONG_DESC` WHERE `pub`=3 ORDER BY `line`";
+			$this->configureStatementFetchAllResults($query,
+				FakeDatabase::createResultRowsForColumns(array('html_text'),
+					array(array('<p>This is paragraph one.</p>'), array('<p>This is paragraph two.</p>'))));
+			$longDescription = $this->_manxDb->getLongDescriptionForPub($pubId);
+			$this->assertFalse($this->_db->queryCalled);
+			/*
+			TODO: LONG_DESC table missing
+			$this->assertQueryCalledForSql($query);
+			$this->assertTrue(is_array($longDescription));
+			$this->assertEquals(2, count($longDescription));
+			$this->assertEquals('<p>This is paragraph one.</p>', $longDescription[0]);
+			$this->assertEquals('<p>This is paragraph two.</p>', $longDescription[1]);
+			*/
+		}
+		
 		private function createInstance()
 		{
 			$this->_db = new FakeDatabase();

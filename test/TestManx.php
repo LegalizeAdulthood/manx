@@ -267,15 +267,35 @@
 			$this->assertEquals("<tr><td>Operating System:</td><td>RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</td></tr>\n", $output);
 		}
 
-		public function testRenderLongDescriptionDoesNothing()
+		public function testRenderLongDescriptionEmpty()
 		{
-			$db = new FakeDatabase();
-			$manx = Manx::getInstanceForDatabase($db);
+			$db = new FakeManxDatabase();
+			$db->getLongDescriptionForPubFakeResult = array();
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$pubId = 3;
 			ob_start();
-			$manx->renderLongDescription(3);
+			$manx->renderLongDescription($pubId);
 			$output = ob_get_contents();
 			ob_end_clean();
+			$this->assertTrue($db->getLongDescriptionForPubCalled);
+			$this->assertEquals($pubId, $db->getLongDescriptionForPubLastPubId);
 			$this->assertEquals('', $output);
+		}
+		
+		public function testRenderLongDescription()
+		{
+			$db = new FakeManxDatabase();
+			$db->getLongDescriptionForPubFakeResult = array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>');
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$pubId = 3;
+			ob_start();
+			$manx->renderLongDescription($pubId);
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertTrue($db->getLongDescriptionForPubCalled);
+			$this->assertEquals($pubId, $db->getLongDescriptionForPubLastPubId);
+			$this->assertEquals('<tr valign="top"><td>Description:</td>'
+				. "<td><p>This is paragraph one.</p><p>This is paragraph two.</p></td></tr>", $output);
 		}
 
 		public function testFormatDocRefNoPart()

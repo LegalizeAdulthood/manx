@@ -70,5 +70,19 @@
 				. "FROM `PUB` JOIN `PUBHISTORY` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=%d ORDER BY `ph_amend_serial`",
 				$pubId))->fetchAll();
 		}
+		
+		public function getLongDescriptionForPub($pubId)
+		{
+			$description = array();
+			/*
+			TODO: LONG_DESC table missing
+			$query = sprintf("SELECT 'html_text' FROM `LONG_DESC` WHERE `pub`=%d ORDER BY `line`", $pubId);
+			foreach ($this->_db->query($query)->fetchAll() as $row)
+			{
+				array_push($description, $row['html_text']);
+			}
+			*/
+			return $description;
+		}
 	}
 ?>

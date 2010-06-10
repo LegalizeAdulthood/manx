@@ -17,6 +17,8 @@
 			$this->getOSTagsForPubFakeResult = array();
 			$this->getAmendmentsForPubCalled = false;
 			$this->getAmendmentsForPubFakeResult = array();
+			$this->getLongDescriptionForPubCalled = false;
+			$this->getLongDescriptionForPubFakeResult = array();
 		}
 
 		public $getDocumentCountCalled, $getDocumentCountFakeResult;
@@ -76,6 +78,14 @@
 			$this->getAmendmentsForPubCalled = true;
 			$this->getAmendmentsForPubLastPubId = $pubId;
 			return $this->getAmendmentsForPubFakeResult;
+		}
+		
+		public $getLongDescriptionForPubCalled, $getLongDescriptionForPubLastPubId, $getLongDescriptionForPubFakeResult;
+		public function getLongDescriptionForPub($pubId)
+		{
+			$this->getLongDescriptionForPubCalled = true;
+			$this->getLongDescriptionForPubLastPubId = $pubId;
+			return $this->getLongDescriptionForPubFakeResult;
 		}
 	}
 ?>

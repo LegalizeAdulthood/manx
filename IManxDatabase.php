@@ -9,5 +9,6 @@
 		function getDisplayLanguage($languageCode);
 		function getOSTagsForPub($pubId);
 		function getAmendmentsForPub($pubId);
+		function getLongDescriptionForPub($pubId);
 	}
 ?>
