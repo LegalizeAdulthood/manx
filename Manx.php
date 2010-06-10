@@ -464,16 +464,15 @@ class Manx implements IManx
 			
 			$mirrorQuery = sprintf("SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
 					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
-					. " WHERE `copyid`=%d ORDER BY rank desc'", $row['copyid']);
+					. " WHERE `copyid`=%d ORDER BY `rank` DESC'", $row['copyid']);
 			$mirrorCount = 0;
-			// TODO: mirror table is missing from data dump!
-			foreach (array() /*$this->_db->query($mirrorQuery)->fetchAll()*/ as $mirrorRow)
+			foreach ($this->_db->query($mirrorQuery)->fetchAll() as $mirrorRow)
 			{
 				if (++$mirrorCount == 1)
 				{
-					print '<tr valign="top"><td>Mirrors:</td><td><ul style="list-style-type:none; margin:0; padding:0">';
+					print '<tr valign="top"><td>Mirrors:</td><td><ul style="list-style-type: none; margin: 0; padding: 0">';
 				}
-				printf("<li style=\"margin: 0; padding: 0\"><a href=\"%s\">%s</a></li>", urlencode($mirrorRow['mirror_url']), htmlspecialchars($mirrorRow['mirror_url']));
+				printf("<li style=\"margin: 0; padding: 0\"><a href=\"%s\">%s</a></li>", $mirrorRow['mirror_url'], htmlspecialchars($mirrorRow['mirror_url']));
 			}
 			if ($mirrorCount > 0)
 			{
