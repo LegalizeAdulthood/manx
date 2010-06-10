@@ -174,6 +174,26 @@ class Manx implements IManx
 		return $tags;
 	}
 	
+	private function renderOSTagsForPub($pubId)
+	{
+		$tags = $this->getOSTagsForPub($pubId);
+		if (count($tags) > 0)
+		{
+			return ' <b>OS:</b> ' . htmlspecialchars(implode(', ', $tags));
+		}
+		return '';
+	}
+	
+	private static function partPrefix($part)
+	{
+		$part = is_null($part) ? '' : trim($part);
+		if (strlen($part) > 0)
+		{
+			return htmlspecialchars($part) . ', ';
+		}
+		return '';
+	}
+	
 	public function renderAmendments($pubId)
 	{
 		$amendments = array();
@@ -183,23 +203,14 @@ class Manx implements IManx
 		foreach ($rows as $row)
 		{
 			$amend = sprintf('<a href="../details.php/%d,%d"><cite>%s</cite></a>', $row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
-			$part = $row['ph_part'];
-			$part = is_null($part) ? '' : trim($part);
-			if (strlen($part) > 0)
-			{
-				$amend = htmlspecialchars($part) . ', ' . $amend;
-			}
+			$amend = Manx::partPrefix($row['ph_part']) . $amend;
 			$pubDate = $row['ph_pubdate'];
 			$pubDate = is_null($pubDate) ? '' : trim($pubDate);
 			if (strlen($pubDate) > 0)
 			{
 				$amend .= ' (' . htmlspecialchars($pubDate) . ')';
 			}
-			$tags = $this->getOSTagsForPub($pubId);
-			if (count($tags) > 0)
-			{
-				$amend .= ' <b>OS:</b> ' . htmlspecialchars(implode(', ', $tags));
-			}
+			$amend .= $this->renderOSTagsForPub($pubId);
 			array_push($amendments, $amend);
 		}
 		if (count($amendments) > 0)
@@ -242,12 +253,7 @@ class Manx implements IManx
 	public static function formatDocRef($row)
 	{
 		$out = sprintf('<a href="../details.php/%d,%d"><cite>%s</cite></a>', $row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
-		$part = $row['ph_part'];
-		if (!is_null($part))
-		{
-			$out = htmlspecialchars($part) . ', ' . $out;
-		}
-		return $out;
+		return Manx::partPrefix($row['ph_part']) . $out;
 	}
 
 	public function renderCitations($pubId)
@@ -440,23 +446,14 @@ class Manx implements IManx
 				$amendRow = $amendRows[0];
 				$amend = sprintf("<a href=\"../details.php/%d,%d\"><cite>%s</cite></a>",
 					$amendRow['ph_company'], $amendRow['pub_id'], htmlspecialchars($amendRow['ph_title']));
-				$part = $amendRow['ph_part'];
-				$part = is_null($part) ? '' : trim($part);
-				if (strlen($part) > 0)
-				{
-					$amend = htmlspecialchars($part) . ', ' . $amend;
-				}
+				$amend = Manx::partPrefix($amendRow['ph_part']) . $amend;
 				$pubDate = $amendRow['ph_pubdate'];
 				if (!is_null($pubDate))
 				{
 					$amend .= ' (' . htmlspecialchars($pubDate) . ')';
 				}
 
-				$tags = $this->getOSTagsForPub($amendRow['pub_id']);
-				if (count($tags) > 0)
-				{
-					$amend .= ' <b>OS:</b> ' . htmlspecialchars(implode(', ', $tags));
-				}
+				$amend .= $this->renderOSTagsForPub($amendRow['pub_id']);
 				printf("<tr>\n<td>Amended to:</td>\n<td>%s</td>\n</tr>\n", $amend);
 			}
 
