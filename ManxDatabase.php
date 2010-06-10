@@ -93,5 +93,16 @@
 				. " JOIN `PUBHISTORY` ON `pub_history`=`ph_id`", $pubId);
 			return $this->_db->query($query)->fetchAll();
 		}
+		
+		public function getTableOfContentsForPub($pubId, $fullContents)
+		{
+			$query = sprintf("SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=%d", $pubId);
+			if (!$fullContents)
+			{
+				$query .= ' AND `level` < 2';
+			}
+			$query .= ' ORDER BY `line`';
+			return $this->_db->query($query)->fetchAll();
+		}
 	}
 ?>

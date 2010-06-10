@@ -294,15 +294,9 @@ class Manx implements IManx
 
 	public function renderTableOfContents($pubId, $fullContents)
 	{
-		$query = sprintf("SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=%d", $pubId);
-		if (!$fullContents)
-		{
-			$query .= ' AND `level` < 2';
-		}
-		$query .= ' ORDER BY `line`';
 		$currentLevel = 0;
 		$startedContents = false;
-		foreach ($this->_db->query($query)->fetchAll() as $row)
+		foreach ($this->_manxDb->getTableOfContentsForPub($pubId, $fullContents) as $row)
 		{
 			if (!$startedContents)
 			{

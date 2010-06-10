@@ -334,9 +334,8 @@
 
 		public function testRenderTableOfContents()
 		{
-			$db = new FakeDatabase();
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
+			$db = new FakeManxDatabase();
+			$db->getTableOfContentsForPubFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('level', 'label', 'name'),
 				array(
 					array(1, 'Chapter 1', 'KA655 CPU and Memory Subsystem'),
@@ -463,15 +462,14 @@
 					array(3, 'B.3.2', 'KA655 Unique IPRs'),
 					array(2, 'B.4', 'Global Q22-Bus Address Space Map'),
 					array(1, 'Appendix C', 'Related Documentation')));
-			$query = "SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=123 ORDER BY `line`";
-
-			$db->queryFakeResultsForQuery[$query] = $statement;
-			$manx = Manx::getInstanceForDatabase($db);
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
 			ob_start();
 			$manx->renderTableOfContents(123, true);
 			$output = ob_get_contents();
 			ob_end_clean();
-			$this->assertTrue($db->queryCalled);
+			$this->assertTrue($db->getTableOfContentsForPubCalled);
+			$this->assertEquals(123, $db->getTableOfContentsForPubLastPubId);
+			$this->assertEquals(true, $db->getTableOfContentsForPubLastFullContents);
 			$this->assertEquals("<h2>Table of Contents</h2>\n"
 				. "<div class=\"toc\">\n"
 				. "<ul>\n"

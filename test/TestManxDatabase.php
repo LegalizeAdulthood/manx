@@ -52,25 +52,20 @@
 			$sites = $this->_manxDb->getSiteList();
 			$this->assertQueryCalledForSql($query);
 			$this->assertEquals(2, count($sites));
-			$this->assertEquals('http://www.dec.com', $sites[0]['url']);
-			$this->assertEquals('http://www.hp.com', $sites[1]['url']);
+			$this->assertColumnValuesForRows($sites, 'url', array('http://www.dec.com', 'http://www.hp.com'));
 		}
 		
 		public function testGetCompanyList()
 		{
 			$this->createInstance();
 			$query = "SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`";
-			$this->configureStatementFetchAllResults($query,
-				array(
+			$expected = array(
 					array('id' => 1, 'name' => "DEC"),
-					array('id' => 2, 'name' => "HP")));
+					array('id' => 2, 'name' => "HP"));
+			$this->configureStatementFetchAllResults($query, $expected);
 			$companies = $this->_manxDb->getCompanyList();
 			$this->assertQueryCalledForSql($query);
-			$this->assertEquals(2, count($companies));
-			$this->assertEquals(1, $companies[0]['id']);
-			$this->assertEquals('DEC', $companies[0]['name']);
-			$this->assertEquals(2, $companies[1]['id']);
-			$this->assertEquals('HP', $companies[1]['name']);
+			$this->assertEquals($expected, $companies);
 		}
 		
 		public function testGetDisplayLanguage()
@@ -92,9 +87,7 @@
 					array(array('RSX-11M Version 4.0'), array('RSX-11M-PLUS Version 2.0'))));
 			$tags = $this->_manxDb->getOSTagsForPub(5);
 			$this->assertQueryCalledForSql($query);
-			$this->assertArrayHasLength($tags, 2);
-			$this->assertEquals('RSX-11M Version 4.0', $tags[0]);
-			$this->assertEquals('RSX-11M-PLUS Version 2.0', $tags[1]);
+			$this->assertEquals($tags, array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0'));
 		}
 		
 		public function testGetAmendmentsForPub()
@@ -111,8 +104,7 @@
 			$amendments = $this->_manxDb->getAmendmentsForPub($pubId);
 			$this->assertQueryCalledForSql($query);
 			$this->assertArrayHasLength($amendments, 2);
-			$this->assertEquals(4496, $amendments[0]['ph_pub']);
-			$this->assertEquals(3301, $amendments[1]['ph_pub']);
+			$this->assertColumnValuesForRows($amendments, 'ph_pub', array(4496, 3301));
 		}
 		
 		public function testGetLongDescriptionForPubDoesNothing()
@@ -128,9 +120,7 @@
 			/*
 			TODO: LONG_DESC table missing
 			$this->assertQueryCalledForSql($query);
-			$this->assertArrayHasLength($longDescription, 2);
-			$this->assertEquals('<p>This is paragraph one.</p>', $longDescription[0]);
-			$this->assertEquals('<p>This is paragraph two.</p>', $longDescription[1]);
+			$this->assertEquals(array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>'), $longDescription);
 			*/
 		}
 		
@@ -151,7 +141,64 @@
 			$this->assertArrayHasLength($citations, 1);
 			$this->assertEquals('EK-306AA-MG-001', $citations[0]['ph_part']);
 		}
+		
+		public function testGetTableOfContentsForPubFullContents()
+		{
+			$this->createInstance();
+			$pubId = 123;
+			$query = "SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=123 ORDER BY `line`";
+			$this->configureStatementFetchAllResults($query,
+				FakeDatabase::createResultRowsForColumns(
+					array('level', 'label', 'name'),
+					array(
+						array(1, 'Chapter 2', 'Configuration'),
+						array(2, '2.4', 'DSSI Configuration'),
+						array(3, '2.4.4', 'DSSI Cabling'),
+						array(4, '2.4.4.1', 'DSSI Bus Termination and Length'),
+						array(1, 'Appendix C', 'Related Documentation'))));
+			$toc = $this->_manxDb->getTableOfContentsForPub($pubId, true);
+			$this->assertQueryCalledForSql($query);
+			$this->assertArrayHasLength($toc, 5);
+			$this->assertColumnValuesForRows($toc, 'label',
+				array('Chapter 2', '2.4', '2.4.4', '2.4.4.1', 'Appendix C'));
+		}
 
+		public function testGetTableOfContentsForPubAbbreviatedContents()
+		{
+			$this->createInstance();
+			$pubId = 123;
+			$query = "SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=123 AND `level` < 2 ORDER BY `line`";
+			$this->configureStatementFetchAllResults($query,
+				FakeDatabase::createResultRowsForColumns(
+					array('level', 'label', 'name'),
+					array(
+						array(1, 'Chapter 1', 'KA655 CPU and Memory Subsystem'),
+						array(1, 'Chapter 2', 'Configuration'),
+						array(1, 'Chapter 3', 'KA655 Firmware'),
+						array(1, 'Chapter 4', 'Troubleshooting and Diagnostics'),
+						array(1, 'Appendix A', 'Configuring the KFQSA'),
+						array(1, 'Appendix B', 'KA655 CPU Address Assignments'),
+						array(1, 'Appendix C', 'Related Documentation'))
+				));
+			$toc = $this->_manxDb->getTableOfContentsForPub($pubId, false);
+			$this->assertQueryCalledForSql($query);
+			$this->assertArrayHasLength($toc, 7);
+			$this->assertColumnValuesForRows($toc, 'label',
+				array('Chapter 1', 'Chapter 2', 'Chapter 3', 'Chapter 4', 'Appendix A', 'Appendix B', 'Appendix C'));
+		}
+
+		private function assertColumnValuesForRows($rows, $column, $values)
+		{
+			$this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");
+			$i = 0;
+			foreach ($rows as $row)
+			{
+				$this->assertTrue(array_key_exists($column, $row), sprintf("row doesn't contain key '%s'", $column));
+				$this->assertEquals($row[$column], $values[$i], "expected value doesn't match value in column");
+				++$i;
+			}
+		}
+		
 		private function assertArrayHasLength($value, $length)
 		{
 			$this->assertTrue(is_array($value));

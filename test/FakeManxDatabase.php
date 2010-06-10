@@ -21,6 +21,8 @@
 			$this->getLongDescriptionForPubFakeResult = array();
 			$this->getCitationsForPubCalled = false;
 			$this->getCitationsForPubFakeResult = array();
+			$this->getTableOfContentsForPubCalled = false;
+			$this->getTableOfContentsForPubFakeResult = array();
 		}
 
 		public $getDocumentCountCalled, $getDocumentCountFakeResult;
@@ -96,6 +98,16 @@
 			$this->getCitationsForPubCalled = true;
 			$this->getCitationsForPubLastPubId = $pubId;
 			return $this->getCitationsForPubFakeResult;
+		}
+		
+		public $getTableOfContentsForPubCalled, $getTableOfContentsForPubLastPubId,
+			$getTableOfContentsForPubLastFullContents, $getTableOfContentsForPubFakeResult;
+		public function getTableOfContentsForPub($pubId, $fullContents)
+		{
+			$this->getTableOfContentsForPubCalled = true;
+			$this->getTableOfContentsForPubLastPubId = $pubId;
+			$this->getTableOfContentsForPubLastFullContents = $fullContents;
+			return $this->getTableOfContentsForPubFakeResult;
 		}
 	}
 ?>

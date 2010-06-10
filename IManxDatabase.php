@@ -11,5 +11,6 @@
 		function getAmendmentsForPub($pubId);
 		function getLongDescriptionForPub($pubId);
 		function getCitationsForPub($pubId);
+		function getTableOfContentsForPub($pubId, $fullContents);
 	}
 ?>
