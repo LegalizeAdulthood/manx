@@ -84,5 +84,14 @@
 			*/
 			return $description;
 		}
+		
+		public function getCitationsForPub($pubId)
+		{
+			$query = sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`"
+				. " FROM `CITEPUB` `C`"
+				. " JOIN `PUB` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=%d)"
+				. " JOIN `PUBHISTORY` ON `pub_history`=`ph_id`", $pubId);
+			return $this->_db->query($query)->fetchAll();
+		}
 	}
 ?>

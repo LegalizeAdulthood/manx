@@ -314,22 +314,18 @@
 
 		public function testRenderCitations()
 		{
-			$db = new FakeDatabase();
-
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
+			$db = new FakeManxDatabase();
+			$db->getCitationsForPubFakeResult =FakeDatabase::createResultRowsForColumns(
 				array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
 				array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance')));
-			$query = 'SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` '
-				. 'FROM `CITEPUB` `C`'
-				. ' JOIN `PUB` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=72)'
-				. ' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`';
-			$db->queryFakeResultsForQuery[$query] = $statement;
-			$manx = Manx::getInstanceForDatabase($db);
+			$pubId = 72;
+			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
 			ob_start();
-			$manx->renderCitations(72);
+			$manx->renderCitations($pubId);
 			$output = ob_get_contents();
 			ob_end_clean();
+			$this->assertTrue($db->getCitationsForPubCalled);
+			$this->assertEquals($pubId, $db->getCitationsForPubLastPubId);
 			$this->assertEquals('<tr valign="top"><td>Cited by:</td>'
 				. '<td><ul class="citelist">'
 					. '<li>EK-306AA-MG-001, <a href="../details.php/1,123"><cite>KA655 CPU System Maintenance</cite></a></li>'

@@ -10,5 +10,6 @@
 		function getOSTagsForPub($pubId);
 		function getAmendmentsForPub($pubId);
 		function getLongDescriptionForPub($pubId);
+		function getCitationsForPub($pubId);
 	}
 ?>

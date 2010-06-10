@@ -92,8 +92,7 @@
 					array(array('RSX-11M Version 4.0'), array('RSX-11M-PLUS Version 2.0'))));
 			$tags = $this->_manxDb->getOSTagsForPub(5);
 			$this->assertQueryCalledForSql($query);
-			$this->assertTrue(is_array($tags));
-			$this->assertEquals(2, count($tags));
+			$this->assertArrayHasLength($tags, 2);
 			$this->assertEquals('RSX-11M Version 4.0', $tags[0]);
 			$this->assertEquals('RSX-11M-PLUS Version 2.0', $tags[1]);
 		}
@@ -111,8 +110,7 @@
 						array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09'))));
 			$amendments = $this->_manxDb->getAmendmentsForPub($pubId);
 			$this->assertQueryCalledForSql($query);
-			$this->assertTrue(is_array($amendments));
-			$this->assertEquals(2, count($amendments));
+			$this->assertArrayHasLength($amendments, 2);
 			$this->assertEquals(4496, $amendments[0]['ph_pub']);
 			$this->assertEquals(3301, $amendments[1]['ph_pub']);
 		}
@@ -130,13 +128,36 @@
 			/*
 			TODO: LONG_DESC table missing
 			$this->assertQueryCalledForSql($query);
-			$this->assertTrue(is_array($longDescription));
-			$this->assertEquals(2, count($longDescription));
+			$this->assertArrayHasLength($longDescription, 2);
 			$this->assertEquals('<p>This is paragraph one.</p>', $longDescription[0]);
 			$this->assertEquals('<p>This is paragraph two.</p>', $longDescription[1]);
 			*/
 		}
 		
+		public function testGetCitationsForPub()
+		{
+			$this->createInstance();
+			$pubId = 72;
+			$query = 'SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` '
+				. 'FROM `CITEPUB` `C`'
+				. ' JOIN `PUB` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=72)'
+				. ' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`';
+			$this->configureStatementFetchAllResults($query,
+				FakeDatabase::createResultRowsForColumns(
+					array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
+					array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance'))));
+			$citations = $this->_manxDb->getCitationsForPub($pubId);
+			$this->assertQueryCalledForSql($query);
+			$this->assertArrayHasLength($citations, 1);
+			$this->assertEquals('EK-306AA-MG-001', $citations[0]['ph_part']);
+		}
+
+		private function assertArrayHasLength($value, $length)
+		{
+			$this->assertTrue(is_array($value));
+			$this->assertEquals($length, count($value));
+		}
+				
 		private function createInstance()
 		{
 			$this->_db = new FakeDatabase();

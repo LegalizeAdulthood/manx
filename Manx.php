@@ -247,11 +247,7 @@ class Manx implements IManx
 	{
 		// Citations from other documents (only really important when there are no copies online)
 		$citations = array();
-		$query = sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`"
-			. " FROM `CITEPUB` `C`"
-			. " JOIN `PUB` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=%d)"
-			. " JOIN `PUBHISTORY` ON `pub_history`=`ph_id`", $pubId);
-		foreach ($this->_db->query($query)->fetchAll() as $row)
+		foreach ($this->_manxDb->getCitationsForPub($pubId) as $row)
 		{
 			array_push($citations, Manx::formatDocRef($row));
 		}
