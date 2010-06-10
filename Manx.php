@@ -143,24 +143,14 @@ class Manx implements IManx
 	
 	public function renderLanguage($lang)
 	{
-		// TODO: the original Manx implementation relied on a table called LANGUAGE which doesn't
-		// exist in the database dump.
-		// Eventually, move this to a table, but for now use a hard coded list.
 		if (!is_null($lang) && $lang != '+en')
 		{
-			$displayLanguage = array('en' => 'English', 'de' => 'German',
-				'fr' => 'French', 'es' => 'Spanish', 'it' => 'Italian',
-				'nl' => 'Dutch', 'no' => 'Norwegian', 'sv' => 'Swedish');
 			$languages = array();
-			foreach (explode('+', $lang) as $code)
+			// Avoid second name of language, if provided (after ';')
+			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'";
+			foreach (array_slice(explode('+', $lang), 1) as $languageCode)
 			{
-				if (count(trim($code)) > 0)
-				{
-					if (array_key_exists($code, $displayLanguage))
-					{
-						array_push($languages, trim($displayLanguage[$code]));
-					}
-				}
+				array_push($languages, $this->_db->query(sprintf($query, $languageCode))->fetch());
 			}
 			if (count($languages) > 0)
 			{

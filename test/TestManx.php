@@ -172,23 +172,42 @@
 			$manx->renderLanguage('+en');
 			$output = ob_get_contents();
 			ob_end_clean();
+			$this->assertFalse($db->queryCalled);
 			$this->assertEquals('', $output);
 		}
 		
 		public function testRenderLanguageFrench()
 		{
 			$db = new FakeDatabase();
+			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='fr'";
+			$statement = new FakeStatement();
+			$statement->fetchFakeResult = 'French';
+			$db->queryFakeResultsForQuery[$query] = $statement;
 			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderLanguage('+fr');
 			$output = ob_get_contents();
 			ob_end_clean();
+			$this->assertTrue($db->queryCalled);
 			$this->assertEquals("<tr><td>Language:</td><td>French</td></tr>\n", $output);
 		}
 		
 		public function testRenderLanguageEnglishFrenchGerman()
 		{
 			$db = new FakeDatabase();
+			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='en'";
+			$statement = new FakeStatement();
+			$statement->fetchFakeResult = 'English';
+			$db->queryFakeResultsForQuery[$query] = $statement;
+			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='fr'";
+			$statement = new FakeStatement();
+			$statement->fetchFakeResult = 'French';
+			$db->queryFakeResultsForQuery[$query] = $statement;
+			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='de'";
+			$statement = new FakeStatement();
+			$statement->fetchFakeResult = 'German';
+			$db->queryFakeResultsForQuery[$query] = $statement;
+
 			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderLanguage('+en+fr+de');
