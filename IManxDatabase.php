@@ -12,5 +12,6 @@
 		function getLongDescriptionForPub($pubId);
 		function getCitationsForPub($pubId);
 		function getTableOfContentsForPub($pubId, $fullContents);
+		function getMirrorsForCopy($copyId);
 	}
 ?>

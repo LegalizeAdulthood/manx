@@ -186,6 +186,26 @@
 			$this->assertColumnValuesForRows($toc, 'label',
 				array('Chapter 1', 'Chapter 2', 'Chapter 3', 'Chapter 4', 'Appendix A', 'Appendix B', 'Appendix C'));
 		}
+		
+		public function testGetMirrorsForCopy()
+		{
+			$this->createInstance();
+			$copyId = 7165;
+			$query = "SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
+					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
+					. " WHERE `copyid`=7165 ORDER BY `rank` DESC";
+			$expected = array('http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+				'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+				'http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+				'http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+				'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf');
+			$this->configureStatementFetchAllResults($query,
+				FakeDatabase::createResultRowsForColumns(array('mirror_url'),
+					array(array($expected[0]), array($expected[1]), array($expected[2]), array($expected[3]), array($expected[4]))));
+			$mirrors = $this->_manxDb->getMirrorsForCopy($copyId);
+			$this->assertQueryCalledForSql($query);
+			$this->assertEquals($expected, $mirrors);
+		}
 
 		private function assertColumnValuesForRows($rows, $column, $values)
 		{

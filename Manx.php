@@ -426,17 +426,14 @@ class Manx implements IManx
 				printf("<tr>\n<td>Amended to:</td>\n<td>%s</td>\n</tr>\n", $amend);
 			}
 
-			$mirrorQuery = sprintf("SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
-					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
-					. " WHERE `copyid`=%d ORDER BY `rank` DESC'", $row['copyid']);
 			$mirrorCount = 0;
-			foreach ($this->_db->query($mirrorQuery)->fetchAll() as $mirrorRow)
+			foreach ($this->_manxDb->getMirrorsForCopy($row['copyid']) as $mirror)
 			{
 				if (++$mirrorCount == 1)
 				{
 					print '<tr valign="top"><td>Mirrors:</td><td><ul style="list-style-type: none; margin: 0; padding: 0">';
 				}
-				printf("<li style=\"margin: 0; padding: 0\"><a href=\"%s\">%s</a></li>", $mirrorRow['mirror_url'], htmlspecialchars($mirrorRow['mirror_url']));
+				printf("<li style=\"margin: 0; padding: 0\"><a href=\"%s\">%s</a></li>", $mirror, htmlspecialchars($mirror));
 			}
 			if ($mirrorCount > 0)
 			{

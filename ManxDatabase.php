@@ -104,5 +104,18 @@
 			$query .= ' ORDER BY `line`';
 			return $this->_db->query($query)->fetchAll();
 		}
+		
+		public function getMirrorsForCopy($copyId)
+		{
+			$query = sprintf("SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
+					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
+					. " WHERE `copyid`=%d ORDER BY `rank` DESC", $copyId);
+			$mirrors = array();
+			foreach ($this->_db->query($query)->fetchAll() as $row)
+			{
+				array_push($mirrors, $row['mirror_url']);
+			}
+			return $mirrors;
+		}
 	}
 ?>

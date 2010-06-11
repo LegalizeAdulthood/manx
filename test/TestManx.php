@@ -666,30 +666,15 @@
 				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`";
 			$db->queryFakeResultsForQuery[$query] = $statement;
 
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
-				array('mirror_url'), array());
-			$query = "SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
-					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
-					. " WHERE `copyid`=7165 ORDER BY `rank` DESC'";
-			$db->queryFakeResultsForQuery[$query] = $statement;
+			$manxDb = new FakeManxDatabase();
+			$manxDb->getMirrorsForCopyFakeResult[7165] = array();
+			$manxDb->getMirrorsForCopyFakeResult[9214] = array('http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+					'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+					'http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+					'http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+					'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf');
 
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
-				array('mirror_url'),
-				array(
-					array('http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf'),
-					array('http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf'),
-					array('http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf'),
-					array('http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf'),
-					array('http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf')
-				));
-			$query = "SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
-					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
-					. " WHERE `copyid`=9214 ORDER BY `rank` DESC'";
-			$db->queryFakeResultsForQuery[$query] = $statement;
-
-			$manx = Manx::getInstanceForDatabase($db);
+			$manx = Manx::getInstanceForDatabases($db, $manxDb);
 			ob_start();
 			$manx->renderCopies(123);
 			$output = ob_get_contents();

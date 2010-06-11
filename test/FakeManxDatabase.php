@@ -23,6 +23,8 @@
 			$this->getCitationsForPubFakeResult = array();
 			$this->getTableOfContentsForPubCalled = false;
 			$this->getTableOfContentsForPubFakeResult = array();
+			$this->getMirrorsForCopyCalled = false;
+			$this->getMirrorsForCopyFakeResult = array();
 		}
 
 		public $getDocumentCountCalled, $getDocumentCountFakeResult;
@@ -108,6 +110,14 @@
 			$this->getTableOfContentsForPubLastPubId = $pubId;
 			$this->getTableOfContentsForPubLastFullContents = $fullContents;
 			return $this->getTableOfContentsForPubFakeResult;
+		}
+		
+		public $getMirrorsForCopyCalled, $getMirrorsForCopyLastCopyId, $getMirrorsForCopyFakeResult;
+		public function getMirrorsForCopy($copyId)
+		{
+			$this->getMirrorsForCopyCalled = true;
+			$this->getMirrorsForCopyLastCopyId = $copyId;
+			return $this->getMirrorsForCopyFakeResult[$copyId];
 		}
 	}
 ?>
