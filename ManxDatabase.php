@@ -18,46 +18,56 @@
 		}
 		private $_db;
 
+		private function fetch($query)
+		{
+			return $this->_db->query($query)->fetch();
+		}
+		
+		private function fetchAll($query)
+		{
+			return $this->_db->query($query)->fetchAll();
+		}
+		
 		function getDocumentCount()
 		{
-			$rows = $this->_db->query("SELECT COUNT(*) FROM `PUB`")->fetch();
+			$rows = $this->fetch("SELECT COUNT(*) FROM `PUB`");
 			return $rows[0];
 		}
 
 		function getOnlineDocumentCount()
 		{
-			$rows = $this->_db->query("SELECT COUNT(DISTINCT `pub`) FROM `COPY`")->fetch();
+			$rows = $this->fetch("SELECT COUNT(DISTINCT `pub`) FROM `COPY`");
 			return $rows[0];
 		}
 
 		function getSiteCount()
 		{
-			$rows = $this->_db->query("SELECT COUNT(*) FROM `SITE`")->fetch();
+			$rows = $this->fetch("SELECT COUNT(*) FROM `SITE`");
 			return $rows[0];
 		}
 
 		public function getSiteList()
 		{
-			return $this->_db->query("SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`")->fetchAll();
+			return $this->fetchAll("SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`");
 		}
 
 		public function getCompanyList()
 		{
-			return $this->_db->query("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`")->fetchAll();
+			return $this->fetchAll("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`");
 		}
 		
 		public function getDisplayLanguage($languageCode)
 		{
 			// Avoid second name of language, if provided (after ';')
 			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'";
-			return $this->_db->query(sprintf($query, $languageCode))->fetch();
+			return $this->fetch(sprintf($query, $languageCode));
 		}
 		
 		public function getOSTagsForPub($pubId)
 		{
 			$query = sprintf("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=%d", $pubId);
 			$tags = array();
-			foreach ($this->_db->query($query)->fetchAll() as $tagRow)
+			foreach ($this->fetchAll($query) as $tagRow)
 			{
 				array_push($tags, trim($tagRow['tag_text']));
 			}
@@ -66,9 +76,9 @@
 		
 		public function getAmendmentsForPub($pubId)
 		{
-			return $this->_db->query(sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
+			return $this->fetchAll(sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
 				. "FROM `PUB` JOIN `PUBHISTORY` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=%d ORDER BY `ph_amend_serial`",
-				$pubId))->fetchAll();
+				$pubId));
 		}
 		
 		public function getLongDescriptionForPub($pubId)
@@ -91,7 +101,7 @@
 				. " FROM `CITEPUB` `C`"
 				. " JOIN `PUB` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=%d)"
 				. " JOIN `PUBHISTORY` ON `pub_history`=`ph_id`", $pubId);
-			return $this->_db->query($query)->fetchAll();
+			return $this->fetchALl($query);
 		}
 		
 		public function getTableOfContentsForPub($pubId, $fullContents)
@@ -102,7 +112,7 @@
 				$query .= ' AND `level` < 2';
 			}
 			$query .= ' ORDER BY `line`';
-			return $this->_db->query($query)->fetchAll();
+			return $this->fetchAll($query);
 		}
 		
 		public function getMirrorsForCopy($copyId)
@@ -111,7 +121,7 @@
 					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
 					. " WHERE `copyid`=%d ORDER BY `rank` DESC", $copyId);
 			$mirrors = array();
-			foreach ($this->_db->query($query)->fetchAll() as $row)
+			foreach ($this->fetchAll($query) as $row)
 			{
 				array_push($mirrors, $row['mirror_url']);
 			}
@@ -124,7 +134,7 @@
 					. " FROM `PUB` JOIN `PUBHISTORY` ON `pub_history`=`ph_id`"
 					. " WHERE `ph_amend_pub`=%d AND `ph_amend_serial`=%d",
 				$pubId, $amendSerial);
-			return $this->_db->query($query)->fetch();
+			return $this->fetch($query);
 		}
 		
 		public function getCopiesForPub($pubId)
@@ -136,7 +146,7 @@
 				. " FROM `COPY`,`SITE`"
 				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND `pub`=%d"
 				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`", $pubId);
-			return $this->_db->query($query)->fetchAll();
+			return $this->fetchAll($query);
 		}
 		
 		public function getDetailsForPub($pubId)
@@ -151,7 +161,7 @@
 					. 'JOIN `COMPANY` ON `ph_company`=`COMPANY`.`id` '
 					. 'WHERE %s AND `pub_id`=%d',
 				'1=1', $pubId);
-			return $this->_db->query($query)->fetch();
+			return $this->fetch($query);
 		}
 	}
 ?>
