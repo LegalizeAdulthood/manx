@@ -724,7 +724,7 @@
 				. "</table>\n", $output);
 		}
 		
-		public function XtestRenderCopiesAmended()
+		public function testRenderCopiesAmended()
 		{
 			$manxDb = new FakeManxDatabase();
 			$manxDb->getCopiesForPubFakeResult = FakeDatabase::createResultRowsForColumns(
@@ -785,29 +785,18 @@
 
 		public function testRenderDetail()
 		{
-			$db = new FakeDatabase();
-			$statement = new FakeStatement();
-			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
+			$db = new FakeManxDatabase();
+			$rows = FakeDatabase::createResultRowsForColumns(
 				array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
 				array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
-			$detailQuery = 'SELECT `pub_id`, `COMPANY`.`name`, '
-				. 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pubdate`, '
-				. '`ph_title`, `ph_abstract`, '
-				. 'IFNULL(`ph_revision`, "") AS `ph_revision`, `ph_ocr_file`, '
-				. '`ph_cover_image`, `ph_lang`, `ph_keywords` '
-				. 'FROM `PUB` '
-				. 'JOIN `PUBHISTORY` ON `pub_history`=`ph_id` '
-				. 'JOIN `COMPANY` ON `ph_company`=`COMPANY`.`id` '
-				. 'WHERE 1=1 AND `pub_id`=3';
-			$db->queryFakeResultsForQuery[$detailQuery] = $statement;
-
-			$manx = new ManxRenderDetailsTester($db, null);
+			$db->getDetailsForPubFakeResult = $rows[0];
+			$manx = new ManxRenderDetailsTester(new FakeDatabase(), $db);
 			ob_start();
 			$manx->renderDetails('/1,3');
 			$output = ob_get_contents();
 			ob_end_clean();
-			$this->assertTrue($db->queryCalled);
-			$this->assertEquals($detailQuery, $db->queryLastStatement);
+			$this->assertTrue($db->getDetailsForPubCalled);
+			$this->assertEquals(3, $db->getDetailsForPubLastPubId);
 			$this->assertTrue($manx->renderLanguageCalled);
 			$this->assertEquals('+en', $manx->renderLanguageLastLanguage);
 			$this->assertTrue($manx->renderAmendmentsCalled);

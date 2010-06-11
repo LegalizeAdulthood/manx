@@ -232,7 +232,7 @@
 				. "`SITE`.`copy_base`,`SITE`.`low`,`COPY`.`md5`,`COPY`.`amend_serial`,"
 				. "`COPY`.`credits`,`copyid`"
 				. " FROM `COPY`,`SITE`"
-				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND PUB=123"
+				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND `pub`=123"
 				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`";
 			$this->configureStatementFetchAllResults($query,
 				FakeDatabase::createResultRowsForColumns(
@@ -244,6 +244,28 @@
 			$this->assertQueryCalledForSql($query);
 			$this->assertArrayHasLength($copies, 1);
 			$this->assertEquals('http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', $copies[0]['url']);
+		}
+		
+		public function testGetDetailsForPub()
+		{
+			$this->createInstance();
+			$pubId = 3;
+			$query = 'SELECT `pub_id`, `COMPANY`.`name`, '
+				. 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pubdate`, '
+				. '`ph_title`, `ph_abstract`, '
+				. 'IFNULL(`ph_revision`, "") AS `ph_revision`, `ph_ocr_file`, '
+				. '`ph_cover_image`, `ph_lang`, `ph_keywords` '
+				. 'FROM `PUB` '
+				. 'JOIN `PUBHISTORY` ON `pub_history`=`ph_id` '
+				. 'JOIN `COMPANY` ON `ph_company`=`COMPANY`.`id` '
+				. 'WHERE 1=1 AND `pub_id`=3';
+			$rows = FakeDatabase::createResultRowsForColumns(
+				array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
+				array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
+			$this->configureStatementFetchResult($query, $rows[0]);
+			$details = $this->_manxDb->getDetailsForPub($pubId);
+			$this->assertQueryCalledForSql($query);
+			$this->assertEquals($rows[0], $details);
 		}
 
 		private function assertColumnValuesForRows($rows, $column, $values)

@@ -15,5 +15,6 @@
 		function getMirrorsForCopy($copyId);
 		function getAmendedPub($pubId, $amendSerial);
 		function getCopiesForPub($pubId);
+		function getDetailsForPub($pubId);
 	}
 ?>

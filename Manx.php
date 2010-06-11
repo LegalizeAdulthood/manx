@@ -441,18 +441,7 @@ class Manx implements IManx
 	function renderDetails($pathInfo)
 	{
 		$params = Manx::detailParamsForPathInfo($pathInfo);
-		$query = sprintf('SELECT `pub_id`, `COMPANY`.`name`, '
-				. 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pubdate`, '
-				. '`ph_title`, `ph_abstract`, '
-				. 'IFNULL(`ph_revision`, "") AS `ph_revision`, `ph_ocr_file`, '
-				. '`ph_cover_image`, `ph_lang`, `ph_keywords` '
-				. 'FROM `PUB` '
-				. 'JOIN `PUBHISTORY` ON `pub_history`=`ph_id` '
-				. 'JOIN `COMPANY` ON `ph_company`=`COMPANY`.`id` '
-				. 'WHERE %s AND `pub_id`=%d',
-			'1=1', $params['id']);
-		$rows = $this->_db->query($query)->fetchAll();
-		$row = $rows[0];
+		$row = $this->_manxDb->getDetailsForPub($params['id']);
 		$coverImage = $row['ph_cover_image'];
 		if (!is_null($coverImage))
 		{

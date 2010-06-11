@@ -134,9 +134,24 @@
 				. "`SITE`.`copy_base`,`SITE`.`low`,`COPY`.`md5`,`COPY`.`amend_serial`,"
 				. "`COPY`.`credits`,`copyid`"
 				. " FROM `COPY`,`SITE`"
-				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND PUB=%d"
+				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND `pub`=%d"
 				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`", $pubId);
 			return $this->_db->query($query)->fetchAll();
+		}
+		
+		public function getDetailsForPub($pubId)
+		{
+			$query = sprintf('SELECT `pub_id`, `COMPANY`.`name`, '
+					. 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pubdate`, '
+					. '`ph_title`, `ph_abstract`, '
+					. 'IFNULL(`ph_revision`, "") AS `ph_revision`, `ph_ocr_file`, '
+					. '`ph_cover_image`, `ph_lang`, `ph_keywords` '
+					. 'FROM `PUB` '
+					. 'JOIN `PUBHISTORY` ON `pub_history`=`ph_id` '
+					. 'JOIN `COMPANY` ON `ph_company`=`COMPANY`.`id` '
+					. 'WHERE %s AND `pub_id`=%d',
+				'1=1', $pubId);
+			return $this->_db->query($query)->fetch();
 		}
 	}
 ?>
