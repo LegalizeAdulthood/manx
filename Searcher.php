@@ -144,11 +144,7 @@
 			$end = min($total - 1, $start + $rowsPerPage - 1);
 			for ($i = $start; $i <= $end; $i++)
 			{
-				$tags = array();
-				foreach ($this->_db->query("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` and `TAG`.`class` = 'os' AND `PUB`=" . $rows[$i]['pub_id'])->fetchAll() as $tag)
-				{
-					array_push($tags, $tag['tag_text']);
-				}
+				$tags = $this->_manxDb->getOSTagsForPub($rows[$i]['pub_id']);
 				$rows[$i]['tags'] = $tags;
 			}
 			$formatter->renderResultsBar($this->_ignoredWords, $this->_searchWords, $start, $end, $total);

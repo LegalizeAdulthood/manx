@@ -147,7 +147,8 @@
 				);
 			$stmt->fetchAllFakeResult = $rows;
 			$formatter = new FakeFormatter();
-			$searcher = Searcher::getInstance($db, new FakeManxDatabase());
+			$manxDb = new FakeManxDatabase();
+			$searcher = Searcher::getInstance($db, $manxDb);
 			$keywords = "graphics terminal";
 			$matchClause = $searcher->matchClauseForKeywords($keywords);
 			$company = 1;
@@ -160,16 +161,15 @@
 				. " AND `ph_company`=$company"
 				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
 			$db->queryFakeResultsForQuery[$mainQuery] = $stmt;
-			$tagStmt = new FakeStatement();
-			$tagStmt->fetchAllFakeResult = array(array('tag_text' => 'OpenVMS VAX Version 6.0'));
-			$tagQuery = "SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` and `TAG`.`class` = 'os' AND `PUB`=1";
-			$db->queryFakeResultsForQuery[$tagQuery] = $tagStmt;
+			
+			$manxDb->getOSTagsForPubFakeResult = array('OpenVMS VAX Version 6.0');
+
 			$searcher->renderSearchResults($formatter, $company, $keywords, true);
 			$this->assertTrue($db->queryCalledForStatement[$mainQuery]);
 			$this->assertTrue($stmt->fetchAllCalled);
 			$this->assertTrue($formatter->renderResultsBarCalled);
-			$this->assertTrue($db->queryCalledForStatement[$tagQuery]);
-			$this->assertTrue($tagStmt->fetchAllCalled);
+			$this->assertTrue($manxDb->getOSTagsForPubCalled);
+			$this->assertEquals(1, $manxDb->getOSTagsForPubLastPubId);
 			$this->assertEquals(array(), $formatter->renderResultsBarLastIgnoredWords);
 			$this->assertEquals(array('graphics', 'terminal'), $formatter->renderResultsBarLastSearchWords);
 			$this->assertEquals(0, $formatter->renderResultsBarLastStart);
