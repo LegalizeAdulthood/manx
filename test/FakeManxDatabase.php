@@ -27,6 +27,8 @@
 			$this->getMirrorsForCopyFakeResult = array();
 			$this->getAmendedPubCalled = false;
 			$this->getAmendedPubFakeResult = array();
+			$this->getCopiesForPubCalled = false;
+			$this->getCopiesForPubFakeResult = array();
 		}
 
 		public $getDocumentCountCalled, $getDocumentCountFakeResult;
@@ -129,6 +131,14 @@
 			$this->getAmendedPubLastPubId = $pubId;
 			$this->getAmendedPubLastAmendSerial = $amendSerial;
 			return $this->getAmendedPubFakeResult;
+		}
+		
+		public $getCopiesForPubCalled, $getCopiesForPubLastPubId, $getCopiesForPubFakeResult;
+		public function getCopiesForPub($pubId)
+		{
+			$this->getCopiesForPubCalled = true;
+			$this->getCopiesForPubLastPubId = $pubId;
+			return $this->getCopiesForPubFakeResult;
 		}
 	}
 ?>

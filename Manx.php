@@ -344,16 +344,9 @@ class Manx implements IManx
 
 	public function renderCopies($pubId)
 	{
-		$query = sprintf("SELECT `format`,`COPY`.`url`,`notes`,`size`,"
-			. "`SITE`.`name`,`SITE`.`url` AS `site_url`,`SITE`.`description`,"
-			. "`SITE`.`copy_base`,`SITE`.`low`,`COPY`.`md5`,`COPY`.`amend_serial`,"
-			. "`COPY`.`credits`,`copyid`"
-			. " FROM `COPY`,`SITE`"
-			. " WHERE `COPY`.`site`=`SITE`.`siteid` AND PUB=%d"
-			. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`", $pubId);
 		print "<h2>Copies</h2>\n";
 		$copyCount = 0;
-		foreach ($this->_db->query($query)->fetchAll() as $row)
+		foreach ($this->_manxDb->getCopiesForPub($pubId) as $row)
 		{
 			if (++$copyCount == 1)
 			{

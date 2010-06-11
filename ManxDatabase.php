@@ -126,5 +126,17 @@
 				$pubId, $amendSerial);
 			return $this->_db->query($query)->fetch();
 		}
+		
+		public function getCopiesForPub($pubId)
+		{
+			$query = sprintf("SELECT `format`,`COPY`.`url`,`notes`,`size`,"
+				. "`SITE`.`name`,`SITE`.`url` AS `site_url`,`SITE`.`description`,"
+				. "`SITE`.`copy_base`,`SITE`.`low`,`COPY`.`md5`,`COPY`.`amend_serial`,"
+				. "`COPY`.`credits`,`copyid`"
+				. " FROM `COPY`,`SITE`"
+				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND PUB=%d"
+				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`", $pubId);
+			return $this->_db->query($query)->fetchAll();
+		}
 	}
 ?>

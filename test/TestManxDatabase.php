@@ -222,6 +222,29 @@
 			$this->assertQueryCalledForSql($query);
 			$this->assertEquals($expected, $amended);
 		}
+		
+		public function testGetCopiesForPub()
+		{
+			$this->createInstance();
+			$pubId = 123;
+			$query = "SELECT `format`,`COPY`.`url`,`notes`,`size`,"
+				. "`SITE`.`name`,`SITE`.`url` AS `site_url`,`SITE`.`description`,"
+				. "`SITE`.`copy_base`,`SITE`.`low`,`COPY`.`md5`,`COPY`.`amend_serial`,"
+				. "`COPY`.`credits`,`copyid`"
+				. " FROM `COPY`,`SITE`"
+				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND PUB=123"
+				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`";
+			$this->configureStatementFetchAllResults($query,
+				FakeDatabase::createResultRowsForColumns(
+				array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copyid'),
+				array(
+					array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, 10277)
+					)));
+			$copies = $this->_manxDb->getCopiesForPub($pubId);
+			$this->assertQueryCalledForSql($query);
+			$this->assertArrayHasLength($copies, 1);
+			$this->assertEquals('http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', $copies[0]['url']);
+		}
 
 		private function assertColumnValuesForRows($rows, $column, $values)
 		{
