@@ -2,27 +2,30 @@
 	require_once 'IDatabase.php';
 	require_once 'ISearcher.php';
 	require_once 'IFormatter.php';
+	require_once 'IManxDatabase.php';
 
 	class Searcher implements ISearcher
 	{
 		private $_searchWords;
 		private $_ignoredWords;
 		private $_db;
+		private $_manxDb;
 
-		public static function getInstance(IDatabase $db)
+		public static function getInstance(IDatabase $db, IManxDatabase $manxDb)
 		{
-			return new Searcher($db);
+			return new Searcher($db, $manxDb);
 		}
 
-		private function __construct($db)
+		private function __construct(IDatabase $db, IManxDatabase $manxDb)
 		{
 			$this->_db = $db;
+			$this->_manxDb = $manxDb;
 		}
 
 		public function renderCompanies($selected)
 		{
 			print '<select id="CP" name="cp">';
-			foreach ($this->_db->query("SELECT `id`,`name` FROM `COMPANY` ORDER BY `sort_name`") as $row)
+			foreach ($this->_manxDb->getCompanyList() as $row)
 			{
 				$id = $row['id'];
 				print '<option value="' . $id . '"' . ($id == $selected ? ' selected' : '') . '>' . htmlspecialchars($row['name']) . '</option>';

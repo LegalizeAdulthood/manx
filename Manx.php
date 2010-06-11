@@ -94,7 +94,7 @@ class Manx implements IManx
 	function renderSearchResults()
 	{
 		$params = Searcher::parameterSource($_GET, $_POST);
-		$searcher = Searcher::getInstance($this->_db);
+		$searcher = Searcher::getInstance($this->_db, $this->_manxDb);
 		print '<div id="Div1"><form action="search.php" method="get" name="f"><div class="field">Company: ';
 		$company = (array_key_exists('cp', $params) ? $params['cp'] : 1);
 		$keywords = urldecode(array_key_exists('q', $params) ? $params['q'] : '');

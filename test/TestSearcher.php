@@ -4,23 +4,28 @@
 	require_once 'test/FakeDatabase.php';
 	require_once 'test/FakeStatement.php';
 	require_once 'test/FakeFormatter.php';
+	require_once 'test/FakeManxDatabase.php';
 
 	class TestSearcher extends PHPUnit_Framework_TestCase
 	{
 		public function testRenderCompanies()
 		{
-			$db = new FakeDatabase();
-			$db->queryFakeResults = array(
+			$db = new FakeManxDatabase();
+			$db->getCompanyListFakeResult = array(
 				array('id' => 1, 'name' => 'DEC'),
-				array('id' => 2, 'name' => '3Com'));
-			$searcher = Searcher::getInstance($db);
+				array('id' => 2, 'name' => '3Com'),
+				array('id' => 3, 'name' => 'AT&T'));
+			$searcher = Searcher::getInstance(new FakeDatabase(), $db);
 			ob_start();
 			$searcher->renderCompanies(1);
-			$this->assertTrue($db->queryCalled);
-			$this->assertEquals("SELECT `id`,`name` FROM `COMPANY` ORDER BY `sort_name`", $db->queryLastStatement);
 			$output = ob_get_contents();
 			ob_end_clean();
-			$this->assertEquals('<select id="CP" name="cp"><option value="1" selected>DEC</option><option value="2">3Com</option></select>', $output);
+			$this->assertTrue($db->getCompanyListCalled);
+			$this->assertEquals('<select id="CP" name="cp">'
+				. '<option value="1" selected>DEC</option>'
+				. '<option value="2">3Com</option>'
+				. '<option value="3">AT&amp;T</option>'
+				. '</select>', $output);
 		}
 
 		public function testParameterSourceHttpGet()
@@ -54,7 +59,7 @@
 		{
 			$keyword = "terminal";
 			$db = new FakeDatabase();
-			$searcher = Searcher::getInstance($db);
+			$searcher = Searcher::getInstance($db, new FakeManxDatabase());
 			$clause = $searcher->matchClauseForKeywords($keyword);
 			$this->assertEquals(" AND ((`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
 				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
@@ -64,7 +69,7 @@
 		{
 			$keyword = "graphics terminal";
 			$db = new FakeDatabase();
-			$searcher = Searcher::getInstance($db);
+			$searcher = Searcher::getInstance($db, new FakeManxDatabase());
 			$clause = $searcher->matchClauseForKeywords($keyword);
 			$this->assertEquals(" AND ((`ph_title` LIKE '%graphics%' OR `ph_keywords` LIKE '%graphics%' "
 				. "OR `ph_match_part` LIKE '%GRAPHICS%' OR `ph_match_alt_part` LIKE '%GRAPHICS%') "
@@ -142,7 +147,7 @@
 				);
 			$stmt->fetchAllFakeResult = $rows;
 			$formatter = new FakeFormatter();
-			$searcher = Searcher::getInstance($db);
+			$searcher = Searcher::getInstance($db, new FakeManxDatabase());
 			$keywords = "graphics terminal";
 			$matchClause = $searcher->matchClauseForKeywords($keywords);
 			$company = 1;
