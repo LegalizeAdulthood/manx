@@ -206,6 +206,22 @@
 			$this->assertQueryCalledForSql($query);
 			$this->assertEquals($expected, $mirrors);
 		}
+		
+		public function testGetAmendedPub()
+		{
+			$this->createInstance();
+			$pubId = 17970;
+			$amendSerial = 7;
+			$query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pubdate`"
+						. " FROM `PUB` JOIN `PUBHISTORY` ON `pub_history`=`ph_id`"
+						. " WHERE `ph_amend_pub`=%d AND `ph_amend_serial`=%d", $pubId, $amendSerial);
+			$expected = array('ph_company' => 7, 'pub_id' => 57, 'ph_part' => 'AB81-14G',
+					'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pubdate' => '1984-02');
+			$this->configureStatementFetchResult($query, $expected);
+			$amended = $this->_manxDb->getAmendedPub($pubId, $amendSerial);
+			$this->assertQueryCalledForSql($query);
+			$this->assertEquals($expected, $amended);
+		}
 
 		private function assertColumnValuesForRows($rows, $column, $values)
 		{

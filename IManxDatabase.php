@@ -13,5 +13,6 @@
 		function getCitationsForPub($pubId);
 		function getTableOfContentsForPub($pubId, $fullContents);
 		function getMirrorsForCopy($copyId);
+		function getAmendedPub($pubId, $amendSerial);
 	}
 ?>

@@ -412,12 +412,7 @@ class Manx implements IManx
 			$amendSerial = $row['amend_serial'];
 			if (!is_null($amendSerial))
 			{
-				$amendQuery = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pubdate`"
-						. " FROM `PUB` JOIN `PUBHISTORY` ON `pub_history`=`ph_id`"
-						. " WHERE `ph_amend_pub`=%d AND `ph_amend_serial`=%d",
-					$pubId, $amendSerial);
-				$amendRows = $this->_db->query($amendQuery)->fetch();
-				$amendRow = $amendRows[0];
+				$amendRow = $this->_manxDb->getAmendedPub($pubId, $amendSerial);
 				$amend = sprintf("<a href=\"../details.php/%d,%d\"><cite>%s</cite></a>",
 					$amendRow['ph_company'], $amendRow['pub_id'], htmlspecialchars($amendRow['ph_title']));
 				$amend = Manx::partPrefix($amendRow['ph_part']) . $amend;

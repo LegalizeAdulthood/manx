@@ -646,7 +646,7 @@
 				. "</ul></div>", $output);
 		}
 
-		public function testRenderCopies()
+		public function testRenderCopiesNoAmendment()
 		{
 			$db = new FakeDatabase();
 
@@ -733,6 +733,77 @@
 				. "<li style=\"margin: 0; padding: 0\"><a href=\"http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf\">http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf</a></li>"
 				. "<li style=\"margin: 0; padding: 0\"><a href=\"http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf\">http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf</a></li></ul></td></tr>"
 				. "</tbody>\n"
+				. "</table>\n", $output);
+		}
+		
+		public function testRenderCopiesAmended()
+		{
+			$db = new FakeDatabase();
+
+			$statement = new FakeStatement();
+			$statement->fetchAllFakeResult = FakeDatabase::createResultRowsForColumns(
+				array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copyid'),
+				array(
+					array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, 10277)
+					));
+			$query = "SELECT `format`,`COPY`.`url`,`notes`,`size`,"
+				. "`SITE`.`name`,`SITE`.`url` AS `site_url`,`SITE`.`description`,"
+				. "`SITE`.`copy_base`,`SITE`.`low`,`COPY`.`md5`,`COPY`.`amend_serial`,"
+				. "`COPY`.`credits`,`copyid`"
+				. " FROM `COPY`,`SITE`"
+				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND PUB=123"
+				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`";
+			$db->queryFakeResultsForQuery[$query] = $statement;
+
+			$manxDb = new FakeManxDatabase();
+			$manxDb->getMirrorsForCopyFakeResult[10277] = array('http://bitsavers.trailing-edge.com/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
+				'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
+				'http://www.textfiles.com/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
+				'http://computer-refuge.org/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
+				'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf');
+			$manxDb->getAmendedPubFakeResult = array('ph_company' => 57, 'pub_id' => 17971, 'ph_part' => 'AB81-14G',
+				'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pubdate' => '1984-02');
+
+			$manx = Manx::getInstanceForDatabases($db, $manxDb);
+			ob_start();
+			$manx->renderCopies(123);
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertEquals(
+				"<h2>Copies</h2>\n"
+				. "<table>\n"
+				. "<tbody><tr>\n"
+				. "<td>Address:</td>\n"
+				. "<td><a href=\"http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf\">http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf</a></td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Site:</td>\n"
+				. "<td><a href=\"http://bitsavers.org/\">Al Kossow's Bitsavers</a></td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Format:</td>\n"
+				. "<td>PDF</td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Size:</td>\n"
+				. "<td>25939827 bytes (24.7 MiB)</td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>MD5:</td>\n"
+				. "<td>0f91ba7f8d99ce7a9b57f9fdb07d3561</td>\n"
+				. "</tr>\n"
+				. "<tr>\n"
+				. "<td>Amended to:</td>\n"
+				. "<td>AB81-14G, <a href=\"../details.php/57,17971\"><cite>Honeywell Publications Catalog Addendum G</cite></a> (1984-02)</td>\n"
+				. "</tr>\n"
+				. "<tr valign=\"top\"><td>Mirrors:</td>"
+				. "<td><ul style=\"list-style-type: none; margin: 0; padding: 0\">"
+				. "<li style=\"margin: 0; padding: 0\"><a href=\"http://bitsavers.trailing-edge.com/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf\">http://bitsavers.trailing-edge.com/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf</a></li>"
+				. "<li style=\"margin: 0; padding: 0\"><a href=\"http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf\">http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf</a></li>"
+				. "<li style=\"margin: 0; padding: 0\"><a href=\"http://www.textfiles.com/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf\">http://www.textfiles.com/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf</a></li>"
+				. "<li style=\"margin: 0; padding: 0\"><a href=\"http://computer-refuge.org/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf\">http://computer-refuge.org/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf</a></li>"
+				. "<li style=\"margin: 0; padding: 0\"><a href=\"http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf\">http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf</a></li>"
+				. "</ul></td></tr></tbody>\n"
 				. "</table>\n", $output);
 		}
 

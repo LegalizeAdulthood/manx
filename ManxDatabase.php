@@ -117,5 +117,14 @@
 			}
 			return $mirrors;
 		}
+		
+		public function getAmendedPub($pubId, $amendSerial)
+		{
+			$query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pubdate`"
+					. " FROM `PUB` JOIN `PUBHISTORY` ON `pub_history`=`ph_id`"
+					. " WHERE `ph_amend_pub`=%d AND `ph_amend_serial`=%d",
+				$pubId, $amendSerial);
+			return $this->_db->query($query)->fetch();
+		}
 	}
 ?>
