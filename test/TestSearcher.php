@@ -1,7 +1,6 @@
 <?php
 	require_once 'PHPUnit/Framework.php';
 	require_once 'Searcher.php';
-	require_once 'test/FakeDatabase.php';
 	require_once 'test/FakeStatement.php';
 	require_once 'test/FakeFormatter.php';
 	require_once 'test/FakeManxDatabase.php';
@@ -15,7 +14,7 @@
 				array('id' => 1, 'name' => 'DEC'),
 				array('id' => 2, 'name' => '3Com'),
 				array('id' => 3, 'name' => 'AT&T'));
-			$searcher = Searcher::getInstance(new FakeDatabase(), $db);
+			$searcher = Searcher::getInstance($db);
 			ob_start();
 			$searcher->renderCompanies(1);
 			$output = ob_get_contents();
@@ -70,8 +69,7 @@
 
 		public function testSearchResultsSingleRow()
 		{
-			$db = new FakeDatabase();
-			$stmt = new FakeStatement();
+			$db = new FakeManxDatabase();
 			$rows = array(
 				array('pub_id' => 1,
 					'ph_part' => '',
@@ -86,31 +84,21 @@
 					'ph_alt_part' => '',
 					'ph_pubtype' => '')
 				);
-			$stmt->fetchAllFakeResult = $rows;
+			$db->searchForPublicationsFakeResult = $rows;
+			$db->getOSTagsForPubFakeResult = array('OpenVMS VAX Version 6.0');
 			$formatter = new FakeFormatter();
-			$manxDb = new FakeManxDatabase();
-			$searcher = Searcher::getInstance($db, $manxDb);
+			$searcher = Searcher::getInstance($db);
 			$keywords = "graphics terminal";
-			$matchClause = ManxDatabase::matchClauseForSearchWords(explode(' ', $keywords));
 			$company = 1;
-			$mainQuery = "SELECT `pub_id`, `ph_part`, `ph_title`,"
-				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
-				. " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
-				. " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `PUB`"
-				. " JOIN `PUBHISTORY` ON `pub_history` = `ph_id`"
-				. " WHERE `pub_has_online_copies` $matchClause"
-				. " AND `ph_company`=$company"
-				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
-			$db->queryFakeResultsForQuery[$mainQuery] = $stmt;
-			
-			$manxDb->getOSTagsForPubFakeResult = array('OpenVMS VAX Version 6.0');
 
 			$searcher->renderSearchResults($formatter, $company, $keywords, true);
-			$this->assertTrue($db->queryCalledForStatement[$mainQuery]);
-			$this->assertTrue($stmt->fetchAllCalled);
+			$this->assertTrue($db->searchForPublicationsCalled);
+			$this->assertEquals(1, $db->searchForPublicationsLastCompany);
+			$this->assertEquals(explode(' ', $keywords), $db->searchForPublicationsLastKeywords);
+			$this->assertTrue($db->searchForPublicationsLastOnline);
+			$this->assertTrue($db->getOSTagsForPubCalled);
+			$this->assertEquals(1, $db->getOSTagsForPubLastPubId);
 			$this->assertTrue($formatter->renderResultsBarCalled);
-			$this->assertTrue($manxDb->getOSTagsForPubCalled);
-			$this->assertEquals(1, $manxDb->getOSTagsForPubLastPubId);
 			$this->assertEquals(array(), $formatter->renderResultsBarLastIgnoredWords);
 			$this->assertEquals(array('graphics', 'terminal'), $formatter->renderResultsBarLastSearchWords);
 			$this->assertEquals(0, $formatter->renderResultsBarLastStart);

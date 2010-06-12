@@ -1,5 +1,4 @@
 <?php
-	require_once 'IDatabase.php';
 	require_once 'ISearcher.php';
 	require_once 'IFormatter.php';
 	require_once 'IManxDatabase.php';
@@ -8,17 +7,15 @@
 	{
 		private $_searchWords;
 		private $_ignoredWords;
-		private $_db;
 		private $_manxDb;
 
-		public static function getInstance(IDatabase $db, IManxDatabase $manxDb)
+		public static function getInstance(IManxDatabase $manxDb)
 		{
-			return new Searcher($db, $manxDb);
+			return new Searcher($manxDb);
 		}
 
-		private function __construct(IDatabase $db, IManxDatabase $manxDb)
+		private function __construct(IManxDatabase $manxDb)
 		{
-			$this->_db = $db;
 			$this->_manxDb = $manxDb;
 		}
 
@@ -73,17 +70,7 @@
 			$stmt = '';
 			$rows = array();
 			$this->_searchWords = Searcher::filterSearchKeywords($keywords, $this->_ignoredWords);
-			$matchClause = ManxDatabase::matchClauseForSearchWords($this->_searchWords);
-			$onlineClause = $online ? "`pub_has_online_copies`" : '1=1';
-			$mainQuery = "SELECT `pub_id`, `ph_part`, `ph_title`,"
-				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
-				. " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
-				. " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `PUB`"
-				. " JOIN `PUBHISTORY` ON `pub_history` = `ph_id`"
-				. " WHERE $onlineClause $matchClause"
-				. " AND `ph_company`=$company"
-				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
-			$rows = $this->_db->query($mainQuery)->fetchAll();
+			$rows = $this->_manxDb->searchForPublications($company, $this->_searchWords, $online);
 			$total = count($rows);
 			if (array_key_exists('start', $params))
 			{

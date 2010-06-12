@@ -1,15 +1,14 @@
 <?php
 	require_once 'PHPUnit/Framework.php';
 	require_once 'Manx.php';
-	require_once 'test/FakeDatabase.php';
 	require_once 'test/FakeStatement.php';
 	require_once 'test/FakeManxDatabase.php';
 
 	class ManxRenderDetailsTester extends Manx
 	{
-		public function __construct($db, $manxDb)
+		public function __construct($manxDb)
 		{
-			Manx::__construct($db, $manxDb);
+			Manx::__construct($manxDb);
 			$this->renderLanguageCalled = false;
 			$this->renderAmendmentsCalled = false;
 			$this->renderOSTagsCalled = false;
@@ -93,7 +92,7 @@
 			$manxDb->getDocumentCountFakeResult = 12;
 			$manxDb->getOnlineDocumentCountFakeResult = 24;
 			$manxDb->getSiteCountFakeResult = 43;
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $manxDb);
+			$manx = Manx::getInstanceForDatabase($manxDb);
 			ob_start();
 			$manx->renderDocumentSummary();
 			$output = ob_get_contents();
@@ -110,7 +109,7 @@
 			$db->getCompanyListFakeResult = array(
 				array('id' => 1, 'name' => "DEC"),
 				array('id' => 2, 'name' => "HP"));
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderCompanyList();
 			$output = ob_get_contents();
@@ -128,7 +127,7 @@
 					array('http://www.dec.com', 'DEC', false),
 					array('http://www.hp.com', 'HP', true)
 				));
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderSiteList();
 			$output = ob_get_contents();
@@ -164,13 +163,13 @@
 
 		public function testRenderLanguageEnglishGivesNoOutput()
 		{
-			$db = new FakeDatabase();
+			$db = new FakeManxDatabase();
 			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderLanguage('+en');
 			$output = ob_get_contents();
 			ob_end_clean();
-			$this->assertFalse($db->queryCalled);
+			$this->assertFalse($db->getDisplayLanguageCalled);
 			$this->assertEquals('', $output);
 		}
 
@@ -187,7 +186,7 @@
 		{
 			$db = new FakeManxDatabase();
 			$db->getDisplayLanguageFakeResult['fr'] = 'French';
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderLanguage('+fr');
 			$output = ob_get_contents();
@@ -202,7 +201,7 @@
 			$db->getDisplayLanguageFakeResult['en'] = 'English';
 			$db->getDisplayLanguageFakeResult['fr'] = 'French';
 			$db->getDisplayLanguageFakeResult['de'] = 'German';
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderLanguage('+en+fr+de');
 			$output = ob_get_contents();
@@ -227,7 +226,7 @@
 					array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09')));
 			$db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
 
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderAmendments($pubId);
 			$output = ob_get_contents();
@@ -245,7 +244,7 @@
 		{
 			$db = new FakeManxDatabase();
 			$db->getOSTagsForPubFakeResult = array();
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderOSTags(3);
 			$output = ob_get_contents();
@@ -258,7 +257,7 @@
 		{
 			$db = new FakeManxDatabase();
 			$db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderOSTags(3);
 			$output = ob_get_contents();
@@ -271,7 +270,7 @@
 		{
 			$db = new FakeManxDatabase();
 			$db->getLongDescriptionForPubFakeResult = array();
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			$pubId = 3;
 			ob_start();
 			$manx->renderLongDescription($pubId);
@@ -286,7 +285,7 @@
 		{
 			$db = new FakeManxDatabase();
 			$db->getLongDescriptionForPubFakeResult = array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>');
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			$pubId = 3;
 			ob_start();
 			$manx->renderLongDescription($pubId);
@@ -319,7 +318,7 @@
 				array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
 				array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance')));
 			$pubId = 72;
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderCitations($pubId);
 			$output = ob_get_contents();
@@ -462,7 +461,7 @@
 					array(3, 'B.3.2', 'KA655 Unique IPRs'),
 					array(2, 'B.4', 'Global Q22-Bus Address Space Map'),
 					array(1, 'Appendix C', 'Related Documentation')));
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $db);
+			$manx = Manx::getInstanceForDatabase($db);
 			ob_start();
 			$manx->renderTableOfContents(123, true);
 			$output = ob_get_contents();
@@ -662,7 +661,7 @@
 					'http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
 					'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf');
 
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $manxDb);
+			$manx = Manx::getInstanceForDatabase($manxDb);
 			ob_start();
 			$manx->renderCopies(123);
 			$output = ob_get_contents();
@@ -740,7 +739,7 @@
 			$manxDb->getAmendedPubFakeResult = array('ph_company' => 57, 'pub_id' => 17971, 'ph_part' => 'AB81-14G',
 				'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pubdate' => '1984-02');
 
-			$manx = Manx::getInstanceForDatabases(new FakeDatabase(), $manxDb);
+			$manx = Manx::getInstanceForDatabase($manxDb);
 			ob_start();
 			$manx->renderCopies(123);
 			$output = ob_get_contents();
@@ -790,7 +789,7 @@
 				array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
 				array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
 			$db->getDetailsForPubFakeResult = $rows[0];
-			$manx = new ManxRenderDetailsTester(new FakeDatabase(), $db);
+			$manx = new ManxRenderDetailsTester($db);
 			ob_start();
 			$manx->renderDetails('/1,3');
 			$output = ob_get_contents();

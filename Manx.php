@@ -5,11 +5,9 @@ require_once 'HtmlFormatter.php';
 require_once 'ManxDatabase.php';
 require_once 'Searcher.php';
 require_once 'IManx.php';
-require_once 'IDatabase.php';
 
 class Manx implements IManx
 {
-	private $_db;
 	private $_manxDb;
 
 	public static function getInstance()
@@ -18,22 +16,16 @@ class Manx implements IManx
 		$db = PDODatabaseAdapter::getInstance(new PDO($config[0], $config[1], $config[2]));
 		return Manx::getInstanceForDatabase($db);
 	}
-	public static function getInstanceForDatabase(IDatabase $db)
+	public static function getInstanceForDatabase(IManxDatabase $db)
 	{
-		return Manx::getInstanceForDatabases($db, ManxDatabase::getInstanceForDatabase($db));
+		return new Manx($db);
 	}
-	public static function getInstanceForDatabases(IDatabase $db, IManxDatabase $manxDb)
+	protected function __construct($manxDb)
 	{
-		return new Manx($db, $manxDb);
-	}
-	protected function __construct($db, $manxDb)
-	{
-		$this->_db = $db;
 		$this->_manxDb = $manxDb;
 	}
 	public function __destruct()
 	{
-		$this->_db = null;
 		$this->_manxDb = null;
 	}
 
@@ -94,7 +86,7 @@ class Manx implements IManx
 	function renderSearchResults()
 	{
 		$params = Searcher::parameterSource($_GET, $_POST);
-		$searcher = Searcher::getInstance($this->_db, $this->_manxDb);
+		$searcher = Searcher::getInstance($this->_manxDb);
 		print '<div id="Div1"><form action="search.php" method="get" name="f"><div class="field">Company: ';
 		$company = (array_key_exists('cp', $params) ? $params['cp'] : 1);
 		$keywords = urldecode(array_key_exists('q', $params) ? $params['q'] : '');

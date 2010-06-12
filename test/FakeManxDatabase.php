@@ -157,7 +157,11 @@
 			$searchForPublicationsLastCompany, $searchForPublicationsLastKeywords, $searchForPublicationsLastOnline;
 		public function searchForPublications($company, $keywords, $online)
 		{
-			throw new Exception("searchForPublications not implemented");
+			$this->searchForPublicationsCalled = true;
+			$this->searchForPublicationsLastCompany = $company;
+			$this->searchForPublicationsLastKeywords = $keywords;
+			$this->searchForPublicationsLastOnline = $online;
+			return $this->searchForPublicationsFakeResult;
 		}
 	}
 ?>
