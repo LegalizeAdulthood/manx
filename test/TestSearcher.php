@@ -126,6 +126,19 @@
 		{
 			$this->assertEquals('backslash\\\\Word', Searcher::cleanSqlWord('backslash\\Word'));
 		}
+		
+		public function testFilterSearchKeywordsIgnored()
+		{
+			$this->assertEquals(array(), Searcher::filterSearchKeywords("a an it on in at", $ignoredWords));
+			$this->assertEquals(array('a', 'an', 'it', 'on', 'in', 'at'), $ignoredWords);
+		}
+		
+		public function testFilterSearchKeywordsAcceptable()
+		{
+			$ignoredWords = array();
+			$this->assertEquals(array('one', 'two'), Searcher::filterSearchKeywords("one two", $ignoredWords));
+			$this->assertEquals(array(), $ignoredWords);
+		}
 
 		public function testSearchResultsSingleRow()
 		{
