@@ -80,8 +80,8 @@
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-				. '<a class="navpage" href="search.php?q=vt220+terminal;start=10;cp=1">2</a>&nbsp;&nbsp;'
-				. '<a href="search.php?q=vt220+terminal;start=10;cp=1"><b>Next</b></a>'
+				. '<a class="navpage" href="search.php?q=vt220+terminal&start=10&cp=1">2</a>&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt220+terminal&start=10&cp=1"><b>Next</b></a>'
 				. '</div>',
 				$output);
 		}
@@ -94,11 +94,11 @@
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;'
-				. '<a href="search.php?q=vt220+terminal;start=0;cp=1"><b>Previous</b></a>&nbsp;&nbsp;'
-				. '<a class="navpage" href="search.php?q=vt220+terminal;start=0;cp=1">1</a>&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt220+terminal&start=0&cp=1"><b>Previous</b></a>&nbsp;&nbsp;'
+				. '<a class="navpage" href="search.php?q=vt220+terminal&start=0&cp=1">1</a>&nbsp;&nbsp;'
 				. '<b class="currpage">2</b>&nbsp;&nbsp;'
-				. '<a class="navpage" href="search.php?q=vt220+terminal;start=20;cp=1">3</a>&nbsp;&nbsp;'
-				. '<a href="search.php?q=vt220+terminal;start=20;cp=1"><b>Next</b></a></div>',
+				. '<a class="navpage" href="search.php?q=vt220+terminal&start=20&cp=1">3</a>&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt220+terminal&start=20&cp=1"><b>Next</b></a></div>',
 				$output);
 		}
 
@@ -110,9 +110,9 @@
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;'
-				. '<a href="search.php?q=vt100+terminal;start=10;cp=1"><b>Previous</b></a>&nbsp;&nbsp;'
-				. '<a class="navpage" href="search.php?q=vt100+terminal;start=0;cp=1">1</a>&nbsp;&nbsp;'
-				. '<a class="navpage" href="search.php?q=vt100+terminal;start=10;cp=1">2</a>&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt100+terminal&start=10&cp=1"><b>Previous</b></a>&nbsp;&nbsp;'
+				. '<a class="navpage" href="search.php?q=vt100+terminal&start=0&cp=1">1</a>&nbsp;&nbsp;'
+				. '<a class="navpage" href="search.php?q=vt100+terminal&start=10&cp=1">2</a>&nbsp;&nbsp;'
 				. '<b class="currpage">3</b>&nbsp;&nbsp;</div>',
 				$output);
 		}
@@ -125,8 +125,8 @@
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-				. '<a class="navpage" href="search.php?q=vt220+terminal;start=10;on=on;cp=1">2</a>&nbsp;&nbsp;'
-				. '<a href="search.php?q=vt220+terminal;start=10;on=on;cp=1"><b>Next</b></a>'
+				. '<a class="navpage" href="search.php?q=vt220+terminal&start=10&on=on&cp=1">2</a>&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt220+terminal&start=10&on=on&cp=1"><b>Next</b></a>'
 				. '</div>',
 				$output);
 		}
@@ -139,8 +139,8 @@
 			$output = ob_get_contents();
 			ob_end_clean();
 			$this->assertEquals('<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-				. '<a class="navpage" href="search.php?q=vt220+terminal;start=5;num=5;on=on;cp=1">2</a>&nbsp;&nbsp;'
-				. '<a href="search.php?q=vt220+terminal;start=5;num=5;on=on;cp=1"><b>Next</b></a>'
+				. '<a class="navpage" href="search.php?q=vt220+terminal&start=5&num=5&on=on&cp=1">2</a>&nbsp;&nbsp;'
+				. '<a href="search.php?q=vt220+terminal&start=5&num=5&on=on&cp=1"><b>Next</b></a>'
 				. '</div>',
 				$output);
 		}

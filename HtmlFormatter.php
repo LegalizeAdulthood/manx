@@ -47,12 +47,12 @@
 		{
 			$encodedQuery = urlencode(array_key_exists('q', $params) ? $params['q'] : '');
 			print '<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;';
-			$linkOptions = ($rowsPerPage != DEFAULT_ROWS_PER_PAGE ? ';num=' . $rowsPerPage : '')
-				. (array_key_exists('on', $params) && ($params['on'] == 'on') ? ';on=on' : '')
-				. (array_key_exists('cp', $params) ? ';cp=' . $params['cp'] : '');
+			$linkOptions = ($rowsPerPage != DEFAULT_ROWS_PER_PAGE ? '&num=' . $rowsPerPage : '')
+				. (array_key_exists('on', $params) && ($params['on'] == 'on') ? '&on=on' : '')
+				. (array_key_exists('cp', $params) ? '&cp=' . $params['cp'] : '');
 			if ($start != 0)
 			{
-				print '<a href="search.php?q=' . $encodedQuery . ';start='
+				print '<a href="search.php?q=' . $encodedQuery . '&start='
 					. ($start - $rowsPerPage) . $linkOptions . '"><b>Previous</b></a>&nbsp;&nbsp;';
 			}
 
@@ -73,7 +73,7 @@
 				else
 				{
 					print '<a class="navpage" href="search.php?q='
-						. $encodedQuery . ';start=' . $currPageStart . $linkOptions
+						. $encodedQuery . '&start=' . $currPageStart . $linkOptions
 						. '">' . $currPageNum . '</a>&nbsp;&nbsp;';
 				}
 				++$currPageNum;
@@ -86,7 +86,7 @@
 			if ($start != $lastPageStart)
 			{
 				print '<a href="search.php?q=' . $encodedQuery
-					. ';start=' . ($start + $rowsPerPage) . $linkOptions . '"><b>Next</b></a>';
+					. '&start=' . ($start + $rowsPerPage) . $linkOptions . '"><b>Next</b></a>';
 			}
 			print '</div>';
 		}
