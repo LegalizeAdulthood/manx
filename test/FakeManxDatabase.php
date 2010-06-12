@@ -31,6 +31,8 @@
 			$this->getCopiesForPubFakeResult = array();
 			$this->getDetailsForPubCalled = false;
 			$this->getDetailsForPubFakeResult = array();
+			$this->searchForPublicationsCalled = false;
+			$this->searchForPublicationsFakeResult = array();
 		}
 
 		public $getDocumentCountCalled, $getDocumentCountFakeResult;
@@ -149,6 +151,13 @@
 			$this->getDetailsForPubCalled = true;
 			$this->getDetailsForPubLastPubId = $pubId;
 			return $this->getDetailsForPubFakeResult;
+		}
+		
+		public $searchForPublicationsCalled, $searchForPublicationsFakeResult,
+			$searchForPublicationsLastCompany, $searchForPublicationsLastKeywords, $searchForPublicationsLastOnline;
+		public function searchForPublications($company, $keywords, $online)
+		{
+			throw new Exception("searchForPublications not implemented");
 		}
 	}
 ?>

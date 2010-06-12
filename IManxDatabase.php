@@ -16,5 +16,6 @@
 		function getAmendedPub($pubId, $amendSerial);
 		function getCopiesForPub($pubId);
 		function getDetailsForPub($pubId);
+		function searchForPublications($company, $keywords, $online);
 	}
 ?>

@@ -268,6 +268,82 @@
 			$this->assertEquals($rows[0], $details);
 		}
 
+		public function testNormalizePartNumberNotString()
+		{
+			$this->assertEquals('', ManxDatabase::normalizePartNumber(array()));
+		}
+
+		public function testNormalizePartNumberLowerCase()
+		{
+			$this->assertEquals('UC', ManxDatabase::normalizePartNumber('uc'));
+		}
+
+		public function testNormalizePartNumberNonAlphaNumeric()
+		{
+			$this->assertEquals('UC122', ManxDatabase::normalizePartNumber(' !u,c,1,2,2 ,./<>?;' . "'" . ':"[]{}\\|`~!@#$%^&*()'));
+		}
+
+		public function testNormalizePartNumberLetterOhIsZero()
+		{
+			$this->assertEquals('UC1220', ManxDatabase::normalizePartNumber(' !u,c,1,2,2,o ,./<>?;' . "'" . ':"[]{}\\|`~!@#$%^&*()'));
+		}
+
+		public function testCleanSqlWordNotString()
+		{
+			$this->assertEquals('', ManxDatabase::cleanSqlWord(array()));
+		}
+
+		public function testCleanSqlWordNoSpecials()
+		{
+			$this->assertEquals('cleanWord', ManxDatabase::cleanSqlWord('cleanWord'));
+		}
+
+		public function testCleanSqlWordPercent()
+		{
+			$this->assertEquals('percent\\%Word', ManxDatabase::cleanSqlWord('percent%Word'));
+		}
+
+		public function testCleanSqlWordQuote()
+		{
+			$this->assertEquals("quote\\'Word", ManxDatabase::cleanSqlWord("quote'Word"));
+		}
+
+		public function testCleanSqlWordUnderline()
+		{
+			$this->assertEquals('underline\\_Word', ManxDatabase::cleanSqlWord('underline_Word'));
+		}
+
+		public function testCleanSqlWordBackslash()
+		{
+			$this->assertEquals('backslash\\\\Word', ManxDatabase::cleanSqlWord('backslash\\Word'));
+		}
+		
+		public function XtestSearchForPublications()
+		{
+			$this->createInstance();
+			$rows = array(
+				array('pub_id' => 1, 'ph_part' => '', 'ph_title' => '', 'pub_has_online_copies' => '',
+					'ph_abstract' => '', 'pub_has_toc' => '', 'pub_superseded' => '',
+					'ph_pubdate' => '', 'ph_revision' => '', 'ph_company' => '', 'ph_alt_part' => '',
+					'ph_pubtype' => '')
+				);
+			$keywords = array('graphics', 'terminal');
+			$matchClause = ''; //$searcher->matchClauseForKeywords($keywords);
+			$company = 1;
+			$query = "SELECT `pub_id`, `ph_part`, `ph_title`,"
+				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
+				. " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
+				. " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `PUB`"
+				. " JOIN `PUBHISTORY` ON `pub_history` = `ph_id`"
+				. " WHERE `pub_has_online_copies` $matchClause"
+				. " AND `ph_company`=$company"
+				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
+			$this->configureStatementFetchAllResults($query, $rows);
+			$pubs = $this->_manxDb->searchForPublications($company, $keywords, true);
+			$this->assertQueryCalledForSql($query);
+			$this->assertEquals($rows[0], $pubs);
+		}
+
 		private function assertColumnValuesForRows($rows, $column, $values)
 		{
 			$this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");

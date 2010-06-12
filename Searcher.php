@@ -83,8 +83,8 @@
 					{
 						$matchClause .= $matchCond;
 					}
-					$normalizedWord = Searcher::normalizePartNumber($word);
-					$cleanWord = Searcher::cleanSqlWord($word);
+					$normalizedWord = ManxDatabase::normalizePartNumber($word);
+					$cleanWord = ManxDatabase::cleanSqlWord($word);
 					$matchClause .= "(`ph_title` LIKE '%$cleanWord%' OR `ph_keywords` LIKE '%$cleanWord%'";
 					if (strlen($normalizedWord) > 2)
 					{
@@ -101,24 +101,6 @@
 			}
 
 			return $matchClause;
-		}
-
-		public static function normalizePartNumber($word)
-		{
-			if (!is_string($word))
-			{
-				return '';
-			}
-			return str_replace('O', '0', preg_replace('/[^A-Z0-9]/', '', strtoupper($word)));
-		}
-
-		public static function cleanSqlWord($word)
-		{
-			if (!is_string($word))
-			{
-				return '';
-			}
-			return str_replace('_', '\_', str_replace('%', '\%', str_replace("'", "\\'", str_replace('\\', '\\\\', $word))));
 		}
 
 		public function renderSearchResults(IFormatter $formatter, $company, $keywords, $online)

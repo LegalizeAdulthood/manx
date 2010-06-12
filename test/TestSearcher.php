@@ -77,56 +77,6 @@
 				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
 		}
 
-		public function testNormalizePartNumberNotString()
-		{
-			$this->assertEquals('', Searcher::normalizePartNumber(array()));
-		}
-
-		public function testNormalizePartNumberLowerCase()
-		{
-			$this->assertEquals('UC', Searcher::normalizePartNumber('uc'));
-		}
-
-		public function testNormalizePartNumberNonAlphaNumeric()
-		{
-			$this->assertEquals('UC122', Searcher::normalizePartNumber(' !u,c,1,2,2 ,./<>?;' . "'" . ':"[]{}\\|`~!@#$%^&*()'));
-		}
-
-		public function testNormalizePartNumberLetterOhIsZero()
-		{
-			$this->assertEquals('UC1220', Searcher::normalizePartNumber(' !u,c,1,2,2,o ,./<>?;' . "'" . ':"[]{}\\|`~!@#$%^&*()'));
-		}
-
-		public function testCleanSqlWordNotString()
-		{
-			$this->assertEquals('', Searcher::cleanSqlWord(array()));
-		}
-
-		public function testCleanSqlWordNoSpecials()
-		{
-			$this->assertEquals('cleanWord', Searcher::cleanSqlWord('cleanWord'));
-		}
-
-		public function testCleanSqlWordPercent()
-		{
-			$this->assertEquals('percent\\%Word', Searcher::cleanSqlWord('percent%Word'));
-		}
-
-		public function testCleanSqlWordQuote()
-		{
-			$this->assertEquals("quote\\'Word", Searcher::cleanSqlWord("quote'Word"));
-		}
-
-		public function testCleanSqlWordUnderline()
-		{
-			$this->assertEquals('underline\\_Word', Searcher::cleanSqlWord('underline_Word'));
-		}
-
-		public function testCleanSqlWordBackslash()
-		{
-			$this->assertEquals('backslash\\\\Word', Searcher::cleanSqlWord('backslash\\Word'));
-		}
-		
 		public function testFilterSearchKeywordsIgnored()
 		{
 			$this->assertEquals(array(), Searcher::filterSearchKeywords("a an it on in at", $ignoredWords));

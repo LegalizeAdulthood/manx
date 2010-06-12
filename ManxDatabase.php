@@ -163,5 +163,72 @@
 				'1=1', $pubId);
 			return $this->fetch($query);
 		}
+		
+		public static function normalizePartNumber($word)
+		{
+			if (!is_string($word))
+			{
+				return '';
+			}
+			return str_replace('O', '0', preg_replace('/[^A-Z0-9]/', '', strtoupper($word)));
+		}
+
+		public static function cleanSqlWord($word)
+		{
+			if (!is_string($word))
+			{
+				return '';
+			}
+			return str_replace('_', '\_', str_replace('%', '\%', str_replace("'", "\\'", str_replace('\\', '\\\\', $word))));
+		}
+
+		public static function matchClauseForSearchWords($searchWords)
+		{
+			$matchClause = '';
+			$matchCond = ' AND ';
+			if (count($searchWords) > 0)
+			{
+				$matchClause .= ' AND (';
+				$ordWord = 0;
+				foreach ($searchWords as $word)
+				{
+					if (++$ordWord > 1)
+					{
+						$matchClause .= $matchCond;
+					}
+					$normalizedWord = ManxDatabase::normalizePartNumber($word);
+					$cleanWord = ManxDatabase::cleanSqlWord($word);
+					$matchClause .= "(`ph_title` LIKE '%$cleanWord%' OR `ph_keywords` LIKE '%$cleanWord%'";
+					if (strlen($normalizedWord) > 2)
+					{
+						$matchClause .= " OR `ph_match_part` LIKE '%$normalizedWord%' OR `ph_match_alt_part` LIKE '%$normalizedWord%'";
+					}
+					$matchClause .= ')';
+				}
+				$matchClause .= ')';
+			}
+
+			if (strlen(trim($matchClause)) == 0)
+			{
+				$matchClause = ' ';
+			}
+
+			return $matchClause;
+		}
+
+		public function searchForPublications($company, $keywords, $online)
+		{
+			$matchClause = $this->matchClauseForKeywords($keywords);
+			$onlineClause = $online ? "`pub_has_online_copies`" : '1=1';
+			$mainQuery = "SELECT `pub_id`, `ph_part`, `ph_title`,"
+				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
+				. " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
+				. " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `PUB`"
+				. " JOIN `PUBHISTORY` ON `pub_history` = `ph_id`"
+				. " WHERE $onlineClause $matchClause"
+				. " AND `ph_company`=$company"
+				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
+			$rows = $this->_db->query($mainQuery)->fetchAll();
+		}
 	}
 ?>
