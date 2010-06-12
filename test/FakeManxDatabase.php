@@ -81,7 +81,7 @@
 			$this->getDisplayLanguageLastLanguageCode[$languageCode] = true;
 			return $this->getDisplayLanguageFakeResult[$languageCode];
 		}
-		
+
 		public $getOSTagsForPubCalled, $getOSTagsForPubLastPubId, $getOSTagsForPubFakeResult;
 		public function getOSTagsForPub($pubId)
 		{
@@ -89,7 +89,7 @@
 			$this->getOSTagsForPubLastPubId = $pubId;
 			return $this->getOSTagsForPubFakeResult;
 		}
-		
+
 		public $getAmendmentsForPubCalled, $getAmendmentsForPubLastPubId, $getAmendmentsForPubFakeResult;
 		public function getAmendmentsForPub($pubId)
 		{
@@ -97,7 +97,7 @@
 			$this->getAmendmentsForPubLastPubId = $pubId;
 			return $this->getAmendmentsForPubFakeResult;
 		}
-		
+
 		public $getLongDescriptionForPubCalled, $getLongDescriptionForPubLastPubId, $getLongDescriptionForPubFakeResult;
 		public function getLongDescriptionForPub($pubId)
 		{
@@ -105,7 +105,7 @@
 			$this->getLongDescriptionForPubLastPubId = $pubId;
 			return $this->getLongDescriptionForPubFakeResult;
 		}
-		
+
 		public $getCitationsForPubCalled, $getCitationsForPubLastPubId, $getCitationsForPubFakeResult;
 		public function getCitationsForPub($pubId)
 		{
@@ -113,7 +113,7 @@
 			$this->getCitationsForPubLastPubId = $pubId;
 			return $this->getCitationsForPubFakeResult;
 		}
-		
+
 		public $getTableOfContentsForPubCalled, $getTableOfContentsForPubLastPubId,
 			$getTableOfContentsForPubLastFullContents, $getTableOfContentsForPubFakeResult;
 		public function getTableOfContentsForPub($pubId, $fullContents)
@@ -123,7 +123,7 @@
 			$this->getTableOfContentsForPubLastFullContents = $fullContents;
 			return $this->getTableOfContentsForPubFakeResult;
 		}
-		
+
 		public $getMirrorsForCopyCalled, $getMirrorsForCopyLastCopyId, $getMirrorsForCopyFakeResult;
 		public function getMirrorsForCopy($copyId)
 		{
@@ -156,7 +156,7 @@
 			$this->getDetailsForPubLastPubId = $pubId;
 			return $this->getDetailsForPubFakeResult;
 		}
-		
+
 		public $searchForPublicationsCalled, $searchForPublicationsFakeResult,
 			$searchForPublicationsLastCompany, $searchForPublicationsLastKeywords, $searchForPublicationsLastOnline;
 		public function searchForPublications($company, $keywords, $online)

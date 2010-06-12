@@ -215,7 +215,7 @@
 			$this->assertTrue($db->getOSTagsForPubCalled);
 			$this->assertEquals($pubId, $db->getOSTagsForPubLastPubId);
 		}
-		
+
 		public function testRenderAmendments()
 		{
 			$db = new FakeManxDatabase();
@@ -280,7 +280,7 @@
 			$this->assertEquals($pubId, $db->getLongDescriptionForPubLastPubId);
 			$this->assertEquals('', $output);
 		}
-		
+
 		public function testRenderLongDescription()
 		{
 			$db = new FakeManxDatabase();
@@ -722,7 +722,7 @@
 				. "</tbody>\n"
 				. "</table>\n", $output);
 		}
-		
+
 		public function testRenderSupersessionPubSupersedesOlder()
 		{
 			$db = new FakeManxDatabase();
@@ -865,17 +865,17 @@
 				. "</table>\n"
 				. "</div>\n", $output);
 		}
-		
+
 		public function testReplaceNullWithEmptyStringOrTrimForNull()
 		{
 			$this->assertEquals('', Manx::replaceNullWithEmptyStringOrTrim(null));
 		}
-		
+
 		public function testReplaceNullWithEmptyStringOrTrimForString()
 		{
 			$this->assertEquals('foo', Manx::replaceNullWithEmptyStringOrTrim('foo'));
 		}
-		
+
 		public function testReplaceNullWithEmptyStringOrTrimForWhitespace()
 		{
 			$this->assertEquals('foo', Manx::replaceNullWithEmptyStringOrTrim(" foo\t\r\n"));

@@ -22,12 +22,12 @@
 		{
 			return $this->_db->query($query)->fetch();
 		}
-		
+
 		private function fetchAll($query)
 		{
 			return $this->_db->query($query)->fetchAll();
 		}
-		
+
 		function getDocumentCount()
 		{
 			$rows = $this->fetch("SELECT COUNT(*) FROM `PUB`");
@@ -55,14 +55,14 @@
 		{
 			return $this->fetchAll("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`");
 		}
-		
+
 		public function getDisplayLanguage($languageCode)
 		{
 			// Avoid second name of language, if provided (after ';')
 			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'";
 			return $this->fetch(sprintf($query, $languageCode));
 		}
-		
+
 		public function getOSTagsForPub($pubId)
 		{
 			$query = sprintf("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=%d", $pubId);
@@ -73,14 +73,14 @@
 			}
 			return $tags;
 		}
-		
+
 		public function getAmendmentsForPub($pubId)
 		{
 			return $this->fetchAll(sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
 				. "FROM `PUB` JOIN `PUBHISTORY` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=%d ORDER BY `ph_amend_serial`",
 				$pubId));
 		}
-		
+
 		public function getLongDescriptionForPub($pubId)
 		{
 			$description = array();
@@ -94,7 +94,7 @@
 			*/
 			return $description;
 		}
-		
+
 		public function getCitationsForPub($pubId)
 		{
 			$query = sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`"
@@ -103,7 +103,7 @@
 				. " JOIN `PUBHISTORY` ON `pub_history`=`ph_id`", $pubId);
 			return $this->fetchALl($query);
 		}
-		
+
 		public function getTableOfContentsForPub($pubId, $fullContents)
 		{
 			$query = sprintf("SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=%d", $pubId);
@@ -114,7 +114,7 @@
 			$query .= ' ORDER BY `line`';
 			return $this->fetchAll($query);
 		}
-		
+
 		public function getMirrorsForCopy($copyId)
 		{
 			$query = sprintf("SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
@@ -127,7 +127,7 @@
 			}
 			return $mirrors;
 		}
-		
+
 		public function getAmendedPub($pubId, $amendSerial)
 		{
 			$query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pubdate`"
@@ -136,7 +136,7 @@
 				$pubId, $amendSerial);
 			return $this->fetch($query);
 		}
-		
+
 		public function getCopiesForPub($pubId)
 		{
 			$query = sprintf("SELECT `format`,`COPY`.`url`,`notes`,`size`,"
@@ -148,7 +148,7 @@
 				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`", $pubId);
 			return $this->fetchAll($query);
 		}
-		
+
 		public function getDetailsForPub($pubId)
 		{
 			$query = sprintf('SELECT `pub_id`, `COMPANY`.`name`, '
@@ -163,7 +163,7 @@
 				'1=1', $pubId);
 			return $this->fetch($query);
 		}
-		
+
 		public static function normalizePartNumber($word)
 		{
 			if (!is_string($word))

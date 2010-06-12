@@ -9,13 +9,13 @@
 		private $_db;
 		private $_manxDb;
 		private $_statement;
-		
+
 		public function testConstruct()
 		{
 			$this->createInstance();
 			$this->assertTrue(!is_null($this->_manxDb) && is_object($this->_manxDb));
 		}
-		
+
 		public function testGetDocumentCount()
 		{
 			$query = "SELECT COUNT(*) FROM `PUB`";
@@ -23,7 +23,7 @@
 			$count = $this->_manxDb->getDocumentCount();
 			$this->assertCountForQuery(2, $count, $query);
 		}
-		
+
 		public function testGetOnlineDocumentCount()
 		{
 			$query = "SELECT COUNT(DISTINCT `pub`) FROM `COPY`";
@@ -31,7 +31,7 @@
 			$count = $this->_manxDb->getOnlineDocumentCount();
 			$this->assertCountForQuery(12, $count, $query);
 		}
-		
+
 		public function testGetSiteCount()
 		{
 			$query = "SELECT COUNT(*) FROM `SITE`";
@@ -54,7 +54,7 @@
 			$this->assertEquals(2, count($sites));
 			$this->assertColumnValuesForRows($sites, 'url', array('http://www.dec.com', 'http://www.hp.com'));
 		}
-		
+
 		public function testGetCompanyList()
 		{
 			$this->createInstance();
@@ -67,7 +67,7 @@
 			$this->assertQueryCalledForSql($query);
 			$this->assertEquals($expected, $companies);
 		}
-		
+
 		public function testGetDisplayLanguage()
 		{
 			$this->createInstance();
@@ -77,7 +77,7 @@
 			$this->assertQueryCalledForSql($query);
 			$this->assertEquals('French', $display);
 		}
-		
+
 		public function testGetOSTagsForPub()
 		{
 			$this->createInstance();
@@ -89,7 +89,7 @@
 			$this->assertQueryCalledForSql($query);
 			$this->assertEquals($tags, array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0'));
 		}
-		
+
 		public function testGetAmendmentsForPub()
 		{
 			$this->createInstance();
@@ -106,7 +106,7 @@
 			$this->assertArrayHasLength($amendments, 2);
 			$this->assertColumnValuesForRows($amendments, 'ph_pub', array(4496, 3301));
 		}
-		
+
 		public function testGetLongDescriptionForPubDoesNothing()
 		{
 			$this->createInstance();
@@ -123,7 +123,7 @@
 			$this->assertEquals(array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>'), $longDescription);
 			*/
 		}
-		
+
 		public function testGetCitationsForPub()
 		{
 			$this->createInstance();
@@ -141,7 +141,7 @@
 			$this->assertArrayHasLength($citations, 1);
 			$this->assertEquals('EK-306AA-MG-001', $citations[0]['ph_part']);
 		}
-		
+
 		public function testGetTableOfContentsForPubFullContents()
 		{
 			$this->createInstance();
@@ -186,7 +186,7 @@
 			$this->assertColumnValuesForRows($toc, 'label',
 				array('Chapter 1', 'Chapter 2', 'Chapter 3', 'Chapter 4', 'Appendix A', 'Appendix B', 'Appendix C'));
 		}
-		
+
 		public function testGetMirrorsForCopy()
 		{
 			$this->createInstance();
@@ -206,7 +206,7 @@
 			$this->assertQueryCalledForSql($query);
 			$this->assertEquals($expected, $mirrors);
 		}
-		
+
 		public function testGetAmendedPub()
 		{
 			$this->createInstance();
@@ -222,7 +222,7 @@
 			$this->assertQueryCalledForSql($query);
 			$this->assertEquals($expected, $amended);
 		}
-		
+
 		public function testGetCopiesForPub()
 		{
 			$this->createInstance();
@@ -245,7 +245,7 @@
 			$this->assertArrayHasLength($copies, 1);
 			$this->assertEquals('http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', $copies[0]['url']);
 		}
-		
+
 		public function testGetDetailsForPub()
 		{
 			$this->createInstance();
@@ -359,7 +359,7 @@
 			$this->assertQueryCalledForSql($query);
 			$this->assertEquals($rows, $pubs);
 		}
-		
+
 		public function testGetPublicationsSupersededByPub()
 		{
 			$this->createInstance();
@@ -371,9 +371,9 @@
 			$this->configureStatementFetchAllResults($query, $rows);
 			$pubs = $this->_manxDb->getPublicationsSupersededByPub($pubId);
 			$this->assertQueryCalledForSql($query);
-			$this->assertEquals($rows, $pubs);			
+			$this->assertEquals($rows, $pubs);
 		}
-		
+
 		public function testGetPublicationsSupersedingPub()
 		{
 			$this->createInstance();
@@ -399,13 +399,13 @@
 				++$i;
 			}
 		}
-		
+
 		private function assertArrayHasLength($value, $length)
 		{
 			$this->assertTrue(is_array($value));
 			$this->assertEquals($length, count($value));
 		}
-				
+
 		private function createInstance()
 		{
 			$this->_db = new FakeDatabase();
@@ -418,14 +418,14 @@
 			$this->createInstance();
 			$this->configureStatementFetchResult($query, array($expectedCount));
 		}
-		
+
 		private function assertCountForQuery($expectedCount, $count, $query)
 		{
 			$this->assertQueryCalledForSql($query);
 			$this->assertTrue($this->_statement->fetchCalled);
 			$this->assertEquals($expectedCount, $count);
 		}
-		
+
 		private function assertQueryCalledForSql($sql)
 		{
 			$this->assertTrue($this->_db->queryCalled);
@@ -437,7 +437,7 @@
 			$this->_statement->fetchFakeResult = $result;
 			$this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
 		}
-		
+
 		private function configureStatementFetchAllResults($query, $results)
 		{
 			$this->_statement->fetchAllFakeResult = $results;

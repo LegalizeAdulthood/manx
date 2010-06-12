@@ -59,7 +59,7 @@
 			$this->assertEquals(array(), Searcher::filterSearchKeywords("a an it on in at", $ignoredWords));
 			$this->assertEquals(array('a', 'an', 'it', 'on', 'in', 'at'), $ignoredWords);
 		}
-		
+
 		public function testFilterSearchKeywordsAcceptable()
 		{
 			$ignoredWords = array();

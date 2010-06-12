@@ -63,7 +63,7 @@
 			}
 			return $searchWords;
 		}
-		
+
 		public function renderSearchResults(IFormatter $formatter, $company, $keywords, $online)
 		{
 			$params = Searcher::parameterSource($_GET, $_POST);

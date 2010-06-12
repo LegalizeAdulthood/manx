@@ -165,7 +165,7 @@ class Manx implements IManx
 		}
 		return '';
 	}
-	
+
 	private static function partPrefix($part)
 	{
 		$part = Manx::replaceNullWithEmptyStringOrTrim($part);
@@ -175,7 +175,7 @@ class Manx implements IManx
 		}
 		return '';
 	}
-	
+
 	private static function formatPubDate($pubDate)
 	{
 		$pubDate = Manx::replaceNullWithEmptyStringOrTrim($pubDate);
@@ -185,7 +185,7 @@ class Manx implements IManx
 		}
 		return '';
 	}
-	
+
 	public function renderAmendments($pubId)
 	{
 		$amendments = array();
@@ -456,7 +456,7 @@ class Manx implements IManx
 		$this->renderCopies($pubId);
 		print "</div>\n";
 	}
-	
+
 	public static function replaceNullWithEmptyStringOrTrim($value)
 	{
 		return is_null($value) ? '' : trim($value);
