@@ -45,10 +45,10 @@
 			}
 		}
 
-		public function matchClauseForKeywords($keywords)
+		public static function filterSearchKeywords($keywords, &$ignoredWords)
 		{
-			$this->_searchWords = array();
-			$this->_ignoredWords = array();
+			$searchWords = array();
+			$ignoredWords = array();
 			foreach (explode(' ', $keywords) as $keyword)
 			{
 				$keyword = trim($keyword);
@@ -56,14 +56,20 @@
 				{
 					if (strlen($keyword) > 2)
 					{
-						array_push($this->_searchWords, $keyword);
+						array_push($searchWords, $keyword);
 					}
 					else
 					{
-						array_push($this->_ignoredWords, $keyword);
+						array_push($ignoredWords, $keyword);
 					}
 				}
 			}
+			return $searchWords;
+		}
+		
+		public function matchClauseForKeywords($keywords)
+		{
+			$this->_searchWords = Searcher::filterSearchKeywords($keywords, $this->_ignoredWords);
 
 			$matchClause = '';
 			$matchCond = ' AND ';
