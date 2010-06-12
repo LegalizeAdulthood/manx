@@ -14,7 +14,8 @@ class Manx implements IManx
 	{
 		$config = explode(" ", trim(file_get_contents("config.txt")));
 		$db = PDODatabaseAdapter::getInstance(new PDO($config[0], $config[1], $config[2]));
-		return Manx::getInstanceForDatabase($db);
+		$manxDb = ManxDatabase::getInstanceForDatabase($db);
+		return Manx::getInstanceForDatabase($manxDb);
 	}
 	public static function getInstanceForDatabase(IManxDatabase $db)
 	{
