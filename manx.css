@@ -1,15 +1,14 @@
 body
 {
 	background: none #fff no-repeat;
-	margin: 0;
+	margin: 0
 }
 
 #AUTH
 {
 	float: right;
 	color: #fff;
-	background-color: #089698;
-	padding: 0.3em;
+	padding: 0.3em
 }
 .field
 {
@@ -112,7 +111,8 @@ div.toc li
 }
 div.toc li.level1 span.level1
 {
-	padding-right: 1em}
+	padding-right: 1em
+}
 div.toc li.level2
 {
 	margin-left: 3em
@@ -157,10 +157,6 @@ ul.citelist li
 {
 	display: none
 }
-#HEADER
-{
-	background-color: #089698;
-}
 #MENU
 {
 	background-color: #089698;
@@ -202,7 +198,6 @@ ul.citelist li
 	background-color: transparent
 }
 
-/* Login styles */
 #LOGINBOX
 {
 	margin: 0 auto;
@@ -217,4 +212,89 @@ ul.citelist li
 #LOGIBUTT
 {
 	float: right
+}
+
+#addformdiv
+{
+	margin-left: 15em
+}
+#addform label
+{
+	float: left;
+	width: 10em;
+	white-space: nowrap
+}
+#addform input, #addform select
+{
+	margin-left: 10em
+}
+#addform ul
+{
+	list-style: none;
+}
+#partlist
+{
+	margin-left: 20em
+}
+
+#wikipagemenu
+{
+
+}
+#wikipagemenu ul
+{
+	display: block
+}
+#wikipagemenu li
+{
+	background: white none repeat scroll 0 0
+}
+#wikipagemenu li
+{
+	display: inline;
+	border-style: solid solid none;
+	border-color: #fcc;
+	border-width: 1px;
+	float: left;
+	margin: 0 2px;
+	padding: 2px 5px;
+	white-space: nowrap
+}
+#wikipagemenu li.current, #wikipagemenu li.current:hover
+{
+	background: #f99 none repeat scroll 0 0;
+	border-style: solid;
+	border: 1px solid #000;
+	border-bottom: 1px solid #f99;
+	margin-bottom: -1px
+}
+#wikipagemenu li:hover
+{
+	background-color: #ff0;
+}
+#wikipagemenusep
+{
+	background: #f99 none repeat scroll 0 0;
+	border-bottom: 1px solid #000;
+	border-top: 1px solid #000;
+	clear: both;
+	height: 4px;
+	line-height: 4px;
+	margin: 0;
+	padding: 0;
+	width: 100%
+}
+#wikitext
+{
+	margin: 1em 0 0 15em;
+	border: 1px solid #ccc;
+	padding: 5px
+}
+.deadlink
+{
+	color: #900
+}
+#wikitext textarea
+{
+	width: 100%
 }
