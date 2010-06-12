@@ -359,6 +359,34 @@
 			$this->assertQueryCalledForSql($query);
 			$this->assertEquals($rows, $pubs);
 		}
+		
+		public function testGetPublicationsSupersededByPub()
+		{
+			$this->createInstance();
+			$pubId = 6105;
+			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `SUPERSESSION`' .
+				' JOIN `PUB` ON (`old_pub`=`pub_id` AND `new_pub`=%d)' .
+				' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`', $pubId);
+			$rows = array(array('ph_company' => 1, 'ph_pub' => 23, 'ph_part' => 'EK-11024-TM-PRE', 'ph_title' => 'PDP-11/24 System Technical Manual'));
+			$this->configureStatementFetchAllResults($query, $rows);
+			$pubs = $this->_manxDb->getPublicationsSupersededByPub($pubId);
+			$this->assertQueryCalledForSql($query);
+			$this->assertEquals($rows, $pubs);			
+		}
+		
+		public function testGetPublicationsSupersedingPub()
+		{
+			$this->createInstance();
+			$pubId = 23;
+			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `SUPERSESSION`'
+				. ' JOIN `PUB` ON (`new_pub`=`pub_id` AND `old_pub`=%d)'
+				. ' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`', $pubId);
+			$rows = array(array('ph_company' => 1, 'ph_pub' => 6105, 'ph_part' => 'EK-11024-TM-001', 'ph_title' => 'PDP-11/24 System Technical Manual'));
+			$this->configureStatementFetchAllResults($query, $rows);
+			$pubs = $this->_manxDb->getPublicationsSupersedingPub($pubId);
+			$this->assertQueryCalledForSql($query);
+			$this->assertEquals($rows, $pubs);
+		}
 
 		private function assertColumnValuesForRows($rows, $column, $values)
 		{

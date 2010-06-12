@@ -723,6 +723,48 @@
 				. "</table>\n", $output);
 		}
 		
+		public function testRenderSupersessionPubSupersedesOlder()
+		{
+			$db = new FakeManxDatabase();
+			$db->getPublicationsSupersededByPubFakeResult =
+				array(array('ph_company' => 1, 'ph_pub' => 23, 'ph_part' => 'EK-11024-TM-PRE', 'ph_title' => 'PDP-11/24 System Technical Manual'));
+			$manx = Manx::getInstanceForDatabase($db);
+			$pubId = 6105;
+			ob_start();
+			$manx->renderSupersessions($pubId);
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertTrue($db->getPublicationsSupersededByPubCalled);
+			$this->assertEquals($pubId, $db->getPublicationsSupersededByPubLastPubId);
+			$this->assertTrue($db->getPublicationsSupersedingPubCalled);
+			$this->assertEquals($pubId, $db->getPublicationsSupersedingPubLastPubId);
+			$this->assertEquals('<tr valign="top"><td>Supersedes:</td>'
+				. '<td><ul class="citelist">'
+				. '<li>EK-11024-TM-PRE, <a href="../details.php/1,23"><cite>PDP-11/24 System Technical Manual</cite></a></li>'
+				. "</ul></td></tr>\n", $output);
+		}
+
+		public function testRenderSupersessionPubSupersededByNewer()
+		{
+			$db = new FakeManxDatabase();
+			$db->getPublicationsSupersedingPubFakeResult =
+				array(array('ph_company' => 1, 'ph_pub' => 6105, 'ph_part' => 'EK-11024-TM-001', 'ph_title' => 'PDP-11/24 System Technical Manual'));
+			$manx = Manx::getInstanceForDatabase($db);
+			$pubId = 23;
+			ob_start();
+			$manx->renderSupersessions($pubId);
+			$output = ob_get_contents();
+			ob_end_clean();
+			$this->assertTrue($db->getPublicationsSupersededByPubCalled);
+			$this->assertEquals($pubId, $db->getPublicationsSupersededByPubLastPubId);
+			$this->assertTrue($db->getPublicationsSupersedingPubCalled);
+			$this->assertEquals($pubId, $db->getPublicationsSupersedingPubLastPubId);
+			$this->assertEquals('<tr valign="top"><td>Superseded by:</td>'
+				. '<td><ul class="citelist">'
+				. '<li>EK-11024-TM-001, <a href="../details.php/1,6105"><cite>PDP-11/24 System Technical Manual</cite></a></li>'
+				. "</ul></td></tr>\n", $output);
+		}
+
 		public function testRenderCopiesAmended()
 		{
 			$manxDb = new FakeManxDatabase();

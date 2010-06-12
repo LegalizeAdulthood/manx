@@ -251,37 +251,29 @@ class Manx implements IManx
 
 	public function renderSupersessions($pubId)
 	{
-	/*
-		# Supersession information. Because documents can be merged in later revisions, or expand to become more than one, there may
-		# be more than one document that preceded or superseded this one.
-		my @supers;
-		$sth = $dbh->prepare('select ph_company,ph_pub,ph_part,ph_title from SUPERSESSION' .
-			' join PUB on (old_pub = pub_id and new_pub=?)' .
-			' join PUBHISTORY on pub_history = ph_id');
-		$sth->execute($pub);
-		while (my $rs = $sth->fetchrow_hashref) {
-			push @supers, format_doc_ref($rs);
+		// Supersession information. Because documents can be merged in later revisions,
+		// or expand to become more than one, there may be more than one document that
+		// preceded or superseded this one.
+		$supers = array();
+		foreach ($this->_manxDb->getPublicationsSupersededByPub($pubId) as $pub)
+		{
+			array_push($supers, $this->formatDocRef($pub));
 		}
-		$sth->finish;
-		if (scalar @supers) {
-			print qq{<tr valign="top"><td>Supersedes:</td><td><ul class="citelist">},
-				(map {"<li>$_</li>"} @supers), qq{</ul></td></tr>\n};
+		if (count($supers) > 0)
+		{
+			echo '<tr valign="top"><td>Supersedes:</td><td><ul class="citelist"><li>',
+				implode('</li><li>', $supers), "</li></ul></td></tr>\n";
 		}
-
-		@supers = ();
-		$sth = $dbh->prepare('select ph_company,ph_pub,ph_part,ph_title from SUPERSESSION' .
-			' join PUB on (new_pub = pub_id and old_pub = ?)' .
-			' join PUBHISTORY on pub_history = ph_id');
-		$sth->execute($pub);
-		while (my $rs = $sth->fetchrow_hashref) {
-			push @supers, format_doc_ref($rs);
+		$supers = array();
+		foreach ($this->_manxDb->getPublicationsSupersedingPub($pubId) as $pub)
+		{
+			array_push($supers, $this->formatDocRef($pub));
 		}
-		$sth->finish;
-		if (scalar @supers) {
-			print qq{<tr valign="top"><td>Superseded by:</td><td><ul class="citelist">},
-				(map {"<li>$_</li>"} @supers), qq{</ul></td></tr>\n};
+		if (count($supers) > 0)
+		{
+			echo '<tr valign="top"><td>Superseded by:</td><td><ul class="citelist"><li>',
+				implode('</li><li>', $supers), "</li></ul></td></tr>\n";
 		}
-	*/
 	}
 
 	public function renderTableOfContents($pubId, $fullContents)

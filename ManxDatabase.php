@@ -230,5 +230,21 @@
 				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
 			return $this->fetchAll($query);
 		}
+
+		function getPublicationsSupersededByPub($pubId)
+		{
+			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `SUPERSESSION`' .
+				' JOIN `PUB` ON (`old_pub`=`pub_id` AND `new_pub`=%d)' .
+				' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`', $pubId);
+			return $this->fetchAll($query);
+		}
+
+		function getPublicationsSupersedingPub($pubId)
+		{
+			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `SUPERSESSION`'
+				. ' JOIN `PUB` ON (`new_pub`=`pub_id` AND `old_pub`=%d)'
+				. ' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`', $pubId);
+			return $this->fetchAll($query);
+		}
 	}
 ?>

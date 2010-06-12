@@ -17,5 +17,7 @@
 		function getCopiesForPub($pubId);
 		function getDetailsForPub($pubId);
 		function searchForPublications($company, $keywords, $online);
+		function getPublicationsSupersededByPub($pubId);
+		function getPublicationsSupersedingPub($pubId);
 	}
 ?>

@@ -33,6 +33,10 @@
 			$this->getDetailsForPubFakeResult = array();
 			$this->searchForPublicationsCalled = false;
 			$this->searchForPublicationsFakeResult = array();
+			$this->getPublicationsSupersededByPubCalled = false;
+			$this->getPublicationsSupersededByPubFakeResult = array();
+			$this->getPublicationsSupersedingPubCalled = false;
+			$this->getPublicationsSupersedingPubFakeResult = array();
 		}
 
 		public $getDocumentCountCalled, $getDocumentCountFakeResult;
@@ -162,6 +166,22 @@
 			$this->searchForPublicationsLastKeywords = $keywords;
 			$this->searchForPublicationsLastOnline = $online;
 			return $this->searchForPublicationsFakeResult;
+		}
+
+		public $getPublicationsSupersededByPubCalled, $getPublicationsSupersededByPubLastPubId, $getPublicationsSupersededByPubFakeResult;
+		function getPublicationsSupersededByPub($pubId)
+		{
+			$this->getPublicationsSupersededByPubCalled = true;
+			$this->getPublicationsSupersededByPubLastPubId = $pubId;
+			return $this->getPublicationsSupersededByPubFakeResult;
+		}
+
+		public $getPublicationsSupersedingPubCalled, $getPublicationsSupersedingPubLastPubId, $getPublicationsSupersedingPubFakeResult;
+		function getPublicationsSupersedingPub($pubId)
+		{
+			$this->getPublicationsSupersedingPubCalled = true;
+			$this->getPublicationsSupersedingPubLastPubId = $pubId;
+			return $this->getPublicationsSupersedingPubFakeResult;
 		}
 	}
 ?>
