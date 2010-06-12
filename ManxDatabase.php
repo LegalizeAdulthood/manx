@@ -218,9 +218,9 @@
 
 		public function searchForPublications($company, $keywords, $online)
 		{
-			$matchClause = $this->matchClauseForKeywords($keywords);
+			$matchClause = ManxDatabase::matchClauseForSearchWords($keywords);
 			$onlineClause = $online ? "`pub_has_online_copies`" : '1=1';
-			$mainQuery = "SELECT `pub_id`, `ph_part`, `ph_title`,"
+			$query = "SELECT `pub_id`, `ph_part`, `ph_title`,"
 				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
 				. " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
 				. " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `PUB`"
@@ -228,7 +228,7 @@
 				. " WHERE $onlineClause $matchClause"
 				. " AND `ph_company`=$company"
 				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
-			$rows = $this->_db->query($mainQuery)->fetchAll();
+			return $this->fetchAll($query);
 		}
 	}
 ?>

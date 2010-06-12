@@ -317,8 +317,24 @@
 		{
 			$this->assertEquals('backslash\\\\Word', ManxDatabase::cleanSqlWord('backslash\\Word'));
 		}
-		
-		public function XtestSearchForPublications()
+
+		public function testMatchClauseForSearchWordsSingleKeyword()
+		{
+			$clause = ManxDatabase::matchClauseForSearchWords(array('terminal'));
+			$this->assertEquals(" AND ((`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
+				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
+		}
+
+		public function testMatchClauseForMultipleKeywords()
+		{
+			$clause = ManxDatabase::matchClauseForSearchWords(array('graphics', 'terminal'));
+			$this->assertEquals(" AND ((`ph_title` LIKE '%graphics%' OR `ph_keywords` LIKE '%graphics%' "
+				. "OR `ph_match_part` LIKE '%GRAPHICS%' OR `ph_match_alt_part` LIKE '%GRAPHICS%') "
+				. "AND (`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
+				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
+		}
+
+		public function testSearchForPublications()
 		{
 			$this->createInstance();
 			$rows = array(
@@ -328,7 +344,7 @@
 					'ph_pubtype' => '')
 				);
 			$keywords = array('graphics', 'terminal');
-			$matchClause = ''; //$searcher->matchClauseForKeywords($keywords);
+			$matchClause = ManxDatabase::matchClauseForSearchWords($keywords);
 			$company = 1;
 			$query = "SELECT `pub_id`, `ph_part`, `ph_title`,"
 				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
@@ -341,7 +357,7 @@
 			$this->configureStatementFetchAllResults($query, $rows);
 			$pubs = $this->_manxDb->searchForPublications($company, $keywords, true);
 			$this->assertQueryCalledForSql($query);
-			$this->assertEquals($rows[0], $pubs);
+			$this->assertEquals($rows, $pubs);
 		}
 
 		private function assertColumnValuesForRows($rows, $column, $values)

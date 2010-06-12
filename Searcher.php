@@ -67,48 +67,13 @@
 			return $searchWords;
 		}
 		
-		public function matchClauseForKeywords($keywords)
-		{
-			$this->_searchWords = Searcher::filterSearchKeywords($keywords, $this->_ignoredWords);
-
-			$matchClause = '';
-			$matchCond = ' AND ';
-			if (count($this->_searchWords) > 0)
-			{
-				$matchClause .= ' AND (';
-				$ordWord = 0;
-				foreach ($this->_searchWords as $word)
-				{
-					if (++$ordWord > 1)
-					{
-						$matchClause .= $matchCond;
-					}
-					$normalizedWord = ManxDatabase::normalizePartNumber($word);
-					$cleanWord = ManxDatabase::cleanSqlWord($word);
-					$matchClause .= "(`ph_title` LIKE '%$cleanWord%' OR `ph_keywords` LIKE '%$cleanWord%'";
-					if (strlen($normalizedWord) > 2)
-					{
-						$matchClause .= " OR `ph_match_part` LIKE '%$normalizedWord%' OR `ph_match_alt_part` LIKE '%$normalizedWord%'";
-					}
-					$matchClause .= ')';
-				}
-				$matchClause .= ')';
-			}
-
-			if (strlen(trim($matchClause)) == 0)
-			{
-				$matchClause = ' ';
-			}
-
-			return $matchClause;
-		}
-
 		public function renderSearchResults(IFormatter $formatter, $company, $keywords, $online)
 		{
 			$params = Searcher::parameterSource($_GET, $_POST);
 			$stmt = '';
 			$rows = array();
-			$matchClause = $this->matchClauseForKeywords($keywords);
+			$this->_searchWords = Searcher::filterSearchKeywords($keywords, $this->_ignoredWords);
+			$matchClause = ManxDatabase::matchClauseForSearchWords($this->_searchWords);
 			$onlineClause = $online ? "`pub_has_online_copies`" : '1=1';
 			$mainQuery = "SELECT `pub_id`, `ph_part`, `ph_title`,"
 				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"

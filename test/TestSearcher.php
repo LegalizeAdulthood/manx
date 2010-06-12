@@ -55,28 +55,6 @@
 			$this->assertTrue(array_key_exists('q', $source));
 		}
 
-		public function testMatchClauseForKeyword()
-		{
-			$keyword = "terminal";
-			$db = new FakeDatabase();
-			$searcher = Searcher::getInstance($db, new FakeManxDatabase());
-			$clause = $searcher->matchClauseForKeywords($keyword);
-			$this->assertEquals(" AND ((`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
-				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
-		}
-
-		public function testMatchClauseForMultipleKeywords()
-		{
-			$keyword = "graphics terminal";
-			$db = new FakeDatabase();
-			$searcher = Searcher::getInstance($db, new FakeManxDatabase());
-			$clause = $searcher->matchClauseForKeywords($keyword);
-			$this->assertEquals(" AND ((`ph_title` LIKE '%graphics%' OR `ph_keywords` LIKE '%graphics%' "
-				. "OR `ph_match_part` LIKE '%GRAPHICS%' OR `ph_match_alt_part` LIKE '%GRAPHICS%') "
-				. "AND (`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
-				. "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
-		}
-
 		public function testFilterSearchKeywordsIgnored()
 		{
 			$this->assertEquals(array(), Searcher::filterSearchKeywords("a an it on in at", $ignoredWords));
@@ -113,7 +91,7 @@
 			$manxDb = new FakeManxDatabase();
 			$searcher = Searcher::getInstance($db, $manxDb);
 			$keywords = "graphics terminal";
-			$matchClause = $searcher->matchClauseForKeywords($keywords);
+			$matchClause = ManxDatabase::matchClauseForSearchWords(explode(' ', $keywords));
 			$company = 1;
 			$mainQuery = "SELECT `pub_id`, `ph_part`, `ph_title`,"
 				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
