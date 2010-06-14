@@ -52,8 +52,8 @@
 				. (array_key_exists('cp', $params) ? '&cp=' . $params['cp'] : '');
 			if ($start != 0)
 			{
-				print '<a href="search.php?q=' . $encodedQuery . '&start='
-					. ($start - $rowsPerPage) . $linkOptions . '"><b>Previous</b></a>&nbsp;&nbsp;';
+				printf('<a href="search.php?q=%s&start=%s%s"><b>Previous</b></a>&nbsp;&nbsp;',
+					$encodedQuery, max(0, $start - $rowsPerPage), $linkOptions);
 			}
 
 			$firstPage = intval($start /(10*$rowsPerPage))*10 + 1;
