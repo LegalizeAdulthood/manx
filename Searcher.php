@@ -74,7 +74,7 @@
 			$total = count($rows);
 			if (array_key_exists('start', $params))
 			{
-				$start = $params['start'] - 1;
+				$start = $params['start'];
 			}
 			else
 			{
