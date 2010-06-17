@@ -230,3 +230,46 @@ CREATE TABLE `TOC` (
   `name` varchar(255) NOT NULL default '',
   KEY `pub` (`pub`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL auto_increment,
+  `email` character varying(32),
+  `pw_sha1` character varying(40),
+  `first_name` character varying(64),
+  `last_name` character varying(64),
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `user_session`
+--
+
+DROP TABLE IF EXISTS `user_session`;
+CREATE TABLE user_session (
+  `id` int(11) NOT NULL auto_increment,
+  `ascii_session_id` character varying(32),
+  `logged_in` bool,
+  `user_id` int(11),
+  `last_impression` timestamp,
+  `created` timestamp,
+  `user_agent` character varying(256),
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `session_variable`
+--
+
+DROP TABLE IF EXISTS `session_variable`;
+CREATE TABLE `session_variable` (
+  `id` int(11) NOT NULL auto_increment,
+  `session_id` int4,
+  `name` character varying(64),
+  `value` text,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;

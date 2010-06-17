@@ -2,7 +2,7 @@
 
 interface IManx
 {
-	public function renderLoginLink($page);
+	public function renderLoginLink($server);
 	public function renderDocumentSummary();
 	public function renderCompanyList();
 	public function renderSearchResults();

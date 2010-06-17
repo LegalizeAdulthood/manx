@@ -79,9 +79,13 @@ class Manx implements IManx
 			$this->_manxDb->getOnlineDocumentCount(), ' of which are online, at ',
 			$this->_manxDb->getSiteCount(), ' websites';
 	}
-	function renderLoginLink($page)
+
+	function renderLoginLink($server)
 	{
-		print '<a href="login.php?redirect=http%3A%2F%2Fvt100.net%2F' . $page . '">Login</a>';
+		$components = explode('/', $server['PHP_SELF']);
+		$path = implode('/', array_slice($components, 0, count($components)-1));
+		printf('<a href="https://%s:%s%s/login.php?redirect=%s">Login</a>',
+			$server['SERVER_NAME'], $server['SERVER_PORT'], $path, $server['PHP_SELF']);
 	}
 
 	function renderSearchResults()

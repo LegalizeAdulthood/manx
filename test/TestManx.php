@@ -94,17 +94,29 @@
 			$this->_db = new FakeManxDatabase();
 			$this->_manx = Manx::getInstanceForDatabase($this->_db);
 		}
-		
+
 		private function startOutputCapture()
 		{
 			ob_start();
 		}
-		
+
 		private function finishOutputCapture()
 		{
 			$output = ob_get_contents();
 			ob_end_clean();
 			return $output;
+		}
+
+		public function testRenderLoginLink()
+		{
+			$this->createInstance();
+			$this->startOutputCapture();
+			$this->_manx->renderLoginLink(array(
+				'PHP_SELF' => '/manx/about.php',
+				'SERVER_NAME' => 'localhost',
+				'SERVER_PORT' => 8888));
+			$output = $this->finishOutputCapture();
+			$this->assertEquals('<a href="https://localhost:8888/manx/login.php?redirect=/manx/about.php">Login</a>', $output);
 		}
 
 		public function testRenderDocumentSummary()
