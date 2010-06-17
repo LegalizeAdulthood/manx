@@ -79,6 +79,9 @@
 
 	class TestManx extends PHPUnit_Framework_TestCase
 	{
+		private $_db;
+		private $_manx;
+
 		private function fakeStatementFetchResults($results)
 		{
 			$stmt = new FakeStatement();
@@ -86,52 +89,64 @@
 			return $stmt;
 		}
 
-		public function testRenderDocumentSummary()
+		private function createInstance()
 		{
-			$manxDb = new FakeManxDatabase();
-			$manxDb->getDocumentCountFakeResult = 12;
-			$manxDb->getOnlineDocumentCountFakeResult = 24;
-			$manxDb->getSiteCountFakeResult = 43;
-			$manx = Manx::getInstanceForDatabase($manxDb);
+			$this->_db = new FakeManxDatabase();
+			$this->_manx = Manx::getInstanceForDatabase($this->_db);
+		}
+		
+		private function startOutputCapture()
+		{
 			ob_start();
-			$manx->renderDocumentSummary();
+		}
+		
+		private function finishOutputCapture()
+		{
 			$output = ob_get_contents();
 			ob_end_clean();
-			$this->assertTrue($manxDb->getDocumentCountCalled);
-			$this->assertTrue($manxDb->getOnlineDocumentCountCalled);
-			$this->assertTrue($manxDb->getSiteCountCalled);
+			return $output;
+		}
+
+		public function testRenderDocumentSummary()
+		{
+			$this->createInstance();
+			$this->_db->getDocumentCountFakeResult = 12;
+			$this->_db->getOnlineDocumentCountFakeResult = 24;
+			$this->_db->getSiteCountFakeResult = 43;
+			$this->startOutputCapture();
+			$this->_manx->renderDocumentSummary();
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getDocumentCountCalled);
+			$this->assertTrue($this->_db->getOnlineDocumentCountCalled);
+			$this->assertTrue($this->_db->getSiteCountCalled);
 			$this->assertEquals("12 manuals, 24 of which are online, at 43 websites", $output);
 		}
 
 		public function testRenderCompanyList()
 		{
-			$db = new FakeManxDatabase();
-			$db->getCompanyListFakeResult = array(
+			$this->createInstance();
+			$this->_db->getCompanyListFakeResult = array(
 				array('id' => 1, 'name' => "DEC"),
 				array('id' => 2, 'name' => "HP"));
-			$manx = Manx::getInstanceForDatabase($db);
-			ob_start();
-			$manx->renderCompanyList();
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertTrue($db->getCompanyListCalled);
+			$this->startOutputCapture();
+			$this->_manx->renderCompanyList();
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getCompanyListCalled);
 			$this->assertEquals('<a href="search.php?cp=1">DEC</a>, <a href="search.php?cp=2">HP</a>', $output);
 		}
 
 		public function testRenderSiteList()
 		{
-			$db = new FakeManxDatabase();
-			$db->getSiteListFakeResult = FakeDatabase::createResultRowsForColumns(
+			$this->createInstance();
+			$this->_db->getSiteListFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('url', 'description', 'low'),
 				array(
 					array('http://www.dec.com', 'DEC', false),
 					array('http://www.hp.com', 'HP', true)
 				));
-			$manx = Manx::getInstanceForDatabase($db);
-			ob_start();
-			$manx->renderSiteList();
-			$output = ob_get_contents();
-			ob_end_clean();
+			$this->startOutputCapture();
+			$this->_manx->renderSiteList();
+			$output = $this->finishOutputCapture();
 			$this->assertEquals('<ul><li><a href="http://www.dec.com">DEC</a></li>'
 				. '<li><a href="http://www.hp.com">HP</a> <span class="warning">(Low Bandwidth)</span></li></ul>', $output);
 		}
@@ -163,17 +178,15 @@
 
 		public function testRenderLanguageEnglishGivesNoOutput()
 		{
-			$db = new FakeManxDatabase();
-			$manx = Manx::getInstanceForDatabase($db);
-			ob_start();
-			$manx->renderLanguage('+en');
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertFalse($db->getDisplayLanguageCalled);
+			$this->createInstance();
+			$this->startOutputCapture();
+			$this->_manx->renderLanguage('+en');
+			$output = $this->finishOutputCapture();
+			$this->assertFalse($this->_db->getDisplayLanguageCalled);
 			$this->assertEquals('', $output);
 		}
 
-		private function createLanguageLookup($db, $code, $display)
+		private function createLanguageLookup(FakeManxDatabase $db, $code, $display)
 		{
 			$query = sprintf("SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'",
 				$code);
@@ -184,29 +197,25 @@
 
 		public function testRenderLanguageFrench()
 		{
-			$db = new FakeManxDatabase();
-			$db->getDisplayLanguageFakeResult['fr'] = 'French';
-			$manx = Manx::getInstanceForDatabase($db);
-			ob_start();
-			$manx->renderLanguage('+fr');
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertTrue($db->getDisplayLanguageCalled);
+			$this->createInstance();
+			$this->_db->getDisplayLanguageFakeResult['fr'] = 'French';
+			$this->startOutputCapture();
+			$this->_manx->renderLanguage('+fr');
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getDisplayLanguageCalled);
 			$this->assertEquals("<tr><td>Language:</td><td>French</td></tr>\n", $output);
 		}
 
 		public function testRenderLanguageEnglishFrenchGerman()
 		{
-			$db = new FakeManxDatabase();
-			$db->getDisplayLanguageFakeResult['en'] = 'English';
-			$db->getDisplayLanguageFakeResult['fr'] = 'French';
-			$db->getDisplayLanguageFakeResult['de'] = 'German';
-			$manx = Manx::getInstanceForDatabase($db);
-			ob_start();
-			$manx->renderLanguage('+en+fr+de');
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertTrue($db->getDisplayLanguageCalled);
+			$this->createInstance();
+			$this->_db->getDisplayLanguageFakeResult['en'] = 'English';
+			$this->_db->getDisplayLanguageFakeResult['fr'] = 'French';
+			$this->_db->getDisplayLanguageFakeResult['de'] = 'German';
+			$this->startOutputCapture();
+			$this->_manx->renderLanguage('+en+fr+de');
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getDisplayLanguageCalled);
 			$this->assertEquals("<tr><td>Languages:</td><td>English, French and German</td></tr>\n", $output);
 		}
 
@@ -218,22 +227,20 @@
 
 		public function testRenderAmendments()
 		{
-			$db = new FakeManxDatabase();
+			$this->createInstance();
 			$pubId = 3;
-			$db->getAmendmentsForPubFakeResult = FakeDatabase::createResultRowsForColumns(
+			$this->_db->getAmendmentsForPubFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pubdate'),
 				array(array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
 					array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09')));
-			$db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
+			$this->_db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
 
-			$manx = Manx::getInstanceForDatabase($db);
-			ob_start();
-			$manx->renderAmendments($pubId);
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertGetOSTagsForPubCalledForPubId($db, $pubId);
-			$this->assertTrue($db->getAmendmentsForPubCalled);
-			$this->assertEquals($pubId, $db->getAmendmentsForPubLastPubId);
+			$this->startOutputCapture();
+			$this->_manx->renderAmendments($pubId);
+			$output = $this->finishOutputCapture();
+			$this->assertGetOSTagsForPubCalledForPubId($this->_db, $pubId);
+			$this->assertTrue($this->_db->getAmendmentsForPubCalled);
+			$this->assertEquals($pubId, $this->_db->getAmendmentsForPubLastPubId);
 			$this->assertEquals('<tr valign="top"><td>Amended&nbsp;by:</td>'
 				. '<td><ul class="citelist"><li>DEC-15-YWZA-DN1, <a href="../details.php/1,4496"><cite>DDT (Dynamic Debugging Technique) Utility Program</cite></a> (1970-04) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'
 				. '<li>DEC-15-YWZA-DN3, <a href="../details.php/1,3301"><cite>SGEN System Generator Utility Program</cite></a> (1970-09) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'
@@ -242,57 +249,49 @@
 
 		public function testRenderOSTagsEmpty()
 		{
-			$db = new FakeManxDatabase();
-			$db->getOSTagsForPubFakeResult = array();
-			$manx = Manx::getInstanceForDatabase($db);
-			ob_start();
-			$manx->renderOSTags(3);
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertGetOSTagsForPubCalledForPubId($db, 3);
+			$this->createInstance();
+			$this->_db->getOSTagsForPubFakeResult = array();
+			$this->startOutputCapture();
+			$this->_manx->renderOSTags(3);
+			$output = $this->finishOutputCapture();
+			$this->assertGetOSTagsForPubCalledForPubId($this->_db, 3);
 			$this->assertEquals('', $output);
 		}
 
 		public function testRenderOSTagsTwoTags()
 		{
-			$db = new FakeManxDatabase();
-			$db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
-			$manx = Manx::getInstanceForDatabase($db);
-			ob_start();
-			$manx->renderOSTags(3);
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertGetOSTagsForPubCalledForPubId($db, 3);
+			$this->createInstance();
+			$this->_db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
+			$this->startOutputCapture();
+			$this->_manx->renderOSTags(3);
+			$output = $this->finishOutputCapture();
+			$this->assertGetOSTagsForPubCalledForPubId($this->_db, 3);
 			$this->assertEquals("<tr><td>Operating System:</td><td>RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</td></tr>\n", $output);
 		}
 
 		public function testRenderLongDescriptionEmpty()
 		{
-			$db = new FakeManxDatabase();
-			$db->getLongDescriptionForPubFakeResult = array();
-			$manx = Manx::getInstanceForDatabase($db);
+			$this->createInstance();
+			$this->_db->getLongDescriptionForPubFakeResult = array();
 			$pubId = 3;
-			ob_start();
-			$manx->renderLongDescription($pubId);
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertTrue($db->getLongDescriptionForPubCalled);
-			$this->assertEquals($pubId, $db->getLongDescriptionForPubLastPubId);
+			$this->startOutputCapture();
+			$this->_manx->renderLongDescription($pubId);
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getLongDescriptionForPubCalled);
+			$this->assertEquals($pubId, $this->_db->getLongDescriptionForPubLastPubId);
 			$this->assertEquals('', $output);
 		}
 
 		public function testRenderLongDescription()
 		{
-			$db = new FakeManxDatabase();
-			$db->getLongDescriptionForPubFakeResult = array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>');
-			$manx = Manx::getInstanceForDatabase($db);
+			$this->createInstance();
+			$this->_db->getLongDescriptionForPubFakeResult = array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>');
 			$pubId = 3;
-			ob_start();
-			$manx->renderLongDescription($pubId);
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertTrue($db->getLongDescriptionForPubCalled);
-			$this->assertEquals($pubId, $db->getLongDescriptionForPubLastPubId);
+			$this->startOutputCapture();
+			$this->_manx->renderLongDescription($pubId);
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getLongDescriptionForPubCalled);
+			$this->assertEquals($pubId, $this->_db->getLongDescriptionForPubLastPubId);
 			$this->assertEquals('<tr valign="top"><td>Description:</td>'
 				. "<td><p>This is paragraph one.</p><p>This is paragraph two.</p></td></tr>", $output);
 		}
@@ -313,18 +312,16 @@
 
 		public function testRenderCitations()
 		{
-			$db = new FakeManxDatabase();
-			$db->getCitationsForPubFakeResult =FakeDatabase::createResultRowsForColumns(
+			$this->createInstance();
+			$this->_db->getCitationsForPubFakeResult =FakeDatabase::createResultRowsForColumns(
 				array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
 				array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance')));
 			$pubId = 72;
-			$manx = Manx::getInstanceForDatabase($db);
-			ob_start();
-			$manx->renderCitations($pubId);
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertTrue($db->getCitationsForPubCalled);
-			$this->assertEquals($pubId, $db->getCitationsForPubLastPubId);
+			$this->startOutputCapture();
+			$this->_manx->renderCitations($pubId);
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getCitationsForPubCalled);
+			$this->assertEquals($pubId, $this->_db->getCitationsForPubLastPubId);
 			$this->assertEquals('<tr valign="top"><td>Cited by:</td>'
 				. '<td><ul class="citelist">'
 					. '<li>EK-306AA-MG-001, <a href="../details.php/1,123"><cite>KA655 CPU System Maintenance</cite></a></li>'
@@ -333,8 +330,8 @@
 
 		public function testRenderTableOfContents()
 		{
-			$db = new FakeManxDatabase();
-			$db->getTableOfContentsForPubFakeResult = FakeDatabase::createResultRowsForColumns(
+			$this->createInstance();
+			$this->_db->getTableOfContentsForPubFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('level', 'label', 'name'),
 				array(
 					array(1, 'Chapter 1', 'KA655 CPU and Memory Subsystem'),
@@ -461,14 +458,12 @@
 					array(3, 'B.3.2', 'KA655 Unique IPRs'),
 					array(2, 'B.4', 'Global Q22-Bus Address Space Map'),
 					array(1, 'Appendix C', 'Related Documentation')));
-			$manx = Manx::getInstanceForDatabase($db);
-			ob_start();
-			$manx->renderTableOfContents(123, true);
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertTrue($db->getTableOfContentsForPubCalled);
-			$this->assertEquals(123, $db->getTableOfContentsForPubLastPubId);
-			$this->assertEquals(true, $db->getTableOfContentsForPubLastFullContents);
+			$this->startOutputCapture();
+			$this->_manx->renderTableOfContents(123, true);
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getTableOfContentsForPubCalled);
+			$this->assertEquals(123, $this->_db->getTableOfContentsForPubLastPubId);
+			$this->assertEquals(true, $this->_db->getTableOfContentsForPubLastFullContents);
 			$this->assertEquals("<h2>Table of Contents</h2>\n"
 				. "<div class=\"toc\">\n"
 				. "<ul>\n"
@@ -647,25 +642,23 @@
 
 		public function testRenderCopiesNoAmendment()
 		{
-			$manxDb = new FakeManxDatabase();
-			$manxDb->getCopiesForPubFakeResult = FakeDatabase::createResultRowsForColumns(
+			$this->createInstance();
+			$this->_db->getCopiesForPubFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copyid'),
 				array(
 					array('PDF', 'http://vt100.net/mirror/hcps/306aamg1.pdf', NULL, 49351262, 'VT100.net', 'http://vt100.net/', "Paul Williams' VT100.net", 'http://vt100.net/', 'N', NULL, NULL, NULL, 7165),
 					array('PDF', 'http://bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf', 'Missing page 4-49', 12023683, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '15a565c18a743c558203f776ee3d6d87', NULL, NULL, 9214)
 					));
-			$manxDb->getMirrorsForCopyFakeResult[7165] = array();
-			$manxDb->getMirrorsForCopyFakeResult[9214] = array('http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+			$this->_db->getMirrorsForCopyFakeResult[7165] = array();
+			$this->_db->getMirrorsForCopyFakeResult[9214] = array('http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
 					'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
 					'http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
 					'http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
 					'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf');
 
-			$manx = Manx::getInstanceForDatabase($manxDb);
-			ob_start();
-			$manx->renderCopies(123);
-			$output = ob_get_contents();
-			ob_end_clean();
+			$this->startOutputCapture();
+			$this->_manx->renderCopies(123);
+			$output = $this->finishOutputCapture();
 			$this->assertEquals(
 				"<h2>Copies</h2>\n"
 				. "<table>\n"
@@ -725,19 +718,17 @@
 
 		public function testRenderSupersessionPubSupersedesOlder()
 		{
-			$db = new FakeManxDatabase();
-			$db->getPublicationsSupersededByPubFakeResult =
+			$this->createInstance();
+			$this->_db->getPublicationsSupersededByPubFakeResult =
 				array(array('ph_company' => 1, 'ph_pub' => 23, 'ph_part' => 'EK-11024-TM-PRE', 'ph_title' => 'PDP-11/24 System Technical Manual'));
-			$manx = Manx::getInstanceForDatabase($db);
 			$pubId = 6105;
-			ob_start();
-			$manx->renderSupersessions($pubId);
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertTrue($db->getPublicationsSupersededByPubCalled);
-			$this->assertEquals($pubId, $db->getPublicationsSupersededByPubLastPubId);
-			$this->assertTrue($db->getPublicationsSupersedingPubCalled);
-			$this->assertEquals($pubId, $db->getPublicationsSupersedingPubLastPubId);
+			$this->startOutputCapture();
+			$this->_manx->renderSupersessions($pubId);
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getPublicationsSupersededByPubCalled);
+			$this->assertEquals($pubId, $this->_db->getPublicationsSupersededByPubLastPubId);
+			$this->assertTrue($this->_db->getPublicationsSupersedingPubCalled);
+			$this->assertEquals($pubId, $this->_db->getPublicationsSupersedingPubLastPubId);
 			$this->assertEquals('<tr valign="top"><td>Supersedes:</td>'
 				. '<td><ul class="citelist">'
 				. '<li>EK-11024-TM-PRE, <a href="../details.php/1,23"><cite>PDP-11/24 System Technical Manual</cite></a></li>'
@@ -746,19 +737,17 @@
 
 		public function testRenderSupersessionPubSupersededByNewer()
 		{
-			$db = new FakeManxDatabase();
-			$db->getPublicationsSupersedingPubFakeResult =
+			$this->createInstance();
+			$this->_db->getPublicationsSupersedingPubFakeResult =
 				array(array('ph_company' => 1, 'ph_pub' => 6105, 'ph_part' => 'EK-11024-TM-001', 'ph_title' => 'PDP-11/24 System Technical Manual'));
-			$manx = Manx::getInstanceForDatabase($db);
 			$pubId = 23;
-			ob_start();
-			$manx->renderSupersessions($pubId);
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertTrue($db->getPublicationsSupersededByPubCalled);
-			$this->assertEquals($pubId, $db->getPublicationsSupersededByPubLastPubId);
-			$this->assertTrue($db->getPublicationsSupersedingPubCalled);
-			$this->assertEquals($pubId, $db->getPublicationsSupersedingPubLastPubId);
+			$this->startOutputCapture();
+			$this->_manx->renderSupersessions($pubId);
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getPublicationsSupersededByPubCalled);
+			$this->assertEquals($pubId, $this->_db->getPublicationsSupersededByPubLastPubId);
+			$this->assertTrue($this->_db->getPublicationsSupersedingPubCalled);
+			$this->assertEquals($pubId, $this->_db->getPublicationsSupersedingPubLastPubId);
 			$this->assertEquals('<tr valign="top"><td>Superseded by:</td>'
 				. '<td><ul class="citelist">'
 				. '<li>EK-11024-TM-001, <a href="../details.php/1,6105"><cite>PDP-11/24 System Technical Manual</cite></a></li>'
@@ -767,25 +756,23 @@
 
 		public function testRenderCopiesAmended()
 		{
-			$manxDb = new FakeManxDatabase();
-			$manxDb->getCopiesForPubFakeResult = FakeDatabase::createResultRowsForColumns(
+			$this->createInstance();
+			$this->_db->getCopiesForPubFakeResult = FakeDatabase::createResultRowsForColumns(
 				array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copyid'),
 				array(
 					array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, 10277)
 					));
-			$manxDb->getMirrorsForCopyFakeResult[10277] = array('http://bitsavers.trailing-edge.com/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
+			$this->_db->getMirrorsForCopyFakeResult[10277] = array('http://bitsavers.trailing-edge.com/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
 				'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
 				'http://www.textfiles.com/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
 				'http://computer-refuge.org/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
 				'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf');
-			$manxDb->getAmendedPubFakeResult = array('ph_company' => 57, 'pub_id' => 17971, 'ph_part' => 'AB81-14G',
+			$this->_db->getAmendedPubFakeResult = array('ph_company' => 57, 'pub_id' => 17971, 'ph_part' => 'AB81-14G',
 				'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pubdate' => '1984-02');
 
-			$manx = Manx::getInstanceForDatabase($manxDb);
-			ob_start();
-			$manx->renderCopies(123);
-			$output = ob_get_contents();
-			ob_end_clean();
+			$this->startOutputCapture();
+			$this->_manx->renderCopies(123);
+			$output = $this->finishOutputCapture();
 			$this->assertEquals(
 				"<h2>Copies</h2>\n"
 				. "<table>\n"
@@ -826,35 +813,34 @@
 
 		public function testRenderDetail()
 		{
-			$db = new FakeManxDatabase();
+			$this->createInstance();
 			$rows = FakeDatabase::createResultRowsForColumns(
 				array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
 				array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
-			$db->getDetailsForPubFakeResult = $rows[0];
-			$manx = new ManxRenderDetailsTester($db);
-			ob_start();
-			$manx->renderDetails('/1,3');
-			$output = ob_get_contents();
-			ob_end_clean();
-			$this->assertTrue($db->getDetailsForPubCalled);
-			$this->assertEquals(3, $db->getDetailsForPubLastPubId);
-			$this->assertTrue($manx->renderLanguageCalled);
-			$this->assertEquals('+en', $manx->renderLanguageLastLanguage);
-			$this->assertTrue($manx->renderAmendmentsCalled);
-			$this->assertEquals(3, $manx->renderAmendmentsLastPubId);
-			$this->assertTrue($manx->renderOSTagsCalled);
-			$this->assertEquals(3, $manx->renderOSTagsLastPubId);
-			$this->assertTrue($manx->renderLongDescriptionCalled);
-			$this->assertEquals(3, $manx->renderLongDescriptionLastPubId);
-			$this->assertTrue($manx->renderCitationsCalled);
-			$this->assertEquals(3, $manx->renderCitationsLastPubId);
-			$this->assertTrue($manx->renderSupersessionsCalled);
-			$this->assertEquals(3, $manx->renderSupersessionsLastPubId);
-			$this->assertTrue($manx->renderTableOfContentsCalled);
-			$this->assertEquals(3, $manx->renderTableOfContentsLastPubId);
-			$this->assertEquals(true, $manx->renderTableOfContentsLastFullContents);
-			$this->assertTrue($manx->renderCopiesCalled);
-			$this->assertEquals(3, $manx->renderCopiesLastPubId);
+			$this->_db->getDetailsForPubFakeResult = $rows[0];
+			$this->_manx = new ManxRenderDetailsTester($this->_db);
+			$this->startOutputCapture();
+			$this->_manx->renderDetails('/1,3');
+			$output = $this->finishOutputCapture();
+			$this->assertTrue($this->_db->getDetailsForPubCalled);
+			$this->assertEquals(3, $this->_db->getDetailsForPubLastPubId);
+			$this->assertTrue($this->_manx->renderLanguageCalled);
+			$this->assertEquals('+en', $this->_manx->renderLanguageLastLanguage);
+			$this->assertTrue($this->_manx->renderAmendmentsCalled);
+			$this->assertEquals(3, $this->_manx->renderAmendmentsLastPubId);
+			$this->assertTrue($this->_manx->renderOSTagsCalled);
+			$this->assertEquals(3, $this->_manx->renderOSTagsLastPubId);
+			$this->assertTrue($this->_manx->renderLongDescriptionCalled);
+			$this->assertEquals(3, $this->_manx->renderLongDescriptionLastPubId);
+			$this->assertTrue($this->_manx->renderCitationsCalled);
+			$this->assertEquals(3, $this->_manx->renderCitationsLastPubId);
+			$this->assertTrue($this->_manx->renderSupersessionsCalled);
+			$this->assertEquals(3, $this->_manx->renderSupersessionsLastPubId);
+			$this->assertTrue($this->_manx->renderTableOfContentsCalled);
+			$this->assertEquals(3, $this->_manx->renderTableOfContentsLastPubId);
+			$this->assertEquals(true, $this->_manx->renderTableOfContentsLastFullContents);
+			$this->assertTrue($this->_manx->renderCopiesCalled);
+			$this->assertEquals(3, $this->_manx->renderCopiesLastPubId);
 			$this->assertEquals('<div style="float:right; margin: 10px"><img src="gigi_regis_handbook.png" alt="" /></div>'
 				. "<div class=\"det\"><h1>GIGI/ReGIS Handbook</h1>\n"
 				. "<table><tbody><tr><td>Company:</td><td>Digital Equipment Corporation</td></tr>\n"
