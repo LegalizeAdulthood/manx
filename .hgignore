@@ -6,3 +6,6 @@ glob:*.ncb
 glob:Debug
 glob:Release
 glob:*.suo
+syntax: glob
+*.opensdf
+*.sdf
