@@ -21,5 +21,7 @@
 		function getPublicationsSupersedingPub($pubId);
 		function getUserId($email, $pw_sha1);
 		function createSession($userId, $sessionId, $remoteHost, $userAgent);
+		function getUserFromSession();
+		function deleteUserSession();
 	}
 ?>

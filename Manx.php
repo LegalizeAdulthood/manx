@@ -5,6 +5,8 @@ require_once 'HtmlFormatter.php';
 require_once 'ManxDatabase.php';
 require_once 'Searcher.php';
 require_once 'IManx.php';
+require_once 'User.php';
+require_once 'Cookie.php';
 
 class Manx implements IManx
 {
@@ -32,7 +34,8 @@ class Manx implements IManx
 
 	function logout()
 	{
-		$this->deleteManxCookie();
+		Cookie::delete();
+		$this->_manxDb->deleteUserSession();
 	}
 
 	function loginUser($user, $password)
@@ -41,32 +44,13 @@ class Manx implements IManx
 		if ($userId > 0)
 		{
 			$sessionId = generateSessionId();
-			$this->setManxCookie($sessionId);
+			Cookie::set($sessionId);
 			$remoteHost = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 			$userAgent = $_SERVER['HTTP_USER_AGENT'];
 			$this->_manxDb->createSession($userId, $sessionId, $remoteHost, $userAgent);
 			return true;
 		}
 		return false;
-	}
-
-	private function setManxCookie($value)
-	{
-		// expires in 30 minutes
-		setcookie('manxSession', $value);
-	}
-
-	private function deleteManxCookie()
-	{
-		setcookie('manxSession', 'OUT', time() - 60);
-	}
-
-	function refreshCookie()
-	{
-		if (array_has_key('manxSession', $_COOKIES))
-		{
-			$this->setManxCookie($_COOKIES['manxSession']);
-		}
 	}
 
 	function renderSiteList()
@@ -121,12 +105,50 @@ class Manx implements IManx
 			$this->_manxDb->getSiteCount(), ' websites';
 	}
 
-	function renderLoginLink($server)
+	function renderAuthorization()
+	{
+		print '<div id="AUTH">';
+		$user = User::getInstance($this->_manxDb);
+		print $user->displayName() . ' | ';
+		if ($user->isLoggedIn())
+		{
+			$this->renderLogoutLink($_SERVER);
+		}
+		else
+		{
+			$this->renderLoginLink($_SERVER);
+		}
+		print '</div>';
+	}
+
+	private function getRedirect($server)
+	{
+		$redirect = $server['PHP_SELF'];
+		if (array_key_exists('QUERY_STRING', $server) and strlen($server['QUERY_STRING']) > 0)
+		{
+			$redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
+		}
+		return urlencode($redirect);
+	}
+
+	private function renderLoginLink($server)
 	{
 		$components = explode('/', $server['PHP_SELF']);
 		$path = implode('/', array_slice($components, 0, count($components)-1));
-		printf('<a href="https://%s:%s%s/login.php?redirect=%s">Login</a>',
-			$server['SERVER_NAME'], $server['SERVER_PORT'], $path, $server['PHP_SELF']);
+		$port = $server['SERVER_PORT'];
+		$port = ($port == '80') ? '' : ":" . $port;
+		$redirect = $server['PHP_SELF'];
+		if (array_key_exists('QUERY_STRING', $server) and strlen($server['QUERY_STRING']) > 0)
+		{
+			$redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
+		}
+		printf('<a href="http://%s%s%s/login.php?redirect=%s">Login</a>',
+			$server['SERVER_NAME'], $port, $path, urlencode($redirect));
+	}
+
+	private function renderLogoutLink($server)
+	{
+		printf('<a href="login.php?LOGO=1&redirect=%s">Logout</a>', $this->getRedirect($server));
 	}
 
 	function renderSearchResults()

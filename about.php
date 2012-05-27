@@ -11,7 +11,7 @@
 	$manx = Manx::getInstance();
 ?>
 <div id="HEADER">
-<div id="AUTH">Guest | <?php $manx->renderLoginLink($_SERVER); ?></div>
+<?php $manx->renderAuthorization() ?>
 <div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
 <div id="MENU"><a class="first" href="search.php">Search</a><span class="nodisp">
 | </span><a class="on">About</a><span class="nodisp">

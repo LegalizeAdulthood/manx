@@ -268,5 +268,18 @@
 			$this->execute("insert into user_session (ascii_session_id, logged_in, user_id, user_agent) values (?, 1, ?, ?)",
 				array($sessionId, $userId, $userAgent));
 		}
+
+		function getUserFromSession()
+		{
+			$sessionId = $_COOKIE['manxSession'];
+			return $this->fetch("select logged_in, first_name, last_name, last_impression from user, user_session"
+				. " where ascii_session_id='" . $sessionId . "' and user_id=user.id");
+		}
+
+		function deleteUserSession()
+		{
+			$sessionId = $_COOKIE['manxSession'];
+			$this->execute("delete from user_session where ascii_session_id='" . $sessionId . "'");
+		}
 	}
 ?>

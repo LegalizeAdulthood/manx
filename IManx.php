@@ -2,7 +2,7 @@
 
 interface IManx
 {
-	public function renderLoginLink($server);
+	public function renderAuthorization();
 	public function renderDocumentSummary();
 	public function renderCompanyList();
 	public function renderSearchResults();
@@ -17,7 +17,6 @@ interface IManx
 	public function renderCopies($pubId);
 	public function loginUser($user, $password);
 	public function logout();
-	public function refreshCookie();
 }
 
 ?>
