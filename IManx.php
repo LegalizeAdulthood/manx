@@ -15,6 +15,9 @@ interface IManx
 	public function renderSupersessions($pubId);
 	public function renderTableOfContents($pubIdm, $fullContents);
 	public function renderCopies($pubId);
+	public function loginUser($user, $password);
+	public function logout();
+	public function refreshCookie();
 }
 
 ?>

@@ -12,8 +12,7 @@ class Manx implements IManx
 
 	public static function getInstance()
 	{
-		$config = explode(" ", trim(file_get_contents("config.txt")));
-		$db = PDODatabaseAdapter::getInstance(new PDO($config[0], $config[1], $config[2]));
+		$db = PDODatabaseAdapter::getInstance();
 		$manxDb = ManxDatabase::getInstanceForDatabase($db);
 		return Manx::getInstanceForDatabase($manxDb);
 	}
@@ -28,6 +27,46 @@ class Manx implements IManx
 	public function __destruct()
 	{
 		$this->_manxDb = null;
+	}
+
+
+	function logout()
+	{
+		$this->deleteManxCookie();
+	}
+
+	function loginUser($user, $password)
+	{
+		$userId = $this->_manxDb->getUserId($user, $password);
+		if ($userId > 0)
+		{
+			$sessionId = generateSessionId();
+			$this->setManxCookie($sessionId);
+			$remoteHost = gethostbyaddr($_SERVER['REMOTE_ADDR']);
+			$userAgent = $_SERVER['HTTP_USER_AGENT'];
+			$this->_manxDb->createSession($userId, $sessionId, $remoteHost, $userAgent);
+			return true;
+		}
+		return false;
+	}
+
+	private function setManxCookie($value)
+	{
+		// expires in 30 minutes
+		setcookie('manxSession', $value);
+	}
+
+	private function deleteManxCookie()
+	{
+		setcookie('manxSession', 'OUT', time() - 60);
+	}
+
+	function refreshCookie()
+	{
+		if (array_has_key('manxSession', $_COOKIES))
+		{
+			$this->setManxCookie($_COOKIES['manxSession']);
+		}
 	}
 
 	function renderSiteList()
@@ -51,6 +90,7 @@ class Manx implements IManx
 			print "Unexpected error: " . $e->getMessage();
 		}
 	}
+
 	function renderCompanyList()
 	{
 		try
@@ -73,6 +113,7 @@ class Manx implements IManx
 			print "Unexpected error: " . $e->getMessage();
 		}
 	}
+
 	function renderDocumentSummary()
 	{
 		echo $this->_manxDb->getDocumentCount(), ' manuals, ',

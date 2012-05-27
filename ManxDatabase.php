@@ -18,6 +18,11 @@
 		}
 		private $_db;
 
+		private function execute($statement, $args)
+		{
+			$this->_db->execute($statement, $args);
+		}
+
 		private function fetch($query)
 		{
 			return $this->_db->query($query)->fetch();
@@ -245,6 +250,23 @@
 				. ' JOIN `PUB` ON (`new_pub`=`pub_id` AND `old_pub`=%d)'
 				. ' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`', $pubId);
 			return $this->fetchAll($query);
+		}
+
+		function getUserId($email, $pw_sha1)
+		{
+			$result = $this->fetchAll("select id from user where email='" . $email . "' and pw_sha1='" .  $pw_sha1 . "'");
+			if (count($result) == 1)
+			{
+				return $result[0]['id'];
+			}
+			return -1;
+		}
+
+		function createSession($userId, $sessionId, $remoteHost, $userAgent)
+		{
+			$this->execute("delete from user_session where user_id=" . $userId);
+			$this->execute("insert into user_session (ascii_session_id, logged_in, user_id, user_agent) values (?, 1, ?, ?)",
+				array($sessionId, $userId, $userAgent));
 		}
 	}
 ?>
