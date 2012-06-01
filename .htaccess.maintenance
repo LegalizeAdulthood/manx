@@ -1,0 +1,6 @@
+DirectoryIndex maintenance.html
+Redirect /about.php /maintenance.html
+Redirect /details.php /maintenance.html
+Redirect /help.php /maintenance.html
+Redirect /login.php /maintenance.html
+Redirect /search.php /maintenance.html
