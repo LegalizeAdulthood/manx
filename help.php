@@ -1,23 +1,19 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/tr/html4/strict.dtd">
-<html lang="en">
-<head>
-<title>Manx</title>
-<link rel="stylesheet" type="text/css" href="manx.css" />
-<link href="manx.ico" type="image/x-icon" rel="shortcut icon" />
-</head>
-<body id="VT100-NET">
 <?php
-	require_once 'Manx.php';
-	$manx = Manx::getInstance();
-?>
-<div id="HEADER">
-<?php $manx->renderAuthorization(); ?>
-<div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
-<div id="MENU"><a class="first" href="search.php">Search</a><span class="nodisp">
-| </span><a href="about.php">About</a><span class="nodisp">
-| </span><a class="on">Help</a></div>
-</div>
-<div class="det"><h1>Help</h1>
+
+require_once 'PageBase.php';
+
+class HelpPage extends PageBase
+{
+	protected function getMenuType()
+	{
+		return MenuType::Help;
+	}
+
+	protected function renderBodyContent()
+	{
+		print <<<EOH
+<h1>Help</h1>
+
 <p>To search, enter a word or words from the title of the manual you're
 looking for, or some letters or digits from the part number. Each word
 you search for must contain at least three letters (or you'd get loads
@@ -40,4 +36,11 @@ shown as being online then at least the Table of Contents is available.
 This isn't too useful (or common) but if it appears that the manual
 contains information you would like, you can at least ask on appropriate
 newsgroups or mailing lists whether anyone has a copy.</p>
-</div></body></html>
+EOH;
+	}
+}
+
+$page = new HelpPage();
+$page->renderPage();
+
+?>
