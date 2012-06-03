@@ -106,7 +106,7 @@
 				. " FROM `CITEPUB` `C`"
 				. " JOIN `PUB` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=%d)"
 				. " JOIN `PUBHISTORY` ON `pub_history`=`ph_id`", $pubId);
-			return $this->fetchALl($query);
+			return $this->fetchAll($query);
 		}
 
 		public function getTableOfContentsForPub($pubId, $fullContents)
