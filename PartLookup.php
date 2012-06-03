@@ -19,6 +19,7 @@ if (hasNonEmptyKey($_POST, 'part') && hasNonEmptyKey($_POST, 'company'))
 <?xml-stylesheet href="PartLookup.css" type="text/css" ?>
 <publist>
 EOH;
+	global $manxDb;
 	foreach ($manxDb->getPublicationsForPartNumber($_POST['part'], $_POST['company']) as $row)
 	{
 		$pubId = $row['pub_id'];

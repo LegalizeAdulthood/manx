@@ -291,12 +291,11 @@
 		function getPublicationsForPartNumber($part, $company)
 		{
 			$part = ManxDatabase::normalizePartNumber($part);
-			$statement = $this->_db->execute("SELECT pub_id,ph_part,ph_title "
+			return $this->_db->execute("SELECT pub_id,ph_part,ph_title "
 					. "FROM pub JOIN pub_history ON pub_history = ph_id "
 					. "WHERE (ph_match_part LIKE ? OR ph_match_alt_part LIKE ?) AND ph_company = ? "
 					. "ORDER BY ph_sort_part, ph_pubdate LIMIT 10",
 				array($part, $part, $company));
-			return $statement->fetchAll();
 		}
 
 		// Add pub_history row, with ph_pub = 0
