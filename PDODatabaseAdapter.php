@@ -5,7 +5,7 @@
 	{
 		public static function getInstance()
 		{
-			$config = explode(" ", trim(file_get_contents("../../private/test-config.txt")));
+			$config = explode(" ", trim(file_get_contents("../private/config.txt")));
 			$pdo = new PDO($config[0], $config[1], $config[2]);
 			return new PDODatabaseAdapter($pdo);
 		}
