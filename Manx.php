@@ -445,7 +445,7 @@ class Manx implements IManx
 		$coverImage = $row['ph_cover_image'];
 		if (!is_null($coverImage))
 		{
-			echo '<div style="float:right; margin: 10px"><img src="', urlencode($coverImage), '" alt="" /></div>';
+			printf('<div style="float:right; margin: 10px"><img src="%s" alt="" /></div>', $coverImage);
 		}
 		echo '<div class="det"><h1>', $row['ph_title'], "</h1>\n";
 		echo '<table><tbody>';
