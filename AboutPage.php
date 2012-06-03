@@ -18,13 +18,19 @@ class AboutPage extends PageBase
 	{
 		print <<<EOH
 <h1>About Manx</h1>
-<p>Manx is a catalogue of manuals for old computers.</p>
+<p>Manx is a catalog of manuals for old computers.
+Manx is an open source project <a href="http://manx.codeplex.com">hosted
+on CodePlex</a>.</p>
 <p>Many of these manuals can't be found by search engines because the
-manuals have been scanned but haven't been converted to text. Manx's
+manuals have been scanned but haven't been converted to text.  Google
+can index deep into these scanned documents because they will OCR scanned
+images in PDFs and index the resulting text.  However, manx contains
+additional metadata on the online documents as well as information about
+documents known to exist but not available online.  Manx's
 search engine is currently limited to searching part numbers, titles
-and keywords of these manuals, though there are plans to search Tables
-of Contents and full text when these become available.</p>
-<p>This catalogue mostly covers manufacturers of minicomputers and
+and keywords of these manuals.</p>
+
+<p>This catalog mostly covers manufacturers of minicomputers and
 mainframes, or associated devices such as terminals and printers.
 Tiziano's <a href="http://1000bit.net/">1000 BiT</a> is the best
 catalogue for microcomputers.</p>
@@ -38,6 +44,7 @@ EOH;
 		$this->_manx->renderCompanyList();
 		print <<<EOH
 </p>
+
 <p>The list below shows the websites included in Manx. As Manx is
 still being built, you will find that not all of the holdings of
 these websites have been catalogued. If you know of manuals on other
@@ -52,6 +59,17 @@ EOH;
 <p>Some of these sites are marked as being Low Bandwidth. They are either on
 a home DSL line, or the owner has indicated that they should not be mirrored
 with tools. It isn't a comment on the usefulness of the site!</p>
+
+<h1>Credits</h1>
+
+<p>Paul Williams wrote the original implementation of Manx in perl and
+entered all the initial data.  Thank you, Paul!</p>
+
+<p>Richard Thomson rewrote manx in PHP when Paul
+Williams took his implementation offline.</p>
+
+<p>Jay West provides hosting services
+for Manx.  Thank you, Jay!</p>
 EOH;
 	}
 }
