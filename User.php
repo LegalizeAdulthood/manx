@@ -11,6 +11,7 @@ class User implements IUser
 	private $_firstName;
 	private $_lastName;
 	private $_displayName;
+	private $_admin;
 
 	public static function getInstanceFromSession(IManxDatabase $manxDb)
 	{
@@ -34,6 +35,7 @@ class User implements IUser
 				$this->_firstName = $row['first_name'];
 				$this->_lastName = $row['last_name'];
 				$this->_displayName = sprintf("%s %s", $this->_firstName, $this->_lastName);
+				$this->_admin = $this->_loggedIn;
 			}
 		}
 		else
@@ -43,7 +45,13 @@ class User implements IUser
 			$this->_firstName = 'Guest';
 			$this->_lastName = '';
 			$this->_displayName = $this->_firstName;
+			$this->_admin = false;
 		}
+	}
+
+	public function isAdmin()
+	{
+		return $this->_admin;
 	}
 
 	public function userId()

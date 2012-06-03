@@ -3,5 +3,6 @@
 	{
 		function isLoggedIn();
 		function displayName();
+		function isAdmin();
 	}
 ?>

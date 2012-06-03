@@ -287,5 +287,48 @@
 				array($sessionId));
 			return (count($rows) == 1) ? $rows[0] : array();
 		}
+
+		function getPublicationsForPartNumber($part, $company)
+		{
+			$part = ManxDatabase::normalizePartNumber($part);
+			$statement = $this->_db->execute("SELECT pub_id,ph_part,ph_title "
+					. "FROM pub JOIN pub_history ON pub_history = ph_id "
+					. "WHERE (ph_match_part LIKE ? OR ph_match_alt_part LIKE ?) AND ph_company = ? "
+					. "ORDER BY ph_sort_part, ph_pubdate LIMIT 10",
+				array($part, $part, $company));
+			return $statement->fetchAll();
+		}
+
+		// Add pub_history row, with ph_pub = 0
+        function addPubHistory($userId, $publicationType, $company, $part, 
+			$altPart, $revision, $pubDate, $title, $keywords, $notes, $languages)
+		{
+			$this->_db->execute(
+				'INSERT INTO `pub_history`(`ph_created`, `ph_edited_by`, `ph_pub`, '
+					. '`ph_pubtype`, `ph_company`, `ph_part`, `ph_alt_part`, '
+					. '`ph_revision`, `ph_pubdate`, `ph_title`, `ph_keywords`, '
+					. '`ph_notes`, `ph_lang`, '
+					// calculated fields
+					. '`ph_match_part`, `ph_match_alt_part`, `ph_sort_part`) '
+					. 'values (now(), ?, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+				array($userId, $publicationType, $company, $part, $altPart,
+					$revision, $pubDate, $title, $keywords, $notes, $languages));
+			return $this->_db->getLastInsertId();
+		}
+
+		// Add pub row, with pub_history = ph_id
+		function addPublication($pubHistoryId)
+		{
+			$this->_db->execute('INSERT INTO `pub` (`pub_history`) VALUES (?)',
+				array($pubHistoryId));
+			return $this->_db->getLastInsertId();
+		}
+
+		// Update pub_history row, with ph_pub = pub_id
+		function updatePubHistoryPubId($pubHistoryId, $pubId)
+		{
+			$this->_db->execute('UPDATE `pub_history` SET `ph_pub` = ? WHERE `ph_id` = ?',
+				array($pubId, $pubHistoryId));
+		}
 	}
 ?>

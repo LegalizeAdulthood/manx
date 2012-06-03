@@ -1,3 +1,7 @@
+-- Fix missing user row for Paul Williams
+INSERT INTO `user`(`id`, `email`, `first_name`, `last_name`) VALUES
+    (1, 'paul@frixxon.co.uk', 'Paul', 'Williams');
+
 -- Fix cover image URLs
 UPDATE `pub_history` SET `ph_cover_image` = REPLACE(`ph_cover_image`, '/manx/', '/') WHERE `ph_cover_image` LIKE '/manx/%';
 

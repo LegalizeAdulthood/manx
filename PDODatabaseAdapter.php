@@ -26,6 +26,11 @@ class PDODatabaseAdapter implements IDatabase
 		$prepared = $this->_pdo->prepare($statement);
 		return $prepared->execute($args) ? $prepared->fetchAll() : array();
 	}
+
+	public function getLastInsertId()
+	{
+		return $this->_pdo->lastInsertId();
+	}
 }
 
 ?>

@@ -26,6 +26,7 @@ class Manx implements IManx
 	{
 		$this->_manxDb = $manxDb;
 	}
+
 	public function __destruct()
 	{
 		$this->_manxDb = null;
@@ -545,7 +546,27 @@ class Manx implements IManx
 		}
 		return false;
 	}
+ 
+	function getUserFromSession()
+	{
+		return User::getInstanceFromSession($this->_manxDb);
+	}
 
+	public function getCompanyList()
+	{
+		return $this->_manxDb->getCompanyList();
+	}
+
+	public function addPublication($user, $company, $part, $pubDate, $title,
+		$publicationType, $altPart, $revision, $keywords, $notes, $languages)
+	{
+		$pubHistoryId = $this->_manxDb->addPubHistory($user->getUserId(),
+			$publicationType, $company, $part, $altpart, $revision, $pubDate,
+			$title, $keywords, $notes, $languages);
+		$pubId = $this->_manxDb->addPublication($pubHistoryId);
+		$this->_manxDb->updatePubHistoryPubId($pubHistoryId, $pubId);
+		return $pubId;
+	}
 }
 
 ?>

@@ -23,5 +23,10 @@
 		function createSessionForUser($userId, $sessionId, $remoteHost, $userAgent);
 		function deleteSessionById($sessionId);
 		function getUserFromSessionId($sessionId);
+		function getPublicationsForPartNumber($part, $company);
+		function addPubHistory($userId, $publicationType, $company, $part,
+			$altpart, $revision, $pubDate, $title, $keywords, $notes, $languages);
+		function addPublication($pubHistoryId);
+		function updatePubHistoryPubId($pubHistoryId, $pubId);
 	}
 ?>

@@ -8,17 +8,24 @@ class MenuType
 	const Search = 1;
 	const About = 2;
 	const Help = 3;
+	const Publication = 4;
+	const Mirror = 5;
+	const Company = 6;
+	const Copy = 7;
+	const Site = 8;
 }
 
 class PageBase
 {
 	protected $_manx;
 	protected $_topDir;
+	protected $_user;
 
 	public function __construct(IManx $manx)
     {
 		$this->_manx = $manx;
 		$this->_topDir = str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1);
+		$this->_user = $this->_manx->getUserFromSession();
 	}
 
 	public function __destruct()
@@ -58,7 +65,12 @@ EOH;
 		printf("<title>%s</title>\n", $this->getTitle());
 		$this->renderLink("stylesheet", "text/css", "manx.css");
 		$this->renderLink("shortcut icon", "image/x-icon", "manx.ico");
+		$this->renderHeaderContent();
 		print "</head>\n";
+	}
+
+	protected function renderHeaderContent()
+	{
 	}
 
 	private function renderBody()
@@ -80,16 +92,39 @@ EOH;
 		}
 	}
 
+	private function renderMenuSeparator()
+	{
+		print '<span class="nodisp"> | </span>';
+	}
+
+	private function renderAdminMenu($menu)
+	{
+		if ($this->_user->isAdmin())
+		{
+			$this->renderMenuSeparator();
+			$this->renderMenuitem(false, ($menu == MenuType::Company), "company.php", "Company");
+			$this->renderMenuSeparator();
+			$this->renderMenuItem(true, ($menu == MenuType::Publication), "publication.php", "Publication");
+			$this->renderMenuSeparator();
+			$this->renderMenuItem(true, ($menu == MenuType::Copy), "copy.php", "Copy");
+			$this->renderMenuSeparator();
+			$this->renderMenuItem(false, ($menu == MenuType::Site), "site.php", "Site");
+			$this->renderMenuSeparator();
+			$this->renderMenuItem(false, ($menu == MenuType::Mirror), "mirror.php", "Mirror");
+		}
+	}
+
 	private function renderMenu()
 	{
 		$menu = $this->getMenuType();
 
 		print '<div id="MENU">';
 		$this->renderMenuItem(true, ($menu == MenuType::Search), "search.php", "Search");
-		print '<span class="nodisp"> | </span>';
+		$this->renderMenuSeparator();
 		$this->renderMenuItem(false, ($menu == MenuType::About), "about.php", "About");
-		print '<span class="nodisp"> | </span>';
+		$this->renderMenuSeparator();
 		$this->renderMenuItem(false, ($menu == MenuType::Help), "help.php", "Help");
+		$this->renderAdminMenu($menu);
 		print "</div>\n";
 	}
 

@@ -18,6 +18,10 @@ interface IManx
 	public function renderCopies($pubId);
 	public function loginUser($user, $password);
 	public function logout();
+	public function getUserFromSession();
+	public function getCompanyList();
+	public function addPublication($user, $company, $part, $pubDate, $title,
+		$publicationType, $altPart, $revision, $keywords, $notes, $languages);
 }
 
 ?>
