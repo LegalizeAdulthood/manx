@@ -432,10 +432,16 @@ class Manx implements IManx
 		}
 	}
 
-	function renderDetails($pathInfo)
+	function getDetailsForPathInfo($pathInfo)
 	{
 		$params = Manx::detailParamsForPathInfo($pathInfo);
-		$row = $this->_manxDb->getDetailsForPub($params['id']);
+		return array($params, $this->_manxDb->getDetailsForPub($params['id']));
+	}
+
+	function renderDetails($details)
+	{
+		$params = $details[0];
+		$row = $details[1];
 		$coverImage = $row['ph_cover_image'];
 		if (!is_null($coverImage))
 		{

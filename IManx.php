@@ -6,7 +6,8 @@ interface IManx
 	public function renderDocumentSummary();
 	public function renderCompanyList();
 	public function renderSearchResults();
-	public function renderDetails($pathInfo);
+	public function getDetailsForPathInfo($pathInfo);
+	public function renderDetails($details);
 	public function renderLanguage($lang);
 	public function renderAmendments($pubId);
 	public function renderOSTags($pubId);
