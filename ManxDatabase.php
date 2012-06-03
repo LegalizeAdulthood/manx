@@ -329,5 +329,26 @@
 			$this->_db->execute('UPDATE `pub_history` SET `ph_pub` = ? WHERE `ph_id` = ?',
 				array($pubId, $pubHistoryId));
 		}
+
+		function getCompanyForId($id)
+		{
+			$rows = $this->_db->execute('SELECT * FROM `company` WHERE `id`=?', array($id));
+			return (count($rows) > 0) ? $rows[0] : array();
+		}
+
+        function addCompany($fullName, $shortName, $sortName, $display, $notes)
+		{
+			$this->_db->execute('INSERT INTO `company`(`name`,`shortname`,`sort_name`,`display`,`notes`) VALUES (?,?,?,?,?)',
+				array($fullName, $shortName, $sortName, $display ? 'Y' : 'N', $notes));
+			return $this->_db->getLastInsertId();
+		}
+
+		function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes)
+		{
+			$this->_db->execute("UPDATE `company` " 
+					. "SET `name`=?, `shortname`=?, `sort_name`=?, `display`=?, `notes`=? "
+					. "WHERE `id`=?",
+				array($name, $shortName, $sortName, $display ? 'Y' : 'N', $ntoes, $id));
+		}
 	}
 ?>

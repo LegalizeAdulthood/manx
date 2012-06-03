@@ -54,7 +54,7 @@ class PageBase
 		printf('<link rel="%s" type="%s" href="%s" />' . "\n", $rel, $type, $this->_topDir . $href);
 	}
 
-	private function renderHeader()
+	protected function renderHeader()
 	{
 		header("Content-Type: text/html; charset=utf-8");
 		print <<<EOH
@@ -128,7 +128,7 @@ EOH;
 		print "</div>\n";
 	}
 
-	private function renderBodyHeader()
+	protected function renderBodyHeader()
 	{
 		print <<<EOH
 <body id="VT100-NET">
@@ -145,11 +145,19 @@ EOH;
 EOH;
 	}
 
-	public function renderBodyFooter()
+	protected function renderBodyFooter()
 	{
 		print <<<EOH
 </div></body></html>
 EOH;
+	}
+
+	protected function redirect($target)
+	{
+		header("Status: 303 See Also");
+		header("Location: " . $target);
+		header("Content-Type: text/plain");
+		print "Redirecting to " . $target;
 	}
 }
 

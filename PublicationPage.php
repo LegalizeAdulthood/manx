@@ -1,17 +1,9 @@
 <?php
 
-require_once 'PageBase.php';
+require_once 'AdminPageBase.php';
 
-class PublicationPage extends PageBase
+class PublicationPage extends AdminPageBase
 {
-	private $_vars;
-
-	public function __construct($manx, $vars)
-	{
-		parent::__construct($manx);
-		$this->_vars = vars;
-	}
-
 	protected function getMenuType()
 	{
 		return MenuType::Publication;
@@ -23,23 +15,6 @@ class PublicationPage extends PageBase
 <script type="text/javascript" src="jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="PartLookup.js"></script>
 EOH;
-	}
-
-	private function param($name, $defaultValue = '')
-	{
-		if (array_key_exists($name, $this->_vars))
-		{
-			return $this->_vars[$name];
-		}
-		else
-		{
-			return $defaultValue;
-		}
-	}
-
-	private function quotedParam($name)
-	{
-		return htmlspecialchars($this->param($name));
 	}
 
 	protected function renderBodyContent()
@@ -108,46 +83,26 @@ EOH;
 EOH;
 	}
 
-	private function redirect($target)
+	public function postPage()
 	{
-		header("Status: 303 See Also");
-		header("Location: " . $target);
-		header("Content-Type: text/plain");
-		print "Redirecting to " . $target;
-	}
+		$company = $this->param('company');
+		$part = $this->param('part');
+		$pubDate = $this->param('pubdate');
+		$title = $this->param('title');
 
-	public function renderPage()
-	{
-		if (!$this->_user->isLoggedIn())
-		{
-			$this->redirect("login.php?redirect=" . urlencode($_SERVER['PHP_SELF']));
-			return;
-		}
+		$publicationType = $this->param('pt');
+		$altPart = $this->param('altpart');
+		$revision = $this->param('revision');
+		$keywords = $this->param('keywords');
+		$notes = $this->param('notes');
+		$languages = $this->param('lang', '+en');
 
-		if ($_SERVER['REQUEST_METHOD'] == 'POST')
-		{
-			$company = $this->param('company');
-			$part = $this->param('part');
-			$pubDate = $this->param('pubdate');
-			$title = $this->param('title');
+		$pubId = $this->_manx->addPublication($this->_user,
+			$company, $part, $pubDate, $title,
+			$publicationType, $altPart, $revision, $keywords, $notes,
+			$languages);
 
-			$publicationType = $this->param('pt');
-			$altPart = $this->param('altpart');
-			$revision = $this->param('revision');
-			$keywords = $this->param('keywords');
-			$notes = $this->param('notes');
-			$languages = $this->param('lang', '+en');
-
-			$pubId = $this->_manx->addPublication($this->_user,
-				$company, $part, $pubDate, $title,
-				$publicationType, $altPart, $revision, $keywords, $notes,
-				$languages);
-
-			$this->redirect(sprintf("details.php/%s,%s", $company, $pubId));
-			return;
-		}
-
-		parent::renderPage();
+		$this->redirect(sprintf("details.php/%s,%s", $company, $pubId));
 	}
 }
 

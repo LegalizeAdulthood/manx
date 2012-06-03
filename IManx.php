@@ -22,6 +22,9 @@ interface IManx
 	public function getCompanyList();
 	public function addPublication($user, $company, $part, $pubDate, $title,
 		$publicationType, $altPart, $revision, $keywords, $notes, $languages);
+	public function getCompanyForId($id);
+	public function addCompany($fullName, $shortName, $sortName, $display, $notes);
+	public function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes);
 }
 
 ?>

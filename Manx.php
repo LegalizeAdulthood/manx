@@ -567,6 +567,21 @@ class Manx implements IManx
 		$this->_manxDb->updatePubHistoryPubId($pubHistoryId, $pubId);
 		return $pubId;
 	}
+
+	public function getCompanyForId($id)
+	{
+		return $this->_manxDb->getCompanyForid($id);
+	}
+
+    public function addCompany($fullName, $shortName, $sortName, $display, $notes)
+	{
+		return $this->_manxDb->addCompany($fullName, $shortName, $sortName, $display, $notes);
+	}
+
+	public function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes)
+	{
+		$this->_manxDb->updateCompany($id, $fullName, $shortName, $sortName, $display, $notes);
+	}
 }
 
 ?>

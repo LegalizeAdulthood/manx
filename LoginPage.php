@@ -59,14 +59,6 @@ EOH;
 		print '</body></html>';
 	}
 
-	function redirect($target)
-	{
-		header("Status: 303 See Also");
-		header("Location: " . $target);
-		header("Content-Type: text/plain; charset=utf-8");
-		print "Redirecting to " . $target;
-	}
-
 	function renderPage()
 	{
 		$this->_loginFailed = false;

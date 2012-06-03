@@ -214,6 +214,7 @@ ul.citelist li
 	float: right
 }
 
+/* add publication form */
 #addformdiv
 {
 	margin-left: 15em
@@ -235,6 +236,26 @@ ul.citelist li
 #partlist
 {
 	margin-left: 20em
+}
+
+/* edit company form */
+#compedit
+{
+	margin-left: 15em;
+}
+#editform label
+{
+	float: left;
+	width: 10em;
+	white-space: nowrap;
+}
+#editform input, #editform select
+{
+	margin-left: 10em
+}
+#editform ul
+{
+	list-style: none;
 }
 
 #wikipagemenu

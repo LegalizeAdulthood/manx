@@ -28,5 +28,8 @@
 			$altpart, $revision, $pubDate, $title, $keywords, $notes, $languages);
 		function addPublication($pubHistoryId);
 		function updatePubHistoryPubId($pubHistoryId, $pubId);
+		function getCompanyForId($id);
+		function addCompany($fullName, $shortName, $sortName, $display, $notes);
+		function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes); 
 	}
 ?>
