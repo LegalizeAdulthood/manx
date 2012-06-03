@@ -7,9 +7,9 @@ class LoginPage extends PageBase
 	private $_loginFailed;
 	private $_cookieFailed;
 
-	public function __construct()
+	public function __construct(IManx $manx)
 	{
-		parent::__construct();
+		parent::__construct($manx);
 		$this->_loginFailed = false;
 		$this->_cookieFailed = false;
 	}

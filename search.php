@@ -1,8 +1,10 @@
 <?php
 
+require_once 'Manx.php';
 require_once 'SearchPage.php';
 
-$page = new SearchPage();
+$manx = Manx::getInstance();
+$page = new SearchPage($manx);
 $page->renderPage();
 
 ?>

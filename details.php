@@ -1,8 +1,10 @@
 <?php
 
+require_once 'Manx.php';
 require_once 'DetailsPage.php';
 
-$page = new Detailspage();
+$manx = Manx::getInstance();
+$page = new Detailspage($manx);
 $page->renderPage();
 
 ?>

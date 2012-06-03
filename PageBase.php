@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Manx.php';
+require_once 'IManx.php';
 
 class MenuType
 {
@@ -15,9 +15,9 @@ class PageBase
 	protected $_manx;
 	protected $_topDir;
 
-	public function __construct()
+	public function __construct(IManx $manx)
     {
-		$this->_manx = Manx::getInstance();
+		$this->_manx = $manx;
 		$this->_topDir = str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1);
 	}
 

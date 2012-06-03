@@ -6,9 +6,9 @@ class DetailsPage extends PageBase
 {
 	private $_details;
 
-	public function __construct()
+	public function __construct(IManx $manx)
 	{
-		parent::__construct();
+		parent::__construct($manx);
 		$this->_details = $this->_manx->getDetailsForPathInfo($_SERVER['PATH_INFO']);
 	}
 

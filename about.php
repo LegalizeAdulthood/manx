@@ -1,9 +1,15 @@
 <?php
 
+require_once 'Manx.php';
 require_once 'PageBase.php';
 
 class AboutPage extends PageBase
 {
+	public function __construct($manx)
+	{
+		parent::__construct($manx);
+	}
+
 	protected function getMenuType()
 	{
 		return MenuType::About;
@@ -51,7 +57,8 @@ EOH;
 	}
 }
 
-$page = new AboutPage();
+$manx = Manx::getInstance();
+$page = new AboutPage($manx);
 $page->renderPage();
 
 ?>
