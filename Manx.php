@@ -105,7 +105,7 @@ class Manx implements IManx
 			. (array_key_exists('q', $params) ? ' value="' . $keywords . '"' : '')
 			. '/> '
 			. 'Online only: <input type="checkbox" name="on" '
-			. (array_key_exists('on', $params) ? ' checked' : '')
+			. (array_key_exists('on', $params) ? 'checked="checked" ' : '')
 			. '/> '
 			. '<input id="Submit1" type="submit" value="Search" /></div></form></div>';
 		$formatter = HtmlFormatter::getInstance();

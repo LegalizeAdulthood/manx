@@ -25,7 +25,7 @@
 			foreach ($this->_manxDb->getCompanyList() as $row)
 			{
 				$id = $row['id'];
-				print '<option value="' . $id . '"' . ($id == $selected ? ' selected' : '') . '>' . htmlspecialchars($row['name']) . '</option>';
+				print '<option value="' . $id . '"' . ($id == $selected ? ' selected="selected"' : '') . '>' . htmlspecialchars($row['name']) . '</option>';
 			}
 			print '</select>';
 		}
