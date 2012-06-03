@@ -1,0 +1,55 @@
+--
+-- Table structure for table `properties`
+--
+
+CREATE TABLE IF NOT EXISTS `properties` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL DEFAULT '',
+  `value` VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Schema version 2
+--
+INSERT INTO `properties` (`name`,`value`) VALUES ('version', '2');
+
+--
+-- Change UPPERCASE tables to lower_case
+--
+
+-- CITEPUB
+ALTER TABLE `CITEPUB` RENAME TO `cite_pub`;
+
+-- COMPANY
+ALTER TABLE `COMPANY` RENAME TO `company`;
+
+-- COPY
+ALTER TABLE `COPY` RENAME TO `copy`;
+
+-- LANGUAGE
+ALTER TABLE `LANGUAGE` RENAME TO `language`;
+
+-- PART
+ALTER TABLE `PART` RENAME TO `part`;
+
+-- PUB
+ALTER TABLE `PUB` RENAME TO `pub`;
+
+-- PUBHISTORY
+ALTER TABLE `PUBHISTORY` RENAME TO `pub_history`;
+
+-- PUBTAG
+ALTER TABLE `PUBTAG` RENAME TO `pub_tag`;
+
+-- SITE
+ALTER TABLE `SITE` RENAME TO `site`;
+
+-- SUPERSESSION
+ALTER TABLE `SUPERSESSION` RENAME TO `supersession`;
+
+-- TAG
+ALTER TABLE `TAG` RENAME TO `tag`;
+
+-- TOC
+ALTER TABLE `TOC` RENAME TO `toc`;

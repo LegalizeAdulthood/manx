@@ -35,42 +35,42 @@
 
 		function getDocumentCount()
 		{
-			$rows = $this->fetch("SELECT COUNT(*) FROM `PUB`");
+			$rows = $this->fetch("SELECT COUNT(*) FROM `pub`");
 			return $rows[0];
 		}
 
 		function getOnlineDocumentCount()
 		{
-			$rows = $this->fetch("SELECT COUNT(DISTINCT `pub`) FROM `COPY`");
+			$rows = $this->fetch("SELECT COUNT(DISTINCT `pub`) FROM `copy`");
 			return $rows[0];
 		}
 
 		function getSiteCount()
 		{
-			$rows = $this->fetch("SELECT COUNT(*) FROM `SITE`");
+			$rows = $this->fetch("SELECT COUNT(*) FROM `site`");
 			return $rows[0];
 		}
 
 		public function getSiteList()
 		{
-			return $this->fetchAll("SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`");
+			return $this->fetchAll("SELECT `url`,`description`,`low` FROM `site` WHERE `live`='Y' ORDER BY `siteid`");
 		}
 
 		public function getCompanyList()
 		{
-			return $this->fetchAll("SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`");
+			return $this->fetchAll("SELECT `id`,`name` FROM `company` WHERE `display` = 'Y' ORDER BY `sort_name`");
 		}
 
 		public function getDisplayLanguage($languageCode)
 		{
 			// Avoid second name of language, if provided (after ';')
-			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'";
+			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `language` WHERE `lang_alpha_2`='%s'";
 			return $this->fetch(sprintf($query, $languageCode));
 		}
 
 		public function getOSTagsForPub($pubId)
 		{
-			$query = sprintf("SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=%d", $pubId);
+			$query = sprintf("SELECT `tag_text` FROM `tag`,`pub_tag` WHERE `tag`.`id`=`pub_tag`.`tag` AND `tag`.`class`='os' AND `pub`=%d", $pubId);
 			$tags = array();
 			foreach ($this->fetchAll($query) as $tagRow)
 			{
@@ -82,7 +82,7 @@
 		public function getAmendmentsForPub($pubId)
 		{
 			return $this->fetchAll(sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
-				. "FROM `PUB` JOIN `PUBHISTORY` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=%d ORDER BY `ph_amend_serial`",
+				. "FROM `pub` JOIN `pub_history` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=%d ORDER BY `ph_amend_serial`",
 				$pubId));
 		}
 
@@ -91,7 +91,7 @@
 			$description = array();
 			/*
 			TODO: LONG_DESC table missing
-			$query = sprintf("SELECT 'html_text' FROM `LONG_DESC` WHERE `pub`=%d ORDER BY `line`", $pubId);
+			$query = sprintf("SELECT 'html_text' FROM `long_desc` WHERE `pub`=%d ORDER BY `line`", $pubId);
 			foreach ($this->_db->query($query)->fetchAll() as $row)
 			{
 				array_push($description, $row['html_text']);
@@ -103,15 +103,15 @@
 		public function getCitationsForPub($pubId)
 		{
 			$query = sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`"
-				. " FROM `CITEPUB` `C`"
-				. " JOIN `PUB` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=%d)"
-				. " JOIN `PUBHISTORY` ON `pub_history`=`ph_id`", $pubId);
+				. " FROM `cite_pub` `C`"
+				. " JOIN `pub` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=%d)"
+				. " JOIN `pub_history` ON `pub`.`pub_history`=`ph_id`", $pubId);
 			return $this->fetchAll($query);
 		}
 
 		public function getTableOfContentsForPub($pubId, $fullContents)
 		{
-			$query = sprintf("SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=%d", $pubId);
+			$query = sprintf("SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=%d", $pubId);
 			if (!$fullContents)
 			{
 				$query .= ' AND `level` < 2';
@@ -123,7 +123,7 @@
 		public function getMirrorsForCopy($copyId)
 		{
 			$query = sprintf("SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
-					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
+					. " FROM `copy` JOIN `mirror` ON `copy`.`site`=`mirror`.`site`"
 					. " WHERE `copyid`=%d ORDER BY `rank` DESC", $copyId);
 			$mirrors = array();
 			foreach ($this->fetchAll($query) as $row)
@@ -136,7 +136,7 @@
 		public function getAmendedPub($pubId, $amendSerial)
 		{
 			$query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pubdate`"
-					. " FROM `PUB` JOIN `PUBHISTORY` ON `pub_history`=`ph_id`"
+					. " FROM `pub` JOIN `pub_history` ON `pub`.`pub_history`=`ph_id`"
 					. " WHERE `ph_amend_pub`=%d AND `ph_amend_serial`=%d",
 				$pubId, $amendSerial);
 			return $this->fetch($query);
@@ -144,26 +144,26 @@
 
 		public function getCopiesForPub($pubId)
 		{
-			$query = sprintf("SELECT `format`,`COPY`.`url`,`notes`,`size`,"
-				. "`SITE`.`name`,`SITE`.`url` AS `site_url`,`SITE`.`description`,"
-				. "`SITE`.`copy_base`,`SITE`.`low`,`COPY`.`md5`,`COPY`.`amend_serial`,"
-				. "`COPY`.`credits`,`copyid`"
-				. " FROM `COPY`,`SITE`"
-				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND `pub`=%d"
-				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`", $pubId);
+			$query = sprintf("SELECT `format`,`copy`.`url`,`notes`,`size`,"
+				. "`site`.`name`,`site`.`url` AS `site_url`,`site`.`description`,"
+				. "`site`.`copy_base`,`site`.`low`,`copy`.`md5`,`copy`.`amend_serial`,"
+				. "`copy`.`credits`,`copyid`"
+				. " FROM `copy`,`site`"
+				. " WHERE `copy`.`site`=`site`.`siteid` AND `pub`=%d"
+				. " ORDER BY `site`.`display_order`,`site`.`siteid`", $pubId);
 			return $this->fetchAll($query);
 		}
 
 		public function getDetailsForPub($pubId)
 		{
-			$query = sprintf('SELECT `pub_id`, `COMPANY`.`name`, '
+			$query = sprintf('SELECT `pub_id`, `company`.`name`, '
 					. 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pubdate`, '
 					. '`ph_title`, `ph_abstract`, '
 					. 'IFNULL(`ph_revision`, "") AS `ph_revision`, `ph_ocr_file`, '
 					. '`ph_cover_image`, `ph_lang`, `ph_keywords` '
-					. 'FROM `PUB` '
-					. 'JOIN `PUBHISTORY` ON `pub_history`=`ph_id` '
-					. 'JOIN `COMPANY` ON `ph_company`=`COMPANY`.`id` '
+					. 'FROM `pub` '
+					. 'JOIN `pub_history` ON `pub`.`pub_history`=`ph_id` '
+					. 'JOIN `company` ON `ph_company`=`company`.`id` '
 					. 'WHERE %s AND `pub_id`=%d',
 				'1=1', $pubId);
 			return $this->fetch($query);
@@ -226,10 +226,11 @@
 			$matchClause = ManxDatabase::matchClauseForSearchWords($keywords);
 			$onlineClause = $online ? "`pub_has_online_copies`" : '1=1';
 			$query = "SELECT `pub_id`, `ph_part`, `ph_title`,"
-				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
-				. " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
-				. " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `PUB`"
-				. " JOIN `PUBHISTORY` ON `pub_history` = `ph_id`"
+					. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
+					. " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
+					. " `ph_company`, `ph_alt_part`, `ph_pubtype`"
+				. " FROM `pub`"
+				. " JOIN `pub_history` ON `pub`.`pub_history` = `ph_id`"
 				. " WHERE $onlineClause $matchClause"
 				. " AND `ph_company`=$company"
 				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
@@ -238,17 +239,17 @@
 
 		function getPublicationsSupersededByPub($pubId)
 		{
-			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `SUPERSESSION`' .
-				' JOIN `PUB` ON (`old_pub`=`pub_id` AND `new_pub`=%d)' .
-				' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`', $pubId);
+			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `supersession`' .
+				' JOIN `pub` ON (`old_pub`=`pub_id` AND `new_pub`=%d)' .
+				' JOIN `pub_history` ON `pub_history`=`ph_id`', $pubId);
 			return $this->fetchAll($query);
 		}
 
 		function getPublicationsSupersedingPub($pubId)
 		{
-			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `SUPERSESSION`'
-				. ' JOIN `PUB` ON (`new_pub`=`pub_id` AND `old_pub`=%d)'
-				. ' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`', $pubId);
+			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `supersession`'
+				. ' JOIN `pub` ON (`new_pub`=`pub_id` AND `old_pub`=%d)'
+				. ' JOIN `pub_history` ON `pub_history`=`ph_id`', $pubId);
 			return $this->fetchAll($query);
 		}
 
