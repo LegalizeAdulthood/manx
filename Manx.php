@@ -101,7 +101,7 @@ class Manx implements IManx
 		$company = (array_key_exists('cp', $params) ? $params['cp'] : 1);
 		$keywords = urldecode(array_key_exists('q', $params) ? $params['q'] : '');
 		$searcher->renderCompanies($company);
-		print 'Keywords: <input id="q" name="q" size="20" maxlength="256" '
+		print ' Keywords: <input id="q" name="q" size="20" maxlength="256" '
 			. (array_key_exists('q', $params) ? ' value="' . $keywords . '"' : '')
 			. '/> '
 			. 'Online only: <input type="checkbox" name="on" '
