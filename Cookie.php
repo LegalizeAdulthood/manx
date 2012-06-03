@@ -2,15 +2,22 @@
 
 class Cookie
 {
+	const NAME = 'manxSession';
+
+	public static function get()
+	{
+		return array_key_exists(Cookie::NAME, $_COOKIE)
+			? $_COOKIE[Cookie::NAME] : '';
+	}
+
 	public static function set($value)
 	{
-		// expires in 30 minutes
-		setcookie('manxSession', $value);
+		setcookie(Cookie::NAME, $value);
 	}
 
 	public static function delete()
 	{
-		setcookie('manxSession', 'OUT', time() - 60);
+		setcookie(Cookie::NAME, 'OUT', time() - 60);
 	}
 }
 

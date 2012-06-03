@@ -31,28 +31,6 @@ class Manx implements IManx
 		$this->_manxDb = null;
 	}
 
-
-	function logout()
-	{
-		Cookie::delete();
-		$this->_manxDb->deleteUserSession();
-	}
-
-	function loginUser($user, $password)
-	{
-		$userId = $this->_manxDb->getUserId($user, $password);
-		if ($userId > 0)
-		{
-			$sessionId = generateSessionId();
-			Cookie::set($sessionId);
-			$remoteHost = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-			$userAgent = $_SERVER['HTTP_USER_AGENT'];
-			$this->_manxDb->createSession($userId, $sessionId, $remoteHost, $userAgent);
-			return true;
-		}
-		return false;
-	}
-
 	function renderSiteList()
 	{
 		try
@@ -105,22 +83,6 @@ class Manx implements IManx
 			$this->_manxDb->getSiteCount(), ' websites';
 	}
 
-	function renderAuthorization()
-	{
-		print '<div id="AUTH">';
-		$user = User::getInstance($this->_manxDb);
-		print $user->displayName() . ' | ';
-		if ($user->isLoggedIn())
-		{
-			$this->renderLogoutLink($_SERVER);
-		}
-		else
-		{
-			$this->renderLoginLink($_SERVER);
-		}
-		print '</div>';
-	}
-
 	private function getRedirect($server)
 	{
 		$redirect = $server['PHP_SELF'];
@@ -129,26 +91,6 @@ class Manx implements IManx
 			$redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
 		}
 		return urlencode($redirect);
-	}
-
-	private function renderLoginLink($server)
-	{
-		$components = explode('/', $server['PHP_SELF']);
-		$path = implode('/', array_slice($components, 0, count($components)-1));
-		$port = $server['SERVER_PORT'];
-		$port = ($port == '80') ? '' : ":" . $port;
-		$redirect = $server['PHP_SELF'];
-		if (array_key_exists('QUERY_STRING', $server) and strlen($server['QUERY_STRING']) > 0)
-		{
-			$redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
-		}
-		printf('<a href="http://%s%s%s/login.php?redirect=%s">Login</a>',
-			$server['SERVER_NAME'], $port, $path, urlencode($redirect));
-	}
-
-	private function renderLogoutLink($server)
-	{
-		printf('<a href="login.php?LOGO=1&redirect=%s">Logout</a>', $this->getRedirect($server));
 	}
 
 	function renderSearchResults()
@@ -528,6 +470,76 @@ class Manx implements IManx
 	{
 		return is_null($value) ? '' : trim($value);
 	}
+
+	private function generateSessionId()
+	{
+		return sprintf("%s.%06d",
+			strftime("%Y%m%d%H%M%S", gmmktime()),
+			rand(0, 1000000));
+	}
+
+	function logout()
+	{
+		Cookie::delete();
+		$this->_manxDb->deleteUserSession();
+	}
+
+	private function renderLoginLink($server)
+	{
+		$components = explode('/', $server['PHP_SELF']);
+		$path = implode('/', array_slice($components, 0, count($components)-1));
+		$port = $server['SERVER_PORT'];
+		$port = ($port == '80') ? '' : ":" . $port;
+		$redirect = $server['PHP_SELF'];
+		if (array_key_exists('QUERY_STRING', $server) and strlen($server['QUERY_STRING']) > 0)
+		{
+			$redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
+		}
+		printf('<a href="http://%s%s%s/login.php?redirect=%s">Login</a>',
+			$server['SERVER_NAME'], $port, $path, urlencode($redirect));
+	}
+
+	public static function getRelativePrefixFromPathInfo()
+	{
+		return str_repeat('../', count(split('/', $_SERVER['PATH_INFO'])) - 1);
+	}
+
+	private function renderLogoutLink()
+	{
+		$prefix = $this->getRelativePrefixFromPathInfo();
+		printf('<a href="%slogin.php?LOGO=1&redirect=%ssearch.php">Logout</a>', $prefix, $prefix);
+	}
+
+	function renderAuthorization()
+	{
+		$user = User::getInstanceFromSession($this->_manxDb);
+		print '<div id="AUTH">' . $user->displayName() . ' | ';
+		if ($user->isLoggedIn())
+		{
+			$this->renderLogoutLink();
+		}
+		else
+		{
+			$this->renderLoginLink($_SERVER);
+		}
+		print "</div>\n";
+	}
+
+	function loginUser($user, $password)
+	{
+		$userId = $this->_manxDb->getUserId($user, $password);
+		if ($userId > 0)
+		{
+			$sessionId = $this->generateSessionId();
+			$remoteHost = gethostbyaddr($_SERVER['REMOTE_ADDR']);
+			$userAgent = $_SERVER['HTTP_USER_AGENT'];
+			$this->_manxDb->createSessionForUser($userId, $sessionId, $remoteHost, $userAgent);
+			Cookie::set($sessionId);
+			return true;
+		}
+		return false;
+	}
+
 }
 
 ?>

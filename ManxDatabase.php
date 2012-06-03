@@ -20,7 +20,7 @@
 
 		private function execute($statement, $args)
 		{
-			$this->_db->execute($statement, $args);
+			return $this->_db->execute($statement, $args);
 		}
 
 		private function fetch($query)
@@ -254,32 +254,37 @@
 
 		function getUserId($email, $pw_sha1)
 		{
-			$result = $this->fetchAll("select id from user where email='" . $email . "' and pw_sha1='" .  $pw_sha1 . "'");
-			if (count($result) == 1)
-			{
-				return $result[0]['id'];
-			}
-			return -1;
+			$rows = $this->execute("SELECT `id` FROM `user` WHERE `email`=? AND `pw_sha1`=?",
+				array($email, $pw_sha1));
+			return (count($rows) > 0) ? $rows[0]['id'] : -1;
 		}
 
-		function createSession($userId, $sessionId, $remoteHost, $userAgent)
+		function createSessionForUser($userId, $sessionId, $remoteHost, $userAgent)
 		{
-			$this->execute("delete from user_session where user_id=" . $userId);
-			$this->execute("insert into user_session (ascii_session_id, logged_in, user_id, user_agent) values (?, 1, ?, ?)",
-				array($sessionId, $userId, $userAgent));
+			$this->execute("DELETE FROM `user_session` WHERE `user_id`=?", array($userId));
+			$this->execute("INSERT INTO `user_session`" 
+					. "(`user_id`, `logged_in`, `ascii_session_id`, `created`, `user_agent`) "
+					. "VALUES (?, 1, ?, NOW(), ?)",
+				array($userId, $sessionId, $userAgent));
 		}
 
-		function getUserFromSession()
+		function deleteSessionById($sessionId)
 		{
-			$sessionId = $_COOKIE['manxSession'];
-			return $this->fetch("select logged_in, first_name, last_name, last_impression from user, user_session"
-				. " where ascii_session_id='" . $sessionId . "' and user_id=user.id");
+			$this->execute("DELETE FROM `user_session` WHERE `ascii_session_id`=?",
+				array($sessionId));
 		}
 
-		function deleteUserSession()
+		function getUserFromSessionId($sessionId)
 		{
-			$sessionId = $_COOKIE['manxSession'];
-			$this->execute("delete from user_session where ascii_session_id='" . $sessionId . "'");
+			$rows = $this->execute("SELECT `user_session`.`user_id`, "
+						. "`user_session`.`logged_in`, "
+						. "`user_session`.`last_impression`, "
+						. "`user`.`first_name`, `user`.`last_name` "
+					. "FROM `user`, `user_session` "
+					. "WHERE `ascii_session_id`=? and "
+						. "`user_session`.`user_id`=`user`.`id`",
+				array($sessionId));
+			return (count($rows) == 1) ? $rows[0] : array();
 		}
 	}
 ?>
