@@ -350,5 +350,10 @@
 					. "WHERE `id`=?",
 				array($name, $shortName, $sortName, $display ? 'Y' : 'N', $ntoes, $id));
 		}
+
+		function getMirrors()
+		{
+			return $this->fetchAll("SELECT * FROM `mirror` ORDER BY `site`,`rank`");
+		}
 	}
 ?>

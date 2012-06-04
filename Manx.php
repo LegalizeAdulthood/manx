@@ -582,6 +582,11 @@ class Manx implements IManx
 	{
 		$this->_manxDb->updateCompany($id, $fullName, $shortName, $sortName, $display, $notes);
 	}
+
+	public function getMirrors()
+	{
+		return $this->_manxDb->getMirrors();
+	}
 }
 
 ?>
