@@ -355,5 +355,10 @@
 		{
 			return $this->fetchAll("SELECT * FROM `mirror` ORDER BY `site`,`rank`");
 		}
+
+		function getSites()
+		{
+			return $this->fetchAll("SELECT * FROM `site` ORDER BY `display_order`");
+		}
 	}
 ?>

@@ -32,5 +32,6 @@
 		function addCompany($fullName, $shortName, $sortName, $display, $notes);
 		function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes); 
 		function getMirrors();
+		function getSites();
 	}
 ?>

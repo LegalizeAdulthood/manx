@@ -587,6 +587,11 @@ class Manx implements IManx
 	{
 		return $this->_manxDb->getMirrors();
 	}
+
+	public function getSites()
+	{
+		return $this->_manxDb->getSites();
+	}
 }
 
 ?>
