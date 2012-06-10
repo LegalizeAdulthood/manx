@@ -491,7 +491,7 @@ class Manx implements IManx
 		$this->_manxDb->deleteUserSession();
 	}
 
-	private function renderLoginLink($server)
+	public function renderLoginLink($server)
 	{
 		$components = explode('/', $server['PHP_SELF']);
 		$path = implode('/', array_slice($components, 0, count($components)-1));

@@ -1,7 +1,7 @@
 <?php
-	require_once 'PHPUnit/Framework.php';
 	require_once 'Manx.php';
 	require_once 'test/FakeStatement.php';
+	require_once 'test/FakeDatabase.php';
 	require_once 'test/FakeManxDatabase.php';
 
 	class ManxRenderDetailsTester extends Manx
@@ -116,7 +116,7 @@
 				'SERVER_NAME' => 'localhost',
 				'SERVER_PORT' => 8888));
 			$output = $this->finishOutputCapture();
-			$this->assertEquals('<a href="https://localhost:8888/manx/login.php?redirect=/manx/about.php">Login</a>', $output);
+			$this->assertEquals('<a href="http://localhost:8888/manx/login.php?redirect=%2Fmanx%2Fabout.php">Login</a>', $output);
 		}
 
 		public function testRenderDocumentSummary()
@@ -823,19 +823,18 @@
 				. "</table>\n", $output);
 		}
 
-		public function testRenderDetail()
+		public function testRenderDetails()
 		{
 			$this->createInstance();
 			$rows = FakeDatabase::createResultRowsForColumns(
 				array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
 				array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
-			$this->_db->getDetailsForPubFakeResult = $rows[0];
 			$this->_manx = new ManxRenderDetailsTester($this->_db);
 			$this->startOutputCapture();
-			$this->_manx->renderDetails('/1,3');
+
+			$this->_manx->renderDetails(array(Manx::detailParamsForPathInfo('/1,3'), $rows[0]));
+
 			$output = $this->finishOutputCapture();
-			$this->assertTrue($this->_db->getDetailsForPubCalled);
-			$this->assertEquals(3, $this->_db->getDetailsForPubLastPubId);
 			$this->assertTrue($this->_manx->renderLanguageCalled);
 			$this->assertEquals('+en', $this->_manx->renderLanguageLastLanguage);
 			$this->assertTrue($this->_manx->renderAmendmentsCalled);

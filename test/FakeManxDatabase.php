@@ -183,5 +183,71 @@
 			$this->getPublicationsSupersedingPubLastPubId = $pubId;
 			return $this->getPublicationsSupersedingPubFakeResult;
 		}
+
+		private function notImplemented($name)
+		{
+			throw new Exception($name . " not implemented");
+		}
+		public function getUserId($email, $pw_sha1)
+		{
+			$this->notImplemented("getUserId");
+		}
+		public function createSessionForUser($userId, $sessionId, $remoteHost, $userAgent)
+		{
+			$this->notImplemented("createSessionForUser");
+		}
+		public function deleteSessionById($sessionId)
+		{
+			$this->notImplemented("deleteSessionById");
+		}
+		public function getUserFromSessionId($sessionId)
+		{
+			$this->notImplemented("getUserFromSessionId");
+		}
+		public function getPublicationsForPartNumber($part, $company)
+		{
+			$this->notImplemented("getPublicationsForPartNumber");
+		}
+		public function addPubHistory($userId, $publicationType, $company, $part,
+			$altpart, $revision, $pubDate, $title, $keywords, $notes, $languages)
+		{
+			$this->notImplemented("addPubHistory");
+		}
+		public function addPublication($pubHistoryId)
+		{
+			$this->notImplemented("addPublication");
+		}
+		public function updatePubHistoryPubId($pubHistoryId, $pubId)
+		{
+			$this->notImplemented("updatePubHistoryPubId");
+		}
+		public function getCompanyForId($id)
+		{
+			$this->notImplemented("getCompanyForId");
+		}
+		public function addCompany($fullName, $shortName, $sortName, $display, $notes)
+		{
+			$this->notImplemented("addCompany");
+		}
+		public function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes)
+		{
+			$this->notImplemented("updateCompany");
+		} 
+		public function getMirrors()
+		{
+			$this->notImplemented("getMirrors");
+		}
+		public function getSites()
+		{
+			$this->notImplemented("getSites");
+		}
+		public function getFormatForExtension($extension)
+		{
+			$this->notImplemented("getFormatForExtension");
+		}
+		public function getCompanyForBitSaversDirectory($dir)
+		{
+			$this->notImplemented("getCompanyForBitSaversDirectory");
+		}
 	}
 ?>

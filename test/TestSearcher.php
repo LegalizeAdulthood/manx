@@ -1,5 +1,4 @@
 <?php
-	require_once 'PHPUnit/Framework.php';
 	require_once 'Searcher.php';
 	require_once 'test/FakeStatement.php';
 	require_once 'test/FakeFormatter.php';
@@ -21,7 +20,7 @@
 			ob_end_clean();
 			$this->assertTrue($db->getCompanyListCalled);
 			$this->assertEquals('<select id="CP" name="cp">'
-				. '<option value="1" selected>DEC</option>'
+				. '<option value="1" selected="selected">DEC</option>'
 				. '<option value="2">3Com</option>'
 				. '<option value="3">AT&amp;T</option>'
 				. '</select>', $output);

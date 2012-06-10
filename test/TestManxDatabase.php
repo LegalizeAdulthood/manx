@@ -1,8 +1,7 @@
 <?php
-	require_once 'PHPUnit/Framework.php';
-	require_once 'ManxDatabase.php';
-	require_once 'test/FakeDatabase.php';
-	require_once 'test/FakeStatement.php';
+require_once 'ManxDatabase.php';
+require_once 'test/FakeDatabase.php';
+require_once 'test/FakeStatement.php';
 
 	class TestManxDatabase extends PHPUnit_Framework_TestCase
 	{
@@ -18,7 +17,7 @@
 
 		public function testGetDocumentCount()
 		{
-			$query = "SELECT COUNT(*) FROM `PUB`";
+			$query = "SELECT COUNT(*) FROM `pub`";
 			$this->configureCountForQuery(2, $query);
 			$count = $this->_manxDb->getDocumentCount();
 			$this->assertCountForQuery(2, $count, $query);
@@ -26,7 +25,7 @@
 
 		public function testGetOnlineDocumentCount()
 		{
-			$query = "SELECT COUNT(DISTINCT `pub`) FROM `COPY`";
+			$query = "SELECT COUNT(DISTINCT `pub`) FROM `copy`";
 			$this->configureCountForQuery(12, $query);
 			$count = $this->_manxDb->getOnlineDocumentCount();
 			$this->assertCountForQuery(12, $count, $query);
@@ -34,7 +33,7 @@
 
 		public function testGetSiteCount()
 		{
-			$query = "SELECT COUNT(*) FROM `SITE`";
+			$query = "SELECT COUNT(*) FROM `site`";
 			$this->configureCountForQuery(43, $query);
 			$count = $this->_manxDb->getSiteCount();
 			$this->assertCountForQuery(43, $count, $query);
@@ -43,7 +42,7 @@
 		public function testGetSiteList()
 		{
 			$this->createInstance();
-			$query = "SELECT `url`,`description`,`low` FROM `SITE` WHERE `live`='Y' ORDER BY `siteid`";
+			$query = "SELECT `url`,`description`,`low` FROM `site` WHERE `live`='Y' ORDER BY `siteid`";
 			$this->configureStatementFetchAllResults($query,
 				FakeDatabase::createResultRowsForColumns(
 					array('url', 'description', 'low'),
@@ -58,7 +57,7 @@
 		public function testGetCompanyList()
 		{
 			$this->createInstance();
-			$query = "SELECT `id`,`name` FROM `COMPANY` WHERE `display` = 'Y' ORDER BY `sort_name`";
+			$query = "SELECT `id`,`name` FROM `company` WHERE `display` = 'Y' ORDER BY `sort_name`";
 			$expected = array(
 					array('id' => 1, 'name' => "DEC"),
 					array('id' => 2, 'name' => "HP"));
@@ -71,7 +70,7 @@
 		public function testGetDisplayLanguage()
 		{
 			$this->createInstance();
-			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='fr'";
+			$query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `language` WHERE `lang_alpha_2`='fr'";
 			$this->configureStatementFetchResult($query, 'French');
 			$display = $this->_manxDb->getDisplayLanguage('fr');
 			$this->assertQueryCalledForSql($query);
@@ -81,7 +80,7 @@
 		public function testGetOSTagsForPub()
 		{
 			$this->createInstance();
-			$query = "SELECT `tag_text` FROM `TAG`,`PUBTAG` WHERE `TAG`.`id`=`PUBTAG`.`tag` AND `TAG`.`class`='os' AND `pub`=5";
+			$query = "SELECT `tag_text` FROM `tag`,`pub_tag` WHERE `tag`.`id`=`pub_tag`.`tag` AND `tag`.`class`='os' AND `pub`=5";
 			$this->configureStatementFetchAllResults($query,
 				FakeDatabase::createResultRowsForColumns(array('tag_text'),
 					array(array('RSX-11M Version 4.0'), array('RSX-11M-PLUS Version 2.0'))));
@@ -94,7 +93,7 @@
 		{
 			$this->createInstance();
 			$query = "SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
-				. "FROM `PUB` JOIN `PUBHISTORY` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
+				. "FROM `pub` JOIN `pub_history` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
 			$pubId = 3;
 			$this->configureStatementFetchAllResults($query,
 				FakeDatabase::createResultRowsForColumns(
@@ -111,7 +110,7 @@
 		{
 			$this->createInstance();
 			$pubId = 3;
-			$query = "SELECT 'html_text' FROM `LONG_DESC` WHERE `pub`=3 ORDER BY `line`";
+			$query = "SELECT 'html_text' FROM `long_desc` WHERE `pub`=3 ORDER BY `line`";
 			$this->configureStatementFetchAllResults($query,
 				FakeDatabase::createResultRowsForColumns(array('html_text'),
 					array(array('<p>This is paragraph one.</p>'), array('<p>This is paragraph two.</p>'))));
@@ -129,9 +128,9 @@
 			$this->createInstance();
 			$pubId = 72;
 			$query = 'SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` '
-				. 'FROM `CITEPUB` `C`'
-				. ' JOIN `PUB` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=72)'
-				. ' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`';
+				. 'FROM `cite_pub` `C`'
+				. ' JOIN `pub` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=72)'
+				. ' JOIN `pub_history` ON `pub`.`pub_history`=`ph_id`';
 			$this->configureStatementFetchAllResults($query,
 				FakeDatabase::createResultRowsForColumns(
 					array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
@@ -146,7 +145,7 @@
 		{
 			$this->createInstance();
 			$pubId = 123;
-			$query = "SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=123 ORDER BY `line`";
+			$query = "SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=123 ORDER BY `line`";
 			$this->configureStatementFetchAllResults($query,
 				FakeDatabase::createResultRowsForColumns(
 					array('level', 'label', 'name'),
@@ -167,7 +166,7 @@
 		{
 			$this->createInstance();
 			$pubId = 123;
-			$query = "SELECT `level`,`label`,`name` FROM `TOC` WHERE `pub`=123 AND `level` < 2 ORDER BY `line`";
+			$query = "SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=123 AND `level` < 2 ORDER BY `line`";
 			$this->configureStatementFetchAllResults($query,
 				FakeDatabase::createResultRowsForColumns(
 					array('level', 'label', 'name'),
@@ -192,7 +191,7 @@
 			$this->createInstance();
 			$copyId = 7165;
 			$query = "SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
-					. " FROM `COPY` JOIN `mirror` ON `COPY`.`site`=`mirror`.`site`"
+					. " FROM `copy` JOIN `mirror` ON `copy`.`site`=`mirror`.`site`"
 					. " WHERE `copyid`=7165 ORDER BY `rank` DESC";
 			$expected = array('http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
 				'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
@@ -213,7 +212,7 @@
 			$pubId = 17970;
 			$amendSerial = 7;
 			$query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pubdate`"
-						. " FROM `PUB` JOIN `PUBHISTORY` ON `pub_history`=`ph_id`"
+						. " FROM `pub` JOIN `pub_history` ON `pub`.`pub_history`=`ph_id`"
 						. " WHERE `ph_amend_pub`=%d AND `ph_amend_serial`=%d", $pubId, $amendSerial);
 			$expected = array('ph_company' => 7, 'pub_id' => 57, 'ph_part' => 'AB81-14G',
 					'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pubdate' => '1984-02');
@@ -227,13 +226,13 @@
 		{
 			$this->createInstance();
 			$pubId = 123;
-			$query = "SELECT `format`,`COPY`.`url`,`notes`,`size`,"
-				. "`SITE`.`name`,`SITE`.`url` AS `site_url`,`SITE`.`description`,"
-				. "`SITE`.`copy_base`,`SITE`.`low`,`COPY`.`md5`,`COPY`.`amend_serial`,"
-				. "`COPY`.`credits`,`copyid`"
-				. " FROM `COPY`,`SITE`"
-				. " WHERE `COPY`.`site`=`SITE`.`siteid` AND `pub`=123"
-				. " ORDER BY `SITE`.`display_order`,`SITE`.`siteid`";
+			$query = "SELECT `format`,`copy`.`url`,`notes`,`size`,"
+				. "`site`.`name`,`site`.`url` AS `site_url`,`site`.`description`,"
+				. "`site`.`copy_base`,`site`.`low`,`copy`.`md5`,`copy`.`amend_serial`,"
+				. "`copy`.`credits`,`copyid`"
+				. " FROM `copy`,`site`"
+				. " WHERE `copy`.`site`=`site`.`siteid` AND `pub`=123"
+				. " ORDER BY `site`.`display_order`,`site`.`siteid`";
 			$this->configureStatementFetchAllResults($query,
 				FakeDatabase::createResultRowsForColumns(
 				array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copyid'),
@@ -250,14 +249,14 @@
 		{
 			$this->createInstance();
 			$pubId = 3;
-			$query = 'SELECT `pub_id`, `COMPANY`.`name`, '
+			$query = 'SELECT `pub_id`, `company`.`name`, '
 				. 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pubdate`, '
 				. '`ph_title`, `ph_abstract`, '
 				. 'IFNULL(`ph_revision`, "") AS `ph_revision`, `ph_ocr_file`, '
 				. '`ph_cover_image`, `ph_lang`, `ph_keywords` '
-				. 'FROM `PUB` '
-				. 'JOIN `PUBHISTORY` ON `pub_history`=`ph_id` '
-				. 'JOIN `COMPANY` ON `ph_company`=`COMPANY`.`id` '
+				. 'FROM `pub` '
+				. 'JOIN `pub_history` ON `pub`.`pub_history`=`ph_id` '
+				. 'JOIN `company` ON `ph_company`=`company`.`id` '
 				. 'WHERE 1=1 AND `pub_id`=3';
 			$rows = FakeDatabase::createResultRowsForColumns(
 				array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
@@ -349,8 +348,8 @@
 			$query = "SELECT `pub_id`, `ph_part`, `ph_title`,"
 				. " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
 				. " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
-				. " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `PUB`"
-				. " JOIN `PUBHISTORY` ON `pub_history` = `ph_id`"
+				. " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `pub`"
+				. " JOIN `pub_history` ON `pub`.`pub_history` = `ph_id`"
 				. " WHERE `pub_has_online_copies` $matchClause"
 				. " AND `ph_company`=$company"
 				. " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
@@ -364,9 +363,9 @@
 		{
 			$this->createInstance();
 			$pubId = 6105;
-			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `SUPERSESSION`' .
-				' JOIN `PUB` ON (`old_pub`=`pub_id` AND `new_pub`=%d)' .
-				' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`', $pubId);
+			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `supersession`' .
+				' JOIN `pub` ON (`old_pub`=`pub_id` AND `new_pub`=%d)' .
+				' JOIN `pub_history` ON `pub_history`=`ph_id`', $pubId);
 			$rows = array(array('ph_company' => 1, 'ph_pub' => 23, 'ph_part' => 'EK-11024-TM-PRE', 'ph_title' => 'PDP-11/24 System Technical Manual'));
 			$this->configureStatementFetchAllResults($query, $rows);
 			$pubs = $this->_manxDb->getPublicationsSupersededByPub($pubId);
@@ -378,9 +377,9 @@
 		{
 			$this->createInstance();
 			$pubId = 23;
-			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `SUPERSESSION`'
-				. ' JOIN `PUB` ON (`new_pub`=`pub_id` AND `old_pub`=%d)'
-				. ' JOIN `PUBHISTORY` ON `pub_history`=`ph_id`', $pubId);
+			$query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `supersession`'
+				. ' JOIN `pub` ON (`new_pub`=`pub_id` AND `old_pub`=%d)'
+				. ' JOIN `pub_history` ON `pub_history`=`ph_id`', $pubId);
 			$rows = array(array('ph_company' => 1, 'ph_pub' => 6105, 'ph_part' => 'EK-11024-TM-001', 'ph_title' => 'PDP-11/24 System Technical Manual'));
 			$this->configureStatementFetchAllResults($query, $rows);
 			$pubs = $this->_manxDb->getPublicationsSupersedingPub($pubId);

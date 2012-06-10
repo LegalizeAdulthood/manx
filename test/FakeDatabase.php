@@ -44,5 +44,14 @@
 			return $rows;
 		}
 
+		public function execute($statement, $args)
+		{
+			throw new Exception("execute not implemented.");
+		}
+
+		public function getLastInsertId()
+		{
+			throw new Exception("getLastInsertId not implemented");
+		}
 	}
 ?>
