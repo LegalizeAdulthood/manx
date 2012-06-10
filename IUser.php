@@ -1,8 +1,10 @@
 <?php
-	interface IUser
-	{
-		function isLoggedIn();
-		function displayName();
-		function isAdmin();
-	}
+
+interface IUser
+{
+	function isLoggedIn();
+	function displayName();
+	function isAdmin();
+}
+
 ?>
