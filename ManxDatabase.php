@@ -291,7 +291,7 @@ class ManxDatabase implements IManxDatabase
 
 	function getPublicationsForPartNumber($part, $company)
 	{
-		$part = ManxDatabase::normalizePartNumber($part);
+		$part = "%" . ManxDatabase::normalizePartNumber($part) . "%";
 		return $this->_db->execute("SELECT pub_id,ph_part,ph_title "
 				. "FROM pub JOIN pub_history ON pub_history = ph_id "
 				. "WHERE (ph_match_part LIKE ? OR ph_match_alt_part LIKE ?) AND ph_company = ? "
@@ -360,6 +360,20 @@ class ManxDatabase implements IManxDatabase
 	function getSites()
 	{
 		return $this->fetchAll("SELECT * FROM `site` ORDER BY `display_order`");
+	}
+
+	function getFormatForExtension($extension)
+	{
+		$rows = $this->execute("SELECT `format` FROM `format_extension` WHERE `extension`=?",
+			array(strtolower($extension)));
+		return (count($rows) > 0) ? $rows[0]['format'] : '';
+	}
+
+	function getCompanyForBitSaversDirectory($dir)
+	{
+		$rows = $this->execute("SELECT `company_id` FROM `company_bitsavers` WHERE `directory`=?",
+			array($dir));
+		return (count($rows) > 0) ? $rows[0]['company_id'] : -1;
 	}
 }
 

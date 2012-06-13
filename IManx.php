@@ -27,6 +27,10 @@ interface IManx
 	public function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes);
 	public function getMirrors();
 	public function getSites();
+	public function getFormatForExtension($extension);
+	public function getCompanyForBitSaversDirectory($dir);
+	public function getPublicationsForPartNumber($part, $companyId);
+	public function getDatabase();
 }
 
 ?>

@@ -34,6 +34,8 @@ interface IManxDatabase
 	function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes); 
 	function getMirrors();
 	function getSites();
+	function getFormatForExtension($extension);
+	function getCompanyForBitSaversDirectory($dir);
 }
 
 ?>

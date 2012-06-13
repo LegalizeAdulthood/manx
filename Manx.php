@@ -592,6 +592,26 @@ class Manx implements IManx
 	{
 		return $this->_manxDb->getSites();
 	}
+
+	public function getFormatForExtension($extension)
+	{
+		return $this->_manxDb->getFormatForExtension($extension);
+	}
+
+	public function getCompanyForBitSaversDirectory($dir)
+	{
+		return $this->_manxDb->getCompanyForBitSaversDirectory($dir);
+	}
+
+	public function getPublicationsForPartNumber($part, $companyId)
+	{
+		return $this->_manxDb->getPublicationsForPartNumber($part, $companyId);
+	}
+
+	public function getDatabase()
+	{
+		return $this->_manxDb;
+	}
 }
 
 ?>
