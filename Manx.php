@@ -487,8 +487,8 @@ class Manx implements IManx
 
 	function logout()
 	{
+		$this->_manxDb->deleteUserSession(Cookie::get());
 		Cookie::delete();
-		$this->_manxDb->deleteUserSession();
 	}
 
 	public function renderLoginLink($server)

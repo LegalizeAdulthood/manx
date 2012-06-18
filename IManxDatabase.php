@@ -22,7 +22,6 @@ interface IManxDatabase
 	function getPublicationsSupersedingPub($pubId);
 	function getUserId($email, $pw_sha1);
 	function createSessionForUser($userId, $sessionId, $remoteHost, $userAgent);
-	function deleteSessionById($sessionId);
 	function getUserFromSessionId($sessionId);
 	function getPublicationsForPartNumber($part, $company);
 	function addPubHistory($userId, $publicationType, $company, $part,
@@ -36,6 +35,7 @@ interface IManxDatabase
 	function getSites();
 	function getFormatForExtension($extension);
 	function getCompanyForBitSaversDirectory($dir);
+	function deleteUserSession($sessionId);
 }
 
 ?>

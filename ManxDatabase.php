@@ -270,7 +270,7 @@ class ManxDatabase implements IManxDatabase
 			array($userId, $sessionId, $userAgent));
 	}
 
-	function deleteSessionById($sessionId)
+	function deleteUserSession($sessionId)
 	{
 		$this->execute("DELETE FROM `user_session` WHERE `ascii_session_id`=?",
 			array($sessionId));

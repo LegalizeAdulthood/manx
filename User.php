@@ -25,7 +25,7 @@ class User implements IUser
 		{
 			if (time() - strtotime($row['last_impression']) > 30*60)
 			{
-				$manxDb->deleteUserSession();
+				$manxDb->deleteUserSession(Cookie::get());
 				Cookie::delete();
 			}
 			else
