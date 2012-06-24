@@ -1,6 +1,7 @@
 <?php
 
 require_once 'PageBase.php';
+require_once 'HtmlFormatter.php';
 require_once 'Searcher.php';
 
 class SearchPage extends PageBase
