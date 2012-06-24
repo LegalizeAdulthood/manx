@@ -24,7 +24,7 @@ class SitePage extends AdminPageBase
 		print "<th>Live</th>";
 		print "<th>Display Order</th>";
 		print "</tr>\n";
-		foreach ($this->_manx->getSites() as $site)
+		foreach ($this->_manxDb->getSites() as $site)
 		{
 			printf("<tr>"
 					. "<td align=\"center\">%d</td>"

@@ -82,7 +82,7 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 		$db = new FakeManxDatabase();
 		$this->_manx->getDatabaseFakeResult = $db;
 		$this->_manx->getUserFromSessionFakeResult = new FakeUser();
-		$this->_manx->getSitesFakeResult =
+		$db->getSitesFakeResult =
 			array(
 				array(
 					'siteid' => '3',
@@ -103,9 +103,9 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 					'7' => '999'
 				)
 			);
-		$this->_manx->getMirrorsFakeResult = array();
-		$this->_manx->getCompanyForBitSaversDirectoryFakeResult = '-1';
-		$this->_manx->getFormatForExtensionFakeResult = 'PDF';
+		$db->getMirrorsFakeResult = array();
+		$db->getCompanyForBitSaversDirectoryFakeResult = '-1';
+		$db->getFormatForExtensionFakeResult = 'PDF';
 		$_SERVER['PATH_INFO'] = '';
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$vars = array(
@@ -138,9 +138,9 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 			'pubs' => array()
 			));
 		$this->assertEquals($expected, $output);
-		$this->assertTrue($this->_manx->getSitesCalled);
-		$this->assertTrue($this->_manx->getCompanyForBitSaversDirectoryCalled);
-		$this->assertTrue($this->_manx->getFormatForExtensionCalled);
+		$this->assertTrue($db->getSitesCalled);
+		$this->assertTrue($db->getCompanyForBitSaversDirectoryCalled);
+		$this->assertTrue($db->getFormatForExtensionCalled);
 	}
 
 	public function testProcessRequestUrlLookup()
@@ -149,7 +149,7 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 		$db = new FakeManxDatabase();
 		$this->_manx->getDatabaseFakeResult = $db;
 		$this->_manx->getUserFromSessionFakeResult = new FakeUser();
-		$this->_manx->getSitesFakeResult =
+		$db->getSitesFakeResult =
 			array(
 				array(
 					'siteid' => '3',
@@ -170,7 +170,7 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 					'7' => '999'
 				)
 			);
-		$this->_manx->getMirrorsFakeResult =
+		$db->getMirrorsFakeResult =
 			array(
 				array(
 					'mirror_id' => '2',
@@ -185,8 +185,8 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 					'4' => '9'
 				)
 			);
-		$this->_manx->getCompanyForBitSaversDirectoryFakeResult = '5';
-		$this->_manx->getFormatForExtensionFakeResult = 'PDF';
+		$db->getCompanyForBitSaversDirectoryFakeResult = '5';
+		$db->getFormatForExtensionFakeResult = 'PDF';
 		$_SERVER['PATH_INFO'] = '';
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$vars = array(
@@ -225,10 +225,10 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 			"bitsavers_directory" => "tektronix",
 			"pubs" => array()
 		));
-		$this->assertTrue($this->_manx->getSitesCalled);
-		$this->assertTrue($this->_manx->getMirrorsCalled);
-		$this->assertTrue($this->_manx->getCompanyForBitSaversDirectoryCalled);
-		$this->assertTrue($this->_manx->getFormatForExtensionCalled);
+		$this->assertTrue($db->getSitesCalled);
+		$this->assertTrue($db->getMirrorsCalled);
+		$this->assertTrue($db->getCompanyForBitSaversDirectoryCalled);
+		$this->assertTrue($db->getFormatForExtensionCalled);
 		$this->assertEquals($expected, $output);
 	}
 }

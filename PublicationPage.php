@@ -27,7 +27,7 @@ EOH;
 <li><label for="company">Company:</label><select id="company" name="company">
 EOH;
 		$selected = -1;
-		foreach ($this->_manx->getCompanyList() as $row)
+		foreach ($this->_manxDb->getCompanyList() as $row)
 		{
 			$id = $row['id'];
 			printf('<option value="%s"%s>%s</option>' . "\n",

@@ -21,7 +21,7 @@
 
 require_once 'Manx.php';
 require_once 'Searcher.php';
-require_once 'ServiceBase.php';
+require_once 'ServicePageBase.php';
 
 class Site
 {
@@ -33,7 +33,7 @@ class UrlWizardService extends ServicePageBase
 	private function determineData()
 	{
 		$data['url'] = urldecode($this->param('url'));
-		$this->_sites = $this->_manx->getSites();
+		$this->_sites = $this->_db->getSites();
 		$data['site'] = $this->determineSiteFromUrl($data);
 		$data['company'] = -1;
 		$data['part'] = '';
@@ -132,7 +132,7 @@ class UrlWizardService extends ServicePageBase
 	{
 		$matchingPrefix = '';
 		$matchingSite = -1;
-		foreach ($this->_manx->getMirrors() as $mirror)
+		foreach ($this->_db->getMirrors() as $mirror)
 		{
 			$mirrorBase = $mirror['copy_stem'];
 			if (substr($data['url'], 0, strlen($mirrorBase)) == $mirrorBase)
@@ -193,7 +193,7 @@ class UrlWizardService extends ServicePageBase
 			return;
 		}
 
-		$company = $this->_manx->getCompanyForBitSaversDirectory($matches[1]);
+		$company = $this->_db->getCompanyForBitSaversDirectory($matches[1]);
 		$data['company'] = $company;
 		$data['bitsavers_directory'] = $matches[1];
 
@@ -207,7 +207,7 @@ class UrlWizardService extends ServicePageBase
 				$data['part'] = array_shift($parts);
 			}
 			$lastPart = count($parts)-1;
-			$data['pubs'] = $this->_manx->getPublicationsForPartNumber($data['part'], $data['company']);
+			$data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
 			if (is_numeric($parts[$lastPart]))
 			{
 				$data['pub_date'] = array_pop($parts);
@@ -226,7 +226,7 @@ class UrlWizardService extends ServicePageBase
 			}
 			$data['title'] = implode(' ', $parts);
 		}
-		$data['format'] = $this->_manx->getFormatForExtension($matches[3]);
+		$data['format'] = $this->_db->getFormatForExtension($matches[3]);
 	}
 
 	private function findPublications()

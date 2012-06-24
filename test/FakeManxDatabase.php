@@ -45,85 +45,89 @@ class FakeManxDatabase implements IManxDatabase
 		$this->addSupersessionFakeResult = -1;
 		$this->addCompanyCalled = false;
 		$this->addSiteCalled = false;
+		$this->getCompanyForBitSaversDirectoryCalled = false;
+		$this->getPublicationsForPartNumberCalled = false;
+		$this->getPublicationsForPartNumberFakeResult = array();
+		$this->getFormatForExtensionCalled = false;
+		$this->getMirrorsCalled = false;
+		$this->getMirrorsFakeResult = array();
 	}
 
-	public $getDocumentCountCalled, $getDocumentCountFakeResult;
 	public function getDocumentCount()
 	{
 		$this->getDocumentCountCalled = true;
 		return $this->getDocumentCountFakeResult;
 	}
+	public $getDocumentCountCalled, $getDocumentCountFakeResult;
 
-	public $getOnlineDocumentCountCalled, $getOnlineDocumentCountFakeResult;
 	public function getOnlineDocumentCount()
 	{
 		$this->getOnlineDocumentCountCalled = true;
 		return $this->getOnlineDocumentCountFakeResult;
 	}
+	public $getOnlineDocumentCountCalled, $getOnlineDocumentCountFakeResult;
 
-	public $getSiteCountCalled, $getSiteCountFakeResult;
 	public function getSiteCount()
 	{
 		$this->getSiteCountCalled = true;
 		return $this->getSiteCountFakeResult;
 	}
+	public $getSiteCountCalled, $getSiteCountFakeResult;
 
-	public $getSiteListCalled, $getSiteListFakeResult;
 	public function getSiteList()
 	{
 		$this->getSiteListCalled = true;
 		return $this->getSiteListFakeResult;
 	}
+	public $getSiteListCalled, $getSiteListFakeResult;
 
-	public $getCompanyListCalled, $getCompanyListFakeResult;
 	public function getCompanyList()
 	{
 		$this->getCompanyListCalled = true;
 		return $this->getCompanyListFakeResult;
 	}
+	public $getCompanyListCalled, $getCompanyListFakeResult;
 
-	public $getDisplayLanguageCalled, $getDisplayLanguageLastLanguageCode, $getDisplayLanguageFakeResult;
 	public function getDisplayLanguage($languageCode)
 	{
 		$this->getDisplayLanguageCalled = true;
 		$this->getDisplayLanguageLastLanguageCode[$languageCode] = true;
 		return $this->getDisplayLanguageFakeResult[$languageCode];
 	}
+	public $getDisplayLanguageCalled, $getDisplayLanguageLastLanguageCode, $getDisplayLanguageFakeResult;
 
-	public $getOSTagsForPubCalled, $getOSTagsForPubLastPubId, $getOSTagsForPubFakeResult;
 	public function getOSTagsForPub($pubId)
 	{
 		$this->getOSTagsForPubCalled = true;
 		$this->getOSTagsForPubLastPubId = $pubId;
 		return $this->getOSTagsForPubFakeResult;
 	}
+	public $getOSTagsForPubCalled, $getOSTagsForPubLastPubId, $getOSTagsForPubFakeResult;
 
-	public $getAmendmentsForPubCalled, $getAmendmentsForPubLastPubId, $getAmendmentsForPubFakeResult;
 	public function getAmendmentsForPub($pubId)
 	{
 		$this->getAmendmentsForPubCalled = true;
 		$this->getAmendmentsForPubLastPubId = $pubId;
 		return $this->getAmendmentsForPubFakeResult;
 	}
+	public $getAmendmentsForPubCalled, $getAmendmentsForPubLastPubId, $getAmendmentsForPubFakeResult;
 
-	public $getLongDescriptionForPubCalled, $getLongDescriptionForPubLastPubId, $getLongDescriptionForPubFakeResult;
 	public function getLongDescriptionForPub($pubId)
 	{
 		$this->getLongDescriptionForPubCalled = true;
 		$this->getLongDescriptionForPubLastPubId = $pubId;
 		return $this->getLongDescriptionForPubFakeResult;
 	}
+	public $getLongDescriptionForPubCalled, $getLongDescriptionForPubLastPubId, $getLongDescriptionForPubFakeResult;
 
-	public $getCitationsForPubCalled, $getCitationsForPubLastPubId, $getCitationsForPubFakeResult;
 	public function getCitationsForPub($pubId)
 	{
 		$this->getCitationsForPubCalled = true;
 		$this->getCitationsForPubLastPubId = $pubId;
 		return $this->getCitationsForPubFakeResult;
 	}
+	public $getCitationsForPubCalled, $getCitationsForPubLastPubId, $getCitationsForPubFakeResult;
 
-	public $getTableOfContentsForPubCalled, $getTableOfContentsForPubLastPubId,
-		$getTableOfContentsForPubLastFullContents, $getTableOfContentsForPubFakeResult;
 	public function getTableOfContentsForPub($pubId, $fullContents)
 	{
 		$this->getTableOfContentsForPubCalled = true;
@@ -131,16 +135,17 @@ class FakeManxDatabase implements IManxDatabase
 		$this->getTableOfContentsForPubLastFullContents = $fullContents;
 		return $this->getTableOfContentsForPubFakeResult;
 	}
+	public $getTableOfContentsForPubCalled, $getTableOfContentsForPubLastPubId,
+		$getTableOfContentsForPubLastFullContents, $getTableOfContentsForPubFakeResult;
 
-	public $getMirrorsForCopyCalled, $getMirrorsForCopyLastCopyId, $getMirrorsForCopyFakeResult;
 	public function getMirrorsForCopy($copyId)
 	{
 		$this->getMirrorsForCopyCalled = true;
 		$this->getMirrorsForCopyLastCopyId = $copyId;
 		return $this->getMirrorsForCopyFakeResult[$copyId];
 	}
+	public $getMirrorsForCopyCalled, $getMirrorsForCopyLastCopyId, $getMirrorsForCopyFakeResult;
 
-	public $getAmendedPubCalled, $getAmendedPubLastPubId, $getAmendedPubLastAmendSerial, $getAmendedPubFakeResult;
 	public function getAmendedPub($pubId, $amendSerial)
 	{
 		$this->getAmendedPubCalled = true;
@@ -148,25 +153,24 @@ class FakeManxDatabase implements IManxDatabase
 		$this->getAmendedPubLastAmendSerial = $amendSerial;
 		return $this->getAmendedPubFakeResult;
 	}
+	public $getAmendedPubCalled, $getAmendedPubLastPubId, $getAmendedPubLastAmendSerial, $getAmendedPubFakeResult;
 
-	public $getCopiesForPubCalled, $getCopiesForPubLastPubId, $getCopiesForPubFakeResult;
 	public function getCopiesForPub($pubId)
 	{
 		$this->getCopiesForPubCalled = true;
 		$this->getCopiesForPubLastPubId = $pubId;
 		return $this->getCopiesForPubFakeResult;
 	}
+	public $getCopiesForPubCalled, $getCopiesForPubLastPubId, $getCopiesForPubFakeResult;
 
-	public $getDetailsForPubCalled, $getDetailsForPubLastPubId, $getDetailsForPubFakeResult;
 	public function getDetailsForPub($pubId)
 	{
 		$this->getDetailsForPubCalled = true;
 		$this->getDetailsForPubLastPubId = $pubId;
 		return $this->getDetailsForPubFakeResult;
 	}
+	public $getDetailsForPubCalled, $getDetailsForPubLastPubId, $getDetailsForPubFakeResult;
 
-	public $searchForPublicationsCalled, $searchForPublicationsFakeResult,
-		$searchForPublicationsLastCompany, $searchForPublicationsLastKeywords, $searchForPublicationsLastOnline;
 	public function searchForPublications($company, $keywords, $online)
 	{
 		$this->searchForPublicationsCalled = true;
@@ -175,89 +179,131 @@ class FakeManxDatabase implements IManxDatabase
 		$this->searchForPublicationsLastOnline = $online;
 		return $this->searchForPublicationsFakeResult;
 	}
+	public $searchForPublicationsCalled,
+		$searchForPublicationsLastCompany, $searchForPublicationsLastKeywords, $searchForPublicationsLastOnline,
+		$searchForPublicationsFakeResult;
 
-	public $getPublicationsSupersededByPubCalled, $getPublicationsSupersededByPubLastPubId, $getPublicationsSupersededByPubFakeResult;
 	function getPublicationsSupersededByPub($pubId)
 	{
 		$this->getPublicationsSupersededByPubCalled = true;
 		$this->getPublicationsSupersededByPubLastPubId = $pubId;
 		return $this->getPublicationsSupersededByPubFakeResult;
 	}
+	public $getPublicationsSupersededByPubCalled,
+		$getPublicationsSupersededByPubLastPubId,
+		$getPublicationsSupersededByPubFakeResult;
 
-	public $getPublicationsSupersedingPubCalled, $getPublicationsSupersedingPubLastPubId, $getPublicationsSupersedingPubFakeResult;
 	function getPublicationsSupersedingPub($pubId)
 	{
 		$this->getPublicationsSupersedingPubCalled = true;
 		$this->getPublicationsSupersedingPubLastPubId = $pubId;
 		return $this->getPublicationsSupersedingPubFakeResult;
 	}
+	public $getPublicationsSupersedingPubCalled,
+		$getPublicationsSupersedingPubLastPubId,
+		$getPublicationsSupersedingPubFakeResult;
 
 	private function notImplemented($name)
 	{
 		throw new Exception($name . " not implemented");
 	}
+
 	public function getUserId($email, $pw_sha1)
 	{
 		$this->notImplemented("getUserId");
 	}
+
 	public function createSessionForUser($userId, $sessionId, $remoteHost, $userAgent)
 	{
 		$this->notImplemented("createSessionForUser");
 	}
+
 	public function deleteSessionById($sessionId)
 	{
 		$this->notImplemented("deleteSessionById");
 	}
+
 	public function getUserFromSessionId($sessionId)
 	{
 		$this->notImplemented("getUserFromSessionId");
 	}
-	public function getPublicationsForPartNumber($part, $company)
+
+	public function getPublicationsForPartNumber($part, $companyId)
 	{
-		$this->notImplemented("getPublicationsForPartNumber");
+		$this->getPublicationsForPartNumberCalled = true;
+		$this->getPublicationsForPartNumberLastPart = $part;
+		$this->getPublicationsForPartNumberLastCompanyId = $companyId;
+		return $this->getPublicationsForPartNumberFakeResult;
 	}
+	public $getPublicationsForPartNumberCalled,
+		$getPublicationsForPartNumberLastPart,
+		$getPublicationsForPartNumberLastCompanyId,
+		$getPublicationsForPartNumberFakeResult;
+
 	public function addPubHistory($userId, $publicationType, $company, $part,
 		$altpart, $revision, $pubDate, $title, $keywords, $notes, $languages)
 	{
 		$this->notImplemented("addPubHistory");
 	}
+
 	public function addPublication($pubHistoryId)
 	{
 		$this->notImplemented("addPublication");
 	}
+
 	public function updatePubHistoryPubId($pubHistoryId, $pubId)
 	{
 		$this->notImplemented("updatePubHistoryPubId");
 	}
+
 	public function getCompanyForId($id)
 	{
 		$this->notImplemented("getCompanyForId");
 	}
+
 	public function addCompany($fullName, $shortName, $sortName, $display, $notes)
 	{
 		$this->addCompanyCalled = true;
 	}
+
 	public function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes)
 	{
 		$this->notImplemented("updateCompany");
 	} 
+
 	public function getMirrors()
 	{
-		$this->notImplemented("getMirrors");
+		$this->getMirrorsCalled = true;
+		return $this->getMirrorsFakeResult;
 	}
+	public $getMirrorsCalled, $getMirrorsFakeResult;
+
 	public function getSites()
 	{
 		$this->getSitesCalled = true;
 		return $this->getSitesFakeResult;
 	}
+
 	public function getFormatForExtension($extension)
 	{
-		$this->notImplemented("getFormatForExtension");
+		$this->getFormatForExtensionCalled = true;
+		$this->getFormatForExtensionLastExtension = $extension;
+		return $this->getFormatForExtensionFakeResult;
 	}
+	public $getFormatForExtensionCalled,
+		$getFormatForExtensionLastExtension,
+		$getFormatForExtensionFakeResult;
+
 	public function getCompanyForBitSaversDirectory($dir)
 	{
-		$this->notImplemented("getCompanyForBitSaversDirectory");
+		$this->getCompanyForBitSaversDirectoryCalled = true;
+		$this->getCompanyForBitSaversDirectoryLastDir = $dir;
+		return $this->getCompanyForBitSaversDirectoryFakeResult;
 	}
+	public $getCompanyForBitSaversDirectoryCalled,
+		$getCompanyForBitSaversDirectoryLastDir,
+		$getCompanyForBitSaversDirectoryFakeResult;
+
 	public function deleteUserSession($sessionId)
 	{
 		$this->notImplemented("deleteUserSession");
@@ -273,11 +319,13 @@ class FakeManxDatabase implements IManxDatabase
 	public $addSupersessionCalled,
 		$addSupersessionLastOldPub, $addSupersessionLastNewPub,
 		$addSupersessionFakeResult;
+
 	function addSite($name, $url, $description, $copy_base, $low, $live)
 	{
 		$this->addSiteCalled = true;
 	}
 	public $addSiteCalled;
+
 	function addCopy($pubId, $format, $siteId, $url,
 		$notes, $size, $md5, $credits, $amendSerial)
 	{
