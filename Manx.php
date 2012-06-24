@@ -444,11 +444,6 @@ class Manx implements IManx
 		Cookie::delete();
 	}
 
-	public static function getRelativePrefixFromPathInfo()
-	{
-		return str_repeat('../', count(split('/', $_SERVER['PATH_INFO'])) - 1);
-	}
-
 	function loginUser($user, $password)
 	{
 		$userId = $this->_manxDb->getUserId($user, $password);

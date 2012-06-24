@@ -139,7 +139,7 @@ EOH;
 <body id="VT100-NET">
 <div id="HEADER">
 EOH;
-		$this->_manx->renderAuthorization();
+		$this->renderAuthorization();
 		print <<<EOH
 <div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
 EOH;
@@ -165,6 +165,11 @@ EOH;
 		print "Redirecting to " . $target;
 	}
 
+	public static function getRelativePrefixFromPathInfo()
+	{
+		return str_repeat('../', count(split('/', $_SERVER['PATH_INFO'])) - 1);
+	}
+
 	public function renderLoginLink($server)
 	{
 		$redirect = $server['PHP_SELF'];
@@ -172,13 +177,13 @@ EOH;
 		{
 			$redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
 		}
-		$prefix = Manx::getRelativePrefixFromPathInfo();
+		$prefix = PageBase::getRelativePrefixFromPathInfo();
 		printf('<a href="%slogin.php?redirect=%s">Login</a>', $prefix, urlencode($redirect));
 	}
 
 	private function renderLogoutLink()
 	{
-		$prefix = Manx::getRelativePrefixFromPathInfo();
+		$prefix = PageBase::getRelativePrefixFromPathInfo();
 		printf('<a href="%slogin.php?LOGO=1&redirect=%ssearch.php">Logout</a>', $prefix, $prefix);
 	}
 
