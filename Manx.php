@@ -493,17 +493,13 @@ class Manx implements IManx
 
 	public function renderLoginLink($server)
 	{
-		$components = explode('/', $server['PHP_SELF']);
-		$path = implode('/', array_slice($components, 0, count($components)-1));
-		$port = $server['SERVER_PORT'];
-		$port = ($port == '80') ? '' : ":" . $port;
 		$redirect = $server['PHP_SELF'];
 		if (array_key_exists('QUERY_STRING', $server) and strlen($server['QUERY_STRING']) > 0)
 		{
 			$redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
 		}
-		printf('<a href="http://%s%s%s/login.php?redirect=%s">Login</a>',
-			$server['SERVER_NAME'], $port, $path, urlencode($redirect));
+		$prefix = $this->getRelativePrefixFromPathInfo();
+		printf('<a href="%slogin.php?redirect=%s">Login</a>', $prefix, urlencode($redirect));
 	}
 
 	public static function getRelativePrefixFromPathInfo()
@@ -560,8 +556,8 @@ class Manx implements IManx
 	public function addPublication($user, $company, $part, $pubDate, $title,
 		$publicationType, $altPart, $revision, $keywords, $notes, $languages)
 	{
-		$pubHistoryId = $this->_manxDb->addPubHistory($user->getUserId(),
-			$publicationType, $company, $part, $altpart, $revision, $pubDate,
+		$pubHistoryId = $this->_manxDb->addPubHistory($user->userId(),
+			$publicationType, $company, $part, $altPart, $revision, $pubDate,
 			$title, $keywords, $notes, $languages);
 		$pubId = $this->_manxDb->addPublication($pubHistoryId);
 		$this->_manxDb->updatePubHistoryPubId($pubHistoryId, $pubId);

@@ -1,0 +1,2 @@
+- superseded by instead of supersedes
+- URL not updated to base when mirror URL entered

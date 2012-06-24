@@ -1,0 +1,29 @@
+/* URL wizard form */
+#form_container
+{
+    margin-left: 5em
+}
+#wizard label
+{
+    float: left;
+    width: 10em;
+    white-space: nowrap
+}
+#wizard input, #wizard select
+{
+    margin-left: 5em
+}
+#wizard ul
+{
+    list-style: none;
+}
+
+.hidden
+{
+	display: none;
+}
+
+.error
+{
+	color: red;
+}

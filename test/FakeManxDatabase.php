@@ -8,6 +8,7 @@ class FakeManxDatabase implements IManxDatabase
 	{
 		$this->getSiteListCalled = false;
 		$this->getCompanyListCalled = false;
+		$this->getCompanyListFakeResult = array();
 		$this->getDocumentCountCalled = false;
 		$this->getOnlineDocumentCountCalled = false;
 		$this->getSiteCountCalled = false;
@@ -38,6 +39,12 @@ class FakeManxDatabase implements IManxDatabase
 		$this->getPublicationsSupersededByPubFakeResult = array();
 		$this->getPublicationsSupersedingPubCalled = false;
 		$this->getPublicationsSupersedingPubFakeResult = array();
+		$this->getSitesCalled = false;
+		$this->getSitesFakeResult = array();
+		$this->addSupersessionCalled = false;
+		$this->addSupersessionFakeResult = -1;
+		$this->addCompanyCalled = false;
+		$this->addSiteCalled = false;
 	}
 
 	public $getDocumentCountCalled, $getDocumentCountFakeResult;
@@ -228,7 +235,7 @@ class FakeManxDatabase implements IManxDatabase
 	}
 	public function addCompany($fullName, $shortName, $sortName, $display, $notes)
 	{
-		$this->notImplemented("addCompany");
+		$this->addCompanyCalled = true;
 	}
 	public function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes)
 	{
@@ -240,7 +247,8 @@ class FakeManxDatabase implements IManxDatabase
 	}
 	public function getSites()
 	{
-		$this->notImplemented("getSites");
+		$this->getSitesCalled = true;
+		return $this->getSitesFakeResult;
 	}
 	public function getFormatForExtension($extension)
 	{
@@ -249,6 +257,53 @@ class FakeManxDatabase implements IManxDatabase
 	public function getCompanyForBitSaversDirectory($dir)
 	{
 		$this->notImplemented("getCompanyForBitSaversDirectory");
+	}
+	public function deleteUserSession($sessionId)
+	{
+		$this->notImplemented("deleteUserSession");
+	}
+
+	function addSupersession($oldPub, $newPub)
+	{
+		$this->addSupersessionCalled = true;
+		$this->addSupersessionLastOldPub = $oldPub;
+		$this->addSupersessionLastNewPub = $newPub;
+		return $this->addSupersessionFakeResult;
+	}
+	public $addSupersessionCalled,
+		$addSupersessionLastOldPub, $addSupersessionLastNewPub,
+		$addSupersessionFakeResult;
+	function addSite($name, $url, $description, $copy_base, $low, $live)
+	{
+		$this->addSiteCalled = true;
+	}
+	public $addSiteCalled;
+	function addCopy($pubId, $format, $siteId, $url,
+		$notes, $size, $md5, $credits, $amendSerial)
+	{
+		$this->addCopyCalled = true;
+		$this->addCopyLastPubId = $pubId;
+		$this->addCopyLastFormat = $format;
+		$this->addCopyLastSiteId = $siteId;
+		$this->addCopyLastUrl = $url;
+		$this->addCopyLastNotes = $notes;
+		$this->addCopyLastSize = $size;
+		$this->addCopyLastMd5 = $md5;
+		$this->addCopyLastCredits = $credits;
+		$this->addCopyLastAmendSerial = $amendSerial;
+		return $this->addCopyFakeResult;
+	}
+	public $addCopyCalled,
+		$addCopyLastPubId, $addCopyLastFormat,
+			$addCopyLastSiteId, $addCopyLastUrl,
+			$addCopyLastNotes, $addCopyLastSize,
+			$addCopyLastMd5, $addCopyLastCredits,
+			$addCopyLastAmendSerial,
+		$addCopyFakeResult;
+
+	function addBitSaversDirectory($companyId, $directory)
+	{
+		$this->notImplemented("addBitSaversDirectory");
 	}
 }
 

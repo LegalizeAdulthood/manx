@@ -3,6 +3,20 @@
 require_once('IDatabase.php');
 require_once('IManxDatabase.php');
 
+class Company
+{
+	const DEC = 1;
+	const TI = 2;
+	const TeleVideo = 6;
+	const Visual = 9;
+	const Wyse = 13;
+	const IBM = 19;
+	const Motorola = 49;
+	const Interdata_PerkinElmer = 58;
+	const Teletype = 70;
+	const GRI = 80;
+}
+
 class ManxDatabase implements IManxDatabase
 {
 	public static function getInstanceForDatabase(IDatabase $db)
@@ -179,6 +193,143 @@ class ManxDatabase implements IManxDatabase
 		return str_replace('O', '0', preg_replace('/[^A-Z0-9]/', '', strtoupper($word)));
 	}
 
+	public static function stripNonAlphaNumeric($text)
+	{
+		return preg_replace('/[^A-Z0-9]/', '', $text);
+	}
+
+	public static function sortPartNumberDEC($pn)
+	{
+		$pn = preg_replace('/-PRE\d*$/', '-000', $pn);
+		$pn = ManxDatabase::stripNonAlphaNumeric($pn);
+		// special case to get RT-11 Software Dispatch in order
+		if (preg_match('/^ADC740.B.$/', $pn, $matches))
+		{
+			$pn = preg_replace('/B(\d)$/', "0\\1", $pn);
+		}
+		return $pn;
+	}
+
+	public static function sortPartNumberTI($pn)
+	{
+		if (preg_match('/^\d{6}-\d{4}/', $pn))
+		{
+			$pn = '0' . $pn;
+		}
+		return ManxDatabase::stripNonAlphaNumeric($pn);
+	}
+
+	public static function sortPartNumberTeleVideo($pn)
+	{
+		// B300013-001 was earliest form. Then dropped B and then added a '1'.
+		// 970 Maintenance Manual has numbers 3002100 (transitional), and then 130021-00
+		if (substr($pn, 0, 1) == 'B')
+		{
+			$pn = substr($pn, 1);
+		}
+		if (substr($pn, 0, 1) == '3')
+		{
+			$pn = '0' . $pn;
+		}
+		return ManxDatabase::stripNonAlphaNumeric($pn);
+	}
+
+	public static function sortPartNumberVisual($pn)
+	{
+		// Order by numbers only
+		$pn = preg_replace('/[^0-9]/', '', $pn);
+		return $pn;
+	}
+
+	public static function sortPartNumberWyse($pn)
+	{
+		// An extra digit was added in the middle in 1985, so pad earlier numbers
+		if (preg_match('/^\d\d-\d\d\d-/', $pn))
+		{
+			$pn = substr($pn, 0, 3) . '0' . substr($pn, 3);
+		}
+		return ManxDatabase::stripNonAlphaNumeric($pn);
+	}
+
+	public static function sortPartNumberIBM($pn)
+	{
+		if (preg_match('/\d\d-\d\d\d\d$/', $pn))
+		{
+			$pn .= '-0';
+		}
+		if (preg_match('/^\d\d-\d\d\d\d-\d+$/', $pn))
+		{
+			$pn = 'A' . $pn;
+		}
+		if (preg_match('/^[A-Z]\w\w\d-/', $pn))
+		{
+			$pn = substr($pn, 1);
+		}
+		if (preg_match('/^\w\w\d-\d\d\d\d-(\d+)$/', $pn, $matches))
+		{
+			$pn = substr($pn, 0, 9) . sprintf("%02d", $matches[1]);
+		}
+		return ManxDatabase::stripNonAlphaNumeric($pn);
+	}
+
+	public static function sortPartNumberMotorola($pn)
+	{
+		if (preg_match('/AN(\d+)(.*)/', $pn, $matches))
+		{
+			$pn = sprintf("AN%05d%s", $matches[1], $matches[2]);
+		}
+		return $pn;
+	}
+
+	public static function sortPartNumberInterdata($pn)
+	{
+		// initial letters (distribution codes, like IBM's?) disregarded
+		if (preg_match('/^([A-Z]+)/', $pn, $matches))
+		{
+			$pn = substr($pn, strlen($matches[1]));
+		}
+		return ManxDatabase::stripNonAlphaNumeric($pn);
+	}
+
+	public static function sortPartNumberTeletype($pn)
+	{
+		if (preg_match('/^(\d+)(.*)/', $pn, $matches))
+		{
+			$pn = sprintf("%04d%s", $matches[1], $matches[2]);
+		}
+		return ManxDatabase::stripNonAlphaNumeric($pn);
+	}
+
+	public static function sortPartNumberGRI($pn)
+	{
+		if (preg_match('/^(\d\d)-(\d\d)-(.*)$/', $pn, $matches))
+		{
+			$pn = $matches[1] . sprintf("%03d", $matches[2]) . $matches[3];
+		}
+		return ManxDatabase::stripNonAlphaNumeric($pn);
+	}
+
+	public static function sortPartNumber($company, $pn)
+	{
+		$pn = strtoupper($pn);
+		// Calculate a default sorted part number, along the same lines as normalization, without the 'O' -> '0' translation
+		$spn = ManxDatabase::stripNonAlphaNumeric($pn);
+		switch ($company)
+		{
+		case Company::DEC:			return ManxDatabase::sortPartNumberDEC($pn);
+		case Company::TI:			return ManxDatabase::sortPartNumberTI($pn);
+		case Company::TeleVideo:	return ManxDatabase::sortPartNumberTeleVideo($pn);
+		case Company::Visual:		return ManxDatabase::sortPartNumberVisual($pn);
+		case Company::Wyse:			return ManxDatabase::sortPartNumberWyse($pn);
+		case Company::IBM:			return ManxDatabase::sortPartNumberIBM($pn);
+		case Company::Motorola:		return ManxDatabase::sortPartNumberMotorola($pn);
+		case Company::Interdata_PerkinElmer: return ManxDatabase::sortPartNumberInterdata($pn);
+		case Company::Teletype:		return ManxDatabase::sortPartNumberTeletype($pn);
+		case Company::GRI:			return ManxDatabase::sortPartNumberGRI($pn);
+		}
+		return $spn;
+	}
+
 	public static function cleanSqlWord($word)
 	{
 		if (!is_string($word))
@@ -308,11 +459,20 @@ class ManxDatabase implements IManxDatabase
 				. '`ph_pubtype`, `ph_company`, `ph_part`, `ph_alt_part`, '
 				. '`ph_revision`, `ph_pubdate`, `ph_title`, `ph_keywords`, '
 				. '`ph_notes`, `ph_lang`, '
-				// calculated fields
 				. '`ph_match_part`, `ph_match_alt_part`, `ph_sort_part`) '
-				. 'values (now(), ?, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-			array($userId, $publicationType, $company, $part, $altPart,
-				$revision, $pubDate, $title, $keywords, $notes, $languages));
+			. 'VALUES (now(), ?, 0, '
+				. '?, ?, ?, ?, '
+				. '?, ?, ?, ?, '
+				. '?, ?, '
+				. '?, ?, ?)',
+			array($userId,
+				$publicationType, $company, $part, $altPart,
+				$revision, $pubDate, $title, $keywords,
+				$notes, $languages,
+				ManxDatabase::normalizePartNumber($part),
+					ManxDatabase::normalizePartNumber($altPart),
+					ManxDatabase::sortPartNumber($company, $part)
+				));
 		return $this->_db->getLastInsertId();
 	}
 
@@ -375,6 +535,42 @@ class ManxDatabase implements IManxDatabase
 			array($dir));
 		return (count($rows) > 0) ? $rows[0]['company_id'] : -1;
 	}
+
+	function addSupersession($oldPub, $newPub)
+	{
+		$this->_db->execute('INSERT INTO `supersession`(`old_pub`,`new_pub`) VALUES (?,?)',
+			array($oldPub, $newPub));
+		return $this->_db->getLastInsertId();
+	}
+
+	function addSite($name, $url, $description, $copy_base, $low, $live)
+	{
+		$this->_db->execute('INSERT INTO `site`(`name`,`url`,`description`,`copy_base`,`low`,`live`) VALUES (?,?,?,?,?,?)',
+			array($name, $url, $description, $copy_base, $low, $live));
+		return $this->_db->getLastInsertId();
+	}
+
+	function addCopy($pubId, $format, $siteId, $url,
+		$notes, $size, $md5, $credits, $amendSerial)
+	{
+		$this->_db->execute('INSERT INTO `copy`(`pub`,`format`,`site`,`url`,`notes`,`size`,`md5`,`credits`,`amend_serial`) '
+			. 'VALUES (?,?,?,?,?,?,?,?,?)',
+			array($pubId, $format, $siteId, $url, $notes, $size, $md5, $credits, $amendSerial));
+		$result = $this->_db->getLastInsertId();
+		$this->_db->execute('UPDATE `pub` SET `pub_has_online_copies`=1 WHERE `pub_id`=?', array($pubId));
+		return $result;
+	}
+
+	function addBitSaversDirectory($companyId, $directory)
+	{
+		$row = $this->execute("SELECT FROM `company_bitsaver` WHERE `company_id`=?", array($companyId));
+		if (count($row) == 0)
+		{
+			$this->_db->execute('INSERT INTO `company_bitsavers`(`company_id`,`directory`) VALUES (?,?)',
+				array($companyId, $directory));
+		}
+	}
+
 }
 
 ?>

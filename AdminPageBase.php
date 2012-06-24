@@ -16,7 +16,7 @@ class AdminPageBase extends PageBase
 	{
 		if (array_key_exists($name, $this->_vars))
 		{
-			return $this->_vars[$name];
+			return urldecode($this->_vars[$name]);
 		}
 		else
 		{

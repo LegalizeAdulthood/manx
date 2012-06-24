@@ -112,12 +112,13 @@ class TestManx extends PHPUnit_Framework_TestCase
 	{
 		$this->createInstance();
 		$this->startOutputCapture();
+		$_SERVER['PATH_INFO'] = '';
 		$this->_manx->renderLoginLink(array(
 			'PHP_SELF' => '/manx/about.php',
 			'SERVER_NAME' => 'localhost',
 			'SERVER_PORT' => 8888));
 		$output = $this->finishOutputCapture();
-		$this->assertEquals('<a href="http://localhost:8888/manx/login.php?redirect=%2Fmanx%2Fabout.php">Login</a>', $output);
+		$this->assertEquals('<a href="login.php?redirect=%2Fmanx%2Fabout.php">Login</a>', $output);
 	}
 
 	public function testRenderDocumentSummary()

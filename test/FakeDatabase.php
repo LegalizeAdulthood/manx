@@ -11,6 +11,10 @@ class FakeDatabase implements IDatabase
 		$this->queryFakeResultsForQuery = array();
 		$this->queryLastStatement = '';
 		$this->queryCalledForStatement = array();
+		$this->executeCalled = false;
+		$this->executeLastStatements = array();
+		$this->executeLastArgs = array();
+		$this->getLastInsertIdCalled = false;
 	}
 
 	public $queryFakeResults;
@@ -47,13 +51,21 @@ class FakeDatabase implements IDatabase
 
 	public function execute($statement, $args)
 	{
-		throw new Exception("execute not implemented.");
+		$this->executeCalled = true;
+		array_push($this->executeLastStatements, $statement);
+		array_push($this->executeLastArgs, $args);
+		return $this->executeFakeResult;
 	}
+	public $executeCalled,
+		$executeLastStatements, $executeLastArgs,
+		$executeFakeResult;
 
 	public function getLastInsertId()
 	{
-		throw new Exception("getLastInsertId not implemented");
+		$this->getLastInsertIdCalled = true;
+		return $this->getLastInsertIdFakeResult;
 	}
+	public $getLastInsertIdCalled, $getLastInsertIdFakeResult;
 }
 
 ?>

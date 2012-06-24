@@ -13,6 +13,7 @@ class MenuType
 	const Company = 6;
 	const Copy = 7;
 	const Site = 8;
+	const UrlWizard = 9;
 }
 
 class PageBase
@@ -49,7 +50,7 @@ class PageBase
 		return MenuType::Undefined;
 	}
 
-	private function renderLink($rel, $type, $href)
+	protected function renderLink($rel, $type, $href)
 	{
 		printf('<link rel="%s" type="%s" href="%s" />' . "\n", $rel, $type, $this->_topDir . $href);
 	}
@@ -101,12 +102,14 @@ EOH;
 	{
 		if ($this->_user->isAdmin())
 		{
+			//$this->renderMenuSeparator();
+			//$this->renderMenuItem(false, ($menu == MenuType::Company), "company.php", "Company");
 			$this->renderMenuSeparator();
-			$this->renderMenuitem(false, ($menu == MenuType::Company), "company.php", "Company");
-			$this->renderMenuSeparator();
-			$this->renderMenuItem(true, ($menu == MenuType::Publication), "publication.php", "Publication");
-			$this->renderMenuSeparator();
-			$this->renderMenuItem(true, ($menu == MenuType::Copy), "copy.php", "Copy");
+			$this->renderMenuItem(false, ($menu == MenuType::UrlWizard), "url-wizard.php", "URL Wizard");
+			//$this->renderMenuItem(false, ($menu == MenuType::Publication), "publication.php", "Publication");
+			//$this->renderMenuSeparator();
+			//$this->renderMenuItem(false, ($menu == MenuType::Copy), "copy.php", "Copy");
+			//$this->renderMenuSeparator();
 			$this->renderMenuSeparator();
 			$this->renderMenuItem(false, ($menu == MenuType::Site), "site.php", "Site");
 			$this->renderMenuSeparator();

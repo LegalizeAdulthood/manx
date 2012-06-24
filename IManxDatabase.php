@@ -36,6 +36,11 @@ interface IManxDatabase
 	function getFormatForExtension($extension);
 	function getCompanyForBitSaversDirectory($dir);
 	function deleteUserSession($sessionId);
+	function addSupersession($oldPub, $newPub);
+	function addSite($name, $url, $description, $copy_base, $low, $live);
+	function addCopy($pubId, $format, $siteId, $url,
+		$notes, $size, $md5, $credits, $amendSerial);
+	function addBitSaversDirectory($companyId, $directory);
 }
 
 ?>
