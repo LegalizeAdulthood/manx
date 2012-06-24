@@ -444,41 +444,9 @@ class Manx implements IManx
 		Cookie::delete();
 	}
 
-	public function renderLoginLink($server)
-	{
-		$redirect = $server['PHP_SELF'];
-		if (array_key_exists('QUERY_STRING', $server) and strlen($server['QUERY_STRING']) > 0)
-		{
-			$redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
-		}
-		$prefix = $this->getRelativePrefixFromPathInfo();
-		printf('<a href="%slogin.php?redirect=%s">Login</a>', $prefix, urlencode($redirect));
-	}
-
 	public static function getRelativePrefixFromPathInfo()
 	{
 		return str_repeat('../', count(split('/', $_SERVER['PATH_INFO'])) - 1);
-	}
-
-	private function renderLogoutLink()
-	{
-		$prefix = $this->getRelativePrefixFromPathInfo();
-		printf('<a href="%slogin.php?LOGO=1&redirect=%ssearch.php">Logout</a>', $prefix, $prefix);
-	}
-
-	function renderAuthorization()
-	{
-		$user = User::getInstanceFromSession($this->_manxDb);
-		print '<div id="AUTH">' . $user->displayName() . ' | ';
-		if ($user->isLoggedIn())
-		{
-			$this->renderLogoutLink();
-		}
-		else
-		{
-			$this->renderLoginLink($_SERVER);
-		}
-		print "</div>\n";
 	}
 
 	function loginUser($user, $password)

@@ -108,19 +108,6 @@ class TestManx extends PHPUnit_Framework_TestCase
 		return $output;
 	}
 
-	public function testRenderLoginLink()
-	{
-		$this->createInstance();
-		$this->startOutputCapture();
-		$_SERVER['PATH_INFO'] = '';
-		$this->_manx->renderLoginLink(array(
-			'PHP_SELF' => '/manx/about.php',
-			'SERVER_NAME' => 'localhost',
-			'SERVER_PORT' => 8888));
-		$output = $this->finishOutputCapture();
-		$this->assertEquals('<a href="login.php?redirect=%2Fmanx%2Fabout.php">Login</a>', $output);
-	}
-
 	public function testDetailParamsForPathInfoCompanyAndId()
 	{
 		$params = Manx::detailParamsForPathInfo('/1,2');

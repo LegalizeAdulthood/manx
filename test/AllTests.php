@@ -7,6 +7,7 @@ require_once 'test/TestManxDatabase.php';
 require_once 'test/TestUrlWizardPage.php';
 require_once 'test/TestUrlWizardService.php';
 require_once 'test/TestAboutPage.php';
+require_once 'test/TestPageBase.php';
 
 class AllTests
 {
@@ -20,6 +21,7 @@ class AllTests
 		$suite->addTestSuite('TestUrlWizardPage');
 		$suite->addTestSuite('TestUrlWizardService');
 		$suite->addTestSuite('TestAboutPage');
+		$suite->addTestSuite('TestPageBase');
 		return $suite;
 	}
 }

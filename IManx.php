@@ -3,7 +3,6 @@
 interface IManx
 {
 	public function getDatabase();
-	public function renderAuthorization();
 	public function renderSearchResults();
 	public function getDetailsForPathInfo($pathInfo);
 	public function renderDetails($details);
