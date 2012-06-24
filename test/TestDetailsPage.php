@@ -1,15 +1,14 @@
 <?php
 
-require_once 'Manx.php';
-require_once 'test/FakeStatement.php';
-require_once 'test/FakeDatabase.php';
+require_once 'DetailsPage.php';
 require_once 'test/FakeManxDatabase.php';
+require_once 'test/FakeManx.php';
 
-class ManxRenderDetailsTester extends Manx
+class RenderDetailsTester extends DetailsPage
 {
-	public function __construct($manxDb)
+	public function __construct($manx)
 	{
-		Manx::__construct($manxDb);
+		DetailsPage::__construct($manx);
 		$this->renderLanguageCalled = false;
 		$this->renderAmendmentsCalled = false;
 		$this->renderOSTagsCalled = false;
@@ -18,6 +17,11 @@ class ManxRenderDetailsTester extends Manx
 		$this->renderSupersessionsCalled = false;
 		$this->renderTableOfContentsCalled = false;
 		$this->renderCopiesCalled = false;
+	}
+
+	public function renderBodyContent()
+	{
+		parent::renderBodyContent();
 	}
 
 	public $renderLanguageCalled, $renderLanguageLastLanguage;
@@ -78,10 +82,11 @@ class ManxRenderDetailsTester extends Manx
 	}
 }
 
-class TestManx extends PHPUnit_Framework_TestCase
+class TestDetailsPage extends PHPUnit_Framework_TestCase
 {
 	private $_db;
 	private $_manx;
+	private $_page;
 
 	private function fakeStatementFetchResults($results)
 	{
@@ -92,8 +97,11 @@ class TestManx extends PHPUnit_Framework_TestCase
 
 	private function createInstance()
 	{
+		$_SERVER['PATH_INFO'] = '/1,3';
 		$this->_db = new FakeManxDatabase();
-		$this->_manx = Manx::getInstanceForDatabase($this->_db);
+		$this->_manx = new FakeManx();
+		$this->_manx->getDatabaseFakeResult = $this->_db;
+		$this->_page = new DetailsPage($this->_manx);
 	}
 
 	private function startOutputCapture()
@@ -110,7 +118,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 
 	public function testDetailParamsForPathInfoCompanyAndId()
 	{
-		$params = Manx::detailParamsForPathInfo('/1,2');
+		$params = DetailsPage::detailParamsForPathInfo('/1,2');
 		$this->assertEquals(4, count(array_keys($params)));
 		$this->assertEquals(1, $params['cp']);
 		$this->assertEquals(2, $params['id']);
@@ -120,24 +128,24 @@ class TestManx extends PHPUnit_Framework_TestCase
 
 	public function testNeatListPlainOneItem()
 	{
-		$this->assertEquals('English', Manx::neatListPlain(array('English')));
+		$this->assertEquals('English', DetailsPage::neatListPlain(array('English')));
 	}
 
 	public function testNeatListPlainTwoItems()
 	{
-		$this->assertEquals('English and French', Manx::neatListPlain(array('English', 'French')));
+		$this->assertEquals('English and French', DetailsPage::neatListPlain(array('English', 'French')));
 	}
 
 	public function testNeatListPlainThreeItems()
 	{
-		$this->assertEquals('English, French and German', Manx::neatListPlain(array('English', 'French', 'German')));
+		$this->assertEquals('English, French and German', DetailsPage::neatListPlain(array('English', 'French', 'German')));
 	}
 
 	public function testRenderLanguageEnglishGivesNoOutput()
 	{
 		$this->createInstance();
 		$this->startOutputCapture();
-		$this->_manx->renderLanguage('+en');
+		$this->_page->renderLanguage('+en');
 		$output = $this->finishOutputCapture();
 		$this->assertFalse($this->_db->getDisplayLanguageCalled);
 		$this->assertEquals('', $output);
@@ -157,7 +165,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 		$this->createInstance();
 		$this->_db->getDisplayLanguageFakeResult['fr'] = 'French';
 		$this->startOutputCapture();
-		$this->_manx->renderLanguage('+fr');
+		$this->_page->renderLanguage('+fr');
 		$output = $this->finishOutputCapture();
 		$this->assertTrue($this->_db->getDisplayLanguageCalled);
 		$this->assertEquals("<tr><td>Language:</td><td>French</td></tr>\n", $output);
@@ -170,7 +178,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 		$this->_db->getDisplayLanguageFakeResult['fr'] = 'French';
 		$this->_db->getDisplayLanguageFakeResult['de'] = 'German';
 		$this->startOutputCapture();
-		$this->_manx->renderLanguage('+en+fr+de');
+		$this->_page->renderLanguage('+en+fr+de');
 		$output = $this->finishOutputCapture();
 		$this->assertTrue($this->_db->getDisplayLanguageCalled);
 		$this->assertEquals("<tr><td>Languages:</td><td>English, French and German</td></tr>\n", $output);
@@ -193,7 +201,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 		$this->_db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
 
 		$this->startOutputCapture();
-		$this->_manx->renderAmendments($pubId);
+		$this->_page->renderAmendments($pubId);
 		$output = $this->finishOutputCapture();
 		$this->assertGetOSTagsForPubCalledForPubId($this->_db, $pubId);
 		$this->assertTrue($this->_db->getAmendmentsForPubCalled);
@@ -209,7 +217,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 		$this->createInstance();
 		$this->_db->getOSTagsForPubFakeResult = array();
 		$this->startOutputCapture();
-		$this->_manx->renderOSTags(3);
+		$this->_page->renderOSTags(3);
 		$output = $this->finishOutputCapture();
 		$this->assertGetOSTagsForPubCalledForPubId($this->_db, 3);
 		$this->assertEquals('', $output);
@@ -220,7 +228,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 		$this->createInstance();
 		$this->_db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
 		$this->startOutputCapture();
-		$this->_manx->renderOSTags(3);
+		$this->_page->renderOSTags(3);
 		$output = $this->finishOutputCapture();
 		$this->assertGetOSTagsForPubCalledForPubId($this->_db, 3);
 		$this->assertEquals("<tr><td>Operating System:</td><td>RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</td></tr>\n", $output);
@@ -232,7 +240,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 		$this->_db->getLongDescriptionForPubFakeResult = array();
 		$pubId = 3;
 		$this->startOutputCapture();
-		$this->_manx->renderLongDescription($pubId);
+		$this->_page->renderLongDescription($pubId);
 		$output = $this->finishOutputCapture();
 		$this->assertTrue($this->_db->getLongDescriptionForPubCalled);
 		$this->assertEquals($pubId, $this->_db->getLongDescriptionForPubLastPubId);
@@ -245,7 +253,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 		$this->_db->getLongDescriptionForPubFakeResult = array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>');
 		$pubId = 3;
 		$this->startOutputCapture();
-		$this->_manx->renderLongDescription($pubId);
+		$this->_page->renderLongDescription($pubId);
 		$output = $this->finishOutputCapture();
 		$this->assertTrue($this->_db->getLongDescriptionForPubCalled);
 		$this->assertEquals($pubId, $this->_db->getLongDescriptionForPubLastPubId);
@@ -257,14 +265,14 @@ class TestManx extends PHPUnit_Framework_TestCase
 	{
 		$row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => NULL);
 		$this->assertEquals('<a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>',
-			Manx::formatDocRef($row));
+			DetailsPage::formatDocRef($row));
 	}
 
 	public function testFormatDocRefWithPart()
 	{
 		$row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => 'FECGAPR');
 		$this->assertEquals('FECGAPR, <a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>',
-			Manx::formatDocRef($row));
+			DetailsPage::formatDocRef($row));
 	}
 
 	public function testRenderCitations()
@@ -275,7 +283,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 			array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance')));
 		$pubId = 72;
 		$this->startOutputCapture();
-		$this->_manx->renderCitations($pubId);
+		$this->_page->renderCitations($pubId);
 		$output = $this->finishOutputCapture();
 		$this->assertTrue($this->_db->getCitationsForPubCalled);
 		$this->assertEquals($pubId, $this->_db->getCitationsForPubLastPubId);
@@ -416,7 +424,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 				array(2, 'B.4', 'Global Q22-Bus Address Space Map'),
 				array(1, 'Appendix C', 'Related Documentation')));
 		$this->startOutputCapture();
-		$this->_manx->renderTableOfContents(123, true);
+		$this->_page->renderTableOfContents(123, true);
 		$output = $this->finishOutputCapture();
 		$this->assertTrue($this->_db->getTableOfContentsForPubCalled);
 		$this->assertEquals(123, $this->_db->getTableOfContentsForPubLastPubId);
@@ -614,7 +622,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 				'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf');
 
 		$this->startOutputCapture();
-		$this->_manx->renderCopies(123);
+		$this->_page->renderCopies(123);
 		$output = $this->finishOutputCapture();
 		$this->assertEquals(
 			"<h2>Copies</h2>\n"
@@ -680,7 +688,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 			array(array('ph_company' => 1, 'ph_pub' => 23, 'ph_part' => 'EK-11024-TM-PRE', 'ph_title' => 'PDP-11/24 System Technical Manual'));
 		$pubId = 6105;
 		$this->startOutputCapture();
-		$this->_manx->renderSupersessions($pubId);
+		$this->_page->renderSupersessions($pubId);
 		$output = $this->finishOutputCapture();
 		$this->assertTrue($this->_db->getPublicationsSupersededByPubCalled);
 		$this->assertEquals($pubId, $this->_db->getPublicationsSupersededByPubLastPubId);
@@ -699,7 +707,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 			array(array('ph_company' => 1, 'ph_pub' => 6105, 'ph_part' => 'EK-11024-TM-001', 'ph_title' => 'PDP-11/24 System Technical Manual'));
 		$pubId = 23;
 		$this->startOutputCapture();
-		$this->_manx->renderSupersessions($pubId);
+		$this->_page->renderSupersessions($pubId);
 		$output = $this->finishOutputCapture();
 		$this->assertTrue($this->_db->getPublicationsSupersededByPubCalled);
 		$this->assertEquals($pubId, $this->_db->getPublicationsSupersededByPubLastPubId);
@@ -728,7 +736,7 @@ class TestManx extends PHPUnit_Framework_TestCase
 			'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pubdate' => '1984-02');
 
 		$this->startOutputCapture();
-		$this->_manx->renderCopies(123);
+		$this->_page->renderCopies(123);
 		$output = $this->finishOutputCapture();
 		$this->assertEquals(
 			"<h2>Copies</h2>\n"
@@ -770,33 +778,39 @@ class TestManx extends PHPUnit_Framework_TestCase
 
 	public function testRenderDetails()
 	{
-		$this->createInstance();
+		$_SERVER['PATH_INFO'] = '/1,3';
+		$this->_db = new FakeManxDatabase();
 		$rows = FakeDatabase::createResultRowsForColumns(
-			array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
-			array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
-		$this->_manx = new ManxRenderDetailsTester($this->_db);
+			array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract',
+				'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
+			array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL,
+				'', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
+		$this->_db->getDetailsForPubFakeResult = $rows[0];
+		$this->_manx = new FakeManx();
+		$this->_manx->getDatabaseFakeResult = $this->_db;
+		$this->_page = new RenderDetailsTester($this->_manx);
 		$this->startOutputCapture();
 
-		$this->_manx->renderDetails(array(Manx::detailParamsForPathInfo('/1,3'), $rows[0]));
+		$this->_page->renderBodyContent();
 
 		$output = $this->finishOutputCapture();
-		$this->assertTrue($this->_manx->renderLanguageCalled);
-		$this->assertEquals('+en', $this->_manx->renderLanguageLastLanguage);
-		$this->assertTrue($this->_manx->renderAmendmentsCalled);
-		$this->assertEquals(3, $this->_manx->renderAmendmentsLastPubId);
-		$this->assertTrue($this->_manx->renderOSTagsCalled);
-		$this->assertEquals(3, $this->_manx->renderOSTagsLastPubId);
-		$this->assertTrue($this->_manx->renderLongDescriptionCalled);
-		$this->assertEquals(3, $this->_manx->renderLongDescriptionLastPubId);
-		$this->assertTrue($this->_manx->renderCitationsCalled);
-		$this->assertEquals(3, $this->_manx->renderCitationsLastPubId);
-		$this->assertTrue($this->_manx->renderSupersessionsCalled);
-		$this->assertEquals(3, $this->_manx->renderSupersessionsLastPubId);
-		$this->assertTrue($this->_manx->renderTableOfContentsCalled);
-		$this->assertEquals(3, $this->_manx->renderTableOfContentsLastPubId);
-		$this->assertEquals(true, $this->_manx->renderTableOfContentsLastFullContents);
-		$this->assertTrue($this->_manx->renderCopiesCalled);
-		$this->assertEquals(3, $this->_manx->renderCopiesLastPubId);
+		$this->assertTrue($this->_page->renderLanguageCalled);
+		$this->assertEquals('+en', $this->_page->renderLanguageLastLanguage);
+		$this->assertTrue($this->_page->renderAmendmentsCalled);
+		$this->assertEquals(3, $this->_page->renderAmendmentsLastPubId);
+		$this->assertTrue($this->_page->renderOSTagsCalled);
+		$this->assertEquals(3, $this->_page->renderOSTagsLastPubId);
+		$this->assertTrue($this->_page->renderLongDescriptionCalled);
+		$this->assertEquals(3, $this->_page->renderLongDescriptionLastPubId);
+		$this->assertTrue($this->_page->renderCitationsCalled);
+		$this->assertEquals(3, $this->_page->renderCitationsLastPubId);
+		$this->assertTrue($this->_page->renderSupersessionsCalled);
+		$this->assertEquals(3, $this->_page->renderSupersessionsLastPubId);
+		$this->assertTrue($this->_page->renderTableOfContentsCalled);
+		$this->assertEquals(3, $this->_page->renderTableOfContentsLastPubId);
+		$this->assertEquals(true, $this->_page->renderTableOfContentsLastFullContents);
+		$this->assertTrue($this->_page->renderCopiesCalled);
+		$this->assertEquals(3, $this->_page->renderCopiesLastPubId);
 		$this->assertEquals('<div style="float:right; margin: 10px"><img src="gigi_regis_handbook.png" alt="" /></div>'
 			. "<div class=\"det\"><h1>GIGI/ReGIS Handbook</h1>\n"
 			. "<table><tbody><tr><td>Company:</td><td>Digital Equipment Corporation</td></tr>\n"
@@ -810,17 +824,17 @@ class TestManx extends PHPUnit_Framework_TestCase
 
 	public function testReplaceNullWithEmptyStringOrTrimForNull()
 	{
-		$this->assertEquals('', Manx::replaceNullWithEmptyStringOrTrim(null));
+		$this->assertEquals('', DetailsPage::replaceNullWithEmptyStringOrTrim(null));
 	}
 
 	public function testReplaceNullWithEmptyStringOrTrimForString()
 	{
-		$this->assertEquals('foo', Manx::replaceNullWithEmptyStringOrTrim('foo'));
+		$this->assertEquals('foo', DetailsPage::replaceNullWithEmptyStringOrTrim('foo'));
 	}
 
 	public function testReplaceNullWithEmptyStringOrTrimForWhitespace()
 	{
-		$this->assertEquals('foo', Manx::replaceNullWithEmptyStringOrTrim(" foo\t\r\n"));
+		$this->assertEquals('foo', DetailsPage::replaceNullWithEmptyStringOrTrim(" foo\t\r\n"));
 	}
 }
 

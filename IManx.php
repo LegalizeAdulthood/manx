@@ -3,16 +3,6 @@
 interface IManx
 {
 	public function getDatabase();
-	public function getDetailsForPathInfo($pathInfo);
-	public function renderDetails($details);
-	public function renderLanguage($lang);
-	public function renderAmendments($pubId);
-	public function renderOSTags($pubId);
-	public function renderLongDescription($pubId);
-	public function renderCitations($pubId);
-	public function renderSupersessions($pubId);
-	public function renderTableOfContents($pubIdm, $fullContents);
-	public function renderCopies($pubId);
 	public function loginUser($user, $password);
 	public function logout();
 	public function getUserFromSession();
