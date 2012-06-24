@@ -121,50 +121,6 @@ class TestManx extends PHPUnit_Framework_TestCase
 		$this->assertEquals('<a href="login.php?redirect=%2Fmanx%2Fabout.php">Login</a>', $output);
 	}
 
-	public function testRenderDocumentSummary()
-	{
-		$this->createInstance();
-		$this->_db->getDocumentCountFakeResult = 12;
-		$this->_db->getOnlineDocumentCountFakeResult = 24;
-		$this->_db->getSiteCountFakeResult = 43;
-		$this->startOutputCapture();
-		$this->_manx->renderDocumentSummary();
-		$output = $this->finishOutputCapture();
-		$this->assertTrue($this->_db->getDocumentCountCalled);
-		$this->assertTrue($this->_db->getOnlineDocumentCountCalled);
-		$this->assertTrue($this->_db->getSiteCountCalled);
-		$this->assertEquals("12 manuals, 24 of which are online, at 43 websites", $output);
-	}
-
-	public function testRenderCompanyList()
-	{
-		$this->createInstance();
-		$this->_db->getCompanyListFakeResult = array(
-			array('id' => 1, 'name' => "DEC"),
-			array('id' => 2, 'name' => "HP"));
-		$this->startOutputCapture();
-		$this->_manx->renderCompanyList();
-		$output = $this->finishOutputCapture();
-		$this->assertTrue($this->_db->getCompanyListCalled);
-		$this->assertEquals('<a href="search.php?cp=1">DEC</a>, <a href="search.php?cp=2">HP</a>', $output);
-	}
-
-	public function testRenderSiteList()
-	{
-		$this->createInstance();
-		$this->_db->getSiteListFakeResult = FakeDatabase::createResultRowsForColumns(
-			array('url', 'description', 'low'),
-			array(
-				array('http://www.dec.com', 'DEC', false),
-				array('http://www.hp.com', 'HP', true)
-			));
-		$this->startOutputCapture();
-		$this->_manx->renderSiteList();
-		$output = $this->finishOutputCapture();
-		$this->assertEquals('<ul><li><a href="http://www.dec.com">DEC</a></li>'
-			. '<li><a href="http://www.hp.com">HP</a> <span class="warning">(Low Bandwidth)</span></li></ul>', $output);
-	}
-
 	public function testDetailParamsForPathInfoCompanyAndId()
 	{
 		$params = Manx::detailParamsForPathInfo('/1,2');

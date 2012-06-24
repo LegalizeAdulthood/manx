@@ -2,9 +2,8 @@
 
 interface IManx
 {
+	public function getDatabase();
 	public function renderAuthorization();
-	public function renderDocumentSummary();
-	public function renderCompanyList();
 	public function renderSearchResults();
 	public function getDetailsForPathInfo($pathInfo);
 	public function renderDetails($details);
@@ -30,7 +29,6 @@ interface IManx
 	public function getFormatForExtension($extension);
 	public function getCompanyForBitSaversDirectory($dir);
 	public function getPublicationsForPartNumber($part, $companyId);
-	public function getDatabase();
 }
 
 ?>

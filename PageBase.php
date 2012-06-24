@@ -19,12 +19,14 @@ class MenuType
 class PageBase
 {
 	protected $_manx;
+	protected $_manxDb;
 	protected $_topDir;
 	protected $_user;
 
 	public function __construct(IManx $manx)
     {
 		$this->_manx = $manx;
+		$this->_manxDb = $manx->getDatabase();
 		$this->_topDir = str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1);
 		$this->_user = $this->_manx->getUserFromSession();
 	}

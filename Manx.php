@@ -32,56 +32,9 @@ class Manx implements IManx
 		$this->_manxDb = null;
 	}
 
-	function renderSiteList()
+	public function getDatabase()
 	{
-		try
-		{
-			print '<ul>';
-			foreach ($this->_manxDb->getSiteList() as $row)
-			{
-				print '<li><a href="' . $row['url'] . '">' . htmlspecialchars($row['description']) . '</a>';
-				if ('Y' == $row['low'])
-				{
-					print ' <span class="warning">(Low Bandwidth)</span>';
-				}
-				print '</li>';
-			}
-			print '</ul>';
-		}
-		catch (Exception $e)
-		{
-			print "Unexpected error: " . $e->getMessage();
-		}
-	}
-
-	function renderCompanyList()
-	{
-		try
-		{
-			$rows = $this->_manxDb->getCompanyList();
-			$count = count($rows);
-			$i = 0;
-			foreach ($rows as $row)
-			{
-				print '<a href="search.php?cp=' . $row['id'] . '">' . htmlspecialchars($row['name']) . '</a>';
-				$i++;
-				if ($i < $count)
-				{
-					print ', ';
-				}
-			}
-		}
-		catch (Exception $e)
-		{
-			print "Unexpected error: " . $e->getMessage();
-		}
-	}
-
-	function renderDocumentSummary()
-	{
-		echo $this->_manxDb->getDocumentCount(), ' manuals, ',
-			$this->_manxDb->getOnlineDocumentCount(), ' of which are online, at ',
-			$this->_manxDb->getSiteCount(), ' websites';
+		return $this->_manxDb;
 	}
 
 	private function getRedirect($server)
@@ -602,11 +555,6 @@ class Manx implements IManx
 	public function getPublicationsForPartNumber($part, $companyId)
 	{
 		return $this->_manxDb->getPublicationsForPartNumber($part, $companyId);
-	}
-
-	public function getDatabase()
-	{
-		return $this->_manxDb;
 	}
 }
 

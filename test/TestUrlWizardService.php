@@ -222,6 +222,7 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 			"pub_date" => "1976-04",
 			"title" => "Rev B 4010 Maintenance Manual",
 			"format" => "PDF",
+			"bitsavers_directory" => "tektronix",
 			"pubs" => array()
 		));
 		$this->assertTrue($this->_manx->getSitesCalled);

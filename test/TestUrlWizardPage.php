@@ -344,17 +344,24 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 </fieldset>
 
 <fieldset id="supersession_fields" class="hidden">
-<legend id="supersession_legend">Supersedes</legend>
+<legend id="supersession_legend">Supersession</legend>
 <ul>
 
 <li id="supersession_search_keywords_field">
-<label for="supersession_search_keywords">Keywords</label>
+<label for="supersession_search_keywords">Search keywords</label>
 <input type="text" id="supersession_search_keywords" name="supersession_search_keywords" size="40" value="" />
 </li>
 
 <li>
-<label for="supersession_old_pub">Publication</label>
+<label for="supersession_old_pub">Supersedes</label>
 <select id="supersession_old_pub" name="supersession_old_pub">
+<option value="-1">(None)</option>
+</select>
+</li>
+
+<li>
+<label for="supersession_new_pub">Superseded by</label>
+<select id="supersession_new_pub" name="supersession_new_pub">
 <option value="-1">(None)</option>
 </select>
 </li>

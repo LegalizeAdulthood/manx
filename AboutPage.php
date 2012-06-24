@@ -37,11 +37,11 @@ catalogue for microcomputers.</p>
 EOH;
 
 		print "<p><strong>Manx</strong> currently knows about ";
-		$this->_manx->renderDocumentSummary();
+		$this->renderDocumentSummary();
 		print ".</p>\n";
 
 		print "<p>Manx covers the following companies:\n";
-		$this->_manx->renderCompanyList();
+		$this->renderCompanyList();
 		print <<<EOH
 </p>
 
@@ -53,7 +53,7 @@ one manual, it is worth including. This list is ordered by date of
 inclusion in Manx.</p>
 EOH;
 
-		$this->_manx->renderSiteList();
+		$this->renderSiteList();
 
 		print <<<EOH
 <p>Some of these sites are marked as being Low Bandwidth. They are either on
@@ -71,6 +71,58 @@ Williams took his implementation offline.</p>
 <p>Jay West provides hosting services
 for Manx.  Thank you, Jay!</p>
 EOH;
+	}
+
+	public function renderDocumentSummary()
+	{
+		echo $this->_manxDb->getDocumentCount(), ' manuals, ',
+			$this->_manxDb->getOnlineDocumentCount(), ' of which are online, at ',
+			$this->_manxDb->getSiteCount(), ' websites';
+	}
+
+	public function renderCompanyList()
+	{
+		try
+		{
+			$rows = $this->_manxDb->getCompanyList();
+			$count = count($rows);
+			$i = 0;
+			foreach ($rows as $row)
+			{
+				print '<a href="search.php?cp=' . $row['id'] . '">' . htmlspecialchars($row['name']) . '</a>';
+				$i++;
+				if ($i < $count)
+				{
+					print ', ';
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			print "Unexpected error: " . $e->getMessage();
+		}
+	}
+
+	public function renderSiteList()
+	{
+		try
+		{
+			print '<ul>';
+			foreach ($this->_manxDb->getSiteList() as $row)
+			{
+				print '<li><a href="' . $row['url'] . '">' . htmlspecialchars($row['description']) . '</a>';
+				if ('Y' == $row['low'])
+				{
+					print ' <span class="warning">(Low Bandwidth)</span>';
+				}
+				print '</li>';
+			}
+			print '</ul>';
+		}
+		catch (Exception $e)
+		{
+			print "Unexpected error: " . $e->getMessage();
+		}
 	}
 }
 
