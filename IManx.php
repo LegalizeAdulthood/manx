@@ -3,7 +3,6 @@
 interface IManx
 {
 	public function getDatabase();
-	public function renderSearchResults();
 	public function getDetailsForPathInfo($pathInfo);
 	public function renderDetails($details);
 	public function renderLanguage($lang);
