@@ -52,9 +52,14 @@ class PageBase
 		return MenuType::Undefined;
 	}
 
-	protected function renderLink($rel, $type, $href)
+	protected function renderLink($rel, $type, $href, $attributes = array())
 	{
-		printf('<link rel="%s" type="%s" href="%s" />' . "\n", $rel, $type, $this->_topDir . $href);
+		$attributeText = '';
+		foreach ($attributes as $name => $value)
+		{
+			$attributeText .= sprintf('%s="%s" ', $name, htmlspecialchars(trim($value)));
+		}
+		printf('<link rel="%s" type="%s" href="%s" %s/>' . "\n", $rel, $type, $this->_topDir . $href, $attributeText);
 	}
 
 	protected function renderHeader()
@@ -68,7 +73,7 @@ EOH;
 		printf("<title>%s</title>\n", $this->getTitle());
 		$this->renderLink("stylesheet", "text/css", "manx.css");
 		$this->renderLink("shortcut icon", "image/x-icon", "manx.ico");
-		$this->renderLink("alternate", "application/rss+xml", "rss.php");
+		$this->renderLink("alternate", "application/rss+xml", "rss.php", array('title' => 'Manx New Documents'));
 		$this->renderHeaderContent();
 		print "</head>\n";
 	}
