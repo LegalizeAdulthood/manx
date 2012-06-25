@@ -411,6 +411,21 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 		$this->assertTrue($this->_db->getLastInsertIdCalled);
 	}
 
+	public function testGetMostRecentDocuments()
+	{
+		$this->createInstance();
+		$count = 200;
+		$query = sprintf('SELECT `ph_pub`, `ph_company`, `ph_title`, '
+			. "IF(ISNULL(`ph_abstract`), '', `ph_abstract`) AS `ph_abstract`, "
+			. '`ph_created`, `company`.`name` AS `company_name` '
+			. 'FROM `pub_history`, `company` '
+			. 'WHERE `pub_history`.`ph_company` = `company`.`id` '
+			. 'ORDER BY `ph_created` DESC LIMIT 0,%d', $count);
+		$rows = $this->_manxDb->getMostRecentDocuments(200);
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals($query, $this->_db->executeLastStatements[0]);
+	}
+
 	public function testSortPartNumberGRINoMatch()
 	{
 		$this->assertEquals('XX', ManxDatabase::sortPartNumberGRI('XX'));

@@ -68,6 +68,7 @@ EOH;
 		printf("<title>%s</title>\n", $this->getTitle());
 		$this->renderLink("stylesheet", "text/css", "manx.css");
 		$this->renderLink("shortcut icon", "image/x-icon", "manx.ico");
+		$this->renderLink("alternate", "application/rss+xml", "rss.php");
 		$this->renderHeaderContent();
 		print "</head>\n";
 	}
@@ -76,7 +77,7 @@ EOH;
 	{
 	}
 
-	private function renderBody()
+	protected function renderBody()
 	{
 		$this->renderBodyHeader();
 		$this->renderBodyContent();

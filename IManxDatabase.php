@@ -41,6 +41,7 @@ interface IManxDatabase
 	function addCopy($pubId, $format, $siteId, $url,
 		$notes, $size, $md5, $credits, $amendSerial);
 	function addBitSaversDirectory($companyId, $directory);
+	function getMostRecentDocuments($count);
 }
 
 ?>

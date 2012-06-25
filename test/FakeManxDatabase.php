@@ -51,6 +51,8 @@ class FakeManxDatabase implements IManxDatabase
 		$this->getFormatForExtensionCalled = false;
 		$this->getMirrorsCalled = false;
 		$this->getMirrorsFakeResult = array();
+		$this->getMostRecentDocumentsCalled = false;
+		$this->getMostRecentDocumentsFakeResult = array();
 	}
 
 	public function getDocumentCount()
@@ -353,6 +355,16 @@ class FakeManxDatabase implements IManxDatabase
 	{
 		$this->notImplemented("addBitSaversDirectory");
 	}
+
+	function getMostRecentDocuments($count)
+	{
+		$this->getMostRecentDocumentsCalled = true;
+		$this->getMostRecentDocumentsLastCount = $count;
+		return $this->getMostRecentDocumentsFakeResult;
+	}
+	public $getMostRecentDocumentsCalled,
+		$getMostRecentDocumentsLastCount,
+		$getMostRecentDocumentsFakeResult;
 }
 
 ?>
