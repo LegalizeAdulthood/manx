@@ -580,6 +580,13 @@ class ManxDatabase implements IManxDatabase
 			. 'WHERE `pub_history`.`ph_company` = `company`.`id` '
 			. 'ORDER BY `ph_created` DESC LIMIT 0,%d', $count), array());
 	}
+
+	function getManxVersion()
+	{
+		$row = $this->fetch(
+			"SELECT `value` FROM `properties` WHERE `name`='version'");
+		return (count($row) > 0) ? $row['value'] : '1';
+	}
 }
 
 ?>

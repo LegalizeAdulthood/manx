@@ -55,6 +55,7 @@ inclusion in Manx.</p>
 EOH;
 
 		$this->renderSiteList();
+		$version = $this->_manxDb->getManxVersion();
 
 		print <<<EOH
 <p>Some of these sites are marked as being Low Bandwidth. They are either on
@@ -71,6 +72,8 @@ entered all the initial data.  Thank you, Paul!</p>
 <p>Richard Thomson rewrote manx in PHP when Paul
 Williams took his implementation offline.  Richard is the current
 maintainer of the code.</p>
+
+<p>This is version ${version}.</p>
 EOH;
 	}
 

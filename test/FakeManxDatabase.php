@@ -365,6 +365,11 @@ class FakeManxDatabase implements IManxDatabase
 	public $getMostRecentDocumentsCalled,
 		$getMostRecentDocumentsLastCount,
 		$getMostRecentDocumentsFakeResult;
+
+	function getManxVersion()
+	{
+		$this->notImplemented("getManxVersion");
+	}
 }
 
 ?>

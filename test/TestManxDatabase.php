@@ -426,6 +426,16 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 		$this->assertEquals($query, $this->_db->executeLastStatements[0]);
 	}
 
+	public function testGetManxVersion()
+	{
+		$this->createInstance();
+		$query = "SELECT `value` FROM `properties` WHERE `name`='version'";
+		$this->configureStatementFetchResult($query, '2');
+		$version = $this->_manxDb->getManxVersion();
+		$this->assertTrue($this->_statement->fetchCalled);
+		$this->assertEquals('2', $version);
+	}
+
 	public function testSortPartNumberGRINoMatch()
 	{
 		$this->assertEquals('XX', ManxDatabase::sortPartNumberGRI('XX'));
