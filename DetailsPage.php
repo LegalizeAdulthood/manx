@@ -59,7 +59,11 @@ class DetailsPage extends PageBase
 		}
 		echo '<div class="det"><h1>', $row['ph_title'], "</h1>\n";
 		echo '<table><tbody>';
-		$this->printTableRowFromDatabaseRow($row, 'Company', 'name');
+		$this->printTableRowNoEncode('Company',
+			sprintf('<a href="../search.php?cp=%d&q=">%s</a>',
+				$params['cp'],
+				htmlspecialchars(trim($row['name']))
+			));
 		$this->printTableRow('Part', $row['ph_part'] . ' ' . $row['ph_revision']);
 		$this->printTableRowFromDatabaseRow($row, 'Date', 'ph_pubdate');
 		$this->printTableRowFromDatabaseRow($row, 'Keywords', 'ph_keywords');
@@ -82,9 +86,14 @@ class DetailsPage extends PageBase
 		print "</div>\n";
 	}
 
+	private function printTableRowNoEncode($name, $value)
+	{
+		echo '<tr><td>', $name, ':</td><td>', $value, "</td></tr>\n";
+	}
+
 	private function printTableRow($name, $value)
 	{
-		echo '<tr><td>', $name, ':</td><td>', htmlspecialchars(trim($value)), "</td></tr>\n";
+		$this->printTableRowNoEncode($name, htmlspecialchars(trim($value)));
 	}
 
 	private function printTableRowFromDatabaseRow($row, $name, $key)

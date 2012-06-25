@@ -811,15 +811,16 @@ class TestDetailsPage extends PHPUnit_Framework_TestCase
 		$this->assertEquals(true, $this->_page->renderTableOfContentsLastFullContents);
 		$this->assertTrue($this->_page->renderCopiesCalled);
 		$this->assertEquals(3, $this->_page->renderCopiesLastPubId);
-		$this->assertEquals('<div style="float:right; margin: 10px"><img src="gigi_regis_handbook.png" alt="" /></div>'
-			. "<div class=\"det\"><h1>GIGI/ReGIS Handbook</h1>\n"
-			. "<table><tbody><tr><td>Company:</td><td>Digital Equipment Corporation</td></tr>\n"
-			. "<tr><td>Part:</td><td>AA-K336A-TK</td></tr>\n"
-			. "<tr><td>Date:</td><td></td></tr>\n"
-			. "<tr><td>Keywords:</td><td>VK100</td></tr>\n"
-			. "</tbody>\n"
-			. "</table>\n"
-			. "</div>\n", $output);
+		$expected = implode("\n", array(
+			'<div style="float:right; margin: 10px"><img src="gigi_regis_handbook.png" alt="" /></div><div class="det"><h1>GIGI/ReGIS Handbook</h1>',
+			'<table><tbody><tr><td>Company:</td><td><a href="../search.php?cp=1&q=">Digital Equipment Corporation</a></td></tr>',
+			'<tr><td>Part:</td><td>AA-K336A-TK</td></tr>',
+			'<tr><td>Date:</td><td></td></tr>',
+			'<tr><td>Keywords:</td><td>VK100</td></tr>',
+			'</tbody>',
+			'</table>',
+			'</div>')) . "\n";
+		$this->assertEquals($expected, $output);
 	}
 
 	public function testReplaceNullWithEmptyStringOrTrimForNull()
