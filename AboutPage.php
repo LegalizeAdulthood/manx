@@ -48,7 +48,8 @@ EOH;
 <p>The list below shows the websites included in Manx. As Manx is
 still being built, you will find that not all of the holdings of
 these websites have been catalogued. If you know of manuals on other
-sites, please let me know about them. Even if a site only contains
+sites, please <a href="http://manx.codeplex.com/WorkItem/Create">create
+a work item</a> for the Data component. Even if a site only contains
 one manual, it is worth including. This list is ordered by date of
 inclusion in Manx.</p>
 EOH;
@@ -65,11 +66,11 @@ with tools. It isn't a comment on the usefulness of the site!</p>
 <p>Paul Williams wrote the original implementation of Manx in perl and
 entered all the initial data.  Thank you, Paul!</p>
 
-<p>Richard Thomson rewrote manx in PHP when Paul
-Williams took his implementation offline.</p>
+<p>Jay West provides hosting services for Manx.  Thank you, Jay!</p>
 
-<p>Jay West provides hosting services
-for Manx.  Thank you, Jay!</p>
+<p>Richard Thomson rewrote manx in PHP when Paul
+Williams took his implementation offline.  Richard is the current
+maintainer of the code.</p>
 EOH;
 	}
 
