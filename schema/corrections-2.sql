@@ -7583,3 +7583,197 @@ UPDATE `copy` SET `md5` = '52d9149bd2e9497e674a190750e358a1' WHERE `url` = 'http
 UPDATE `copy` SET `md5` = 'a7d447cacd1860eb30c0e3fb510a325b' WHERE `url` = 'http://bitsavers.org/pdf/dec/pdp10/TOPS20/V4.0_Apr80/AA-5511A-TK_COGO_Inst_Jun78.pdf';
 UPDATE `copy` SET `md5` = '475a7d4b9216faeb179bced6b4771d18' WHERE `url` = 'http://bitsavers.org/pdf/dec/pdp10/TOPS20/V4.0_Apr80/AA-H654A-TM_BasicPlus2_Lang_Oct79.pdf';
 UPDATE `copy` SET `md5` = 'ab3b451993c5a9f45bf95c98e23aef30' WHERE `url` = 'http://bitsavers.org/pdf/dec/pdp10/TOPS20/V4.1_Feb83/AA-P346A-TM_KS_Install_4.1_Feb83.pdf';
+
+--
+-- Update Antonio Carlini documents that used to be on vt100.net
+--
+
+INSERT INTO `site` (
+	`name`,
+	`url`,
+	`description`,
+	`copy_base`,
+	`low`,
+	`live`
+) VALUES (
+	'antonio',
+	'http://manx.classiccmp.org/collections/antonio/',
+	'Antonio Carlini\'s Scans',
+	'http://manx.classiccmp.org/collections/antonio/',
+	'N',
+	'Y'
+);
+
+DROP PROCEDURE IF EXISTS `manx_antonio_row`;
+
+DROP PROCEDURE IF EXISTS `manx_antonio`;
+
+DELIMITER //
+
+CREATE PROCEDURE manx_antonio_row(IN old_url VARCHAR(255), IN new_url VARCHAR(255), IN new_site INT(11))
+BEGIN
+	UPDATE `copy`
+		SET `url` = new_url, `site` = new_site
+		WHERE `url` = old_url AND `site` = 1;
+END//
+
+CREATE PROCEDURE manx_antonio()
+BEGIN
+	DECLARE new_site INT(11);
+	SELECT `siteid` FROM `site` WHERE `name` = 'antonio' INTO `new_site` ;
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/0la50rm2.pdf', 'http://manx.classiccmp.org/collections/antontio/0la50rm2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/0rv20om2.pdf', 'http://manx.classiccmp.org/collections/antontio/0rv20om2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/105aaow1.pdf', 'http://manx.classiccmp.org/collections/antontio/105aaow1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/1123-cfg.pdf', 'http://manx.classiccmp.org/collections/antontio/1123-cfg.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/11730z1.pdf', 'http://manx.classiccmp.org/collections/antontio/11730z1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/249acad3.pdf', 'http://manx.classiccmp.org/collections/antontio/249acad3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/297aain1.pdf', 'http://manx.classiccmp.org/collections/antontio/297aain1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/393aacl1.pdf', 'http://manx.classiccmp.org/collections/antontio/393aacl1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/4818epp1.pdf', 'http://manx.classiccmp.org/collections/antontio/4818epp1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/5075atc.pdf', 'http://manx.classiccmp.org/collections/antontio/5075atc.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/63xrain1.pdf', 'http://manx.classiccmp.org/collections/antontio/63xrain1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/83xupin1.pdf', 'http://manx.classiccmp.org/collections/antontio/83xupin1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/8600smm4.pdf', 'http://manx.classiccmp.org/collections/antontio/8600smm4.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/86xv1mg3.pdf', 'http://manx.classiccmp.org/collections/antontio/86xv1mg3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/a0574hr1.pdf', 'http://manx.classiccmp.org/collections/antontio/a0574hr1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/a0716inc.pdf', 'http://manx.classiccmp.org/collections/antontio/a0716inc.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/a0717opc.pdf', 'http://manx.classiccmp.org/collections/antontio/a0717opc.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/a0718tic.pdf', 'http://manx.classiccmp.org/collections/antontio/a0718tic.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/a0719tmc.pdf', 'http://manx.classiccmp.org/collections/antontio/a0719tmc.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/aa-k759b-tk.pdf', 'http://manx.classiccmp.org/collections/antontio/aa-k759b-tk.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/aacl61axv.pdf', 'http://manx.classiccmp.org/collections/antontio/aacl61axv.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/aap088atv.pdf', 'http://manx.classiccmp.org/collections/antontio/aap088atv.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/aau003atv.pdf', 'http://manx.classiccmp.org/collections/antontio/aau003atv.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/aax730ate.pdf', 'http://manx.classiccmp.org/collections/antontio/aax730ate.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/aax731ate.pdf', 'http://manx.classiccmp.org/collections/antontio/aax731ate.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/aaz085atk.pdf', 'http://manx.classiccmp.org/collections/antontio/aaz085atk.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/adv11op1.pdf', 'http://manx.classiccmp.org/collections/antontio/adv11op1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/adw563atv.pdf', 'http://manx.classiccmp.org/collections/antontio/adw563atv.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/av-z084a-tk.pdf', 'http://manx.classiccmp.org/collections/antontio/av-z084a-tk.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/avx728ate.pdf', 'http://manx.classiccmp.org/collections/antontio/avx728ate.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ba11nug1.pdf', 'http://manx.classiccmp.org/collections/antontio/ba11nug1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/bookrdr.pdf', 'http://manx.classiccmp.org/collections/antontio/bookrdr.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/chipkit.pdf', 'http://manx.classiccmp.org/collections/antontio/chipkit.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/cmiv1rm2.pdf', 'http://manx.classiccmp.org/collections/antontio/cmiv1rm2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/cmiv4rm2.pdf', 'http://manx.classiccmp.org/collections/antontio/cmiv4rm2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/cmiv5rm4.pdf', 'http://manx.classiccmp.org/collections/antontio/cmiv5rm4.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/d200cin1.pdf', 'http://manx.classiccmp.org/collections/antontio/d200cin1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/d3100in1.pdf', 'http://manx.classiccmp.org/collections/antontio/d3100in1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/d3100og1.pdf', 'http://manx.classiccmp.org/collections/antontio/d3100og1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/db86xtd2.pdf', 'http://manx.classiccmp.org/collections/antontio/db86xtd2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/defcn-ftz.pdf', 'http://manx.classiccmp.org/collections/antontio/defcn-ftz.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/defcn-ftzins.pdf', 'http://manx.classiccmp.org/collections/antontio/defcn-ftzins.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/defcn-notice.pdf', 'http://manx.classiccmp.org/collections/antontio/defcn-notice.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/defcnin2.pdf', 'http://manx.classiccmp.org/collections/antontio/defcnin2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/df124ugp.pdf', 'http://manx.classiccmp.org/collections/antontio/df124ugp.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dhv11mc.pdf', 'http://manx.classiccmp.org/collections/antontio/dhv11mc.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dhv11tm1.pdf', 'http://manx.classiccmp.org/collections/antontio/dhv11tm1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dlv11op1.pdf', 'http://manx.classiccmp.org/collections/antontio/dlv11op1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dmb32td1.pdf', 'http://manx.classiccmp.org/collections/antontio/dmb32td1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dmb32ug1.pdf', 'http://manx.classiccmp.org/collections/antontio/dmb32ug1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dmf32ug3.pdf', 'http://manx.classiccmp.org/collections/antontio/dmf32ug3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dpvqmtm1.pdf', 'http://manx.classiccmp.org/collections/antontio/dpvqmtm1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/drv1bop1.pdf', 'http://manx.classiccmp.org/collections/antontio/drv1bop1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/drv1jpc2.pdf', 'http://manx.classiccmp.org/collections/antontio/drv1jpc2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/drvwaug1.pdf', 'http://manx.classiccmp.org/collections/antontio/drvwaug1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dsrzarm2.pdf', 'http://manx.classiccmp.org/collections/antontio/dsrzarm2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dwbuatm1.pdf', 'http://manx.classiccmp.org/collections/antontio/dwbuatm1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dy51axv.pdf', 'http://manx.classiccmp.org/collections/antontio/dy51axv.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dy84axv.pdf', 'http://manx.classiccmp.org/collections/antontio/dy84axv.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dz110ug2.pdf', 'http://manx.classiccmp.org/collections/antontio/dz110ug2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dzq11mc1.pdf', 'http://manx.classiccmp.org/collections/antontio/dzq11mc1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dzv11ug1.pdf', 'http://manx.classiccmp.org/collections/antontio/dzv11ug1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/dzv11ug2.pdf', 'http://manx.classiccmp.org/collections/antontio/dzv11ug2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ea05axv.pdf', 'http://manx.classiccmp.org/collections/antontio/ea05axv.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ea06axv.pdf', 'http://manx.classiccmp.org/collections/antontio/ea06axv.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ea07axv.pdf', 'http://manx.classiccmp.org/collections/antontio/ea07axv.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ea08axv.pdf', 'http://manx.classiccmp.org/collections/antontio/ea08axv.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ecg002731.pdf', 'http://manx.classiccmp.org/collections/antontio/ecg002731.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-00r80-ps-001.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-00r80-ps-001.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-0rc25-ps-002.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-0rc25-ps-002.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-0ts11-ps-001.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-0ts11-ps-001.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-0tu77-ps-002.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-0tu77-ps-002.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-0tu78-ps-002.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-0tu78-ps-002.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-0tu80-ps-003.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-0tu80-ps-003.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-0tu81-ps-002.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-0tu81-ps-002.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-11034-mc-003.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-11034-mc-003.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-ba200-dg-001.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-ba200-dg-001.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-cibci-ug-001.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-cibci-ug-001.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-la210-rg-001.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-la210-rg-001.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-lsi11-mc-001.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-lsi11-mc-001.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-lsi11-tm-003.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-lsi11-tm-003.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-lsifs-sv-005-vol1.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-lsifs-sv-005-vol1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-lsifs-sv-005-vol2.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-lsifs-sv-005-vol2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-lsifs-sv-005-vol3.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-lsifs-sv-005-vol3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-mic11-sg-001.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-mic11-sg-001.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-pc380-ps-003.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-pc380-ps-003.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-pdp44-mc-001.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-pdp44-mc-001.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-rqdxe-ug-002.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-rqdxe-ug-002.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ek-vaxv3-hb-001.pdf', 'http://manx.classiccmp.org/collections/antontio/ek-vaxv3-hb-001.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ethv1in3.pdf', 'http://manx.classiccmp.org/collections/antontio/ethv1in3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/h780cop1.pdf', 'http://manx.classiccmp.org/collections/antontio/h780cop1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/hkead.pdf', 'http://manx.classiccmp.org/collections/antontio/hkead.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/hmelabd.pdf', 'http://manx.classiccmp.org/collections/antontio/hmelabd.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/hr5bd.pdf', 'http://manx.classiccmp.org/collections/antontio/hr5bd.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/k-09-50.pdf', 'http://manx.classiccmp.org/collections/antontio/k-09-50.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ka86drc1.pdf', 'http://manx.classiccmp.org/collections/antontio/ka86drc1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ka86dug2.pdf', 'http://manx.classiccmp.org/collections/antontio/ka86dug2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/kfqsain3.pdf', 'http://manx.classiccmp.org/collections/antontio/kfqsain3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/klesiin1.pdf', 'http://manx.classiccmp.org/collections/antontio/klesiin1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/kms1ptm2.pdf', 'http://manx.classiccmp.org/collections/antontio/kms1ptm2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/kmsbeug1.pdf', 'http://manx.classiccmp.org/collections/antontio/kmsbeug1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/kmv11ug1.pdf', 'http://manx.classiccmp.org/collections/antontio/kmv11ug1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/kmv1aig1.pdf', 'http://manx.classiccmp.org/collections/antontio/kmv1aig1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/kmv1aig1rn.pdf', 'http://manx.classiccmp.org/collections/antontio/kmv1aig1rn.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/kw11-p-0.pdf', 'http://manx.classiccmp.org/collections/antontio/kw11-p-0.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/la100rg1.pdf', 'http://manx.classiccmp.org/collections/antontio/la100rg1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/la3635op3.pdf', 'http://manx.classiccmp.org/collections/antontio/la3635op3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/lep07om1.pdf', 'http://manx.classiccmp.org/collections/antontio/lep07om1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ln03rsp1.pdf', 'http://manx.classiccmp.org/collections/antontio/ln03rsp1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/lp100in1.pdf', 'http://manx.classiccmp.org/collections/antontio/lp100in1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/lp100op1.pdf', 'http://manx.classiccmp.org/collections/antontio/lp100op1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/lpv11op1.pdf', 'http://manx.classiccmp.org/collections/antontio/lpv11op1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/lqp02ps1.pdf', 'http://manx.classiccmp.org/collections/antontio/lqp02ps1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/lqp02tm1.pdf', 'http://manx.classiccmp.org/collections/antontio/lqp02tm1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/lqp03rm1.pdf', 'http://manx.classiccmp.org/collections/antontio/lqp03rm1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/m3100smb.pdf', 'http://manx.classiccmp.org/collections/antontio/m3100smb.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/m7270.pdf', 'http://manx.classiccmp.org/collections/antontio/m7270.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/mln03mg2.pdf', 'http://manx.classiccmp.org/collections/antontio/mln03mg2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/mp00633.pdf', 'http://manx.classiccmp.org/collections/antontio/mp00633.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/mp00663.pdf', 'http://manx.classiccmp.org/collections/antontio/mp00663.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/mp00866.pdf', 'http://manx.classiccmp.org/collections/antontio/mp00866.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/mp01732.pdf', 'http://manx.classiccmp.org/collections/antontio/mp01732.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/msv1dop1.pdf', 'http://manx.classiccmp.org/collections/antontio/msv1dop1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/mv310ipd.pdf', 'http://manx.classiccmp.org/collections/antontio/mv310ipd.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/mvxaaig1.pdf', 'http://manx.classiccmp.org/collections/antontio/mvxaaig1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/mvxaaom1.pdf', 'http://manx.classiccmp.org/collections/antontio/mvxaaom1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/mxv1bug1.pdf', 'http://manx.classiccmp.org/collections/antontio/mxv1bug1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/mxvb2in1.pdf', 'http://manx.classiccmp.org/collections/antontio/mxvb2in1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/netacug3.pdf', 'http://manx.classiccmp.org/collections/antontio/netacug3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/otu58ug3.pdf', 'http://manx.classiccmp.org/collections/antontio/otu58ug3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/pc100.pdf', 'http://manx.classiccmp.org/collections/antontio/pc100.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/pc100b.pdf', 'http://manx.classiccmp.org/collections/antontio/pc100b.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/pc100esv1.pdf', 'http://manx.classiccmp.org/collections/antontio/pc100esv1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/pc100ps2.pdf', 'http://manx.classiccmp.org/collections/antontio/pc100ps2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/pdprc0775.pdf', 'http://manx.classiccmp.org/collections/antontio/pdprc0775.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/ps750td2.pdf', 'http://manx.classiccmp.org/collections/antontio/ps750td2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/r100eom1.pdf', 'http://manx.classiccmp.org/collections/antontio/r100eom1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/sb100ip3.pdf', 'http://manx.classiccmp.org/collections/antontio/sb100ip3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/t1001011.pdf', 'http://manx.classiccmp.org/collections/antontio/t1001011.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/v2000sg1.pdf', 'http://manx.classiccmp.org/collections/antontio/v2000sg1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/v21sfin1.pdf', 'http://manx.classiccmp.org/collections/antontio/v21sfin1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/vsm31cl.pdf', 'http://manx.classiccmp.org/collections/antontio/vsm31cl.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/vsm40om2.pdf', 'http://manx.classiccmp.org/collections/antontio/vsm40om2.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/vt340ip3.pdf', 'http://manx.classiccmp.org/collections/antontio/vt340ip3.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/vt34rsv1.pdf', 'http://manx.classiccmp.org/collections/antontio/vt34rsv1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/vx31mug1.pdf', 'http://manx.classiccmp.org/collections/antontio/vx31mug1.pdf', new_site);
+	CALL manx_antonio_row('http://vt100.net/mirror/antonio/wksysqs1.pdf', 'http://manx.classiccmp.org/collections/antontio/wksysqs1.pdf', new_site);
+END//
+
+DELIMITER ;
+
+CALL manx_antonio();
+
+DROP PROCEDURE manx_antonio_row;
+
+DROP PROCEDURE manx_antonio;
