@@ -62,7 +62,7 @@ class UrlWizardService extends ServicePageBase
 		}
 		$data['pub_date'] = UrlWizardService::extractPubDate($matches[1]);
 		$data['title'] = implode(' ', explode('_', $matches[1]));
-		$data['format'] = $this->_manx->getFormatForExtension($matches[2]);
+		$data['format'] = $this->_db->getFormatForExtension($matches[2]);
 	}
 
 	public static function extractPubDate($fileBase)
@@ -157,6 +157,7 @@ class UrlWizardService extends ServicePageBase
 		$url = $data['url'];
 		$matchingPrefix = '';
 		$matchingSite = array();
+		$components = parse_url($url);
 		foreach ($this->_sites as $site)
 		{
 			$siteBase = $site['copy_base'];
@@ -164,7 +165,8 @@ class UrlWizardService extends ServicePageBase
 			{
 				$siteBase = $site['url'];
 			}
-			if (substr($data['url'], 0, strlen($siteBase)) == $siteBase)
+			$siteComponents = parse_url($siteBase);
+			if (UrlWizardService::urlComponentsMatch($components, $siteComponents))
 			{
 				if (strlen($siteBase) > strlen($matchingPrefix))
 				{
@@ -173,7 +175,89 @@ class UrlWizardService extends ServicePageBase
 				}
 			}
 		}
-		return (count($matchingSite) == 0) ? $this->determineSiteFromMirrorUrl($data) : $matchingSite;
+		if (count($matchingSite) == 0)
+		{
+			return $this->determineSiteFromMirrorUrl($data);
+		}
+		$siteComponents = parse_url($matchingSite['url']);
+		$components['host'] = $siteComponents['host'];
+		$data['url'] = UrlWizardService::buildUrl($components);
+		return $matchingSite;
+	}
+
+	private static function buildUrl($components)
+	{
+		return sprintf("%s://%s%s", $components['scheme'], $components['host'], $components['path']);
+	}
+
+	private static function componentEqual($component, $lhs, $rhs)
+	{
+		return (!array_key_exists($component, $lhs) && !array_key_exists($component, $rhs))
+			|| (array_key_exists($component, $lhs)
+				&& array_key_exists($component, $rhs)
+				&& $lhs[$component] == $rhs[$component]);
+	}
+
+	public static function urlComponentsMatch($components, $siteComponents)
+	{
+		$path = $components['path'];
+		$sitePath = $siteComponents['path'];
+		if (strlen($sitePath) > strlen($path))
+		{
+			return false;
+		}
+		if (UrlWizardService::componentEqual('scheme', $components, $siteComponents)
+			&& UrlWizardService::componentEqual('port', $components, $siteComponents))
+		{
+			$hostEqual = false;
+			if (UrlWizardService::componentEqual('host', $components, $siteComponents))
+			{
+				$hostEqual = true;
+			}
+			else
+			{
+				$host = explode('.', $components['host']);
+				$siteHost = explode('.', $siteComponents['host']);
+				if ((count($siteHost) == 2)
+					&& (count($host) == 3)
+					&& ($host[0] == 'www'))
+				{
+					array_shift($host);
+					$hostEqual = implode('.', $host) == implode('.', $siteHost);
+				}
+			}
+			if ($hostEqual
+				&& (substr($path, 0, strlen($sitePath)) == $sitePath))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function determineSiteForHost($host)
+	{
+		$matchingPrefix = '';
+		$matchingSite = array();
+		foreach ($this->_sites as $site)
+		{
+			$siteBase = $site['copy_base'];
+			if (strlen($siteBase) == 0)
+			{
+				$siteBase = $site['url'];
+			}
+			$siteComponents = parse_url($siteBase);
+			if ($host == $siteComponents['host'])
+			{
+				if (strlen($siteBase) > strlen($matchingPrefix))
+				{
+					$matchingPrefix = $siteBase;
+					$matchingSite = $site;
+				}
+			}
+		}
+		return $matchingSite;
 	}
 
 	private static function months()
@@ -187,17 +271,27 @@ class UrlWizardService extends ServicePageBase
 	private function determineBitSaversData(&$data)
 	{
 		$url = $data['url'];
-        $matches = array();
-        if (1 != preg_match('|^http://bitsavers.org/pdf/([^/]+).*/([^/]+)\.([^.]+)$|', $url, $matches))
-        {
-			return;
-		}
+		$urlComponents = parse_url($url);
+		$dirs = split('/', $urlComponents['path']);
+		$companyDir = $dirs[2];
 
-		$company = $this->_db->getCompanyForBitSaversDirectory($matches[1]);
+		$company = $this->_db->getCompanyForBitSaversDirectory($companyDir);
 		$data['company'] = $company;
-		$data['bitsavers_directory'] = $matches[1];
+		$data['bitsavers_directory'] = $companyDir;
 
-		$fileBase = $matches[2];
+		$fileName = array_pop($dirs);
+		$dotPos = strrpos($fileName, '.');
+		if ($dotPos === false)
+		{
+			$fileBase = $fileName;
+			$extension = '';
+		}
+		else
+		{
+			$fileParts = explode('.', $fileName);
+			$extension = array_pop($fileParts);
+			$fileBase = implode('.', $fileParts);
+		}
 		$data['pub_date'] = UrlWizardService::extractPubDate($fileBase);
 		$parts = explode('_', $fileBase);
 		if (count($parts) > 1)
@@ -226,7 +320,7 @@ class UrlWizardService extends ServicePageBase
 			}
 			$data['title'] = implode(' ', $parts);
 		}
-		$data['format'] = $this->_db->getFormatForExtension($matches[3]);
+		$data['format'] = $this->_db->getFormatForExtension($extension);
 	}
 
 	private function findPublications()

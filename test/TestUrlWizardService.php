@@ -36,6 +36,20 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 {
 	private $_manx;
 
+	public function testUrlComponentsMatchBitSaversOrg()
+	{
+		$components = parse_url('http://bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf');
+		$siteComponents = parse_url('http://bitsavers.org/pdf/');
+		$this->assertTrue(UrlWizardService::urlComponentsMatch($components, $siteComponents));
+	}
+
+	public function testUrlComponentsMatchWwwBitSaversOrg()
+	{
+		$components = parse_url('http://www.bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf');
+		$siteComponents = parse_url('http://bitsavers.org/pdf/');
+		$this->assertTrue(UrlWizardService::urlComponentsMatch($components, $siteComponents));
+	}
+
 	public function testExtractPubDateSeparateMonthYear()
 	{
 		$this->assertEquals('1975-03', UrlWizardService::extractPubDate('foo_bar_Mar_1975'));
@@ -228,6 +242,82 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 		$this->assertTrue($db->getSitesCalled);
 		$this->assertTrue($db->getMirrorsCalled);
 		$this->assertTrue($db->getCompanyForBitSaversDirectoryCalled);
+		$this->assertTrue($db->getFormatForExtensionCalled);
+		$this->assertEquals($expected, $output);
+	}
+
+	public function testWwwBitSaversOrgProcessRequestUrlLookup()
+	{
+		$this->_manx = new FakeManx();
+		$db = new FakeManxDatabase();
+		$this->_manx->getDatabaseFakeResult = $db;
+		$this->_manx->getUserFromSessionFakeResult = new FakeUser();
+		$db->getSitesFakeResult =
+			array(
+				array(
+					'siteid' => '3',
+					'0' => '3',
+					'name' => 'bitsavers',
+					'1' => 'bitsavers',
+					'url' => 'http://bitsavers.org/',
+					'2' => 'http://bitsavers.org/',
+					'description' => "Al Kossow's Bitsavers",
+					'3' => "Al Kossow's Bitsavers",
+					'copy_base' => 'http://bitsavers.org/pdf/',
+					'4' => 'http://bitsavers.org/pdf/',
+					'low' => 'N',
+					'5' => 'N',
+					'live' => 'Y',
+					'6' => 'Y',
+					'display_order' => '999',
+					'7' => '999'
+				)
+			);
+		$db->getMirrorsFakeResult = array();
+		$db->getCompanyForBitSaversDirectoryFakeResult = '-1';
+		$db->getFormatForExtensionFakeResult = 'PDF';
+		$_SERVER['PATH_INFO'] = '';
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$vars = array(
+			'method' => 'url-lookup',
+			'url' => 'http%3A%2F%2Fwww.bitsavers.org%2Fpdf%2Funivac%2F1100%2FUE-637_1108execUG_1970.pdf'
+			);
+		ob_start();
+		$page = new UrlWizardServiceTester($this->_manx, $vars);
+
+		$page->processRequest();
+
+		$output = ob_get_contents();
+		ob_end_clean();
+		$expected = json_encode(array(
+			"url" => 'http://bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf',
+			"site" => array("siteid" => "3",
+				"0" => "3",
+				"name" => "bitsavers",
+				"1" => "bitsavers",
+				"url" => "http://bitsavers.org/",
+				"2" => "http://bitsavers.org/",
+				"description" => "Al Kossow's Bitsavers",
+				"3" => "Al Kossow's Bitsavers",
+				"copy_base" => "http://bitsavers.org/pdf/",
+				"4" => "http://bitsavers.org/pdf/",
+				"low" => "N",
+				"5" => "N",
+				"live" => "Y",
+				"6" => "Y",
+				"display_order" => "999",
+				"7" => "999"),
+			"company" => "-1",
+			"part" => "UE-637",
+			"pub_date" => "1970",
+			"title" => "1108execUG",
+			"format" => "PDF",
+			"bitsavers_directory" => "univac",
+			"pubs" => array()
+		));
+		$this->assertTrue($db->getSitesCalled);
+		$this->assertTrue($db->getCompanyForBitSaversDirectoryCalled);
+		$this->assertEquals('univac', $db->getCompanyForBitSaversDirectoryLastDir);
 		$this->assertTrue($db->getFormatForExtensionCalled);
 		$this->assertEquals($expected, $output);
 	}
