@@ -321,6 +321,12 @@ $(function()
 				{
 					$('.form_container').after('<p class="error">There is an error!</p>');
 					event.preventDefault();
+					return;
+				}
+				else if (!confirm("Add this information?"))
+				{
+					event.preventDefault();
+					return;
 				}
 			}
 			catch (e)
@@ -328,6 +334,7 @@ $(function()
 				$('.form_container').after('<p>There was an exception!  FUCK!</p>' 
 					+ '<dl><dt>' + e.name + '</dt><dd>' + e.message + '</dd></dl>');
 				event.preventDefault();
+				return;
 			}
 		});
 });
