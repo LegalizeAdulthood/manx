@@ -2,12 +2,15 @@
 
 require_once 'IManx.php';
 
-class ServicePageBase
+abstract class ServicePageBase
 {
+	/** @var \IManx */
 	protected $_manx;
 	protected $_topDir;
+	/** @var \IUser */
 	protected $_user;
 	protected $_vars;
+	/** @var \IManxDatabase */
 	protected $_db;
 
 	public function __construct(IManx $manx, $vars)
@@ -68,6 +71,8 @@ class ServicePageBase
 
 		$this->redirect("search.php");
 	}
+
+	protected abstract function methodDispatch();
 }
 
 ?>

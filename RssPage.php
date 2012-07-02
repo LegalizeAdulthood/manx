@@ -42,6 +42,11 @@ class RssPage extends PageBase
 	{
 		$this->_rss->renderBody();
 	}
+
+	protected function renderBodyContent()
+	{
+		throw new Exception("renderBodyContent not used");
+	}
 }
 
 ?>

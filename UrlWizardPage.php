@@ -5,6 +5,7 @@ require_once 'AdminPageBase.php';
 
 class URLWizardPage extends AdminPageBase
 {
+	/** @var \IManxDatabase */
 	private $_db;
 
 	public function __construct($manx, $vars)
@@ -18,8 +19,8 @@ class URLWizardPage extends AdminPageBase
 		return MenuType::UrlWizard;
 	}
 
-    protected function postPage()
-    {
+	protected function postPage()
+	{
 		$company = $this->addCompany();
 		$this->addBitSaversDirectory($company);
 		$pubId = $this->addPublication($company);
@@ -27,7 +28,7 @@ class URLWizardPage extends AdminPageBase
 		$siteId = $this->addSite();
 		$this->addCopy($pubId, $siteId);
 		$this->redirect(sprintf("details.php/%s,%s", $company, $pubId));
-    }
+	}
 
 	private function addCompany()
 	{
@@ -105,7 +106,7 @@ class URLWizardPage extends AdminPageBase
 			$this->param('copy_credits'), $this->param('copy_amend_serial'));
 	}
 
-    protected function renderHeaderContent()
+	protected function renderHeaderContent()
 	{
 		$this->renderLink("stylesheet", "text/css", "UrlWizard.css");
 		print <<<EOH

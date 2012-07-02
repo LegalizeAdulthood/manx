@@ -1,7 +1,7 @@
 String.prototype.trim = function()
 {
 	return this.replace(/^\s+|\s+$/g, "");
-}
+};
 
 $(function()
 {
@@ -23,7 +23,7 @@ $(function()
 	var build_option = function(val, text)
 	{
 		return '<option value="' + val + '">' + text + '</option>';
-	}
+	};
 
 	var build_option_list = function(id, new_text, transformer, json)
 	{
@@ -33,7 +33,7 @@ $(function()
 			options.push(transformer(json[i]));
 		}
 		$("#" + id).html(options.join(''));
-	}
+	};
 
 	var set_error_label = function(id)
 	{
@@ -186,7 +186,7 @@ $(function()
 	var validate_supersession = function()
 	{
 		return true;
-	}
+	};
 
 	var set_publication_search_results = function(json)
 	{
@@ -196,7 +196,7 @@ $(function()
 				return build_option(pub.ph_pub, pub.ph_title);
 			},
 			json);
-	}
+	};
 	var reset_publication_search_results = function()
 	{
 		build_option_list("pub_pub_id", "(New Publication)", null, []);
@@ -238,10 +238,6 @@ $(function()
 			&& validate_combo_box('company_id', validate_company)
 			&& validate_combo_box('pub_pub_id', validate_publication)
 			&& validate_combo_box("supersession_old_pub", validate_supersession);
-	};
-
-	var display_error_message = function()
-	{
 	};
 
 	$("#copy_url").change(
@@ -321,12 +317,10 @@ $(function()
 				{
 					$('.form_container').after('<p class="error">There is an error!</p>');
 					event.preventDefault();
-					return;
 				}
 				else if (!confirm("Add this information?"))
 				{
 					event.preventDefault();
-					return;
 				}
 			}
 			catch (e)
@@ -334,7 +328,6 @@ $(function()
 				$('.form_container').after('<p>There was an exception!  FUCK!</p>' 
 					+ '<dl><dt>' + e.name + '</dt><dd>' + e.message + '</dd></dl>');
 				event.preventDefault();
-				return;
 			}
 		});
 });

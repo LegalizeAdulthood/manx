@@ -16,15 +16,18 @@ class MenuType
 	const UrlWizard = 9;
 }
 
-class PageBase
+abstract class PageBase
 {
+	/** @var IManx */
 	protected $_manx;
+	/** @var IManxDatabase */
 	protected $_manxDb;
 	protected $_topDir;
+	/** @var IUser */
 	protected $_user;
 
 	public function __construct(IManx $manx)
-    {
+	{
 		$this->_manx = $manx;
 		$this->_manxDb = $manx->getDatabase();
 		$this->_topDir = str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1);
@@ -88,6 +91,8 @@ EOH;
 		$this->renderBodyContent();
 		$this->renderBodyFooter();
 	}
+
+	abstract protected function renderBodyContent();
 
 	private function renderMenuItem($first, $textOnly, $href, $text)
 	{
@@ -173,7 +178,7 @@ EOH;
 
 	public static function getRelativePrefixFromPathInfo()
 	{
-		return str_repeat('../', count(split('/', $_SERVER['PATH_INFO'])) - 1);
+		return str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1);
 	}
 
 	public function renderLoginLink($server)

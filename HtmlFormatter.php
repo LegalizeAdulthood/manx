@@ -62,7 +62,6 @@ class HtmlFormatter implements IFormatter
 		$lastPageStart = ($lastPageNum - 1)*$rowsPerPage;
 		$currPageNum = $firstPage;
 		$currPageStart = ($currPageNum - 1)*$rowsPerPage;
-		$startPageNum = intval($start/$rowsPerPage) + 1;
 
 		$numIndices = 0;
 		while ($numIndices++ < 10)

@@ -5,15 +5,15 @@
 1. Enter URL and submit to wizard for analysis.
 2. Wizard does the following:
    a. Look at prefix of URL and try to associate a mirror or site with
-      the URL.
+	  the URL.
    b. Look at directory components of the URL and try to match them
-      against short names for companies to identify the company.
+	  against short names for companies to identify the company.
    c. Look at the prefix of the last component of the URL and attempt to
-      extract a proposed part number
+	  extract a proposed part number
    d. Fetch document and compute size and MD5 (requires PECL http)
    e. Extract a proposed title from the last component of the URL
    f. Identify a possible new site if URL doesn't match any known site
-      or mirror.
+	  or mirror.
 3. Show all guesses at information for editing before submitting a
    real change.
 
@@ -30,6 +30,9 @@ class Site
 
 class UrlWizardService extends ServicePageBase
 {
+	/** @var array */
+	private $_sites;
+
 	private function determineData()
 	{
 		$data['url'] = urldecode($this->param('url'));
@@ -56,7 +59,7 @@ class UrlWizardService extends ServicePageBase
 	{
 		$url = $data['url'];
 		$matches = array();
-        if (1 != preg_match('|^.*/([^/]+)\.([^./]+)$|', $url, $matches))
+		if (1 != preg_match('|^.*/([^/]+)\.([^./]+)$|', $url, $matches))
 		{
 			return;
 		}
@@ -132,6 +135,7 @@ class UrlWizardService extends ServicePageBase
 	{
 		$matchingPrefix = '';
 		$matchingSite = -1;
+		$originalPrefix = '';
 		foreach ($this->_db->getMirrors() as $mirror)
 		{
 			$mirrorBase = $mirror['copy_stem'];

@@ -39,7 +39,7 @@ class TestRssPage extends PHPUnit_Framework_TestCase
 		$manx->getDatabaseFakeResult = $db;
 		$dtp = new FakeDateTimeProvider();
 		$dtp->nowFakeResult = new DateTime("03 Dec 1964 15:00:00 -0400");
-        ob_start();
+		ob_start();
 		$page = new RssPageTester($manx, $dtp);
 
 		$page->renderBody();

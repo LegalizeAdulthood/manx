@@ -62,7 +62,7 @@ class Manx implements IManx
 		}
 		return false;
 	}
- 
+
 	function getUserFromSession()
 	{
 		return User::getInstanceFromSession($this->_manxDb);

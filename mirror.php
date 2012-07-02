@@ -22,6 +22,11 @@ class MirrorPage extends AdminPageBase
 		}
 		print "</table>\n";
 	}
+
+	protected function postPage()
+	{
+		throw new Exception("postPage unimplemented");
+	}
 }
 
 $manx = Manx::getInstance();

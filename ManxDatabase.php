@@ -509,7 +509,7 @@ class ManxDatabase implements IManxDatabase
 		$this->_db->execute("UPDATE `company` " 
 				. "SET `name`=?, `shortname`=?, `sort_name`=?, `display`=?, `notes`=? "
 				. "WHERE `id`=?",
-			array($name, $shortName, $sortName, $display ? 'Y' : 'N', $ntoes, $id));
+			array($fullName, $shortName, $sortName, $display ? 'Y' : 'N', $notes, $id));
 	}
 
 	function getMirrors()
@@ -563,7 +563,7 @@ class ManxDatabase implements IManxDatabase
 
 	function addBitSaversDirectory($companyId, $directory)
 	{
-		$row = $this->execute("SELECT FROM `company_bitsaver` WHERE `company_id`=?", array($companyId));
+		$row = $this->execute("SELECT FROM `company_bitsavers` WHERE `company_id`=?", array($companyId));
 		if (count($row) == 0)
 		{
 			$this->_db->execute('INSERT INTO `company_bitsavers`(`company_id`,`directory`) VALUES (?,?)',

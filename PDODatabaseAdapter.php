@@ -14,6 +14,7 @@ class PDODatabaseAdapter implements IDatabase
 	{
 		$this->_pdo = $pdo;
 	}
+	/** @var PDO */
 	private $_pdo;
 
 	public function query($statement)

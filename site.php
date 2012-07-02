@@ -41,6 +41,11 @@ class SitePage extends AdminPageBase
 		}
 		print "</table>\n";
 	}
+
+	protected function postPage()
+	{
+		throw new Exception("postPage not implemented");
+	}
 }
 
 $manx = Manx::getInstance();

@@ -70,7 +70,7 @@ EOH;
 <li><label for="revision">Revision:</label>
 <input type="text" id="revision" name="revision" value="$revision"></li>
 <li><label for="keywords">Keywords:</label>
-<input type="text" id="keywords" name="keywords" value="$keywrods"></li>
+<input type="text" id="keywords" name="keywords" value="$keywords"></li>
 <li><label for="notes">Notes:</label>
 <input type="text" id="notes" name="notes" value="$notes"></li>
 <li><label for="lang">Language(s):</label>

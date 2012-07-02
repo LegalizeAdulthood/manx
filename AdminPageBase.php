@@ -2,7 +2,7 @@
 
 require_once 'PageBase.php';
 
-class AdminPageBase extends PageBase
+abstract class AdminPageBase extends PageBase
 {
 	protected $_vars;
 
@@ -45,6 +45,8 @@ class AdminPageBase extends PageBase
 
 		parent::renderPage();
 	}
+
+	protected abstract function postPage();
 }
 
 ?>
