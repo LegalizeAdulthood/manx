@@ -276,7 +276,7 @@ class UrlWizardService extends ServicePageBase
 	{
 		$url = $data['url'];
 		$urlComponents = parse_url($url);
-		$dirs = split('/', $urlComponents['path']);
+		$dirs = explode('/', $urlComponents['path']);
 		$companyDir = $dirs[2];
 
 		$company = $this->_db->getCompanyForBitSaversDirectory($companyDir);

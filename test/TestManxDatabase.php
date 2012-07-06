@@ -6,8 +6,11 @@ require_once 'test/FakeStatement.php';
 
 class TestManxDatabase extends PHPUnit_Framework_TestCase
 {
+	/** @var \FakeDatabase */
 	private $_db;
+	/** @var \ManxDatabase */
 	private $_manxDb;
+	/** @var object */
 	private $_statement;
 
 	public function testConstruct()
@@ -252,7 +255,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 		$pubId = 3;
 		$query = 'SELECT `pub_id`, `company`.`name`, '
 			. 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pubdate`, '
-			. '`ph_title`, `ph_abstract`, '
+			. '`ph_title`, IFNULL(`ph_abstract`, "") AS `ph_abstract`, '
 			. 'IFNULL(`ph_revision`, "") AS `ph_revision`, `ph_ocr_file`, '
 			. '`ph_cover_image`, `ph_lang`, `ph_keywords` '
 			. 'FROM `pub` '
@@ -415,9 +418,9 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 	{
 		$this->createInstance();
 		$count = 200;
-		$query = sprintf('SELECT `ph_pub`, `ph_company`, `ph_title`, '
-			. "IF(ISNULL(`ph_abstract`), '', `ph_abstract`) AS `ph_abstract`, "
-			. '`ph_created`, `company`.`name` AS `company_name` '
+		$query = sprintf('SELECT `ph_pub`, `ph_company`, `ph_created`, `ph_title`, '
+			. '`company`.`name` AS `company_name`, `ph_part`, `ph_revision`, `ph_keywords`, `ph_pubdate`, '
+			. 'IFNULL(`ph_abstract`, "") AS `ph_abstract` '
 			. 'FROM `pub_history`, `company` '
 			. 'WHERE `pub_history`.`ph_company` = `company`.`id` '
 			. 'ORDER BY `ph_created` DESC LIMIT 0,%d', $count);

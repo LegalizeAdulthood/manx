@@ -4,6 +4,13 @@ require_once 'PageBase.php';
 require_once 'test/FakeDatabase.php';
 require_once 'test/FakeManxDatabase.php';
 
+class PageBaseTester extends PageBase
+{
+	protected function renderBodyContent()
+	{
+	}
+}
+
 class TestPageBase extends PHPUnit_Framework_TestCase
 {
 	private $_db;
@@ -23,7 +30,7 @@ class TestPageBase extends PHPUnit_Framework_TestCase
 		$this->_db = new FakeManxDatabase();
 		$this->_manx = new FakeManx();
 		$this->_manx->getDatabaseFakeResult = $this->_db;
-		$this->_page = new PageBase($this->_manx);
+		$this->_page = new PageBaseTester($this->_manx);
 	}
 
 	private function startOutputCapture()

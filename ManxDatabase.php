@@ -574,9 +574,9 @@ class ManxDatabase implements IManxDatabase
 	function getMostRecentDocuments($count)
 	{
 		return $this->execute(sprintf('SELECT `ph_pub`, `ph_company`, `ph_created`,'
-			. ' `ph_title`, `company`.`name` as `company_name`,'
+			. ' `ph_title`, `company`.`name` AS `company_name`,'
 			. ' `ph_part`, `ph_revision`, `ph_keywords`, `ph_pubdate`,'
-			. ' IFNULL(`ph_abstract`, "") as `ph_abstract`'
+			. ' IFNULL(`ph_abstract`, "") AS `ph_abstract`'
 			. ' FROM `pub_history`, `company`'
 			. ' WHERE `pub_history`.`ph_company` = `company`.`id`'
 			. ' ORDER BY `ph_created` DESC LIMIT 0,%d', $count), array());
