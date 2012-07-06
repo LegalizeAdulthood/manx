@@ -9,3 +9,4 @@ glob:*.suo
 syntax: glob
 *.opensdf
 *.sdf
+.idea/workspace.xml
