@@ -30,7 +30,9 @@ abstract class PageBase
 	{
 		$this->_manx = $manx;
 		$this->_manxDb = $manx->getDatabase();
-		$this->_topDir = str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1);
+		$this->_topDir = array_key_exists('PATH_INFO', $_SERVER) ?
+			str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1)
+			: '';
 		$this->_user = $this->_manx->getUserFromSession();
 	}
 
@@ -178,7 +180,9 @@ EOH;
 
 	public static function getRelativePrefixFromPathInfo()
 	{
-		return str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1);
+		return array_key_exists('PATH_INFO', $_SERVER) ?
+			str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1)
+			: '';
 	}
 
 	public function renderLoginLink($server)
