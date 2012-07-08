@@ -136,7 +136,7 @@ EOH;
 		{
 			$help = $options['help'];
 			print <<<EOH
-		<img id="${id}_help_button" src="help.png" width="16" height="16" />
+<img id="${id}_help_button" src="help.png" width="16" height="16" />
 <div id="${id}_help" class="hidden">$help</div>
 <div id="${id}_error" class="error hidden"></div>
 
