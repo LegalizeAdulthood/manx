@@ -330,4 +330,16 @@ $(function()
 				event.preventDefault();
 			}
 		});
+
+	var help_shown = { };
+	$('img[id$="_help_button"]').each(function()
+		{
+			var id = $(this).attr('id').replace('_button', '');
+			help_shown[id] = false;
+			$(this).click(function()
+			{
+				(help_shown[id] ? hide : show)(id);
+				help_shown[id] = !help_shown[id];
+			});
+		});
 });

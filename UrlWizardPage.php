@@ -110,7 +110,7 @@ class URLWizardPage extends AdminPageBase
 	{
 		$this->renderLink("stylesheet", "text/css", "UrlWizard.css");
 		print <<<EOH
-<script type="text/javascript" src="jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="UrlWizard.js"></script>
 EOH;
 	}
@@ -130,15 +130,29 @@ EOH;
 <li id="${id}_field"$className>
 <label for="$id">$label</label>
 <input type="text" id="$id" name="$id"$width$maxLength value="" />
+
+EOH;
+		if (array_key_exists('help', $options))
+		{
+			$help = $options['help'];
+			print <<<EOH
+		<img id="${id}_help_button" src="help.png" width="16" height="16" />
+<div id="${id}_help" class="hidden"><p>$help</p></div>
+
+EOH;
+		}
+		print <<<EOH
 </li>
 
 
 EOH;
 	}
 
-	private function renderTextInputMaxSize($label, $id, $size, $maxLength)
+	private function renderTextInputMaxSize($label, $id, $size, $maxLength, $help)
 	{
-		$this->renderTextInput($label, $id, array('size' => $size, 'maxlength' => $maxLength));
+		$this->renderTextInput($label, $id,
+			array('size' => $size, 'maxlength' => $maxLength,
+			'help' => $help));
 	}
 
 	protected function renderBodyContent()
@@ -154,8 +168,11 @@ EOH;
 <ul>
 
 EOH;
-		$this->renderTextInputMaxSize('Document URL', 'copy_url', 60, 255);
-		$this->renderTextInput('Format', 'copy_format', array('class' => 'hidden', 'size' => 10, 'maxlength' => 10));
+		$this->renderTextInputMaxSize('Document URL', 'copy_url', 60, 255,
+			'The complete URL for the document.');
+		$this->renderTextInput('Format', 'copy_format',
+			array('class' => 'hidden', 'size' => 10, 'maxlength' => 10,
+				'help' => 'The format of the document at the URL, i.e. PDF.'));
 		print <<<EOH
 <li id="copy_site_field" class="hidden">
 <label for="copy_site">Site</label>
@@ -173,7 +190,8 @@ EOH;
 
 
 EOH;
-		$this->renderTextInputMaxSize('Notes', 'copy_notes', 60, 200);
+		$this->renderTextInputMaxSize('Notes', 'copy_notes', 60, 200,
+			'Notes about this copy of the publication.');
 		print <<<EOH
 <input type="hidden" id="copy_size" name="copy_size" value="" />
 
@@ -181,7 +199,8 @@ EOH;
 
 
 EOH;
-		$this->renderTextInputMaxSize('Credits', 'copy_credits', 60, 200);
+		$this->renderTextInputMaxSize('Credits', 'copy_credits', 60, 200,
+			'Credits for this copy, i.e. Scanned by legalize.');
 		print <<<EOH
 <input type="hidden" id="copy_amend_serial" name="copy_amend_serial" value="" />
 
@@ -199,17 +218,23 @@ EOH;
 
 
 EOH;
-		$this->renderTextInput('Name', 'site_name', array('maxlength' => 100));
-		$this->renderTextInput('URL', 'site_url', array('maxlength' => 200));
-		$this->renderTextInput('Description', 'site_description', array('maxlength' => 200));
-		$this->renderTextInput('Copy Base', 'site_copy_base', array('maxlength' => 200));
+		$this->renderTextInput('Name', 'site_name', array('maxlength' => 100,
+			'help' => 'The short, mnemonic name for the site.'));
+		$this->renderTextInput('URL', 'site_url', array('maxlength' => 200,
+			'help' => 'The main URL for the site.'));
+		$this->renderTextInput('Description', 'site_description',
+			array('maxlength' => 200,
+			'help' => 'The description for the site as used on the About page.'));
+		$this->renderTextInput('Copy Base', 'site_copy_base', array('maxlength' => 200,
+			'help' => 'The base URL for documents on the site, which may be different'
+				. ' from the site URL.'));
 		print <<<EOH
-<li>
+<li id="site_low_field">
 <label for="site_low">Low Bandwidth?</label>
 <input type="checkbox" id="site_low" name="site_low" value="" />
 </li>
 
-<li>
+<li id="site_live_field">
 <label for="site_live">Live?</label>
 <input type="checkbox" id="site_live" name="site_live" value="" />
 </li>
@@ -221,7 +246,7 @@ EOH;
 <legend id="company_legend">Company</legend>
 <ul>
 
-<li>
+<li id="company_id_field">
 <label for="company_id">Company</label>
 <select id="company_id" name="company_id">
 <option value="-1">(New Company)</option>
@@ -237,10 +262,18 @@ EOH;
 
 
 EOH;
-		$this->renderTextInput('Name', 'company_name', array('class' => 'hidden', 'size' => 50, 'maxlength' => 50));
-		$this->renderTextInput('Short Name', 'company_short_name', array('class' => 'hidden', 'size' => 50, 'maxlength' => 50));
-		$this->renderTextInput('Sort Name', 'company_sort_name', array('class' => 'hidden', 'size' => 50, 'maxlength' => 50));
-		$this->renderTextInput('Notes', 'company_notes', array('class' => 'hidden', 'size' => 60, 'maxlength' => 255));
+		$this->renderTextInput('Name', 'company_name',
+			array('class' => 'hidden', 'size' => 50, 'maxlength' => 50,
+			'help' => 'The full name of the company, i.e. Digital Equipment Corporation.  It will be used on the About page and in the company dropdown list on the search page.'));
+		$this->renderTextInput('Short Name', 'company_short_name',
+			array('class' => 'hidden', 'size' => 50, 'maxlength' => 50,
+			'help' => 'A short name for the company, i.e. DEC.'));
+		$this->renderTextInput('Sort Name', 'company_sort_name',
+			array('class' => 'hidden', 'size' => 50, 'maxlength' => 50,
+			'help' => 'A lower case sort key for the company, i.e. dec.'));
+		$this->renderTextInput('Notes', 'company_notes',
+			array('class' => 'hidden', 'size' => 60, 'maxlength' => 255,
+			'help' => 'Notes for the company, i.e. terminal manufacturer'));
 		print <<<EOH
 </ul>
 </fieldset>
@@ -251,9 +284,10 @@ EOH;
 
 
 EOH;
-		$this->renderTextInput('Search Keywords', 'pub_search_keywords', array('size' => 40));
+		$this->renderTextInput('Search Keywords', 'pub_search_keywords',
+			array('size' => 40, 'help' => 'Search keywords to locate a known publication.'));
 		print <<<EOH
-<li>
+<li id="pub_pub_id_field">
 <label for="pub_pub_id">Publication</label>
 <select id="pub_pub_id" name="pub_pub_id">
 <option value="-1">(New Publication)</option>
@@ -262,8 +296,10 @@ EOH;
 
 
 EOH;
-		$this->renderTextInputMaxSize('Title', 'pub_history_ph_title', 60, 255);
-		$this->renderTextInputMaxSize('Revision', 'pub_history_ph_revision', 20, 20);
+		$this->renderTextInputMaxSize('Title', 'pub_history_ph_title', 60, 255,
+			'The title of this document; exclude part numbers and publication dates.');
+		$this->renderTextInputMaxSize('Revision', 'pub_history_ph_revision', 20, 20,
+			'The revision number or letter of this publication, i.e. B');
 		print <<<EOH
 <li id="pub_history_ph_pubtype_field">
 <label for="pub_history_ph_pubtype">Type</label>
@@ -275,20 +311,27 @@ EOH;
 
 
 EOH;
-		$this->renderTextInputMaxSize('Publication Date', 'pub_history_ph_pubdate', 10, 10);
-		$this->renderTextInput('Abstract', 'pub_history_ph_abstract', array('maxlength' => 255));
-		$this->renderTextInput('Part #', 'pub_history_ph_part', array('maxlength' => 50));
-		$this->renderTextInput('Match Part #', 'pub_history_ph_match_part', array('maxlength' => 50));
+		$this->renderTextInputMaxSize('Publication Date', 'pub_history_ph_pubdate', 10, 10,
+			'The date of publication, if any, i.e. 1979-02.');
+		$this->renderTextInput('Abstract', 'pub_history_ph_abstract',
+			array('maxlength' => 255, 'help' => 'The abstract for the publication, if any.'));
+		$this->renderTextInput('Part #', 'pub_history_ph_part',
+			array('maxlength' => 50, 'help' => 'The part number for this publication, if any.'));
+		$this->renderTextInput('Match Part #', 'pub_history_ph_match_part',array('maxlength' => 50));
 		$this->renderTextInput('Sort Part #', 'pub_history_ph_sort_part', array('maxlength' => 50));
-		$this->renderTextInput('Alternative Part #', 'pub_history_ph_alt_part', array('maxlength' => 50));
+		$this->renderTextInput('Alternative Part #', 'pub_history_ph_alt_part',
+			array('maxlength' => 50, 'help' => 'An alternate part number for the publication, if any.'));
 		$this->renderTextInput('Match Alternative Part #', 'pub_history_ph_match_alt_part', array('maxlength' => 50));
-		$this->renderTextInput('Keywords', 'pub_history_ph_keywords', array('maxlength' => 100));
-		$this->renderTextInput('Notes', 'pub_history_ph_notes', array('maxlength' => 255));
-		$this->renderTextInput('Class', 'pub_history_ph_class', array('maxlength' => 40));
+		$this->renderTextInput('Keywords', 'pub_history_ph_keywords',
+			array('maxlength' => 100, 'help' => 'Keywords for this publication, i.e. terminal graphics.'));
+		$this->renderTextInput('Notes', 'pub_history_ph_notes',
+			array('maxlength' => 255, 'help' => 'Additional notes for this revision of the publication.'));
+		$this->renderTextInput('Class', 'pub_history_ph_class',
+			array('maxlength' => 40, 'help' => 'Class of the publication.'));
 		$this->renderTextInput('Amends Publication', 'pub_history_ph_amend_pub',
-			array('class' => 'hidden', 'maxlength' => 10));
+			array('class' => 'hidden', 'maxlength' => 10, 'help' => 'Publication amended by this publication.'));
 		$this->renderTextInput('Amendment Serial No.', 'pub_history_ph_amend_serial',
-			array('class' => 'hidden', 'maxlength' => 10));
+			array('class' => 'hidden', 'maxlength' => 10, 'help' => 'Serial number of this amendment.'));
 		print <<<EOH
 </ul>
 </fieldset>
@@ -299,9 +342,11 @@ EOH;
 
 
 EOH;
-		$this->renderTextInput('Search keywords', 'supersession_search_keywords', array('size' => 40));
+		$this->renderTextInput('Search keywords', 'supersession_search_keywords',
+			array('size' => 40,
+				'help' => 'Search keywords to locate publications superseded by or superceding this publication.'));
 		print <<<EOH
-<li>
+<li id="supersession_old_pub_field">
 <label for="supersession_old_pub">Supersedes</label>
 <select id="supersession_old_pub" name="supersession_old_pub">
 <option value="-1">(None)</option>
@@ -311,7 +356,7 @@ EOH;
 
 EOH;
 		print <<<EOH
-<li>
+<li id="supersession_new_pub_field">
 <label for="supersession_new_pub">Superseded by</label>
 <select id="supersession_new_pub" name="supersession_new_pub">
 <option value="-1">(None)</option>

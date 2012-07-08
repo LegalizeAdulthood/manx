@@ -9,7 +9,7 @@
     width: 10em;
     white-space: nowrap
 }
-#wizard input, #wizard select
+#wizard input, #wizard select, #wizard li > div
 {
     margin-left: 5em
 }
