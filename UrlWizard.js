@@ -35,25 +35,33 @@ $(function()
 		$("#" + id).html(options.join(''));
 	};
 
-	var set_error_label = function(id)
+	var clear_or_set_error_label = function(error, id, message)
 	{
-		$("label[for='" + id + "']").addClass("error");
-	};
-
-	var clear_error_label = function(id)
-	{
-		$("label[for='" + id + "']").removeClass("error");
+		var label = $("label[for='" + id + "']");
+		var error_id = id + "_error";
+		var error_div = $("#" + error_id);
+		if (error)
+		{
+			label.addClass("error");
+			error_div.text(message);
+			show(error_id);
+			return false;
+		}
+		else
+		{
+			label.removeClass("error");
+			error_div.text('');
+			hide(error_id);
+			return true;
+		}
 	};
 
 	var validate_field_non_empty = function(input_id)
 	{
-		if ($("#" + input_id).val().trim().length == 0)
-		{
-			set_error_label(input_id);
-			return false;
-		}
-		clear_error_label(input_id);
-		return true;
+		return clear_or_set_error_label(
+			$("#" + input_id).val().trim().length == 0,
+			input_id,
+			'This value is required and cannot be empty.');
 	};
 
 	var validate_combo_box = function(combo_id, field_validator)
@@ -158,7 +166,17 @@ $(function()
 	};
 	var validate_publication = function()
 	{
-		return validate_field_non_empty("pub_history_ph_title");
+		var validate_title_part_number = function()
+			{
+				var title = $("#pub_history_ph_title").val().toLowerCase().trim();
+				var part = $("#pub_history_ph_part").val().toLowerCase().trim();
+				return clear_or_set_error_label(
+					(part.length > 0) && (title.indexOf(part) != -1),
+					'pub_history_ph_title',
+					'The title cannot contain the part number.');
+			};
+		return validate_field_non_empty("pub_history_ph_title")
+			&& validate_title_part_number();
 	};
 
 	var set_supersessions = function(json)
@@ -235,6 +253,8 @@ $(function()
 
 	var validate_data = function()
 	{
+		$('div[id$="_error"]').addClass('hidden');
+		$("label").removeClass('error');
 		return validate_copy()
 			&& validate_combo_box('company_id', validate_company)
 			&& validate_combo_box('pub_pub_id', validate_publication)
@@ -272,15 +292,21 @@ $(function()
 				reset_publication_search_results();
 				reset_supersessions();
 			}
+			validate_data();
 		});
 
 	$("#copy_site").change(
 		function()
 		{
 			show_or_hide("copy_site")("site_fields");
+			validate_data();
 		});
 
-	$("#company_id").change(show_hide_company_fields);
+	$("#company_id").change(function()
+		{
+			show_hide_company_fields();
+			validate_data();
+		});
 
 	$("#supersession_search_keywords").change(search_for_supersessions);
 	$("#supersession_old_pub").change($("#supersession_new_pub").val(-1));
@@ -303,6 +329,7 @@ $(function()
 			fn("pub_history_ph_notes_field");
 			fn("pub_history_ph_amend_pub_field");
 			fn("pub_history_ph_amend_serial_field");
+			validate_data();
 		});
 
 	$("input[name='next']").click(
