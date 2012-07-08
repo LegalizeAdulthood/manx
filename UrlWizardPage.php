@@ -317,17 +317,12 @@ EOH;
 			array('maxlength' => 255, 'help' => 'The abstract for the publication, if any.'));
 		$this->renderTextInput('Part #', 'pub_history_ph_part',
 			array('maxlength' => 50, 'help' => 'The part number for this publication, if any.'));
-		$this->renderTextInput('Match Part #', 'pub_history_ph_match_part',array('maxlength' => 50));
-		$this->renderTextInput('Sort Part #', 'pub_history_ph_sort_part', array('maxlength' => 50));
 		$this->renderTextInput('Alternative Part #', 'pub_history_ph_alt_part',
 			array('maxlength' => 50, 'help' => 'An alternate part number for the publication, if any.'));
-		$this->renderTextInput('Match Alternative Part #', 'pub_history_ph_match_alt_part', array('maxlength' => 50));
 		$this->renderTextInput('Keywords', 'pub_history_ph_keywords',
-			array('maxlength' => 100, 'help' => 'Keywords for this publication, i.e. terminal graphics.'));
+			array('maxlength' => 100, 'help' => 'A space separated list of keywords for this publication, i.e. terminal graphics.'));
 		$this->renderTextInput('Notes', 'pub_history_ph_notes',
 			array('maxlength' => 255, 'help' => 'Additional notes for this revision of the publication.'));
-		$this->renderTextInput('Class', 'pub_history_ph_class',
-			array('maxlength' => 40, 'help' => 'Class of the publication.'));
 		$this->renderTextInput('Amends Publication', 'pub_history_ph_amend_pub',
 			array('class' => 'hidden', 'maxlength' => 10, 'help' => 'Publication amended by this publication.'));
 		$this->renderTextInput('Amendment Serial No.', 'pub_history_ph_amend_serial',

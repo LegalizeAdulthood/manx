@@ -101,6 +101,7 @@ $(function()
 	{
 		return validate_field_non_empty("site_name")
 			&& validate_field_non_empty("site_url")
+			&& validate_field_non_empty("site_description")
 			&& validate_field_non_empty("site_copy_base");
 	};
 
@@ -297,13 +298,9 @@ $(function()
 			fn("pub_history_ph_pubdate_field");
 			fn("pub_history_ph_abstract_field");
 			fn("pub_history_ph_part_field");
-			fn("pub_history_ph_match_part_field");
-			fn("pub_history_ph_sort_part_field");
 			fn("pub_history_ph_alt_part_field");
-			fn("pub_history_ph_match_alt_part_field");
 			fn("pub_history_ph_keywords_field");
 			fn("pub_history_ph_notes_field");
-			fn("pub_history_ph_class_field");
 			fn("pub_history_ph_amend_pub_field");
 			fn("pub_history_ph_amend_serial_field");
 		});
