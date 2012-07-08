@@ -85,14 +85,22 @@ class URLWizardPage extends AdminPageBase
 		}
 	}
 
+	private static function ensureTrailingSlash($text)
+	{
+		return (substr(trim($text), -1) == '/') ?
+			trim($text) : trim($text) . '/';
+	}
+
 	private function addSite()
 	{
 		$siteId = $this->param('copy_site');
 		if ($siteId == -1)
 		{
 			$siteId = $this->_db->addSite($this->param('site_name'),
-				$this->param('site_url'), $this->param('site_description'),
-				$this->param('site_copy_base'), $this->param('site_low'),
+				UrlWizardPage::ensureTrailingSlash($this->param('site_url')),
+				$this->param('site_description'),
+				UrlWizardPage::ensureTrailingSlash($this->param('site_copy_base')),
+				$this->param('site_low'),
 				$this->param('site_live'));
 		}
 		return $siteId;
