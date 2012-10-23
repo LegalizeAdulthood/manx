@@ -315,19 +315,36 @@ class UrlWizardService extends ServicePageBase
 		$data['format'] = $this->_db->getFormatForExtension($extension);
 	}
 
-	private function findPublications()
+	private function findPublicationsForKeywords($keywords)
 	{
-		$company = $this->param('company');
-		$ignoredWords = array();
-		$keywords = Searcher::filterSearchKeywords($this->param('keywords'), $ignoredWords);
 		$data = array();
-		foreach ($this->_db->searchForPublications($company, $keywords, false) as $row)
+		foreach ($this->_db->searchForPublications($this->param('company'), $keywords, false) as $row)
 		{
 			array_push($data,
 				array('pub_id' => $row['pub_id'],
 					'ph_part' => $row['ph_part'],
 					'ph_revision' => $row['ph_revision'],
 					'ph_title' => $row['ph_title']));
+		}
+		return $data;
+	}
+
+	private function findPublications()
+	{
+		$company = $this->param('company');
+		$ignoredWords = array();
+		$keywords = Searcher::filterSearchKeywords($this->param('keywords'), $ignoredWords);
+		$data = $this->findPublicationsForKeywords($keywords);
+		foreach ($keywords as $keyword)
+		{
+			if (1 == preg_match('|^([0-9]+)|', $keyword, $matches))
+			{
+				$filtered = Searcher::filterSearchKeywords($matches[1], $ignoredWords);
+				if (count($filtered))
+				{
+					$data = array_merge($data, $this->findPublicationsForKeywords($filtered));
+				}
+			}
 		}
 		return $data;
 	}
