@@ -48,7 +48,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 		$_SERVER['PATH_INFO'] = '';
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$vars = array(
-			'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
+			'copy_url' => 'http://bitsavers.org/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
 			'copy_format' => 'PDF',
 			'copy_site' => '3',
 			'copy_notes' => '',
@@ -65,9 +65,9 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 			'company_short_name' => '',
 			'company_sort_name' => '',
 			'company_notes' => '',
-			'pub_search_keywords' => 'Rev+B+4010+Maintenance+Manual',
+			'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
 			'pub_pub_id' => '-1',
-			'pub_history_ph_title' => '4010+and+4010-1+Maintenance+Manual',
+			'pub_history_ph_title' => '4010 and 4010-1 Maintenance Manual',
 			'pub_history_ph_revision' => 'B',
 			'pub_history_ph_pubtype' => 'D',  
 			'pub_history_ph_pubdate' => '1976-04',
@@ -77,12 +77,12 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 			'pub_history_ph_sort_part' => '',
 			'pub_history_ph_alt_part' => '',  
 			'pub_history_ph_match_alt_part' => '',       
-			'pub_history_ph_keywords' => 'terminal+graphics',
+			'pub_history_ph_keywords' => 'terminal graphics',
 			'pub_history_ph_notes' => '',
 			'pub_history_ph_class' => '',
 			'pub_history_ph_amend_pub' => '',
 			'pub_history_ph_amend_serial' => '',
-			'supersession_search_keywords' => '4010+Maintenance+Manual',
+			'supersession_search_keywords' => '4010 Maintenance Manual',
 			'supersession_old_pub' => '5634',
 			'next' => 'Next+%3E');
 		$page = new URLWizardPageTester($this->_manx, $vars);
@@ -93,22 +93,22 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 		$output = ob_get_contents();
 		$this->assertFalse($db->addCompanyCalled);
 		$this->assertTrue($this->_manx->addPublicationCalled);
-		$this->assertEquals($this->_manx->addPublicationLastTitle, urldecode($vars['pub_history_ph_title']));
-		$this->assertEquals($this->_manx->addPublicationLastKeywords, urldecode($vars['pub_history_ph_keywords']));
+		$this->assertEquals($this->_manx->addPublicationLastTitle, $vars['pub_history_ph_title']);
+		$this->assertEquals($this->_manx->addPublicationLastKeywords, $vars['pub_history_ph_keywords']);
 		$this->assertTrue($db->addSupersessionCalled);
 		$this->assertEquals(5634, $db->addSupersessionLastOldPub);
 		$this->assertEquals(19690, $db->addSupersessionLastNewPub);
 		$this->assertFalse($db->addSiteCalled);
 		$this->assertTrue($db->addCopyCalled);
 		$this->assertEquals($db->addCopyLastPubId, 19690);
-		$this->assertEquals($db->addCopyLastFormat, urldecode($vars['copy_format']));
-		$this->assertEquals($db->addCopyLastSiteId, urldecode($vars['copy_site']));
-		$this->assertEquals($db->addCopyLastUrl, urldecode($vars['copy_url']));
-		$this->assertEquals($db->addCopyLastNotes, urldecode($vars['copy_notes']));
-		$this->assertEquals($db->addCopyLastSize, urldecode($vars['copy_size']));
-		$this->assertEquals($db->addCopyLastMd5, urldecode($vars['copy_md5']));
-		$this->assertEquals($db->addCopyLastCredits, urldecode($vars['copy_credits']));
-		$this->assertEquals($db->addCopyLastAmendSerial, urldecode($vars['copy_amend_serial']));
+		$this->assertEquals($db->addCopyLastFormat, $vars['copy_format']);
+		$this->assertEquals($db->addCopyLastSiteId, $vars['copy_site']);
+		$this->assertEquals($db->addCopyLastUrl, $vars['copy_url']);
+		$this->assertEquals($db->addCopyLastNotes, $vars['copy_notes']);
+		$this->assertEquals($db->addCopyLastSize, $vars['copy_size']);
+		$this->assertEquals($db->addCopyLastMd5, $vars['copy_md5']);
+		$this->assertEquals($db->addCopyLastCredits, $vars['copy_credits']);
+		$this->assertEquals($db->addCopyLastAmendSerial, $vars['copy_amend_serial']);
 		$this->assertTrue($page->redirectCalled);
 	}
 
@@ -166,7 +166,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 <div id="copy_notes_error" class="error hidden"></div>
 </li>
 
-<input type="hidden" id="copy_size" name="copy_size" value="" />
+<input type="hidden" id="copy_size" name="copy_size" value="0" />
 
 <input type="hidden" id="copy_md5" name="copy_md5" value="" />
 
@@ -178,7 +178,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 <div id="copy_credits_error" class="error hidden"></div>
 </li>
 
-<input type="hidden" id="copy_amend_serial" name="copy_amend_serial" value="" />
+<input type="hidden" id="copy_amend_serial" name="copy_amend_serial" value="0" />
 
 </ul>
 </fieldset>

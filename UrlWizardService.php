@@ -35,7 +35,7 @@ class UrlWizardService extends ServicePageBase
 
 	private function determineData()
 	{
-		$data['url'] = urldecode($this->param('url'));
+		$data['url'] = $this->param('url');
 		$this->_sites = $this->_db->getSites();
 		$data['site'] = $this->determineSiteFromUrl($data);
 		$data['company'] = -1;

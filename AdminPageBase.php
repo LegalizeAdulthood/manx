@@ -16,7 +16,7 @@ abstract class AdminPageBase extends PageBase
 	{
 		if (array_key_exists($name, $this->_vars))
 		{
-			return urldecode($this->_vars[$name]);
+			return $this->_vars[$name];
 		}
 		else
 		{
