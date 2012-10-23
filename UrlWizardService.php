@@ -326,6 +326,7 @@ class UrlWizardService extends ServicePageBase
 			array_push($data,
 				array('pub_id' => $row['pub_id'],
 					'ph_part' => $row['ph_part'],
+					'ph_revision' => $row['ph_revision'],
 					'ph_title' => $row['ph_title']));
 		}
 		return $data;

@@ -147,10 +147,10 @@ $(function()
 		$("#pub_history_ph_pubdate").val(data.pub_date);
 		$("#pub_history_ph_part").val(data.part);
 
-		$("#pub_search_keywords").val(data.title);
+		$("#pub_search_keywords").val(data.part + ' ' + data.title);
 		search_for_publications();
 
-		$("#supersession_search_keywords").val(data.title);
+		$("#supersession_search_keywords").val(data.part + ' ' + data.title);
 		search_for_supersessions();
 	};
 	var reset_publication = function()
@@ -179,16 +179,22 @@ $(function()
 			&& validate_title_part_number();
 	};
 
+	var set_pub_list = function(id, new_text, json)
+	{
+		build_option_list(id, new_text,
+			function(item)
+			{
+				return build_option(item.pub_id,
+					item.ph_part + ' ' + item.ph_revision + ' ' + item.ph_title);
+			},
+			json);
+	};
+
 	var set_supersessions = function(json)
 	{
 		var set_supersession_pub = function(id)
 		{
-			build_option_list(id, "(None)",
-				function(item)
-				{
-					return build_option(item.pub_id, item.ph_title);
-				},
-				json);
+			set_pub_list(id, "(None)", json);
 		};
 		set_supersession_pub("supersession_old_pub");
 		set_supersession_pub("supersession_new_pub");
@@ -209,12 +215,7 @@ $(function()
 
 	var set_publication_search_results = function(json)
 	{
-		build_option_list("pub_pub_id", "(New Publication)",
-			function(pub)
-			{
-				return build_option(pub.ph_pub, pub.ph_title);
-			},
-			json);
+		set_pub_list("pub_pub_id", "(New Publication)", json);
 	};
 	var reset_publication_search_results = function()
 	{
@@ -314,8 +315,14 @@ $(function()
 		});
 
 	$("#supersession_search_keywords").change(search_for_supersessions);
-	$("#supersession_old_pub").change($("#supersession_new_pub").val(-1));
-	$("#supersession_new_pub").change($("#supersession_old_pub").val(-1));
+	$("#supersession_old_pub").change(function()
+		{
+			$("#supersession_new_pub").val(-1);
+		});
+	$("#supersession_new_pub").change(function()
+		{
+			$("#supersession_old_pub").val(-1);
+		});
 
 	$("#pub_search_keywords").change(search_for_publications);
 
