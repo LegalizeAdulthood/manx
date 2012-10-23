@@ -7667,3 +7667,9 @@ UPDATE `copy`
 INSERT INTO `mirror`(`site`, `original_stem`, `copy_stem`, `rank`)
 SELECT 2, 'http://www.computer.museum.uq.edu.au/', CONCAT(`copy_stem`, 'www.computer.museum.uq.edu.au/'), `rank`
 FROM `mirror` WHERE `site` = 3;
+
+---
+--- Add manx mirror for vt100.net content
+---
+INSERT INTO `mirror`(`site`, `original_stem`, `copy_stem`, `rank`)
+VALUES (1, 'http://vt100.net/', 'http://manx.classiccmp.org/mirror/vt100.net/', 1);
