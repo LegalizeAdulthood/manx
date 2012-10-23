@@ -7633,17 +7633,6 @@ CALL `manx_site_migrater`('antonio',
 	1, 'http://vt100.net/mirror/antonio/');
 
 --
--- Update Howard M. Harte's mirror that used to be on vt100.net
---
-UPDATE `site`
-	SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte', 'http://manx.classiccmp.org/mirror/harte'),
-		`description` = REPLACE(`description`, 'VT100.net', 'manx.classiccmp.org')
-	WHERE `siteid` = 49;
-UPDATE `copy`
-	SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte/', 'http://manx.classiccmp.org/mirror/harte/')
-	WHERE `site` = 49;
-
---
 -- Compaq Maintenance Documentation Service on CD-ROM, DIGITAL-branded Products, September 1999
 --
 CALL `manx_site_migrater`('mds-199909',
@@ -7660,3 +7649,21 @@ CALL `manx_site_migrater`('hcps',
 	1, 'http://vt100.net/mirror/hcps/');
 
 DROP PROCEDURE `manx_site_migrater`;
+
+--
+-- Update Howard M. Harte's mirror that used to be on vt100.net
+--
+UPDATE `site`
+	SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte', 'http://manx.classiccmp.org/mirror/harte'),
+		`description` = REPLACE(`description`, 'VT100.net', 'manx.classiccmp.org')
+	WHERE `siteid` = 49;
+UPDATE `copy`
+	SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte/', 'http://manx.classiccmp.org/mirror/harte/')
+	WHERE `site` = 49;
+
+---
+--- Add bitsavers mirrors for Wilbur Williams' Computer Museum
+---
+INSERT INTO `mirror`(`site`, `original_stem`, `copy_stem`, `rank`)
+SELECT 2, 'http://www.computer.museum.uq.edu.au/', CONCAT(`copy_stem`, 'www.computer.museum.uq.edu.au/'), `rank`
+FROM `mirror` WHERE `site` = 3;
