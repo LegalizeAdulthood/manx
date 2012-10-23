@@ -212,7 +212,7 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$vars = array(
 			'method' => 'url-lookup',
-			'url' => 'http%3A%2F%2Fbitsavers.trailing-edge.com%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf');
+			'url' => 'http://bitsavers.trailing-edge.com/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf');
 		ob_start();
 		$page = new UrlWizardServiceTester($this->_manx, $vars);
 
@@ -287,7 +287,7 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$vars = array(
 			'method' => 'url-lookup',
-			'url' => 'http%3A%2F%2Fwww.bitsavers.org%2Fpdf%2Funivac%2F1100%2FUE-637_1108execUG_1970.pdf'
+			'url' => 'http://www.bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf'
 			);
 		ob_start();
 		$page = new UrlWizardServiceTester($this->_manx, $vars);
