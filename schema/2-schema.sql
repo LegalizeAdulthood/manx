@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `properties` (
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table `bitsavers_company`
+-- Table structure for table `company_bitsavers`
 --
 
 CREATE TABLE IF NOT EXISTS `company_bitsavers` (
@@ -86,7 +86,6 @@ INSERT INTO `company_bitsavers`(`company_id`,`directory`) VALUES
 	(14,  'hazeltine'),
 	(7,   'hp'),
 	(57,  'honeywell'),
-	(105, 'infoton'),
 	(65,  'inmos'),
 	(47,  'intel'),
 	(58,  'interdata'),
