@@ -251,10 +251,15 @@ $(function()
 		pub_search($("#supersession_search_keywords").val(), set_supersessions);
 	};
 
-	var validate_data = function()
+	var clear_errors = function()
 	{
 		$('div[id$="_error"]').addClass('hidden');
 		$("label").removeClass('error');
+	};
+
+	var validate_data = function()
+	{
+		clear_errors();
 		return validate_copy()
 			&& validate_combo_box('company_id', validate_company)
 			&& validate_combo_box('pub_pub_id', validate_publication)
@@ -292,20 +297,20 @@ $(function()
 				reset_publication_search_results();
 				reset_supersessions();
 			}
-			validate_data();
+			clear_errors();
 		});
 
 	$("#copy_site").change(
 		function()
 		{
 			show_or_hide("copy_site")("site_fields");
-			validate_data();
+			clear_errors();
 		});
 
 	$("#company_id").change(function()
 		{
 			show_hide_company_fields();
-			validate_data();
+			clear_errors();
 		});
 
 	$("#supersession_search_keywords").change(search_for_supersessions);
@@ -329,7 +334,7 @@ $(function()
 			fn("pub_history_ph_notes_field");
 			fn("pub_history_ph_amend_pub_field");
 			fn("pub_history_ph_amend_serial_field");
-			validate_data();
+			clear_errors();
 		});
 
 	$("input[name='next']").click(

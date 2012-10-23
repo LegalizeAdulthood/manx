@@ -76,7 +76,7 @@ EOH;
 			if ($this->_manx->loginUser($_POST['user'], sha1($_POST['pass'])))
 			{
 				// Now take our cookie and redirect back to this script to test
-				$this->redirect($_SERVER['request_url'] . '?check=1&redirect=' . urlencode($this->getRedirect()));
+				$this->redirect($_SERVER['REQUEST_URL'] . '?check=1&redirect=' . urlencode($this->getRedirect()));
 				exit;
 			}
 			else

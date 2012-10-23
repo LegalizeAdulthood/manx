@@ -52,32 +52,39 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 
 	public function testExtractPubDateSeparateMonthYear()
 	{
-		$this->assertEquals('1975-03', UrlWizardService::extractPubDate('foo_bar_Mar_1975'));
+		$this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar_1975');
 	}
 
 	public function testExtractPubDateMonthYear()
 	{
-		$this->assertEquals('1975-03', UrlWizardService::extractPubDate('foo_bar_Mar1975'));
+		$this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar1975');
 	}
 
 	public function testExtractPubDateYear()
 	{
-		$this->assertEquals('1975', UrlWizardService::extractPubDate('foo_bar_1975'));
+		$this->assertPubDateForFileBase('1975', 'foo_bar_1975');
 	}
 
 	public function testExtractPubDateTwoDigitYear()
 	{
-		$this->assertEquals('1975', UrlWizardService::extractPubDate('foo_bar_75'));
+		$this->assertPubDateForFileBase('1975', 'foo_bar_75');
 	}
 
 	public function testExtractPubDateSeparateMonthTwoDigitYear()
 	{
-		$this->assertEquals('1975-03', UrlWizardService::extractPubDate('foo_bar_Mar_75'));
+		$this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar_75');
 	}
 
 	public function testExtractPubDateMonthTwoDigitYear()
 	{
-		$this->assertEquals('1975-03', UrlWizardService::extractPubDate('foo_bar_Mar75'));
+		$this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar75');
+	}
+
+	public function assertPubDateForFileBase($pubDate, $fileBase)
+	{
+		list($date, $newFileBase) = UrlWizardService::extractPubDate($fileBase);
+		$this->assertEquals($pubDate, $date);
+		$this->assertEquals('foo_bar', $newFileBase);
 	}
 
 	public function testConstruct()

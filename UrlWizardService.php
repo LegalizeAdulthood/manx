@@ -63,8 +63,8 @@ class UrlWizardService extends ServicePageBase
 		{
 			return;
 		}
-		$data['pub_date'] = UrlWizardService::extractPubDate($matches[1]);
-		$data['title'] = implode(' ', explode('_', $matches[1]));
+		list($data['pub_date'], $fileBase) = UrlWizardService::extractPubDate($matches[1]);
+		$data['title'] = implode(' ', explode('_', $fileBase));
 		$data['format'] = $this->_db->getFormatForExtension($matches[2]);
 	}
 
@@ -91,9 +91,11 @@ class UrlWizardService extends ServicePageBase
 					if ($month == $prefix)
 					{
 						$pubDate = sprintf("%s-%s", $pubDate, $months[$prefix]);
+						--$lastPart;
 						break;
 					}
 				}
+				$fileBase = implode('_', array_slice($parts, 0, $lastPart + 1));
 			}
 			else if (1 == preg_match('/^([a-z]+)([0-9]+)$/', $year, $matches))
 			{
@@ -108,12 +110,14 @@ class UrlWizardService extends ServicePageBase
 					if ($month == $prefix)
 					{
 						$pubDate = sprintf("%d-%s", $year, $months[$prefix]);
+						--$lastPart;
+						$fileBase = implode('_', array_slice($parts, 0, $lastPart + 1));
 						break;
 					}
 				}
 			}
 		}
-		return $pubDate;
+		return array($pubDate, $fileBase);
 	}
 
 	private function findSiteById($id)
@@ -296,7 +300,7 @@ class UrlWizardService extends ServicePageBase
 			$extension = array_pop($fileParts);
 			$fileBase = implode('.', $fileParts);
 		}
-		$data['pub_date'] = UrlWizardService::extractPubDate($fileBase);
+		list($data['pub_date'], $fileBase) = UrlWizardService::extractPubDate($fileBase);
 		$parts = explode('_', $fileBase);
 		if (count($parts) > 1)
 		{
@@ -306,22 +310,6 @@ class UrlWizardService extends ServicePageBase
 			}
 			$lastPart = count($parts)-1;
 			$data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
-			if (is_numeric($parts[$lastPart]))
-			{
-				$data['pub_date'] = array_pop($parts);
-				$lastPart = count($parts)-1;
-				$month = $parts[$lastPart];
-				$months = UrlWizardService::months();
-				foreach (array_keys($months) as $prefix)
-				{
-					if (strtolower(substr($month, 0, 3)) == $prefix)
-					{
-						$data['pub_date'] = sprintf("%s-%s", $data['pub_date'], $months[$prefix]);
-						array_pop($parts);
-						break;
-					}
-				}
-			}
 			$data['title'] = implode(' ', $parts);
 		}
 		$data['format'] = $this->_db->getFormatForExtension($extension);

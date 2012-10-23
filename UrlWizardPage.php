@@ -91,6 +91,11 @@ class URLWizardPage extends AdminPageBase
 			trim($text) : trim($text) . '/';
 	}
 
+	private static function yesNo($text)
+	{
+		return (strtolower($text) == 'y') ? 'Y' : 'N';
+	}
+
 	private function addSite()
 	{
 		$siteId = $this->param('copy_site');
@@ -100,8 +105,8 @@ class URLWizardPage extends AdminPageBase
 				UrlWizardPage::ensureTrailingSlash($this->param('site_url')),
 				$this->param('site_description'),
 				UrlWizardPage::ensureTrailingSlash($this->param('site_copy_base')),
-				$this->param('site_low'),
-				$this->param('site_live'));
+				UrlWizardPage::yesNo($this->param('site_low')),
+				UrlWizardPage::yesNo($this->param('site_live')));
 		}
 		return $siteId;
 	}
@@ -203,7 +208,7 @@ EOH;
 		$this->renderTextInputMaxSize('Notes', 'copy_notes', 60, 200,
 			'Notes about this copy of the publication.');
 		print <<<EOH
-<input type="hidden" id="copy_size" name="copy_size" value="" />
+<input type="hidden" id="copy_size" name="copy_size" value="0" />
 
 <input type="hidden" id="copy_md5" name="copy_md5" value="" />
 
@@ -212,7 +217,7 @@ EOH;
 		$this->renderTextInputMaxSize('Credits', 'copy_credits', 60, 200,
 			'Credits for this copy, i.e. Scanned by legalize.');
 		print <<<EOH
-<input type="hidden" id="copy_amend_serial" name="copy_amend_serial" value="" />
+<input type="hidden" id="copy_amend_serial" name="copy_amend_serial" value="0" />
 
 </ul>
 </fieldset>
@@ -241,12 +246,12 @@ EOH;
 		print <<<EOH
 <li id="site_low_field">
 <label for="site_low">Low Bandwidth?</label>
-<input type="checkbox" id="site_low" name="site_low" value="" />
+<input type="checkbox" id="site_low" name="site_low" value="Y" />
 </li>
 
 <li id="site_live_field">
 <label for="site_live">Live?</label>
-<input type="checkbox" id="site_live" name="site_live" value="" />
+<input type="checkbox" id="site_live" name="site_live" value="Y" checked="checked" />
 </li>
 
 </ul>

@@ -563,7 +563,7 @@ class ManxDatabase implements IManxDatabase
 
 	function addBitSaversDirectory($companyId, $directory)
 	{
-		$row = $this->execute("SELECT FROM `company_bitsavers` WHERE `company_id`=?", array($companyId));
+		$row = $this->execute("SELECT * FROM `company_bitsavers` WHERE `company_id`=?", array($companyId));
 		if (count($row) == 0)
 		{
 			$this->_db->execute('INSERT INTO `company_bitsavers`(`company_id`,`directory`) VALUES (?,?)',

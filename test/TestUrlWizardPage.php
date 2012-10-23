@@ -226,12 +226,12 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 
 <li id="site_low_field">
 <label for="site_low">Low Bandwidth?</label>
-<input type="checkbox" id="site_low" name="site_low" value="" />
+<input type="checkbox" id="site_low" name="site_low" value="Y" />
 </li>
 
 <li id="site_live_field">
 <label for="site_live">Live?</label>
-<input type="checkbox" id="site_live" name="site_live" value="" />
+<input type="checkbox" id="site_live" name="site_live" value="Y" checked="checked" />
 </li>
 
 </ul>
