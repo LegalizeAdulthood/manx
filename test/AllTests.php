@@ -9,6 +9,7 @@ require_once 'test/TestRssPage.php';
 require_once 'test/TestSearcher.php';
 require_once 'test/TestUrlWizardPage.php';
 require_once 'test/TestUrlWizardService.php';
+require_once 'test/TestAdminPageBase.php';
 
 class AllTests
 {
@@ -24,6 +25,7 @@ class AllTests
 		$suite->addTestSuite('TestSearcher');
 		$suite->addTestSuite('TestUrlWizardPage');
 		$suite->addTestSuite('TestUrlWizardService');
+		$suite->addTestSuite('TestAdminPageBase');
 		return $suite;
 	}
 }

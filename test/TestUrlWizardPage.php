@@ -48,7 +48,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 		$_SERVER['PATH_INFO'] = '';
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		$vars = array(
-			'copy_url' => 'http://bitsavers.org/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
+			'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
 			'copy_format' => 'PDF',
 			'copy_site' => '3',
 			'copy_notes' => '',
@@ -93,22 +93,22 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 		$output = ob_get_contents();
 		$this->assertFalse($db->addCompanyCalled);
 		$this->assertTrue($this->_manx->addPublicationCalled);
-		$this->assertEquals($this->_manx->addPublicationLastTitle, $vars['pub_history_ph_title']);
-		$this->assertEquals($this->_manx->addPublicationLastKeywords, $vars['pub_history_ph_keywords']);
+		$this->assertEquals($vars['pub_history_ph_title'], $this->_manx->addPublicationLastTitle);
+		$this->assertEquals($vars['pub_history_ph_keywords'], $this->_manx->addPublicationLastKeywords);
 		$this->assertTrue($db->addSupersessionCalled);
 		$this->assertEquals(5634, $db->addSupersessionLastOldPub);
 		$this->assertEquals(19690, $db->addSupersessionLastNewPub);
 		$this->assertFalse($db->addSiteCalled);
 		$this->assertTrue($db->addCopyCalled);
-		$this->assertEquals($db->addCopyLastPubId, 19690);
-		$this->assertEquals($db->addCopyLastFormat, $vars['copy_format']);
-		$this->assertEquals($db->addCopyLastSiteId, $vars['copy_site']);
-		$this->assertEquals($db->addCopyLastUrl, $vars['copy_url']);
-		$this->assertEquals($db->addCopyLastNotes, $vars['copy_notes']);
-		$this->assertEquals($db->addCopyLastSize, $vars['copy_size']);
-		$this->assertEquals($db->addCopyLastMd5, $vars['copy_md5']);
-		$this->assertEquals($db->addCopyLastCredits, $vars['copy_credits']);
-		$this->assertEquals($db->addCopyLastAmendSerial, $vars['copy_amend_serial']);
+		$this->assertEquals(19690, $db->addCopyLastPubId);
+		$this->assertEquals($vars['copy_format'], $db->addCopyLastFormat);
+		$this->assertEquals($vars['copy_site'], $db->addCopyLastSiteId);
+		$this->assertEquals(rawurldecode($vars['copy_url']), $db->addCopyLastUrl);
+		$this->assertEquals($vars['copy_notes'], $db->addCopyLastNotes);
+		$this->assertEquals($vars['copy_size'], $db->addCopyLastSize);
+		$this->assertEquals($vars['copy_md5'], $db->addCopyLastMd5);
+		$this->assertEquals($vars['copy_credits'], $db->addCopyLastCredits);
+		$this->assertEquals($vars['copy_amend_serial'], $db->addCopyLastAmendSerial);
 		$this->assertTrue($page->redirectCalled);
 	}
 
