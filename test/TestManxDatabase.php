@@ -549,11 +549,11 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 		$this->createInstance();
 		$this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
 			array('ph_company', 'ph_pub', 'ph_title'),
-			array('1', '2', 'IM1 Schematic'));
+			array(array('1', '2', 'IM1 Schematic')));
 		$row = $this->_manxDb->copyExistsForUrl('http://bitsavers.org/pdf/sgi/iris/IM1_Schematic.pdf');
 		$this->assertTrue($this->_db->executeCalled);
 		$this->assertEquals(3, count($row));
-		$this->assertEquals('1', $row['company']);
+		$this->assertEquals('1', $row['ph_company']);
 		$this->assertEquals('2', $row['ph_pub']);
 		$this->assertEquals('IM1 Schematic', $row['ph_title']);
 	}
