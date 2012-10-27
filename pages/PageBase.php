@@ -76,8 +76,8 @@ abstract class PageBase
 <head>
 EOH;
 		printf("<title>%s</title>\n", $this->getTitle());
-		$this->renderLink("stylesheet", "text/css", "manx.css");
-		$this->renderLink("shortcut icon", "image/x-icon", "manx.ico");
+		$this->renderLink("stylesheet", "text/css", "assets/manx.css");
+		$this->renderLink("shortcut icon", "image/x-icon", "assets/manx.ico");
 		$this->renderLink("alternate", "application/rss+xml", "rss.php", array('title' => 'Manx New Documents'));
 		$this->renderHeaderContent();
 		print "</head>\n";

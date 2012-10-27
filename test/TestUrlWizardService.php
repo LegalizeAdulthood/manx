@@ -3,7 +3,7 @@
 require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeUser.php';
-require_once 'UrlWizardService.php';
+require_once 'pages/UrlWizardService.php';
 
 class UrlWizardServiceTester extends UrlWizardService
 {

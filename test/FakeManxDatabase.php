@@ -1,6 +1,6 @@
 <?php
 
-require_once 'IManxDatabase.php';
+require_once 'pages/IManxDatabase.php';
 
 class FakeManxDatabase implements IManxDatabase
 {

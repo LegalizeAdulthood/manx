@@ -1,6 +1,6 @@
 <?php
 
-require_once 'IDatabase.php';
+require_once 'pages/IDatabase.php';
 
 class FakeDatabase implements IDatabase
 {

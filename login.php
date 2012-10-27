@@ -1,7 +1,7 @@
 <?php
 
-require_once 'Manx.php';
-require_once 'LoginPage.php';
+require_once 'pages/Manx.php';
+require_once 'pages/LoginPage.php';
 
 $manx = Manx::getInstance();
 $page = new LoginPage($manx);

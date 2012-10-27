@@ -1,6 +1,6 @@
 <?php
 
-require_once 'ICurlApi.php';
+require_once 'pages/ICurlApi.php';
 
 class FakeCurlApi implements ICurlApi
 {

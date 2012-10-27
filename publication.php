@@ -1,7 +1,7 @@
 <?php
 
-require_once 'Manx.php';
-require_once 'PublicationPage.php';
+require_once 'pages/Manx.php';
+require_once 'pages/PublicationPage.php';
 
 $manx = Manx::getInstance();
 $vars = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $_POST : $_GET;

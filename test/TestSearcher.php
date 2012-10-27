@@ -1,7 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Framework/TestCase.php';
-require_once 'Searcher.php';
+require_once 'pages/Searcher.php';
 require_once 'test/FakeStatement.php';
 require_once 'test/FakeFormatter.php';
 require_once 'test/FakeManxDatabase.php';

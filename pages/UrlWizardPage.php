@@ -142,10 +142,10 @@ class URLWizardPage extends AdminPageBase
 
 	protected function renderHeaderContent()
 	{
-		$this->renderLink("stylesheet", "text/css", "UrlWizard.css");
+		$this->renderLink("stylesheet", "text/css", "assets/UrlWizard.css");
 		print <<<EOH
-<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="UrlWizard.js"></script>
+<script type="text/javascript" src="assets/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="assets/UrlWizard.js"></script>
 EOH;
 	}
 
@@ -172,7 +172,7 @@ EOH;
 		{
 			$help = $options['help'];
 			print <<<EOH
-<img id="${id}_help_button" src="help.png" width="16" height="16" />
+<img id="${id}_help_button" src="assets/help.png" width="16" height="16" />
 <div id="${id}_help" class="hidden">$help</div>
 <div id="${id}_error" class="error hidden"></div>
 

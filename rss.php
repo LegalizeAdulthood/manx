@@ -1,8 +1,8 @@
 <?php
 
-require_once 'Manx.php';
-require_once 'RssPage.php';
-require_once 'DateTimeProvider.php';
+require_once 'pages/Manx.php';
+require_once 'pages/RssPage.php';
+require_once 'pages/DateTimeProvider.php';
 
 $manx = Manx::getInstance();
 $dtp = new DateTimeProvider();

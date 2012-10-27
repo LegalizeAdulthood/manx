@@ -1,6 +1,6 @@
 <?php
 
-require_once 'CompanyPage.php';
+require_once 'pages/CompanyPage.php';
 
 $manx = Manx::getInstance();
 $vars = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $_POST : $_GET;

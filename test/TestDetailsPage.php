@@ -1,6 +1,6 @@
 <?php
 
-require_once 'DetailsPage.php';
+require_once 'pages/DetailsPage.php';
 require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeManx.php';
 

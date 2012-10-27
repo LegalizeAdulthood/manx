@@ -19,7 +19,7 @@
 
 */
 
-require_once 'UrlWizardPage.php';
+require_once 'pages/UrlWizardPage.php';
 
 $manx = Manx::getInstance();
 $vars = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $_POST : $_GET;

@@ -1,8 +1,8 @@
 <?php
 
-require_once 'RssPage.php';
+require_once 'pages/RssPage.php';
 require_once 'test/FakeManxDatabase.php';
-require_once 'IDateTimeProvider.php';
+require_once 'pages/IDateTimeProvider.php';
 
 class RssPageTester extends RssPage
 {

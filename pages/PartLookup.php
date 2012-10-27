@@ -16,7 +16,7 @@ if (hasNonEmptyKey($_POST, 'part') && hasNonEmptyKey($_POST, 'company'))
 	header("Content-Type: text/xml; charset=utf-8");
 
 	print <<<EOH
-<?xml-stylesheet href="PartLookup.css" type="text/css" ?>
+<?xml-stylesheet href="assets/PartLookup.css" type="text/css" ?>
 <publist>
 EOH;
 	global $manxDb;

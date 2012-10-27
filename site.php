@@ -1,7 +1,7 @@
 <?php
 
-require_once 'Manx.php';
-require_once 'AdminPageBase.php';
+require_once 'pages/Manx.php';
+require_once 'pages/AdminPageBase.php';
 
 class SitePage extends AdminPageBase
 {

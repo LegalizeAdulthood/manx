@@ -1,6 +1,6 @@
 <?php
 
-require_once 'IManx.php';
+require_once 'pages/IManx.php';
 
 class FakeManx implements IManx
 {

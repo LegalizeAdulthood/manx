@@ -1,6 +1,6 @@
 <?php
 require_once 'test/FakeDatabase.php';
-require_once 'HtmlFormatter.php';
+require_once 'pages/HtmlFormatter.php';
 
 class TestHtmlFormatter extends PHPUnit_Framework_TestCase
 {

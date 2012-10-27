@@ -1,6 +1,6 @@
 <?php
 
-require_once 'IFormatter.php';
+require_once 'pages/IFormatter.php';
 
 class FakeFormatter implements IFormatter
 {

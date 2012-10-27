@@ -1,6 +1,6 @@
 <?php
 
-require_once 'IUser.php';
+require_once 'pages/IUser.php';
 
 class FakeUser implements IUser
 {
