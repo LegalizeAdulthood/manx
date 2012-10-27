@@ -21,6 +21,7 @@ class TestUrlInfo extends PHPUnit_Framework_TestCase
 		$curlApi->execFakeResult = "HTTP/1.0 200 OK\n"
 			. "Content-Length: 4096\n"
 			. "\n";
+		$curlApi->getinfoFakeResult = 200;
 		$url = 'http://bitsavers.org/WhatsNew.txt';
 		$curl = new UrlInfo($url, $curlApi);
 		$size = $curl->size();
