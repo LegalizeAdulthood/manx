@@ -144,6 +144,14 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 <div id="copy_url_error" class="error hidden"></div>
 </li>
 
+<li id="copy_mirror_url_field" class="hidden">
+<label for="copy_mirror_url">Mirror Document URL</label>
+<input type="text" id="copy_mirror_url" name="copy_mirror_url" size="60" maxlength="255" readonly="readonly" value="" />
+<img id="copy_mirror_url_help_button" src="help.png" width="16" height="16" />
+<div id="copy_mirror_url_help" class="hidden">Read-only.  The URL of a mirrored document as originally entered.</div>
+<div id="copy_mirror_url_error" class="error hidden"></div>
+</li>
+
 <li id="copy_format_field" class="hidden">
 <label for="copy_format">Format</label>
 <input type="text" id="copy_format" name="copy_format" size="10" maxlength="10" value="" />
