@@ -2,6 +2,7 @@
 
 require_once 'Manx.php';
 require_once 'AdminPageBase.php';
+require_once 'UrlInfo.php';
 
 class URLWizardPage extends AdminPageBase
 {
@@ -115,8 +116,28 @@ class URLWizardPage extends AdminPageBase
 	{
 		$this->_db->addCopy($pubId, $this->param('copy_format'),
 			$siteId, $this->param('copy_url'), $this->param('copy_notes'),
-			$this->param('copy_size'), $this->param('copy_md5'),
+			$this->param('copy_size'), $this->getCopyMd5(),
 			$this->param('copy_credits'), $this->param('copy_amend_serial'));
+	}
+
+	private function getCopyMd5()
+	{
+		$md5 = $this->param('copy_md5');
+		if (!strlen($md5))
+		{
+			$url = $this->param('copy_mirror_url');
+			if (!strlen($url))
+			{
+				$url = $this->param('copy_url');
+			}
+			$urlInfo = new UrlInfo($url);
+			$result = $urlInfo->md5();
+			if ($result !== false && $result[0] < 300)
+			{
+				$md5 = $result[1];
+			}
+		}
+		return $md5;
 	}
 
 	protected function renderHeaderContent()
