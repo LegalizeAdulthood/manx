@@ -142,15 +142,16 @@ $(function()
 
 	var set_publication = function(data)
 	{
+		var keywords = (data.part + ' ' + data.title).trim();
 		show("publication_fields");
 		$("#pub_history_ph_title").val(data.title);
 		$("#pub_history_ph_pubdate").val(data.pub_date);
 		$("#pub_history_ph_part").val(data.part);
 
-		$("#pub_search_keywords").val(data.part + ' ' + data.title);
+		$("#pub_search_keywords").val(keywords);
 		search_for_publications();
 
-		$("#supersession_search_keywords").val(data.part + ' ' + data.title);
+		$("#supersession_search_keywords").val(keywords);
 		search_for_supersessions();
 	};
 	var reset_publication = function()

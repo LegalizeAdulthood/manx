@@ -312,21 +312,38 @@ class UrlWizardService extends ServicePageBase
 			$data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
 			$data['title'] = implode(' ', $parts);
 		}
+		else
+		{
+			$data['pubs'] = $this->findPublicationsForKeywords($company, $parts[0]);
+			$data['title'] = $parts[0];
+		}
 		$data['format'] = $this->_db->getFormatForExtension($extension);
 	}
 
-	private function findPublicationsForKeywords($keywords)
+	private static function emptyStringIfNull($str)
+	{
+		return is_null($str) ? '' : $str;
+	}
+
+	private function accumulatePublicationsForKeywords($company, $keywords, $online)
 	{
 		$data = array();
-		foreach ($this->_db->searchForPublications($this->param('company'), $keywords, false) as $row)
+		foreach ($this->_db->searchForPublications($company, $keywords, $online) as $row)
 		{
 			array_push($data,
 				array('pub_id' => $row['pub_id'],
-					'ph_part' => $row['ph_part'],
-					'ph_revision' => $row['ph_revision'],
+					'ph_part' => self::emptyStringIfNull($row['ph_part']),
+					'ph_revision' => self::emptyStringIfNull($row['ph_revision']),
 					'ph_title' => $row['ph_title']));
 		}
 		return $data;
+	}
+
+	private function findPublicationsForKeywords($company, $keywords)
+	{
+		return array_merge(
+			$this->accumulatePublicationsForKeywords($company, $keywords, false),
+			$this->accumulatePublicationsForKeywords($company, $keywords, true));
 	}
 
 	private function findPublications()
@@ -334,7 +351,7 @@ class UrlWizardService extends ServicePageBase
 		$company = $this->param('company');
 		$ignoredWords = array();
 		$keywords = Searcher::filterSearchKeywords($this->param('keywords'), $ignoredWords);
-		$data = $this->findPublicationsForKeywords($keywords);
+		$data = $this->findPublicationsForKeywords($company, $keywords);
 		foreach ($keywords as $keyword)
 		{
 			if (1 == preg_match('|^([0-9]+)|', $keyword, $matches))
@@ -342,7 +359,7 @@ class UrlWizardService extends ServicePageBase
 				$filtered = Searcher::filterSearchKeywords($matches[1], $ignoredWords);
 				if (count($filtered))
 				{
-					$data = array_merge($data, $this->findPublicationsForKeywords($filtered));
+					$data = array_merge($data, $this->findPublicationsForKeywords($company, $filtered));
 				}
 			}
 		}
