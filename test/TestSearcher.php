@@ -1,5 +1,6 @@
 <?php
 
+require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'Searcher.php';
 require_once 'test/FakeStatement.php';
 require_once 'test/FakeFormatter.php';

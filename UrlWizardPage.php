@@ -139,10 +139,12 @@ EOH;
 		$className = $this->getAttribute('class', $options);
 		$width = $this->getAttribute('size', $options);
 		$maxLength = $this->getAttribute('maxlength', $options);
+		$readOnly = array_key_exists('readonly', $options) ?
+			' readonly="readonly"' : '';
 		print <<<EOH
 <li id="${id}_field"$className>
 <label for="$id">$label</label>
-<input type="text" id="$id" name="$id"$width$maxLength value="" />
+<input type="text" id="$id" name="$id"$width$maxLength$readOnly value="" />
 
 EOH;
 		if (array_key_exists('help', $options))
@@ -185,6 +187,10 @@ EOH;
 EOH;
 		$this->renderTextInputMaxSize('Document URL', 'copy_url', 60, 255,
 			'The complete URL for the document.');
+		$this->renderTextInput('Mirror Document URL', 'copy_mirror_url',
+			array('class' => 'hidden', 'size' => 60, 'maxlength' => 255,
+				'readonly' => true,
+				'help' => 'Read-only.  The URL of a mirrored document as originally entered.'));
 		$this->renderTextInput('Format', 'copy_format',
 			array('class' => 'hidden', 'size' => 10, 'maxlength' => 10,
 				'help' => 'The format of the document at the URL, i.e. PDF.'));

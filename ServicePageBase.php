@@ -58,7 +58,7 @@ abstract class ServicePageBase
 	{
 		if (!$this->_user->isLoggedIn())
 		{
-			$this->redirect("search.php");
+			header("Status: 401 Not Authorized");
 			return;
 		}
 

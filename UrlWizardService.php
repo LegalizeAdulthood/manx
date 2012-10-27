@@ -22,6 +22,8 @@
 require_once 'Manx.php';
 require_once 'Searcher.php';
 require_once 'ServicePageBase.php';
+require_once 'CurlApi.php';
+require_once 'UrlInfo.php';
 
 class Site
 {
@@ -32,10 +34,30 @@ class UrlWizardService extends ServicePageBase
 {
 	/** @var array */
 	private $_sites;
+	/** @var ICurlApi */
+	private $_curlApi;
+
+	public function __construct($manx, $vars, $curlApi = null)
+	{
+		parent::__construct($manx, $vars);
+		$this->_curlApi = is_null($curlApi) ? CurlApi::getInstance() : $curlApi;
+	}
 
 	private function determineData()
 	{
-		$data['url'] = $this->param('url');
+		$url = $this->param('url');
+		$urlInfo = new UrlInfo($url, $this->_curlApi);
+		$size = $urlInfo->size();
+		if ($size === false)
+		{
+			$data['valid'] = false;
+			return $data;
+		}
+
+		$data['url'] = $url;
+		$data['mirror_url'] = '';
+		$data['size'] = $size;
+		$data['valid'] = true;
 		$this->_sites = $this->_db->getSites();
 		$data['site'] = $this->determineSiteFromUrl($data);
 		$data['company'] = -1;
@@ -155,6 +177,7 @@ class UrlWizardService extends ServicePageBase
 		}
 		if ($matchingSite != -1)
 		{
+			$data['mirror_url'] = $data['url'];
 			$data['url'] = $originalPrefix . substr($data['url'], strlen($matchingPrefix));
 		}
 		return $this->findSiteById($matchingSite);

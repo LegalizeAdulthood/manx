@@ -72,23 +72,34 @@ $(function()
 	var set_copy = function(data)
 	{
 		$("#copy_url").val(data.url);
+		if (data.mirror_url.length > 0)
+		{
+			show("copy_mirror_url_field");
+			$("#copy_mirror_url").val(data.mirror_url);
+		}
 		show("copy_site_field");
 		$("#copy_site").val(data.site.siteid);
 		show("copy_format_field");
 		$("#copy_format").val(data.format);
+		$("#copy_size").val(data.size);
 	};
 	var reset_copy = function()
 	{
+		hide("copy_mirror_url_field");
+		$("#copy_mirror_url").val('');
 		hide("copy_site_field");
 		$("#copy_site").val(-1);
 		hide("copy_format_field");
 		$("#copy_format").val('');
+		$("#copy_size").val(0);
 	};
 	var validate_copy = function()
 	{
+		var size = $("#copy_size").val();
 		return validate_field_non_empty('copy_url')
 			&& validate_combo_box('copy_site', validate_site)
-			&& validate_field_non_empty('copy_format');
+			&& validate_field_non_empty('copy_format')
+			&& Number(size) == size;
 	};
 
 	var set_bitsavers = function(data)
@@ -268,6 +279,17 @@ $(function()
 			&& validate_combo_box("supersession_old_pub", validate_supersession);
 	};
 
+	var reset_form = function()
+	{
+		reset_copy();
+		reset_site();
+		reset_company();
+		reset_publication();
+		hide("supersession_fields");
+		reset_publication_search_results();
+		reset_supersessions();
+	};
+
 	$("#copy_url").change(
 		function()
 		{
@@ -281,23 +303,25 @@ $(function()
 					},
 					function(json)
 					{
-						set_copy(json);
-						set_bitsavers(json);
-						show_or_hide("copy_site")("site_fields");
-						set_company(json);
-						set_publication(json);
-						show("supersession_fields");
+						if (!json.valid)
+						{
+							clear_or_set_error_label(true, "copy_url", "No document at URL " + url);
+							reset_form();
+						}
+						else
+						{
+							set_copy(json);
+							set_bitsavers(json);
+							show_or_hide("copy_site")("site_fields");
+							set_company(json);
+							set_publication(json);
+							show("supersession_fields");
+						}
 					});
 			}
 			else
 			{
-				reset_copy();
-				reset_site();
-				reset_company();
-				reset_publication();
-				hide("supersession_fields");
-				reset_publication_search_results();
-				reset_supersessions();
+				reset_form();
 			}
 			clear_errors();
 		});
