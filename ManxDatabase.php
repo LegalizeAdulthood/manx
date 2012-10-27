@@ -437,7 +437,16 @@ class ManxDatabase implements IManxDatabase
 				. "WHERE `ascii_session_id`=? and "
 					. "`user_session`.`user_id`=`user`.`id`",
 			array($sessionId));
-		return (count($rows) == 1) ? $rows[0] : array();
+		if (count($rows) == 1)
+		{
+			$this->execute("UPDATE `user_session` "
+				. "SET `last_impression` = NOW() "
+				. "WHERE `ascii_session_id`=?",
+				array($sessionId));
+			return $rows[0];
+		}
+
+		return array();
 	}
 
 	function getPublicationsForPartNumber($part, $company)
