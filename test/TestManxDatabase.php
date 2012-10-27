@@ -120,11 +120,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 				array(array('<p>This is paragraph one.</p>'), array('<p>This is paragraph two.</p>'))));
 		$longDescription = $this->_manxDb->getLongDescriptionForPub($pubId);
 		$this->assertFalse($this->_db->queryCalled);
-		/*
-		TODO: LONG_DESC table missing
-		$this->assertQueryCalledForSql($query);
-		$this->assertEquals(array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>'), $longDescription);
-		*/
 	}
 
 	public function testGetCitationsForPub()
@@ -563,6 +558,58 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 		$this->createInstance();
 		$this->_db->executeFakeResult = array();
 		$this->assertFalse($this->_manxDb->copyExistsForUrl('http://bitsavers.org/pdf/sgi/iris/IM1_Schematic.pdf'));
+	}
+
+	public function testGetZeroSizeDocuments()
+	{
+		$this->createInstance();
+		$query = "SELECT `copyid`,`ph_company`,`ph_pub`,`ph_title` "
+			. "FROM `copy`,`pub_history` "
+			. "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
+			. "AND (`copy`.`size` IS NULL OR `copy`.`size` = 0) "
+			. "AND `copy`.`format` <> 'HTML' "
+			. " LIMIT 0,10";
+		$this->configureStatementFetchAllResults($query,
+			FakeDatabase::createResultRowsForColumns(
+				array('copyid', 'ph_company', 'ph_pub', 'ph_title'),
+				array(array('66', '1', '2', 'IM1 Schematic'))));
+		$this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
+		$rows = $this->_manxDb->getZeroSizeDocuments();
+		$this->assertQueryCalledForSql($query);
+		$this->assertEquals(1, count($rows));
+		$this->assertEquals(66, $rows[0]['copyid']);
+		$this->assertEquals(1, $rows[0]['ph_company']);
+		$this->assertEquals(2, $rows[0]['ph_pub']);
+		$this->assertEquals('IM1 Schematic', $rows[0]['ph_title']);
+	}
+
+	public function testGetUrlForCopy()
+	{
+		$this->createInstance();
+		$query = "SELECT `url` FROM `copy` WHERE `copyid` = ?";
+		$url = 'http://www.example.com/foo.pdf';
+		$this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
+			array('url'),
+			array(array($url)));
+		$actualUrl = $this->_manxDb->getUrlForCopy(5);
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals(1, count($this->_db->executeLastStatements));
+		$this->assertEquals($query, $this->_db->executeLastStatements[0]);
+		$this->assertEquals($url, $actualUrl);
+	}
+
+	public function testUpdateSizeForCopy()
+	{
+		$this->createInstance();
+		$query = "UPDATE `copy` SET `size` = ? WHERE `copyid` = ?";
+		$copyId = 5;
+		$size = 4096;
+		$this->_manxDb->updateSizeForCopy($copyId, $size);
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals(1, count($this->_db->executeLastStatements));
+		$this->assertEquals($query, $this->_db->executeLastStatements[0]);
+		$this->assertEquals($size, $this->_db->executeLastArgs[0][0]);
+		$this->assertEquals($copyId, $this->_db->executeLastArgs[0][1]);
 	}
 
 	private function assertColumnValuesForRows($rows, $column, $values)

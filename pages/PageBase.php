@@ -14,6 +14,7 @@ class MenuType
 	const Copy = 7;
 	const Site = 8;
 	const UrlWizard = 9;
+	const SizeReport = 10;
 }
 
 abstract class PageBase
@@ -129,6 +130,7 @@ EOH;
 			$this->renderMenuItem(false, ($menu == MenuType::Site), "site.php", "Site");
 			$this->renderMenuSeparator();
 			$this->renderMenuItem(false, ($menu == MenuType::Mirror), "mirror.php", "Mirror");
+			$this->renderMenuitem(false, ($menu == MenuType::SizeReport), "size-report.php", "Size Report");
 		}
 	}
 

@@ -382,6 +382,34 @@ class FakeManxDatabase implements IManxDatabase
 	public $copyExistsForUrlCalled,
 		$copyExistsForUrlLastUrl,
 		$copyExistsForUrlFakeResult;
+
+	function getZeroSizeDocuments()
+	{
+		$this->getZeroSizeDocumentsCalled = true;
+		return $this->getZeroSizeDocumentsFakeResult;
+	}
+	public $getZeroSizeDocumentsCalled,
+		$getZeroSizeDocumentsFakeResult;
+
+	function getUrlForCopy($copyId)
+	{
+		$this->getUrlForCopyCalled = true;
+		$this->getUrlForCopyLastCopyId = $copyId;
+		return $this->getUrlForCopyFakeResult;
+	}
+	public $getUrlForCopyCalled,
+		$getUrlForCopyLastCopyId,
+		$getUrlForCopyFakeResult;
+
+	function updateSizeForCopy($copyId, $size)
+	{
+		$this->updateSizeForCopyCalled = true;
+		$this->updateSizeForCopyLastCopyId = $copyId;
+		$this->updateSizeForCopyLastSize = $size;
+	}
+	public $updateSizeForCopyCalled,
+		$updateSizeForCopyLastCopyId,
+		$updateSizeForCopyLastSize;
 }
 
 ?>

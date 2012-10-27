@@ -30,24 +30,38 @@ class UrlInfo
 
 		$httpStatus = $this->_api->getinfo($session, CURLINFO_HTTP_CODE);
 		$size = 0;
-		if ($httpStatus < 400)
+		if ($httpStatus == 200)
 		{
-			$result = str_replace("\r", '', $result);
-			foreach (explode("\n", $result) as $line)
+			$size = $this->getHeaderValue($result, 'content-length');
+		}
+		else if ($httpStatus == 302)
+		{
+			$url = $this->getHeaderValue($result, 'location');
+			if ($url)
 			{
-				if (strpos($line, ':') > 0)
-				{
-					list($header, $value) = explode(':', $line);
-					if (strtolower($header) == 'content-length')
-					{
-						$size = trim($value);
-						break;
-					}
-				}
+				$this->_url = $url;
+				$this->_api->close($session);
+				return $this->size();
 			}
 		}
 		$this->_api->close($session);
 		return $size;
+	}
+
+	private function getHeaderValue($headers, $name)
+	{
+		foreach (explode("\n", str_replace("\r", '', $headers)) as $line)
+		{
+			if (strpos($line, ':') > 0)
+			{
+				list($header, $value) = explode(':', $line, 2);
+				if (strtolower($header) == $name)
+				{
+					return trim($value);
+				}
+			}
+		}
+		return false;
 	}
 
 	public function md5()

@@ -44,6 +44,9 @@ interface IManxDatabase
 	function getMostRecentDocuments($count);
 	function getManxVersion();
 	function copyExistsForUrl($url);
+	function getZeroSizeDocuments();
+	function getUrlForCopy($copyId);
+	function updateSizeForCopy($copyId, $size);
 }
 
 ?>

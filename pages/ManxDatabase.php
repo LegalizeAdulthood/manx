@@ -606,6 +606,29 @@ class ManxDatabase implements IManxDatabase
 			array($url));
 		return (count($rows) > 0) ? $rows[0] : false;
 	}
+
+	function getZeroSizeDocuments()
+	{
+		return $this->fetchAll("SELECT `copyid`,`ph_company`,`ph_pub`,`ph_title` "
+			. "FROM `copy`,`pub_history` "
+			. "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
+				. "AND (`copy`.`size` IS NULL OR `copy`.`size` = 0) "
+				. "AND `copy`.`format` <> 'HTML' "
+			. " LIMIT 0,10");
+	}
+
+	function getUrlForCopy($copyId)
+	{
+		$rows = $this->execute("SELECT `url` FROM `copy` WHERE `copyid` = ?",
+			array($copyId));
+		return $rows[0]['url'];
+	}
+
+	function updateSizeForCopy($copyId, $size)
+	{
+		$this->execute("UPDATE `copy` SET `size` = ? WHERE `copyid` = ?",
+			array($size, $copyId));
+	}
 }
 
 ?>
