@@ -597,6 +597,15 @@ class ManxDatabase implements IManxDatabase
 			"SELECT `value` FROM `properties` WHERE `name`='version'");
 		return (count($row) > 0) ? $row['value'] : '1';
 	}
+
+	function copyExistsForUrl($url)
+	{
+		$rows = $this->execute("SELECT `ph_company`,`ph_pub`,`ph_title` "
+				. "FROM `copy`,`pub_history` "
+				. "WHERE `copy`.`pub`=`pub_history`.`ph_pub` AND `copy`.`url`=?",
+			array($url));
+		return (count($rows) > 0) ? $rows[0] : false;
+	}
 }
 
 ?>

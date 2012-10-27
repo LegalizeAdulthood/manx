@@ -43,7 +43,7 @@ $(function()
 		if (error)
 		{
 			label.addClass("error");
-			error_div.text(message);
+			error_div.html(message);
 			show(error_id);
 			return false;
 		}
@@ -93,10 +93,31 @@ $(function()
 		$("#copy_format").val('');
 		$("#copy_size").val(0);
 	};
+	var copy_exists = function(json)
+	{
+		var copy_url = $("#copy_url");
+		copy_url.data('exists', json.exists);
+		copy_url.data('company', json.company);
+		copy_url.data('pub_id', json.pub_id);
+		copy_url.data('title', json.title);
+	};
+	var validate_copy_exists = function()
+	{
+		var copy_url = $("#copy_url");
+		if (jQuery.hasData(copy_url[0]))
+		{
+			return clear_or_set_error_label(true, "copy_url",
+				'Manx already knows about <a href="details.php/'
+					+ copy_url.data('company') + ',' + copy_url.data('pub_id') + '">'
+					+ copy_url.data('title') + '</a>.');
+		}
+		return true;
+	};
 	var validate_copy = function()
 	{
 		var size = $("#copy_size").val();
-		return validate_field_non_empty('copy_url')
+		return validate_copy_exists()
+			&& validate_field_non_empty('copy_url')
 			&& validate_combo_box('copy_site', validate_site)
 			&& validate_field_non_empty('copy_format')
 			&& Number(size) == size;
@@ -306,6 +327,12 @@ $(function()
 						if (!json.valid)
 						{
 							clear_or_set_error_label(true, "copy_url", "No document at URL " + url);
+							reset_form();
+						}
+						else if (json.exists)
+						{
+							copy_exists(json);
+							validate_copy_exists();
 							reset_form();
 						}
 						else

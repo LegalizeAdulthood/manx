@@ -53,6 +53,8 @@ class FakeManxDatabase implements IManxDatabase
 		$this->getMirrorsFakeResult = array();
 		$this->getMostRecentDocumentsCalled = false;
 		$this->getMostRecentDocumentsFakeResult = array();
+		$this->copyExistsForUrlCalled = false;
+		$this->copyExistsForUrlFakeResult = false;
 	}
 
 	public function getDocumentCount()
@@ -370,6 +372,16 @@ class FakeManxDatabase implements IManxDatabase
 	{
 		$this->notImplemented("getManxVersion");
 	}
+
+	function copyExistsForUrl($url)
+	{
+		$this->copyExistsForUrlCalled = true;
+		$this->copyExistsForUrlLastUrl = $url;
+		return $this->copyExistsForUrlFakeResult;
+	}
+	public $copyExistsForUrlCalled,
+		$copyExistsForUrlLastUrl,
+		$copyExistsForUrlFakeResult;
 }
 
 ?>

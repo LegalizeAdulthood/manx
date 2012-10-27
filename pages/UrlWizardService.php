@@ -65,8 +65,7 @@ class UrlWizardService extends ServicePageBase
 		$data['pub_date'] = '';
 		$data['title'] = '';
 		$data['format'] = '';
-		if (array_key_exists('siteid', $data['site'])
-			&& $data['site']['siteid'] == Site::BitSavers)
+		if ($this->siteIsBitSavers($data))
 		{
 			$this->determineBitSaversData($data);
 		}
@@ -74,7 +73,26 @@ class UrlWizardService extends ServicePageBase
 		{
 			$this->determineUrlData($data);
 		}
+		$this->determineUrlExists($data);
 		return $data;
+	}
+
+	private function determineUrlExists(&$data)
+	{
+		$row = $this->_db->copyExistsForUrl($data['url']);
+		if ($row)
+		{
+			$data['exists'] = true;
+			$data['company'] = $row['ph_company'];
+			$data['pub_id'] = $row['ph_pub'];
+			$data['title'] = $row['ph_title'];
+		}
+	}
+
+	private function siteIsBitSavers($data)
+	{
+		return array_key_exists('siteid', $data['site'])
+			&& $data['site']['siteid'] == Site::BitSavers;
 	}
 
 	private function determineUrlData(&$data)
