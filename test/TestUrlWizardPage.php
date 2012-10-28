@@ -133,7 +133,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 <form id="wizard" action="url-wizard.php" method="POST" name="f">
 
 <fieldset id="copy_fields">
-<legend id="copy_legend">Copy</legend>
+<legend id="copy_legend"><a id="copy_link" class="hidden">Copy</a><span id="copy_text">Copy</span></legend>
 <ul>
 
 <li id="copy_url_field">

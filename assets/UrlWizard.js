@@ -71,11 +71,18 @@ $(function()
 
 	var set_copy = function(data)
 	{
+		hide("copy_text");
+		show("copy_link");
 		$("#copy_url").val(data.url);
 		if (data.mirror_url.length > 0)
 		{
 			show("copy_mirror_url_field");
 			$("#copy_mirror_url").val(data.mirror_url);
+			$("#copy_link").attr('href', data.mirror_url);
+		}
+		else
+		{
+			$("#copy_link").attr('href', data.url);
 		}
 		show("copy_site_field");
 		$("#copy_site").val(data.site.siteid);
@@ -85,6 +92,8 @@ $(function()
 	};
 	var reset_copy = function()
 	{
+		show("copy_text");
+		hide("copy_link");
 		hide("copy_mirror_url_field");
 		$("#copy_mirror_url").val('');
 		hide("copy_site_field");
