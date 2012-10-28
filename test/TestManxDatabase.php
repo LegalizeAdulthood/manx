@@ -612,6 +612,43 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 		$this->assertEquals($copyId, $this->_db->executeLastArgs[0][1]);
 	}
 
+	public function testUpdateMD5ForCopy()
+	{
+		$this->createInstance();
+		$query = "UPDATE `copy` SET `md5` = ? WHERE `copyid` = ?";
+		$copyId = 5;
+		$md5 = 'e7e98fb955892f73507d7b3a1874f9ee';
+		$this->_manxDb->updateMD5ForCopy($copyId, $md5);
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals(1, count($this->_db->executeLastStatements));
+		$this->assertEquals($query, $this->_db->executeLastStatements[0]);
+		$this->assertEquals($md5, $this->_db->executeLastArgs[0][0]);
+		$this->assertEquals($copyId, $this->_db->executeLastArgs[0][1]);
+	}
+
+	public function testGetMissingMD5Documents()
+	{
+		$this->createInstance();
+		$query = "SELECT `copyid`,`ph_company`,`ph_pub`,`ph_title` "
+			. "FROM `copy`,`pub_history` "
+			. "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
+			. "AND (`copy`.`md5` IS NULL) "
+			. "AND `copy`.`format` <> 'HTML' "
+			. " LIMIT 0,10";
+		$this->configureStatementFetchAllResults($query,
+			FakeDatabase::createResultRowsForColumns(
+				array('copyid', 'ph_company', 'ph_pub', 'ph_title'),
+				array(array('66', '1', '2', 'IM1 Schematic'))));
+		$this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
+		$rows = $this->_manxDb->getMissingMD5Documents();
+		$this->assertQueryCalledForSql($query);
+		$this->assertEquals(1, count($rows));
+		$this->assertEquals(66, $rows[0]['copyid']);
+		$this->assertEquals(1, $rows[0]['ph_company']);
+		$this->assertEquals(2, $rows[0]['ph_pub']);
+		$this->assertEquals('IM1 Schematic', $rows[0]['ph_title']);
+	}
+
 	private function assertColumnValuesForRows($rows, $column, $values)
 	{
 		$this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");

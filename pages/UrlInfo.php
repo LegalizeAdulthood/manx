@@ -29,6 +29,8 @@ class UrlInfo
 		}
 
 		$httpStatus = $this->_api->getinfo($session, CURLINFO_HTTP_CODE);
+		$this->_api->close($session);
+
 		$size = 0;
 		if ($httpStatus == 200)
 		{
@@ -40,11 +42,9 @@ class UrlInfo
 			if ($url)
 			{
 				$this->_url = $url;
-				$this->_api->close($session);
 				return $this->size();
 			}
 		}
-		$this->_api->close($session);
 		return $size;
 	}
 
@@ -77,12 +77,12 @@ class UrlInfo
 		}
 
 		$httpStatus = $this->_api->getinfo($session, CURLINFO_HTTP_CODE);
-		$md5 = false;
-		if ($httpStatus < 400)
-		{
-			$md5 = md5($result);
-		}
 		$this->_api->close($session);
-		return array($httpStatus, $md5);
+
+		if ($httpStatus == 200)
+		{
+			return md5($result);
+		}
+		return false;
 	}
 }

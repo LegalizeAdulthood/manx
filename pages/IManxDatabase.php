@@ -38,7 +38,7 @@ interface IManxDatabase
 	function deleteUserSession($sessionId);
 	function addSupersession($oldPub, $newPub);
 	function addSite($name, $url, $description, $copy_base, $low, $live);
-	function addCopy($pubId, $format, $siteId, $url,
+	function addcopy($pubId, $format, $siteId, $url,
 		$notes, $size, $md5, $credits, $amendSerial);
 	function addBitSaversDirectory($companyId, $directory);
 	function getMostRecentDocuments($count);
@@ -47,6 +47,8 @@ interface IManxDatabase
 	function getZeroSizeDocuments();
 	function getUrlForCopy($copyId);
 	function updateSizeForCopy($copyId, $size);
+	function updateMD5ForCopy($copyId, $md5);
+	function getMissingMD5Documents();
 }
 
 ?>

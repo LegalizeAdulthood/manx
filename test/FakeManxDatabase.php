@@ -410,6 +410,23 @@ class FakeManxDatabase implements IManxDatabase
 	public $updateSizeForCopyCalled,
 		$updateSizeForCopyLastCopyId,
 		$updateSizeForCopyLastSize;
+
+	function updateMD5ForCopy($copyId, $md5)
+	{
+		$this->updateMD5ForCopyCalled = true;
+		$this->updateMD5ForCopyLastCopyId = $copyId;
+		$this->updateMD5ForCopyLastMD5 = $md5;
+	}
+	public $updateMD5ForCopyCalled,
+		$updateMD5ForCopyLastCopyId, $updateMD5ForCopyLastMD5;
+
+	function getMissingMD5Documents()
+	{
+		$this->getMissingMD5DocumentsCalled;
+		return $this->getMissingMD5DocumentsFakeResult;
+	}
+	public $getMissingMD5DocumentsCalled,
+		$getMissingMD5DocumentsFakeResult;
 }
 
 ?>

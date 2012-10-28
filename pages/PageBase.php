@@ -15,6 +15,7 @@ class MenuType
 	const Site = 8;
 	const UrlWizard = 9;
 	const SizeReport = 10;
+	const MD5Report = 11;
 }
 
 abstract class PageBase
@@ -97,15 +98,25 @@ EOH;
 
 	abstract protected function renderBodyContent();
 
-	private function renderMenuItem($first, $textOnly, $href, $text)
+	private function renderFirstMenuItem($selected, $href, $text)
 	{
-		if ($textOnly)
+		$this->renderMenuItemWithAttributes($selected, 'firston', 'class="first" ', $text, $href);
+	}
+
+	private function renderMenuItem($selected, $href, $text)
+	{
+		$this->renderMenuItemWithAttributes($selected, 'on', '', $text, $href);
+	}
+
+	private function renderMenuItemWithAttributes($selected, $selectedClass, $unselectedAttribute, $text, $href)
+	{
+		if ($selected)
 		{
-			printf('<a class="%son">%s</a>', $first ? 'first' : '', $text);
+			printf('<a class="%s">%s</a>', $selectedClass, $text);
 		}
 		else
 		{
-			printf('<a %shref="%s">%s</a>', $first ? 'class="first" ' : '', $this->_topDir . $href, $text);
+			printf('<a %shref="%s">%s</a>', $unselectedAttribute, $this->_topDir . $href, $text);
 		}
 	}
 
@@ -119,18 +130,19 @@ EOH;
 		if ($this->_user->isAdmin())
 		{
 			//$this->renderMenuSeparator();
-			//$this->renderMenuItem(false, ($menu == MenuType::Company), "company.php", "Company");
+			//$this->renderMenuItem(($menu == MenuType::Company), "company.php", "Company");
 			$this->renderMenuSeparator();
-			$this->renderMenuItem(false, ($menu == MenuType::UrlWizard), "url-wizard.php", "URL Wizard");
-			//$this->renderMenuItem(false, ($menu == MenuType::Publication), "publication.php", "Publication");
+			$this->renderMenuItem(($menu == MenuType::UrlWizard), "url-wizard.php", "URL Wizard");
+			//$this->renderMenuItem(($menu == MenuType::Publication), "publication.php", "Publication");
 			//$this->renderMenuSeparator();
-			//$this->renderMenuItem(false, ($menu == MenuType::Copy), "copy.php", "Copy");
+			//$this->renderMenuItem(($menu == MenuType::Copy), "copy.php", "Copy");
 			//$this->renderMenuSeparator();
 			$this->renderMenuSeparator();
-			$this->renderMenuItem(false, ($menu == MenuType::Site), "site.php", "Site");
+			$this->renderMenuItem(($menu == MenuType::Site), "site.php", "Site");
 			$this->renderMenuSeparator();
-			$this->renderMenuItem(false, ($menu == MenuType::Mirror), "mirror.php", "Mirror");
-			$this->renderMenuitem(false, ($menu == MenuType::SizeReport), "size-report.php", "Size Report");
+			$this->renderMenuItem(($menu == MenuType::Mirror), "mirror.php", "Mirror");
+			$this->renderMenuItem(($menu == MenuType::SizeReport), "size-report.php", "Size Report");
+			$this->renderMenuItem(($menu == MenuType::MD5Report), "md5-report.php", "MD5 Report");
 		}
 	}
 
@@ -139,11 +151,11 @@ EOH;
 		$menu = $this->getMenuType();
 
 		print '<div id="MENU">';
-		$this->renderMenuItem(true, ($menu == MenuType::Search), "search.php", "Search");
+		$this->renderFirstMenuItem(($menu == MenuType::Search), "search.php", "Search");
 		$this->renderMenuSeparator();
-		$this->renderMenuItem(false, ($menu == MenuType::About), "about.php", "About");
+		$this->renderMenuItem(($menu == MenuType::About), "about.php", "About");
 		$this->renderMenuSeparator();
-		$this->renderMenuItem(false, ($menu == MenuType::Help), "help.php", "Help");
+		$this->renderMenuItem(($menu == MenuType::Help), "help.php", "Help");
 		$this->renderAdminMenu($menu);
 		print "</div>\n";
 	}

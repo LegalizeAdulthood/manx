@@ -564,10 +564,15 @@ class ManxDatabase implements IManxDatabase
 	{
 		$this->_db->execute('INSERT INTO `copy`(`pub`,`format`,`site`,`url`,`notes`,`size`,`md5`,`credits`,`amend_serial`) '
 			. 'VALUES (?,?,?,?,?,?,?,?,?)',
-			array($pubId, $format, $siteId, $url, $notes, $size, $md5, $credits, $amendSerial));
+			array($pubId, $format, $siteId, $url, $notes, $size, $this->md5Value($md5), $credits, $amendSerial));
 		$result = $this->_db->getLastInsertId();
 		$this->_db->execute('UPDATE `pub` SET `pub_has_online_copies`=1 WHERE `pub_id`=?', array($pubId));
 		return $result;
+	}
+
+	public function md5Value($md5)
+	{
+		return is_string($md5) ? $md5 : null;
 	}
 
 	function addBitSaversDirectory($companyId, $directory)
@@ -628,6 +633,22 @@ class ManxDatabase implements IManxDatabase
 	{
 		$this->execute("UPDATE `copy` SET `size` = ? WHERE `copyid` = ?",
 			array($size, $copyId));
+	}
+
+	function updateMD5ForCopy($copyId, $md5)
+	{
+		$this->execute("UPDATE `copy` SET `md5` = ? WHERE `copyid` = ?",
+			array($this->md5Value($md5), $copyId));
+	}
+
+	function getMissingMD5Documents()
+	{
+		return $this->fetchAll("SELECT `copyid`,`ph_company`,`ph_pub`,`ph_title` "
+			. "FROM `copy`,`pub_history` "
+			. "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
+			. "AND (`copy`.`md5` IS NULL) "
+			. "AND `copy`.`format` <> 'HTML' "
+			. " LIMIT 0,10");
 	}
 }
 
