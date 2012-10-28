@@ -23,6 +23,14 @@ class UrlWizardPageTester extends UrlWizardPage
 	{
 		parent::postPage();
 	}
+
+	protected function md5ForFile($url)
+	{
+		$this->md5ForFileCalled = true;
+		$this->md5ForFileLastUrl = $url;
+		return $this->md5ForFileFakeResult;
+	}
+	public $md5ForFileCalled, $md5ForFileLastUrl, $md5ForFileFakeResult;
 }
 
 class TestUrlWizardPage extends PHPUnit_Framework_TestCase
@@ -86,6 +94,8 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 			'supersession_old_pub' => '5634',
 			'next' => 'Next+%3E');
 		$page = new URLWizardPageTester($this->_manx, $vars);
+		$md5 = '01234567890123456789012345678901';
+		$page->md5ForFileFakeResult = $md5;
 		ob_start();
 
 		$page->postPage();
@@ -106,7 +116,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 		$this->assertEquals(rawurldecode($vars['copy_url']), $db->addCopyLastUrl);
 		$this->assertEquals($vars['copy_notes'], $db->addCopyLastNotes);
 		$this->assertEquals($vars['copy_size'], $db->addCopyLastSize);
-		$this->assertEquals($vars['copy_md5'], $db->addCopyLastMd5);
+		$this->assertEquals($md5, $db->addCopyLastMd5);
 		$this->assertEquals($vars['copy_credits'], $db->addCopyLastCredits);
 		$this->assertEquals($vars['copy_amend_serial'], $db->addCopyLastAmendSerial);
 		$this->assertTrue($page->redirectCalled);

@@ -77,8 +77,7 @@ EOH;
 	{
 		foreach ($this->getUrlsForCopy($copyId) as $url)
 		{
-			$urlInfo = new UrlInfo($url);
-			$md5 = $urlInfo->md5();
+			$md5 = md5_file($url);
 			if ($md5 !== false)
 			{
 				return $md5;

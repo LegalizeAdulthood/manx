@@ -90,27 +90,6 @@ class UrlInfo
 		return false;
 	}
 
-	public function md5()
-	{
-		$this->_session = $this->_api->init($this->_url);
-		$this->_api->setopt($this->_session, CURLOPT_RETURNTRANSFER, 1);
-		$result = $this->_api->exec($this->_session);
-		if (!$result)
-		{
-			$this->close();
-			return false;
-		}
-
-		$httpStatus = $this->httpStatus();
-		$this->close();
-
-		if ($httpStatus == 200)
-		{
-			return md5($result);
-		}
-		return false;
-	}
-
 	private function close()
 	{
 		$this->_api->close($this->_session);

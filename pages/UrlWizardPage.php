@@ -130,8 +130,7 @@ class URLWizardPage extends AdminPageBase
 			{
 				$url = $this->param('copy_url');
 			}
-			$urlInfo = new UrlInfo($url);
-			$md5 = $urlInfo->md5();
+			$md5 = $this->md5ForFile($url);
 		}
 		return $md5;
 	}
@@ -418,6 +417,11 @@ EOH;
 </div>
 
 EOH;
+	}
+
+	protected function md5ForFile($url)
+	{
+		return md5_file($url);
 	}
 }
 
