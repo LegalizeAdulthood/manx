@@ -16,6 +16,7 @@ class MenuType
 	const UrlWizard = 9;
 	const SizeReport = 10;
 	const MD5Report = 11;
+	const BitSavers = 12;
 }
 
 abstract class PageBase
@@ -130,19 +131,20 @@ EOH;
 		if ($this->_user->isAdmin())
 		{
 			//$this->renderMenuSeparator();
-			//$this->renderMenuItem(($menu == MenuType::Company), "company.php", "Company");
+			//$this->renderMenuItem($menu == MenuType::Company, "company.php", "Company");
 			$this->renderMenuSeparator();
-			$this->renderMenuItem(($menu == MenuType::UrlWizard), "url-wizard.php", "URL Wizard");
-			//$this->renderMenuItem(($menu == MenuType::Publication), "publication.php", "Publication");
+			$this->renderMenuItem($menu == MenuType::UrlWizard, "url-wizard.php", "URL Wizard");
+			$this->renderMenuItem($menu == MenuType::BitSavers, "bitsavers.php", "BitSavers");
+			//$this->renderMenuItem($menu == MenuType::Publication, "publication.php", "Publication");
 			//$this->renderMenuSeparator();
-			//$this->renderMenuItem(($menu == MenuType::Copy), "copy.php", "Copy");
+			//$this->renderMenuItem($menu == MenuType::Copy, "copy.php", "Copy");
 			//$this->renderMenuSeparator();
 			$this->renderMenuSeparator();
-			$this->renderMenuItem(($menu == MenuType::Site), "site.php", "Site");
+			$this->renderMenuItem($menu == MenuType::Site, "site.php", "Site");
 			$this->renderMenuSeparator();
-			$this->renderMenuItem(($menu == MenuType::Mirror), "mirror.php", "Mirror");
-			$this->renderMenuItem(($menu == MenuType::SizeReport), "size-report.php", "Size Report");
-			$this->renderMenuItem(($menu == MenuType::MD5Report), "md5-report.php", "MD5 Report");
+			$this->renderMenuItem($menu == MenuType::Mirror, "mirror.php", "Mirror");
+			$this->renderMenuItem($menu == MenuType::SizeReport, "size-report.php", "Size Report");
+			$this->renderMenuItem($menu == MenuType::MD5Report, "md5-report.php", "MD5 Report");
 		}
 	}
 

@@ -6,6 +6,7 @@ class UrlInfo
 {
 	private $_api;
 	private $_url;
+	private $_session;
 
 	public function __construct($url, ICurlApi $api = null)
 	{
@@ -15,26 +16,35 @@ class UrlInfo
 
 	public function size()
 	{
-		$session = $this->_api->init($this->_url);
-		$this->_api->setopt($session, CURLOPT_URL, $this->_url);
-		$this->_api->setopt($session, CURLOPT_HEADER, 1);
-		$this->_api->setopt($session, CURLOPT_NOBODY, 1);
-		$this->_api->setopt($session, CURLOPT_RETURNTRANSFER, 1);
-		$this->_api->setopt($session, CURLOPT_FRESH_CONNECT, 1);
-		$result = $this->_api->exec($session);
+		return $this->getValueFromHeadResponse('content-length');
+	}
+
+	public function lastModified()
+	{
+		$lastModified = $this->getValueFromHeadResponse('last-modified');
+		if (is_string($lastModified) && strlen($lastModified))
+		{
+			$lastModified = strtotime($lastModified);
+		}
+		return $lastModified;
+	}
+
+	private function getValueFromHeadResponse($header)
+	{
+		$result = $this->head();
 		if (!$result)
 		{
-			$this->_api->close($session);
+			$this->close();
 			return false;
 		}
 
-		$httpStatus = $this->_api->getinfo($session, CURLINFO_HTTP_CODE);
-		$this->_api->close($session);
+		$httpStatus = $this->httpStatus();
+		$this->close();
 
-		$size = 0;
+		$value = '';
 		if ($httpStatus == 200)
 		{
-			$size = $this->getHeaderValue($result, 'content-length');
+			$value = $this->getHeaderValue($result, $header);
 		}
 		else if ($httpStatus == 302)
 		{
@@ -42,10 +52,26 @@ class UrlInfo
 			if ($url)
 			{
 				$this->_url = $url;
-				return $this->size();
+				return $this->getValueFromHeadResponse($header);
 			}
 		}
-		return $size;
+		return $value;
+	}
+
+	public function httpStatus()
+	{
+		return $this->_api->getinfo($this->_session, CURLINFO_HTTP_CODE);
+	}
+
+	private function head()
+	{
+		$this->_session = $this->_api->init($this->_url);
+		$this->_api->setopt($this->_session, CURLOPT_HEADER, 1);
+		$this->_api->setopt($this->_session, CURLOPT_NOBODY, 1);
+		$this->_api->setopt($this->_session, CURLOPT_RETURNTRANSFER, 1);
+		$this->_api->setopt($this->_session, CURLOPT_FRESH_CONNECT, 1);
+		$result = $this->_api->exec($this->_session);
+		return $result;
 	}
 
 	private function getHeaderValue($headers, $name)
@@ -66,23 +92,27 @@ class UrlInfo
 
 	public function md5()
 	{
-		$session = $this->_api->init($this->_url);
-		$this->_api->setopt($session, CURLOPT_URL, $this->_url);
-		$this->_api->setopt($session, CURLOPT_RETURNTRANSFER, 1);
-		$result = $this->_api->exec($session);
+		$this->_session = $this->_api->init($this->_url);
+		$this->_api->setopt($this->_session, CURLOPT_RETURNTRANSFER, 1);
+		$result = $this->_api->exec($this->_session);
 		if (!$result)
 		{
-			$this->_api->close($session);
+			$this->close();
 			return false;
 		}
 
-		$httpStatus = $this->_api->getinfo($session, CURLINFO_HTTP_CODE);
-		$this->_api->close($session);
+		$httpStatus = $this->httpStatus();
+		$this->close();
 
 		if ($httpStatus == 200)
 		{
 			return md5($result);
 		}
 		return false;
+	}
+
+	private function close()
+	{
+		$this->_api->close($this->_session);
 	}
 }

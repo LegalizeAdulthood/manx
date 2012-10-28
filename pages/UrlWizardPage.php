@@ -143,6 +143,20 @@ class URLWizardPage extends AdminPageBase
 <script type="text/javascript" src="assets/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="assets/UrlWizard.js"></script>
 EOH;
+		if (array_key_exists('url', $this->_vars))
+		{
+			$url = $this->_vars['url'];
+			print <<<EOH
+<script type="text/javascript">
+$(function()
+{
+	var copy_url = $("#copy_url");
+	copy_url.val("${url}");
+	copy_url.change();
+});
+</script>
+EOH;
+		}
 	}
 
 	private function getAttribute($name, $options)

@@ -32,4 +32,23 @@ class TestUrlInfo extends PHPUnit_Framework_TestCase
 		$this->assertTrue($curlApi->closeCalled);
 		$this->assertEquals(4096, $size);
 	}
+
+	public function testGetLastModified()
+	{
+		$curlApi = new FakeCurlApi();
+		$curlApi->initFakeResult = 0xdeadbeef;
+		$curlApi->execFakeResult = "HTTP/1.0 200 OK\n"
+			. "Last-Modified: Wed, 15 Nov 1995 04:58:08 GMT\n"
+			. "\n";
+		$curlApi->getinfoFakeResult = 200;
+		$url = 'http://bitsavers.org/Whatsnew.txt';
+		$curl = new UrlInfo($url, $curlApi);
+		$lastModified = $curl->lastModified();
+		$this->assertTrue($curlApi->initCalled);
+		$this->assertTrue($curlApi->setoptCalled);
+		$this->assertTrue($curlApi->execCalled);
+		$this->assertTrue($curlApi->getinfoCalled);
+		$this->assertTrue($curlApi->closeCalled);
+		$this->assertEquals(strtotime('Wed, 15 Nov 1995 04:58:08 GMT'), $lastModified);
+	}
 }

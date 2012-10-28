@@ -104,14 +104,10 @@ $(function()
 	var validate_copy_exists = function()
 	{
 		var copy_url = $("#copy_url");
-		if (jQuery.hasData(copy_url[0]))
-		{
-			return clear_or_set_error_label(true, "copy_url",
-				'Manx already knows about <a href="details.php/'
-					+ copy_url.data('company') + ',' + copy_url.data('pub_id') + '">'
-					+ copy_url.data('title') + '</a>.');
-		}
-		return true;
+		return clear_or_set_error_label(copy_url.data('exists'), "copy_url",
+			'Manx already knows about <a href="details.php/'
+				+ copy_url.data('company') + ',' + copy_url.data('pub_id') + '">'
+				+ copy_url.data('title') + '</a>.');
 	};
 	var validate_copy = function()
 	{
