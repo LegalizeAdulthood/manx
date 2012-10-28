@@ -7661,15 +7661,15 @@ UPDATE `copy`
 	SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte/', 'http://manx.classiccmp.org/mirror/harte/')
 	WHERE `site` = 49;
 
----
---- Add bitsavers mirrors for Wilbur Williams' Computer Museum
----
+--
+-- Add bitsavers mirrors for Wilbur Williams' Computer Museum
+--
 INSERT INTO `mirror`(`site`, `original_stem`, `copy_stem`, `rank`)
 SELECT 2, 'http://www.computer.museum.uq.edu.au/', CONCAT(`copy_stem`, 'www.computer.museum.uq.edu.au/'), `rank`
 FROM `mirror` WHERE `site` = 3;
 
----
---- Add manx mirror for vt100.net content
----
+--
+-- Add manx mirror for vt100.net content
+--
 INSERT INTO `mirror`(`site`, `original_stem`, `copy_stem`, `rank`)
 VALUES (1, 'http://vt100.net/', 'http://manx.classiccmp.org/mirror/vt100.net/', 1);
