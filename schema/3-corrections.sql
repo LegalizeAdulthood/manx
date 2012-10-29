@@ -7702,4 +7702,12 @@ UPDATE `copy`
 	SET `url` = CONCAT(`url`, REPLACE(REVERSE(SUBSTRING_INDEX(REVERSE(`url`), '/', 2)), '/', '.pdf'))
 	WHERE `site`=1 AND `url` LIKE '%/' AND `format` = 'PDF';
 
+--
+-- Fix ftp.compaq.com URL
+--
+
+UPDATE `copy`
+	SET `url` = 'http://h18002.www1.hp.com/cpq-alphaserver/technology/literature/alphaahb.pdf'
+	WHERE `url` = 'ftp://ftp.compaq.com/pub/products/software/alpha-tools/documentation/current/alpha-archt/alpha-architecture.pdf';
+
 COMMIT;
