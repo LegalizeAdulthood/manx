@@ -7674,4 +7674,24 @@ FROM `mirror` WHERE `site` = 3;
 INSERT INTO `mirror`(`site`, `original_stem`, `copy_stem`, `rank`)
 VALUES (1, 'http://vt100.net/', 'http://manx.classiccmp.org/mirror/vt100.net/', 1);
 
+--
+-- Update ftp.digital.com URLs
+--
+
+UPDATE `copy`
+	SET `url` = REPLACE(`url`,
+		'ftp://ftp.digital.com/pub/DEC/Alpha/misc/',
+		'ftp://ftp.hp.com/pub/alphaserver/archive/alpha/misc/')
+	WHERE `url` LIKE 'ftp://ftp.digital.com/pub/DEC/Alpha/misc/%';
+UPDATE `copy`
+	SET `url` = REPLACE(REPLACE(`url`, '/docs', ''),
+		'ftp://ftp.digital.com/pub/DEC/Alpha/systems/',
+		'ftp://ftp.hp.com/pub/alphaserver/archive/alpha/systems/')
+	WHERE `url` LIKE 'ftp://ftp.digital.com/pub/DEC/Alpha/systems/%/docs/%';
+UPDATE `copy`
+	SET `url` = REPLACE(`url`,
+		'ftp://ftp.digital.com/pub/DEC/DECinfo/semiconductor/',
+		'http://h18000.www1.hp.com/cpq-alphaserver/technology/')
+	WHERE `url` LIKE 'ftp://ftp.digital.com/pub/DEC/DECinfo/semiconductor/%';
+
 COMMIT;
