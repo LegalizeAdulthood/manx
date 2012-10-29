@@ -101,6 +101,36 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 		$this->assertTrue(is_object($page));
 		$this->assertFalse(is_null($page));
 	}
+
+	public function testComparePublicationsByTitle()
+	{
+		list($left, $right) = $this->createPublicationsForCompare('', '', 'foo', '', '', 'bar');
+		$this->assertEquals(1, UrlWizardService::comparePublications($left, $right));
+	}
+
+	public function testComparePublicationsByPart()
+	{
+		list($left, $right) = $this->createPublicationsForCompare('00', '', 'foo', '01', '', 'bar');
+		$this->assertEquals(-1, UrlWizardService::comparePublications($left, $right));
+	}
+
+	public function testComparePublicationsByRev()
+	{
+		list($left, $right) = $this->createPublicationsForCompare('00', 'B', 'foo', '00', 'A', 'foo');
+		$this->assertEquals(1, UrlWizardService::comparePublications($left, $right));
+	}
+
+	private function createPublicationsForCompare($leftPart, $leftRev, $leftTitle, $rightPart, $rightRev, $rightTitle)
+	{
+		$columns = array('ph_pub', 'ph_part', 'ph_revision', 'ph_title');
+		$left = FakeDatabase::createResultRowsForColumns($columns,
+			array(array('1', $leftPart, $leftRev, $leftTitle)));
+		$left = $left[0];
+		$right = FakeDatabase::createResultRowsForColumns($columns,
+			array(array('2', $rightPart, $rightRev, $rightTitle)));
+		$right = $right[0];
+		return array($left, $right);
+	}
 }
 
 class TestUrlWizardServiceProcessRequest extends TestUrlWizardService
@@ -258,17 +288,6 @@ class TestUrlWizardServiceProcessRequest extends TestUrlWizardService
 		$this->assertEquals('univac', $this->_db->getCompanyForBitSaversDirectoryLastDir);
 		$this->assertTrue($this->_db->getFormatForExtensionCalled);
 		$this->assertEquals($expected, $output);
-	}
-
-	public function testComparePublications()
-	{
-		$columns = array('ph_pub', 'ph_part', 'ph_revision', 'ph_title');
-		$left = FakeDatabase::createResultRowsForColumns($columns,
-			array(array('1', '', '', 'foo')));
-		$right = FakeDatabase::createResultRowsForColumns($columns,
-			array(array('2', '', '', 'bar')));
-		$compare = UrlWizardService::comparePublications($left, $right);
-		$this->assertEquals(1, $compare);
 	}
 }
 

@@ -371,20 +371,49 @@ class UrlWizardService extends ServicePageBase
 		$data = array();
 		foreach ($this->_db->searchForPublications($company, $keywords, $online) as $row)
 		{
-			array_push($data,
-				array('pub_id' => $row['pub_id'],
+			$pubId = $row['pub_id'];
+			if (!array_key_exists($pubId, $data))
+			{
+				$data[$pubId] = array('pub_id' => $row['pub_id'],
 					'ph_part' => self::emptyStringIfNull($row['ph_part']),
 					'ph_revision' => self::emptyStringIfNull($row['ph_revision']),
-					'ph_title' => $row['ph_title']));
+					'ph_title' => $row['ph_title']);
+			}
 		}
 		return $data;
 	}
 
 	private function findPublicationsForKeywords($company, $keywords)
 	{
-		return array_merge(
+		return $this->mergePubs(
 			$this->accumulatePublicationsForKeywords($company, $keywords, false),
 			$this->accumulatePublicationsForKeywords($company, $keywords, true));
+	}
+
+	private function mergePubs($left, $right)
+	{
+		foreach (array_keys($right) as $pubId)
+		{
+			if (!array_key_exists($pubId, $left))
+			{
+				$left[$pubId] = $right[$pubId];
+			}
+		}
+		return $left;
+	}
+
+	public static function comparePublications($left, $right)
+	{
+		$result = strcmp($left['ph_part'], $right['ph_part']);
+		if ($result == 0)
+		{
+			$result = strcmp($left['ph_revision'], $right['ph_revision']);
+		}
+		if ($result == 0)
+		{
+			$result = strcmp($left['ph_title'], $right['ph_title']);
+		}
+		return $result;
 	}
 
 	private function findPublications()
@@ -393,17 +422,13 @@ class UrlWizardService extends ServicePageBase
 		$ignoredWords = array();
 		$keywords = Searcher::filterSearchKeywords($this->param('keywords'), $ignoredWords);
 		$data = $this->findPublicationsForKeywords($company, $keywords);
-		foreach ($keywords as $keyword)
+		$filtered = Searcher::filterSearchKeywords($keywords[0], $ignoredWords);
+		if (count($filtered))
 		{
-			if (1 == preg_match('|^([0-9]+)|', $keyword, $matches))
-			{
-				$filtered = Searcher::filterSearchKeywords($matches[1], $ignoredWords);
-				if (count($filtered))
-				{
-					$data = array_merge($data, $this->findPublicationsForKeywords($company, $filtered));
-				}
-			}
+			$data = $this->mergePubs($data, $this->findPublicationsForKeywords($company, $filtered));
 		}
+		$data = array_values($data);
+		usort($data, array('UrlWizardService', 'comparePublications'));
 		return $data;
 	}
 
