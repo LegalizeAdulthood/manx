@@ -427,6 +427,59 @@ class FakeManxDatabase implements IManxDatabase
 	}
 	public $getMissingMD5DocumentsCalled,
 		$getMissingMD5DocumentsFakeResult;
+
+	function getProperty($name)
+	{
+		$this->getPropertyCalled = true;
+		$this->getPropertyLastName = $name;
+		return $this->getPropertyFakeResult;
+	}
+	public $getPropertyCalled, $getPropertyLastName, $getPropertyFakeResult;
+
+	function setProperty($name, $value)
+	{
+		$this->setPropertyCalled = true;
+		$this->setPropertyLastName = $name;
+		$this->setPropertyLastValue = $value;
+	}
+	public $setPropertyCalled, $setPropertyLastName, $setPropertyLastValue;
+
+	function addBitSaversUnknownPath($path)
+	{
+		$this->addBitSaversUnknownPathCalled = true;
+		$this->addBitSaversUnknownPathLastPath = $path;
+	}
+	public $addBitSaversUnknownPathCalled, $addBitSaversUnknownPathLastPath;
+
+	function ignoreBitSaversPath($path)
+	{
+		$this->ignoreBitSaversPathCalled = true;
+		$this->ignoreBitSaversPathLastPath = $path;
+	}
+	public $ignoreBitSaversPathCalled, $ignoreBitSaversPathLastPath;
+
+	function getBitSaversUnknownPathCount()
+	{
+		$this->getBitSaversUnknownPathCountCalled = true;
+		return $this->getBitSaversUnknownPathCountFakeResult;
+	}
+	public $getBitSaversUnknownPathCountCalled, $getBitSaversUnknownPathCountFakeResult;
+
+	function getBitSaversUnknownPaths()
+	{
+		$this->getBitSaversUnknownPathsCalled = true;
+		return $this->getBitSaversUnknownPathsFakeResult;
+	}
+	public $getBitSaversUnknownPathsCalled, $getBitSaversUnknownPathsFakeResult;
+
+	function bitSaversIgnoredPath($path)
+	{
+		$this->bitSaversIgnoredPathCalled = true;
+		$this->bitSaversIgnoredPathLastPath = $path;
+		return $this->bitSaversIgnoredPathFakeResult;
+	}
+	public $bitSaversIgnoredPathCalled, $bitSaversIgnoredPathLastPath,
+		$bitSaversIgnoredPathFakeResult;
 }
 
 ?>

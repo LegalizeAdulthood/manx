@@ -650,6 +650,53 @@ class ManxDatabase implements IManxDatabase
 			. "AND `copy`.`format` <> 'HTML' "
 			. " LIMIT 0,10");
 	}
+
+	function getProperty($name)
+	{
+		$rows = $this->execute("SELECT `value` FROM `properties` WHERE `name` = ?",
+			array($name));
+		return (count($rows) > 0) ? $rows[0]['value'] : false;
+	}
+
+	function setProperty($name, $value)
+	{
+		$this->execute("INSERT INTO `properties`(`name`, `value`) VALUES (?, ?) "
+			. "ON DUPLICATE KEY UPDATE `value` = ?",
+			array($name, $value, $value));
+	}
+
+	function addBitSaversUnknownPath($path)
+	{
+		$this->execute("INSERT INTO `bitsavers_unknown`(`path`) VALUES (?)",
+			array($path));
+	}
+
+	function ignoreBitSaversPath($path)
+	{
+		$this->execute("UPDATE `bitsavers_unknown` SET `ignored` = 1 WHERE `path` = ?",
+			array($path));
+	}
+
+	function getBitSaversUnknownPathCount()
+	{
+		$count = $this->execute("DELETE `bitsavers_unknown` FROM `bitsavers_unknown` "
+			. "INNER JOIN `copy` ON `url` = CONCAT('http://bitsavers.org/pdf/', `path`) "
+			. "WHERE `site` = 3", array());
+		$rows = $this->execute("SELECT COUNT(*) AS `count` FROM `bitsavers_unknown` WHERE `ignored` = 0", array());
+		return $rows[0]['count'];
+	}
+
+	function getBitSaversUnknownPaths()
+	{
+		return $this->execute("SELECT `path` FROM `bitsavers_unknown` WHERE `ignored` = 0", array());
+	}
+
+	function bitSaversIgnoredPath($path)
+	{
+		$rows = $this->execute("SELECT COUNT(*) AS `count` FROM `bitsavers_unknown` WHERE `path` = ? AND `ignored` = 1",
+			array($path));
+		return ($rows[0]['count'] > 0);
+	}
 }
 
 ?>

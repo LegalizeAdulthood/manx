@@ -3,10 +3,9 @@
 --
 
 CREATE TABLE IF NOT EXISTS `properties` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(50) NOT NULL DEFAULT '',
+  `name` VARCHAR(255) NOT NULL,
   `value` VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`name`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -27,6 +26,16 @@ CREATE TABLE IF NOT EXISTS `format_extension` (
   `format` VARCHAR(10) NOT NULL DEFAULT '',
   `extension` VARCHAR(10) NOT NULL DEFAULT '',
   PRIMARY KEY (`format`, `extension`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `bitsavers_unknown`
+--
+
+CREATE TABLE IF NOT EXISTS `bitsavers_unknown` (
+  `path` VARCHAR(255) NOT NULL,
+  `ignored` TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`path`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -170,3 +179,5 @@ ALTER TABLE `TAG` RENAME TO `tag`;
 
 -- TOC
 ALTER TABLE `TOC` RENAME TO `toc`;
+
+COMMIT;

@@ -259,6 +259,17 @@ class TestUrlWizardServiceProcessRequest extends TestUrlWizardService
 		$this->assertTrue($this->_db->getFormatForExtensionCalled);
 		$this->assertEquals($expected, $output);
 	}
+
+	public function testComparePublications()
+	{
+		$columns = array('ph_pub', 'ph_part', 'ph_revision', 'ph_title');
+		$left = FakeDatabase::createResultRowsForColumns($columns,
+			array(array('1', '', '', 'foo')));
+		$right = FakeDatabase::createResultRowsForColumns($columns,
+			array(array('2', '', '', 'bar')));
+		$compare = UrlWizardService::comparePublications($left, $right);
+		$this->assertEquals(1, $compare);
+	}
 }
 
 ?>

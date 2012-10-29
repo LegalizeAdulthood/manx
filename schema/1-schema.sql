@@ -257,3 +257,5 @@ CREATE TABLE IF NOT EXISTS `session_variable` (
   `value` text,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+COMMIT;

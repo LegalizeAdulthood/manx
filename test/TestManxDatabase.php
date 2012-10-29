@@ -649,6 +649,114 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 		$this->assertEquals('IM1 Schematic', $rows[0]['ph_title']);
 	}
 
+	public function testGetProperty()
+	{
+		$this->createInstance();
+		$query = "SELECT `value` FROM `properties` WHERE `name` = ?";
+		$this->_db->executeFakeResult = array(array('value' => 'bar'));
+		$value = $this->_manxDb->getProperty('foo');
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals($query, $this->_db->executeLastStatements[0]);
+		$this->assertEquals('foo', $this->_db->executeLastArgs[0][0]);
+		$this->assertEquals('bar', $value);
+	}
+
+	public function testSetProperty()
+	{
+		$this->createInstance();
+		$query = "INSERT INTO `properties`(`name`, `value`) VALUES (?, ?) "
+			. "ON DUPLICATE KEY UPDATE `value` = ?";
+		$this->_db->executeFakeResult = null;
+		$this->_manxDb->setProperty('foo', 'bar');
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals($query, $this->_db->executeLastStatements[0]);
+		$this->assertEquals(3, count($this->_db->executeLastArgs[0]));
+		$this->assertEquals('foo', $this->_db->executeLastArgs[0][0]);
+		$this->assertEquals('bar', $this->_db->executeLastArgs[0][1]);
+		$this->assertEquals('bar', $this->_db->executeLastArgs[0][2]);
+	}
+
+	public function testAddBitSaversUnknownPath()
+	{
+		$this->createInstance();
+		$query = "INSERT INTO `bitsavers_unknown`(`path`) VALUES (?)";
+		$this->_db->executeFakeResult = null;
+		$this->_manxDb->addBitSaversUnknownPath('foo/frob.jpg');
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals($query, $this->_db->executeLastStatements[0]);
+		$this->assertEquals(1, count($this->_db->executeLastArgs[0]));
+		$this->assertEquals('foo/frob.jpg', $this->_db->executeLastArgs[0][0]);
+	}
+
+	public function testIgnoreBitSaversPath()
+	{
+		$this->createInstance();
+		$query = "UPDATE `bitsavers_unknown` SET `ignored` = 1 WHERE `path` = ?";
+		$this->_db->executeFakeResult = null;
+		$this->_manxDb->ignoreBitSaversPath('foo/frob.jpg');
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals($query, $this->_db->executeLastStatements[0]);
+		$this->assertEquals(1, count($this->_db->executeLastArgs[0]));
+		$this->assertEquals('foo/frob.jpg', $this->_db->executeLastArgs[0][0]);
+	}
+
+	public function testGetBitSaversUnknownPathCount()
+	{
+		$this->createInstance();
+		$expectedCount = 3;
+		$this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
+			array('count'), array(array($expectedCount)));
+		$count = $this->_manxDb->getBitSaversUnknownPathCount();
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals(2, count($this->_db->executeLastStatements));
+		$this->assertStringStartsWith("DELETE `bitsavers_unknown` FROM `bitsavers_unknown`",
+			$this->_db->executeLastStatements[0]);
+		$this->assertEquals(0, count($this->_db->executeLastArgs[0]));
+		$this->assertStringStartsWith("SELECT COUNT(*) AS `count` FROM `bitsavers_unknown`",
+			$this->_db->executeLastStatements[1]);
+		$this->assertEquals(0, count($this->_db->executeLastArgs[1]));
+		$this->assertEquals($expectedCount, $count);
+	}
+
+	public function testGetBitSaversUnknownPaths()
+	{
+		$this->createInstance();
+		$this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
+			array('path'), array(array('foo/bar.jpg'), array('foo/foo.jpg')));
+		$paths = $this->_manxDb->getBitSaversUnknownPaths();
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals(1, count($this->_db->executeLastStatements));
+		$this->assertEquals(1, count($this->_db->executeLastArgs));
+		$this->assertStringStartsWith("SELECT `path` FROM `bitsavers_unknown`", $this->_db->executeLastStatements[0]);
+		$this->assertEquals(0, count($this->_db->executeLastArgs[0]));
+		$this->assertEquals('foo/bar.jpg', $paths[0]['path']);
+		$this->assertEquals('foo/foo.jpg', $paths[1]['path']);
+	}
+
+	public function testBitSaversIgnoredPathTrue()
+	{
+		$this->createInstance();
+		$this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
+			array('count'), array(array(1)));
+		$ignored = $this->_manxDb->bitSaversIgnoredPath('foo/bar.jpg');
+		$this->assertTrue($this->_db->executeCalled);
+		$this->assertEquals(1, count($this->_db->executeLastStatements));
+		$this->assertEquals(1, count($this->_db->executeLastArgs));
+		$this->assertEquals("SELECT COUNT(*) AS `count` FROM `bitsavers_unknown` WHERE `path` = ? AND `ignored` = 1",
+			$this->_db->executeLastStatements[0]);
+		$this->assertEquals('foo/bar.jpg', $this->_db->executeLastArgs[0][0]);
+		$this->assertTrue($ignored);
+	}
+
+	public function testBitSaversIgnoredPathFalse()
+	{
+		$this->createInstance();
+		$this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
+			array('count'), array(array(0)));
+		$ignored = $this->_manxDb->bitSaversIgnoredPath('foo/bar.jpg');
+		$this->assertFalse($ignored);
+	}
+
 	private function assertColumnValuesForRows($rows, $column, $values)
 	{
 		$this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");

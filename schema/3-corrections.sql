@@ -7673,3 +7673,5 @@ FROM `mirror` WHERE `site` = 3;
 --
 INSERT INTO `mirror`(`site`, `original_stem`, `copy_stem`, `rank`)
 VALUES (1, 'http://vt100.net/', 'http://manx.classiccmp.org/mirror/vt100.net/', 1);
+
+COMMIT;

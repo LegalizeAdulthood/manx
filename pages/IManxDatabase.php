@@ -49,6 +49,13 @@ interface IManxDatabase
 	function updateSizeForCopy($copyId, $size);
 	function updateMD5ForCopy($copyId, $md5);
 	function getMissingMD5Documents();
+	function getProperty($name);
+	function setProperty($name, $value);
+	function addBitSaversUnknownPath($path);
+	function ignoreBitSaversPath($path);
+	function getBitSaversUnknownPathCount();
+	function getBitSaversUnknownPaths();
+	function bitSaversIgnoredPath($path);
 }
 
 ?>
