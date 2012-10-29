@@ -7694,4 +7694,12 @@ UPDATE `copy`
 		'http://h18000.www1.hp.com/cpq-alphaserver/technology/')
 	WHERE `url` LIKE 'ftp://ftp.digital.com/pub/DEC/DECinfo/semiconductor/%';
 
+--
+-- Update vt100.net PDF directory URLs
+--
+
+UPDATE `copy`
+	SET `url` = CONCAT(`url`, REPLACE(REVERSE(SUBSTRING_INDEX(REVERSE(`url`), '/', 2)), '/', '.pdf'))
+	WHERE `site`=1 AND `url` LIKE '%/' AND `format` = 'PDF';
+
 COMMIT;
