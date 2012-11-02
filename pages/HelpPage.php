@@ -4,19 +4,19 @@ require_once 'PageBase.php';
 
 class HelpPage extends PageBase
 {
-	public function __construct($manx)
-	{
-		parent::__construct($manx);
-	}
+    public function __construct($manx)
+    {
+        parent::__construct($manx);
+    }
 
-	protected function getMenuType()
-	{
-		return MenuType::Help;
-	}
+    protected function getMenuType()
+    {
+        return MenuType::Help;
+    }
 
-	protected function renderBodyContent()
-	{
-		print <<<EOH
+    protected function renderBodyContent()
+    {
+        print <<<EOH
 <h1>Help</h1>
 
 <p>To search, enter a word or words from the title of the manual you're
@@ -52,5 +52,5 @@ report</a> on our <a href="http://manx.codeplex.com">CodePlex project</a>.
 You can vote on existing issues to help the developers identify
 priorities with your feedback.</p>
 EOH;
-	}
+    }
 }

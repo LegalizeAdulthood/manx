@@ -2,7 +2,7 @@
 -- Fix missing user row for Paul Williams
 --
 INSERT INTO `user`(`id`, `email`, `first_name`, `last_name`)
-	VALUES (1, 'paul@frixxon.co.uk', 'Paul', 'Williams');
+    VALUES (1, 'paul@frixxon.co.uk', 'Paul', 'Williams');
 
 --
 -- Fix cover image URLs
@@ -7593,34 +7593,34 @@ UPDATE `copy` SET `url`='http://bitsavers.org/pdf/zilog/z8000/Z8000_CPUrefMan_19
 DROP PROCEDURE IF EXISTS `manx_site_migrater`;
 DELIMITER //
 CREATE PROCEDURE `manx_site_migrater`(IN `site_name` VARCHAR(100),
-	IN `site_description` VARCHAR(200),
-	IN `site_copy_base` VARCHAR(200),
-	IN `old_site_id` INT(11),
-	IN `old_copy_base` VARCHAR(200))
+    IN `site_description` VARCHAR(200),
+    IN `site_copy_base` VARCHAR(200),
+    IN `old_site_id` INT(11),
+    IN `old_copy_base` VARCHAR(200))
 BEGIN
-	DECLARE `new_site_id` INT(11);
-	INSERT INTO `site` (
-		`name`,
-		`url`,
-		`description`,
-		`copy_base`,
-		`low`,
-		`live`
-	) VALUES (
-		`site_name`,
-		`site_copy_base`,
-		`site_description`,
-		`site_copy_base`,
-		'N',
-		'Y'
-	);
-	SELECT `siteid` FROM `site` WHERE `name` = `site_name` INTO `new_site_id`;
-	UPDATE `copy`
-		SET `url` = REPLACE(`url`, `old_copy_base`, `site_copy_base`),
-			`site` = `new_site_id`
-		WHERE
-			`url` LIKE CONCAT(`old_copy_base`, '%')
-			AND `site` = `old_site_id`;
+    DECLARE `new_site_id` INT(11);
+    INSERT INTO `site` (
+        `name`,
+        `url`,
+        `description`,
+        `copy_base`,
+        `low`,
+        `live`
+    ) VALUES (
+        `site_name`,
+        `site_copy_base`,
+        `site_description`,
+        `site_copy_base`,
+        'N',
+        'Y'
+    );
+    SELECT `siteid` FROM `site` WHERE `name` = `site_name` INTO `new_site_id`;
+    UPDATE `copy`
+        SET `url` = REPLACE(`url`, `old_copy_base`, `site_copy_base`),
+            `site` = `new_site_id`
+        WHERE
+            `url` LIKE CONCAT(`old_copy_base`, '%')
+            AND `site` = `old_site_id`;
 END//
 DELIMITER ;
 
@@ -7628,25 +7628,25 @@ DELIMITER ;
 -- Update Antonio Carlini documents that used to be on vt100.net
 --
 CALL `manx_site_migrater`('antonio',
-	'Antonio Carlini\'s Scans',
-	'http://manx.classiccmp.org/collections/antonio/',
-	1, 'http://vt100.net/mirror/antonio/');
+    'Antonio Carlini\'s Scans',
+    'http://manx.classiccmp.org/collections/antonio/',
+    1, 'http://vt100.net/mirror/antonio/');
 
 --
 -- Compaq Maintenance Documentation Service on CD-ROM, DIGITAL-branded Products, September 1999
 --
 CALL `manx_site_migrater`('mds-199909',
-	'Compaq Maintenance Documentation Service on CD-ROM, DIGITAL-branded Products, September 1999',
-	'http://manx.classiccmp.org/collections/mds-199909/',
-	1, 'http://vt100.net/mirror/mds-199909/');
+    'Compaq Maintenance Documentation Service on CD-ROM, DIGITAL-branded Products, September 1999',
+    'http://manx.classiccmp.org/collections/mds-199909/',
+    1, 'http://vt100.net/mirror/mds-199909/');
 
 --
 -- hcps collection
 --
 CALL `manx_site_migrater`('hcps',
-	'hcps collection',
-	'http://manx.classiccmp.org/collections/hcps/',
-	1, 'http://vt100.net/mirror/hcps/');
+    'hcps collection',
+    'http://manx.classiccmp.org/collections/hcps/',
+    1, 'http://vt100.net/mirror/hcps/');
 
 DROP PROCEDURE `manx_site_migrater`;
 
@@ -7654,12 +7654,12 @@ DROP PROCEDURE `manx_site_migrater`;
 -- Update Howard M. Harte's mirror that used to be on vt100.net
 --
 UPDATE `site`
-	SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte', 'http://manx.classiccmp.org/mirror/harte'),
-		`description` = REPLACE(`description`, 'VT100.net', 'manx.classiccmp.org')
-	WHERE `siteid` = 49;
+    SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte', 'http://manx.classiccmp.org/mirror/harte'),
+        `description` = REPLACE(`description`, 'VT100.net', 'manx.classiccmp.org')
+    WHERE `siteid` = 49;
 UPDATE `copy`
-	SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte/', 'http://manx.classiccmp.org/mirror/harte/')
-	WHERE `site` = 49;
+    SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte/', 'http://manx.classiccmp.org/mirror/harte/')
+    WHERE `site` = 49;
 
 --
 -- Add bitsavers mirrors for Wilbur Williams' Computer Museum
@@ -7679,35 +7679,35 @@ VALUES (1, 'http://vt100.net/', 'http://manx.classiccmp.org/mirror/vt100.net/', 
 --
 
 UPDATE `copy`
-	SET `url` = REPLACE(`url`,
-		'ftp://ftp.digital.com/pub/DEC/Alpha/misc/',
-		'ftp://ftp.hp.com/pub/alphaserver/archive/alpha/misc/')
-	WHERE `url` LIKE 'ftp://ftp.digital.com/pub/DEC/Alpha/misc/%';
+    SET `url` = REPLACE(`url`,
+        'ftp://ftp.digital.com/pub/DEC/Alpha/misc/',
+        'ftp://ftp.hp.com/pub/alphaserver/archive/alpha/misc/')
+    WHERE `url` LIKE 'ftp://ftp.digital.com/pub/DEC/Alpha/misc/%';
 UPDATE `copy`
-	SET `url` = REPLACE(REPLACE(`url`, '/docs', ''),
-		'ftp://ftp.digital.com/pub/DEC/Alpha/systems/',
-		'ftp://ftp.hp.com/pub/alphaserver/archive/alpha/systems/')
-	WHERE `url` LIKE 'ftp://ftp.digital.com/pub/DEC/Alpha/systems/%/docs/%';
+    SET `url` = REPLACE(REPLACE(`url`, '/docs', ''),
+        'ftp://ftp.digital.com/pub/DEC/Alpha/systems/',
+        'ftp://ftp.hp.com/pub/alphaserver/archive/alpha/systems/')
+    WHERE `url` LIKE 'ftp://ftp.digital.com/pub/DEC/Alpha/systems/%/docs/%';
 UPDATE `copy`
-	SET `url` = REPLACE(`url`,
-		'ftp://ftp.digital.com/pub/DEC/DECinfo/semiconductor/',
-		'http://h18000.www1.hp.com/cpq-alphaserver/technology/')
-	WHERE `url` LIKE 'ftp://ftp.digital.com/pub/DEC/DECinfo/semiconductor/%';
+    SET `url` = REPLACE(`url`,
+        'ftp://ftp.digital.com/pub/DEC/DECinfo/semiconductor/',
+        'http://h18000.www1.hp.com/cpq-alphaserver/technology/')
+    WHERE `url` LIKE 'ftp://ftp.digital.com/pub/DEC/DECinfo/semiconductor/%';
 
 --
 -- Update vt100.net PDF directory URLs
 --
 
 UPDATE `copy`
-	SET `url` = CONCAT(`url`, REPLACE(REVERSE(SUBSTRING_INDEX(REVERSE(`url`), '/', 2)), '/', '.pdf'))
-	WHERE `site`=1 AND `url` LIKE '%/' AND `format` = 'PDF';
+    SET `url` = CONCAT(`url`, REPLACE(REVERSE(SUBSTRING_INDEX(REVERSE(`url`), '/', 2)), '/', '.pdf'))
+    WHERE `site`=1 AND `url` LIKE '%/' AND `format` = 'PDF';
 
 --
 -- Fix ftp.compaq.com URL
 --
 
 UPDATE `copy`
-	SET `url` = 'http://h18002.www1.hp.com/cpq-alphaserver/technology/literature/alphaahb.pdf'
-	WHERE `url` = 'ftp://ftp.compaq.com/pub/products/software/alpha-tools/documentation/current/alpha-archt/alpha-architecture.pdf';
+    SET `url` = 'http://h18002.www1.hp.com/cpq-alphaserver/technology/literature/alphaahb.pdf'
+    WHERE `url` = 'ftp://ftp.compaq.com/pub/products/software/alpha-tools/documentation/current/alpha-archt/alpha-architecture.pdf';
 
 COMMIT;

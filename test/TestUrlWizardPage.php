@@ -7,136 +7,136 @@ require_once 'pages/UrlWizardPage.php';
 
 class UrlWizardPageTester extends UrlWizardPage
 {
-	public function renderBodyContent()
-	{
-		parent::renderBodyContent();
-	}
+    public function renderBodyContent()
+    {
+        parent::renderBodyContent();
+    }
 
-	protected function redirect($target)
-	{
-		$this->redirectCalled = true;
-		$this->redirectLastTarget = $target;
-	}
-	public $redirectCalled, $redirectLastTarget;
+    protected function redirect($target)
+    {
+        $this->redirectCalled = true;
+        $this->redirectLastTarget = $target;
+    }
+    public $redirectCalled, $redirectLastTarget;
 
-	public function postPage()
-	{
-		parent::postPage();
-	}
+    public function postPage()
+    {
+        parent::postPage();
+    }
 
-	protected function md5ForFile($url)
-	{
-		$this->md5ForFileCalled = true;
-		$this->md5ForFileLastUrl = $url;
-		return $this->md5ForFileFakeResult;
-	}
-	public $md5ForFileCalled, $md5ForFileLastUrl, $md5ForFileFakeResult;
+    protected function md5ForFile($url)
+    {
+        $this->md5ForFileCalled = true;
+        $this->md5ForFileLastUrl = $url;
+        return $this->md5ForFileFakeResult;
+    }
+    public $md5ForFileCalled, $md5ForFileLastUrl, $md5ForFileFakeResult;
 }
 
 class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 {
-	private $_manx;
+    private $_manx;
 
-	public function testConstruct()
-	{
-		$this->_manx = new FakeManx();
-		$_SERVER['PATH_INFO'] = '';
-		$vars = array();
-		$page = new URLWizardPage($this->_manx, $vars);
-		$this->assertTrue(is_object($page));
-		$this->assertFalse(is_null($page));
-	}
+    public function testConstruct()
+    {
+        $this->_manx = new FakeManx();
+        $_SERVER['PATH_INFO'] = '';
+        $vars = array();
+        $page = new URLWizardPage($this->_manx, $vars);
+        $this->assertTrue(is_object($page));
+        $this->assertFalse(is_null($page));
+    }
 
-	public function testPostPage()
-	{
-		$this->_manx = new FakeManx();
-		$this->_manx->addPublicationFakeResult = 19690;
-		$db = new FakeManxDatabase();
-		$this->_manx->getDatabaseFakeResult = $db;
-		$_SERVER['PATH_INFO'] = '';
-		$_SERVER['REQUEST_METHOD'] = 'POST';
-		$vars = array(
-			'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
-			'copy_format' => 'PDF',
-			'copy_site' => '3',
-			'copy_notes' => '',
-			'copy_size' => '',
-			'copy_md5' => '',
-			'copy_credits' => '',
-			'copy_amend_serial' => '',
-			'site_name' => '',
-			'site_url' => '',
-			'site_description' => '',
-			'site_copy_base' => '',
-			'company_id' => '5',
-			'company_name' => '',
-			'company_short_name' => '',
-			'company_sort_name' => '',
-			'company_notes' => '',
-			'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
-			'pub_pub_id' => '-1',
-			'pub_history_ph_title' => '4010 and 4010-1 Maintenance Manual',
-			'pub_history_ph_revision' => 'B',
-			'pub_history_ph_pubtype' => 'D',
-			'pub_history_ph_pubdate' => '1976-04',
-			'pub_history_ph_abstract' => '',
-			'pub_history_ph_part' => '070-1183-01',
-			'pub_history_ph_match_part' => '',
-			'pub_history_ph_sort_part' => '',
-			'pub_history_ph_alt_part' => '',
-			'pub_history_ph_match_alt_part' => '',
-			'pub_history_ph_keywords' => 'terminal graphics',
-			'pub_history_ph_notes' => '',
-			'pub_history_ph_class' => '',
-			'pub_history_ph_amend_pub' => '',
-			'pub_history_ph_amend_serial' => '',
-			'supersession_search_keywords' => '4010 Maintenance Manual',
-			'supersession_old_pub' => '5634',
-			'next' => 'Next+%3E');
-		$page = new URLWizardPageTester($this->_manx, $vars);
-		$md5 = '01234567890123456789012345678901';
-		$page->md5ForFileFakeResult = $md5;
-		ob_start();
+    public function testPostPage()
+    {
+        $this->_manx = new FakeManx();
+        $this->_manx->addPublicationFakeResult = 19690;
+        $db = new FakeManxDatabase();
+        $this->_manx->getDatabaseFakeResult = $db;
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $vars = array(
+            'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
+            'copy_format' => 'PDF',
+            'copy_site' => '3',
+            'copy_notes' => '',
+            'copy_size' => '',
+            'copy_md5' => '',
+            'copy_credits' => '',
+            'copy_amend_serial' => '',
+            'site_name' => '',
+            'site_url' => '',
+            'site_description' => '',
+            'site_copy_base' => '',
+            'company_id' => '5',
+            'company_name' => '',
+            'company_short_name' => '',
+            'company_sort_name' => '',
+            'company_notes' => '',
+            'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
+            'pub_pub_id' => '-1',
+            'pub_history_ph_title' => '4010 and 4010-1 Maintenance Manual',
+            'pub_history_ph_revision' => 'B',
+            'pub_history_ph_pubtype' => 'D',
+            'pub_history_ph_pubdate' => '1976-04',
+            'pub_history_ph_abstract' => '',
+            'pub_history_ph_part' => '070-1183-01',
+            'pub_history_ph_match_part' => '',
+            'pub_history_ph_sort_part' => '',
+            'pub_history_ph_alt_part' => '',
+            'pub_history_ph_match_alt_part' => '',
+            'pub_history_ph_keywords' => 'terminal graphics',
+            'pub_history_ph_notes' => '',
+            'pub_history_ph_class' => '',
+            'pub_history_ph_amend_pub' => '',
+            'pub_history_ph_amend_serial' => '',
+            'supersession_search_keywords' => '4010 Maintenance Manual',
+            'supersession_old_pub' => '5634',
+            'next' => 'Next+%3E');
+        $page = new URLWizardPageTester($this->_manx, $vars);
+        $md5 = '01234567890123456789012345678901';
+        $page->md5ForFileFakeResult = $md5;
+        ob_start();
 
-		$page->postPage();
+        $page->postPage();
 
-		$output = ob_get_contents();
-		$this->assertFalse($db->addCompanyCalled);
-		$this->assertTrue($this->_manx->addPublicationCalled);
-		$this->assertEquals($vars['pub_history_ph_title'], $this->_manx->addPublicationLastTitle);
-		$this->assertEquals($vars['pub_history_ph_keywords'], $this->_manx->addPublicationLastKeywords);
-		$this->assertTrue($db->addSupersessionCalled);
-		$this->assertEquals(5634, $db->addSupersessionLastOldPub);
-		$this->assertEquals(19690, $db->addSupersessionLastNewPub);
-		$this->assertFalse($db->addSiteCalled);
-		$this->assertTrue($db->addCopyCalled);
-		$this->assertEquals(19690, $db->addCopyLastPubId);
-		$this->assertEquals($vars['copy_format'], $db->addCopyLastFormat);
-		$this->assertEquals($vars['copy_site'], $db->addCopyLastSiteId);
-		$this->assertEquals(rawurldecode($vars['copy_url']), $db->addCopyLastUrl);
-		$this->assertEquals($vars['copy_notes'], $db->addCopyLastNotes);
-		$this->assertEquals($vars['copy_size'], $db->addCopyLastSize);
-		$this->assertEquals($md5, $db->addCopyLastMd5);
-		$this->assertEquals($vars['copy_credits'], $db->addCopyLastCredits);
-		$this->assertEquals($vars['copy_amend_serial'], $db->addCopyLastAmendSerial);
-		$this->assertTrue($page->redirectCalled);
-	}
+        $output = ob_get_contents();
+        $this->assertFalse($db->addCompanyCalled);
+        $this->assertTrue($this->_manx->addPublicationCalled);
+        $this->assertEquals($vars['pub_history_ph_title'], $this->_manx->addPublicationLastTitle);
+        $this->assertEquals($vars['pub_history_ph_keywords'], $this->_manx->addPublicationLastKeywords);
+        $this->assertTrue($db->addSupersessionCalled);
+        $this->assertEquals(5634, $db->addSupersessionLastOldPub);
+        $this->assertEquals(19690, $db->addSupersessionLastNewPub);
+        $this->assertFalse($db->addSiteCalled);
+        $this->assertTrue($db->addCopyCalled);
+        $this->assertEquals(19690, $db->addCopyLastPubId);
+        $this->assertEquals($vars['copy_format'], $db->addCopyLastFormat);
+        $this->assertEquals($vars['copy_site'], $db->addCopyLastSiteId);
+        $this->assertEquals(rawurldecode($vars['copy_url']), $db->addCopyLastUrl);
+        $this->assertEquals($vars['copy_notes'], $db->addCopyLastNotes);
+        $this->assertEquals($vars['copy_size'], $db->addCopyLastSize);
+        $this->assertEquals($md5, $db->addCopyLastMd5);
+        $this->assertEquals($vars['copy_credits'], $db->addCopyLastCredits);
+        $this->assertEquals($vars['copy_amend_serial'], $db->addCopyLastAmendSerial);
+        $this->assertTrue($page->redirectCalled);
+    }
 
-	public function testRenderPage()
-	{
-		$this->_manx = new FakeManx();
-		$this->_manx->getUserFromSessionFakeResult = new FakeUser();
-		$_SERVER['PATH_INFO'] = '';
-		$_SERVER['REQUEST_METHOD'] = 'GET';
-		$db = new FakeManxDatabase();
-		$this->_manx->getDatabaseFakeResult = $db;
-		$vars = array();
-		$page = new URLWizardPageTester($this->_manx, $vars);
-		ob_start();
-		$page->renderBodyContent();
-		$output = ob_get_contents();
-		ob_end_clean();
-		$expected = <<<EOH
+    public function testRenderPage()
+    {
+        $this->_manx = new FakeManx();
+        $this->_manx->getUserFromSessionFakeResult = new FakeUser();
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $db = new FakeManxDatabase();
+        $this->_manx->getDatabaseFakeResult = $db;
+        $vars = array();
+        $page = new URLWizardPageTester($this->_manx, $vars);
+        ob_start();
+        $page->renderBodyContent();
+        $output = ob_get_contents();
+        ob_end_clean();
+        $expected = <<<EOH
 <h1>URL Wizard</h1>
 
 <div id="form_container">
@@ -445,6 +445,6 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 </div>
 
 EOH;
-		$this->assertEquals($expected, $output);
-	}
+        $this->assertEquals($expected, $output);
+    }
 }

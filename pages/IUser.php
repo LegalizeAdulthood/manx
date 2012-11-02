@@ -2,8 +2,8 @@
 
 interface IUser
 {
-	function isLoggedIn();
-	function displayName();
-	function isAdmin();
-	function userId();
+    function isLoggedIn();
+    function displayName();
+    function isAdmin();
+    function userId();
 }

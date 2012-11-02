@@ -1,261 +1,261 @@
 body
 {
-	background: none #fff no-repeat;
-	margin: 0
+    background: none #fff no-repeat;
+    margin: 0
 }
 
 #AUTH
 {
-	float: right;
-	color: #fff;
-	padding: 0.3em
+    float: right;
+    color: #fff;
+    padding: 0.3em
 }
 .field
 {
-	margin: 0.5em 1em
+    margin: 0.5em 1em
 }
 
 div.det
 {
-	margin: 10px
+    margin: 10px
 }
 
 #LOGO h1 span
 {
-	display: none
+    display: none
 }
 #LOGO h1
 {
-	background: #089698 url(manx.png) no-repeat top left;
-	height: 80px;
-	margin: 0
+    background: #089698 url(manx.png) no-repeat top left;
+    height: 80px;
+    margin: 0
 }
 
 h1, h2
 {
-	color: #089698;
-	background-color: transparent
+    color: #089698;
+    background-color: transparent
 }
 
 table.restable td,
 table.restable th
 {
-	padding: 0.1em 1em;
-	text-align: left
+    padding: 0.1em 1em;
+    text-align: left
 }
 table.restable td.idcol,
 table.restable th.idcol
 {
-	text-align: right
+    text-align: right
 }
 .restable blockquote
 {
-	margin: 0.5em 2em;
-	font-size: smaller
+    margin: 0.5em 2em;
+    font-size: smaller
 }
 
 .logo
 {
-	float: left;
-	width: 180px
+    float: left;
+    width: 180px
 }
 
 img.button
 {
-	border: none
+    border: none
 }
 
 .resbar
 {
-	background-color: transparent;
-	color: #000;
-	font-weight: bolder;
-	padding: 0.2em 1em;
-	margin-top: 0.5em
+    background-color: transparent;
+    color: #000;
+    font-weight: bolder;
+    padding: 0.2em 1em;
+    margin-top: 0.5em
 }
 
 div.query
 {
-	margin-left: 10em;
+    margin-left: 10em;
 }
 
 .query span
 {
-	float: left;
-	width: 10em
+    float: left;
+    width: 10em
 }
 
 .pagesel
 {
-	margin-top: 0.5em;
-	padding-top: 0.2em;
-	border-top: thin solid #089698;
-	text-align: center
+    margin-top: 0.5em;
+    padding-top: 0.2em;
+    border-top: thin solid #089698;
+    text-align: center
 }
 
 .warning
 {
-	background-color: transparent;
-	color: #f00
+    background-color: transparent;
+    color: #f00
 }
 
 div.toc ul
 {
-	margin-left: 0;
-	padding-left: 0
+    margin-left: 0;
+    padding-left: 0
 }
 div.toc li
 {
-	padding-left: 0;
-	list-style-type: none
+    padding-left: 0;
+    list-style-type: none
 }
 div.toc li.level1 span.level1
 {
-	padding-right: 1em
+    padding-right: 1em
 }
 div.toc li.level2
 {
-	margin-left: 3em
+    margin-left: 3em
 }
 div.toc li.level2 span
 {
-	float: left;
-	width: 5em
+    float: left;
+    width: 5em
 }
 div.toc li.level3 span
 {
-	float: left;
-	width: 7em
+    float: left;
+    width: 7em
 }
 div.toc li.level4 span
 {
-	float: left;
-	width: 9em
+    float: left;
+    width: 9em
 }
 div.toc li.level5 span
 {
-	float: left;
-	width: 11em
+    float: left;
+    width: 11em
 }
 
 ul.citelist
 {
-	margin: 0;
-	padding-left: 0
+    margin: 0;
+    padding-left: 0
 }
 ul.citelist li
 {
-	padding-left: 0;
-	list-style-type: none
+    padding-left: 0;
+    list-style-type: none
 }
 
 .navbot
 {
-	text-align: right
+    text-align: right
 }
 .nodisp
 {
-	display: none
+    display: none
 }
 #MENU
 {
-	background-color: #089698;
-	padding: 3px 10px;
-	margin-top: 1px
+    background-color: #089698;
+    padding: 3px 10px;
+    margin-top: 1px
 }
 #MENU a
 {
-	color: #eee;
-	text-decoration: none;
-	font-weight: bolder;
-	border-right: 1px solid #eee;
-	padding: 3px 10px
+    color: #eee;
+    text-decoration: none;
+    font-weight: bolder;
+    border-right: 1px solid #eee;
+    padding: 3px 10px
 }
 #MENU a.first
 {
-	border-left: 1px solid #eee
+    border-left: 1px solid #eee
 }
 #MENU a:hover
 {
-	background-color: #ff8f35;
-	color: #000
+    background-color: #ff8f35;
+    color: #000
 }
 #MENU a.firston
 {
-	border-left: 1px solid #eee;
-	background-color: #ff8f35;
-	color: #000
+    border-left: 1px solid #eee;
+    background-color: #ff8f35;
+    color: #000
 }
 #MENU a.on
 {
-	background-color: #ff8f35;
-	color: #000
+    background-color: #ff8f35;
+    color: #000
 }
 
 .ss
 {
-	color: #999;
-	background-color: transparent
+    color: #999;
+    background-color: transparent
 }
 
 #LOGINBOX
 {
-	margin: 0 auto;
-	background-color: #cce5e6;
-	border: 2px solid #089698 ;
-	padding: 5px
+    margin: 0 auto;
+    background-color: #cce5e6;
+    border: 2px solid #089698 ;
+    padding: 5px
 }
 #LOGINBOX label
 {
-	float: right
+    float: right
 }
 #LOGIBUTT
 {
-	float: right
+    float: right
 }
 
 /* add publication form */
 #addformdiv
 {
-	margin-left: 15em
+    margin-left: 15em
 }
 #addform label
 {
-	float: left;
-	width: 10em;
-	white-space: nowrap
+    float: left;
+    width: 10em;
+    white-space: nowrap
 }
 #addform input, #addform select
 {
-	margin-left: 10em
+    margin-left: 10em
 }
 #addform ul
 {
-	list-style: none;
+    list-style: none;
 }
 #partlist
 {
-	margin-left: 20em
+    margin-left: 20em
 }
 
 /* edit company form */
 #compedit
 {
-	margin-left: 15em;
+    margin-left: 15em;
 }
 #editform label
 {
-	float: left;
-	width: 10em;
-	white-space: nowrap;
+    float: left;
+    width: 10em;
+    white-space: nowrap;
 }
 #editform input, #editform select
 {
-	margin-left: 10em
+    margin-left: 10em
 }
 #editform ul
 {
-	list-style: none;
+    list-style: none;
 }
 
 #wikipagemenu
@@ -264,58 +264,58 @@ ul.citelist li
 }
 #wikipagemenu ul
 {
-	display: block
+    display: block
 }
 #wikipagemenu li
 {
-	background: white none repeat scroll 0 0
+    background: white none repeat scroll 0 0
 }
 #wikipagemenu li
 {
-	display: inline;
-	border-style: solid solid none;
-	border-color: #fcc;
-	border-width: 1px;
-	float: left;
-	margin: 0 2px;
-	padding: 2px 5px;
-	white-space: nowrap
+    display: inline;
+    border-style: solid solid none;
+    border-color: #fcc;
+    border-width: 1px;
+    float: left;
+    margin: 0 2px;
+    padding: 2px 5px;
+    white-space: nowrap
 }
 #wikipagemenu li.current, #wikipagemenu li.current:hover
 {
-	background: #f99 none repeat scroll 0 0;
-	border-style: solid;
-	border: 1px solid #000;
-	border-bottom: 1px solid #f99;
-	margin-bottom: -1px
+    background: #f99 none repeat scroll 0 0;
+    border-style: solid;
+    border: 1px solid #000;
+    border-bottom: 1px solid #f99;
+    margin-bottom: -1px
 }
 #wikipagemenu li:hover
 {
-	background-color: #ff0;
+    background-color: #ff0;
 }
 #wikipagemenusep
 {
-	background: #f99 none repeat scroll 0 0;
-	border-bottom: 1px solid #000;
-	border-top: 1px solid #000;
-	clear: both;
-	height: 4px;
-	line-height: 4px;
-	margin: 0;
-	padding: 0;
-	width: 100%
+    background: #f99 none repeat scroll 0 0;
+    border-bottom: 1px solid #000;
+    border-top: 1px solid #000;
+    clear: both;
+    height: 4px;
+    line-height: 4px;
+    margin: 0;
+    padding: 0;
+    width: 100%
 }
 #wikitext
 {
-	margin: 1em 0 0 15em;
-	border: 1px solid #ccc;
-	padding: 5px
+    margin: 1em 0 0 15em;
+    border: 1px solid #ccc;
+    padding: 5px
 }
 .deadlink
 {
-	color: #900
+    color: #900
 }
 #wikitext textarea
 {
-	width: 100%
+    width: 100%
 }

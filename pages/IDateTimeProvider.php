@@ -2,9 +2,9 @@
 
 interface IDateTimeProvider
 {
-	/**
-	 * @abstract
-	 * @return DateTime
-	 */
-	function now();
+    /**
+     * @abstract
+     * @return DateTime
+     */
+    function now();
 }

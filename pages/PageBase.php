@@ -4,232 +4,232 @@ require_once 'IManx.php';
 
 class MenuType
 {
-	const Undefined = 0;
-	const Search = 1;
-	const About = 2;
-	const Help = 3;
-	const Publication = 4;
-	const Mirror = 5;
-	const Company = 6;
-	const Copy = 7;
-	const Site = 8;
-	const UrlWizard = 9;
-	const SizeReport = 10;
-	const MD5Report = 11;
-	const BitSavers = 12;
+    const Undefined = 0;
+    const Search = 1;
+    const About = 2;
+    const Help = 3;
+    const Publication = 4;
+    const Mirror = 5;
+    const Company = 6;
+    const Copy = 7;
+    const Site = 8;
+    const UrlWizard = 9;
+    const SizeReport = 10;
+    const MD5Report = 11;
+    const BitSavers = 12;
 }
 
 abstract class PageBase
 {
-	/** @var IManx */
-	protected $_manx;
-	/** @var IManxDatabase */
-	protected $_manxDb;
-	protected $_topDir;
-	/** @var IUser */
-	protected $_user;
+    /** @var IManx */
+    protected $_manx;
+    /** @var IManxDatabase */
+    protected $_manxDb;
+    protected $_topDir;
+    /** @var IUser */
+    protected $_user;
 
-	public function __construct(IManx $manx)
-	{
-		$this->_manx = $manx;
-		$this->_manxDb = $manx->getDatabase();
-		$this->_topDir = array_key_exists('PATH_INFO', $_SERVER) ?
-			str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1)
-			: '';
-		$this->_user = $this->_manx->getUserFromSession();
-	}
+    public function __construct(IManx $manx)
+    {
+        $this->_manx = $manx;
+        $this->_manxDb = $manx->getDatabase();
+        $this->_topDir = array_key_exists('PATH_INFO', $_SERVER) ?
+            str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1)
+            : '';
+        $this->_user = $this->_manx->getUserFromSession();
+    }
 
-	public function __destruct()
-	{
-		$this->_manx = null;
-	}
+    public function __destruct()
+    {
+        $this->_manx = null;
+    }
 
-	public function renderPage()
-	{
-		$this->renderHeader();
-		$this->renderBody();
-	}
+    public function renderPage()
+    {
+        $this->renderHeader();
+        $this->renderBody();
+    }
 
-	protected function getTitle()
-	{
-		return "Manx";
-	}
+    protected function getTitle()
+    {
+        return "Manx";
+    }
 
-	protected function getMenuType()
-	{
-		return MenuType::Undefined;
-	}
+    protected function getMenuType()
+    {
+        return MenuType::Undefined;
+    }
 
-	protected function renderLink($rel, $type, $href, $attributes = array())
-	{
-		$attributeText = '';
-		foreach ($attributes as $name => $value)
-		{
-			$attributeText .= sprintf('%s="%s" ', $name, htmlspecialchars(trim($value)));
-		}
-		printf('<link rel="%s" type="%s" href="%s" %s/>' . "\n", $rel, $type, $this->_topDir . $href, $attributeText);
-	}
+    protected function renderLink($rel, $type, $href, $attributes = array())
+    {
+        $attributeText = '';
+        foreach ($attributes as $name => $value)
+        {
+            $attributeText .= sprintf('%s="%s" ', $name, htmlspecialchars(trim($value)));
+        }
+        printf('<link rel="%s" type="%s" href="%s" %s/>' . "\n", $rel, $type, $this->_topDir . $href, $attributeText);
+    }
 
-	protected function renderHeader()
-	{
-		header("Content-Type: text/html; charset=utf-8");
-		print <<<EOH
+    protected function renderHeader()
+    {
+        header("Content-Type: text/html; charset=utf-8");
+        print <<<EOH
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/tr/html4/strict.dtd">
 <html lang="en">
 <head>
 EOH;
-		printf("<title>%s</title>\n", $this->getTitle());
-		$this->renderLink("stylesheet", "text/css", "assets/manx.css");
-		$this->renderLink("shortcut icon", "image/x-icon", "assets/manx.ico");
-		$this->renderLink("alternate", "application/rss+xml", "rss.php", array('title' => 'Manx New Documents'));
-		$this->renderHeaderContent();
-		print "</head>\n";
-	}
+        printf("<title>%s</title>\n", $this->getTitle());
+        $this->renderLink("stylesheet", "text/css", "assets/manx.css");
+        $this->renderLink("shortcut icon", "image/x-icon", "assets/manx.ico");
+        $this->renderLink("alternate", "application/rss+xml", "rss.php", array('title' => 'Manx New Documents'));
+        $this->renderHeaderContent();
+        print "</head>\n";
+    }
 
-	protected function renderHeaderContent()
-	{
-	}
+    protected function renderHeaderContent()
+    {
+    }
 
-	protected function renderBody()
-	{
-		$this->renderBodyHeader();
-		$this->renderBodyContent();
-		$this->renderBodyFooter();
-	}
+    protected function renderBody()
+    {
+        $this->renderBodyHeader();
+        $this->renderBodyContent();
+        $this->renderBodyFooter();
+    }
 
-	abstract protected function renderBodyContent();
+    abstract protected function renderBodyContent();
 
-	private function renderFirstMenuItem($selected, $href, $text)
-	{
-		$this->renderMenuItemWithAttributes($selected, 'firston', 'class="first" ', $text, $href);
-	}
+    private function renderFirstMenuItem($selected, $href, $text)
+    {
+        $this->renderMenuItemWithAttributes($selected, 'firston', 'class="first" ', $text, $href);
+    }
 
-	private function renderMenuItem($selected, $href, $text)
-	{
-		$this->renderMenuItemWithAttributes($selected, 'on', '', $text, $href);
-	}
+    private function renderMenuItem($selected, $href, $text)
+    {
+        $this->renderMenuItemWithAttributes($selected, 'on', '', $text, $href);
+    }
 
-	private function renderMenuItemWithAttributes($selected, $selectedClass, $unselectedAttribute, $text, $href)
-	{
-		if ($selected)
-		{
-			printf('<a class="%s">%s</a>', $selectedClass, $text);
-		}
-		else
-		{
-			printf('<a %shref="%s">%s</a>', $unselectedAttribute, $this->_topDir . $href, $text);
-		}
-	}
+    private function renderMenuItemWithAttributes($selected, $selectedClass, $unselectedAttribute, $text, $href)
+    {
+        if ($selected)
+        {
+            printf('<a class="%s">%s</a>', $selectedClass, $text);
+        }
+        else
+        {
+            printf('<a %shref="%s">%s</a>', $unselectedAttribute, $this->_topDir . $href, $text);
+        }
+    }
 
-	private function renderMenuSeparator()
-	{
-		print '<span class="nodisp"> | </span>';
-	}
+    private function renderMenuSeparator()
+    {
+        print '<span class="nodisp"> | </span>';
+    }
 
-	private function renderAdminMenu($menu)
-	{
-		if ($this->_user->isAdmin())
-		{
-			//$this->renderMenuSeparator();
-			//$this->renderMenuItem($menu == MenuType::Company, "company.php", "Company");
-			$this->renderMenuSeparator();
-			$this->renderMenuItem($menu == MenuType::UrlWizard, "url-wizard.php", "URL Wizard");
-			$this->renderMenuItem($menu == MenuType::BitSavers, "bitsavers.php", "BitSavers");
-			//$this->renderMenuItem($menu == MenuType::Publication, "publication.php", "Publication");
-			//$this->renderMenuSeparator();
-			//$this->renderMenuItem($menu == MenuType::Copy, "copy.php", "Copy");
-			//$this->renderMenuSeparator();
-			$this->renderMenuSeparator();
-			$this->renderMenuItem($menu == MenuType::Site, "site.php", "Site");
-			$this->renderMenuSeparator();
-			$this->renderMenuItem($menu == MenuType::Mirror, "mirror.php", "Mirror");
-			$this->renderMenuItem($menu == MenuType::SizeReport, "size-report.php", "Size Report");
-			$this->renderMenuItem($menu == MenuType::MD5Report, "md5-report.php", "MD5 Report");
-		}
-	}
+    private function renderAdminMenu($menu)
+    {
+        if ($this->_user->isAdmin())
+        {
+            //$this->renderMenuSeparator();
+            //$this->renderMenuItem($menu == MenuType::Company, "company.php", "Company");
+            $this->renderMenuSeparator();
+            $this->renderMenuItem($menu == MenuType::UrlWizard, "url-wizard.php", "URL Wizard");
+            $this->renderMenuItem($menu == MenuType::BitSavers, "bitsavers.php", "BitSavers");
+            //$this->renderMenuItem($menu == MenuType::Publication, "publication.php", "Publication");
+            //$this->renderMenuSeparator();
+            //$this->renderMenuItem($menu == MenuType::Copy, "copy.php", "Copy");
+            //$this->renderMenuSeparator();
+            $this->renderMenuSeparator();
+            $this->renderMenuItem($menu == MenuType::Site, "site.php", "Site");
+            $this->renderMenuSeparator();
+            $this->renderMenuItem($menu == MenuType::Mirror, "mirror.php", "Mirror");
+            $this->renderMenuItem($menu == MenuType::SizeReport, "size-report.php", "Size Report");
+            $this->renderMenuItem($menu == MenuType::MD5Report, "md5-report.php", "MD5 Report");
+        }
+    }
 
-	private function renderMenu()
-	{
-		$menu = $this->getMenuType();
+    private function renderMenu()
+    {
+        $menu = $this->getMenuType();
 
-		print '<div id="MENU">';
-		$this->renderFirstMenuItem(($menu == MenuType::Search), "search.php", "Search");
-		$this->renderMenuSeparator();
-		$this->renderMenuItem(($menu == MenuType::About), "about.php", "About");
-		$this->renderMenuSeparator();
-		$this->renderMenuItem(($menu == MenuType::Help), "help.php", "Help");
-		$this->renderAdminMenu($menu);
-		print "</div>\n";
-	}
+        print '<div id="MENU">';
+        $this->renderFirstMenuItem(($menu == MenuType::Search), "search.php", "Search");
+        $this->renderMenuSeparator();
+        $this->renderMenuItem(($menu == MenuType::About), "about.php", "About");
+        $this->renderMenuSeparator();
+        $this->renderMenuItem(($menu == MenuType::Help), "help.php", "Help");
+        $this->renderAdminMenu($menu);
+        print "</div>\n";
+    }
 
-	protected function renderBodyHeader()
-	{
-		print <<<EOH
+    protected function renderBodyHeader()
+    {
+        print <<<EOH
 <body id="VT100-NET">
 <div id="HEADER">
 EOH;
-		$this->renderAuthorization();
-		print <<<EOH
+        $this->renderAuthorization();
+        print <<<EOH
 <div id="LOGO"><h1><span>Manx &ndash; a catalogue of online computer manuals</span></h1></div>
 EOH;
-		$this->renderMenu();
-		print <<<EOH
+        $this->renderMenu();
+        print <<<EOH
 </div>
 <div class="det">
 EOH;
-	}
+    }
 
-	protected function renderBodyFooter()
-	{
-		print <<<EOH
+    protected function renderBodyFooter()
+    {
+        print <<<EOH
 </div></body></html>
 EOH;
-	}
+    }
 
-	protected function redirect($target)
-	{
-		header("Status: 303 See Also");
-		header("Location: " . $target);
-		header("Content-Type: text/plain");
-		print "Redirecting to " . $target;
-	}
+    protected function redirect($target)
+    {
+        header("Status: 303 See Also");
+        header("Location: " . $target);
+        header("Content-Type: text/plain");
+        print "Redirecting to " . $target;
+    }
 
-	public static function getRelativePrefixFromPathInfo()
-	{
-		return array_key_exists('PATH_INFO', $_SERVER) ?
-			str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1)
-			: '';
-	}
+    public static function getRelativePrefixFromPathInfo()
+    {
+        return array_key_exists('PATH_INFO', $_SERVER) ?
+            str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1)
+            : '';
+    }
 
-	public function renderLoginLink($server)
-	{
-		$redirect = $server['PHP_SELF'];
-		if (array_key_exists('QUERY_STRING', $server) and strlen($server['QUERY_STRING']) > 0)
-		{
-			$redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
-		}
-		$prefix = PageBase::getRelativePrefixFromPathInfo();
-		printf('<a href="%slogin.php?redirect=%s">Login</a>', $prefix, urlencode($redirect));
-	}
+    public function renderLoginLink($server)
+    {
+        $redirect = $server['PHP_SELF'];
+        if (array_key_exists('QUERY_STRING', $server) and strlen($server['QUERY_STRING']) > 0)
+        {
+            $redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
+        }
+        $prefix = PageBase::getRelativePrefixFromPathInfo();
+        printf('<a href="%slogin.php?redirect=%s">Login</a>', $prefix, urlencode($redirect));
+    }
 
-	private function renderLogoutLink()
-	{
-		$prefix = PageBase::getRelativePrefixFromPathInfo();
-		printf('<a href="%slogin.php?LOGO=1&redirect=%ssearch.php">Logout</a>', $prefix, $prefix);
-	}
+    private function renderLogoutLink()
+    {
+        $prefix = PageBase::getRelativePrefixFromPathInfo();
+        printf('<a href="%slogin.php?LOGO=1&redirect=%ssearch.php">Logout</a>', $prefix, $prefix);
+    }
 
-	protected function renderAuthorization()
-	{
-		$user = User::getInstanceFromSession($this->_manxDb);
-		print '<div id="AUTH">' . $user->displayName() . ' | ';
-		if ($user->isLoggedIn())
-		{
-			$this->renderLogoutLink();
-		}
-		else
-		{
-			$this->renderLoginLink($_SERVER);
-		}
-		print "</div>\n";
-	}
+    protected function renderAuthorization()
+    {
+        $user = User::getInstanceFromSession($this->_manxDb);
+        print '<div id="AUTH">' . $user->displayName() . ' | ';
+        if ($user->isLoggedIn())
+        {
+            $this->renderLogoutLink();
+        }
+        else
+        {
+            $this->renderLoginLink($_SERVER);
+        }
+        print "</div>\n";
+    }
 }

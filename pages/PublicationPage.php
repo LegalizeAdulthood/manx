@@ -4,47 +4,47 @@ require_once 'AdminPageBase.php';
 
 class PublicationPage extends AdminPageBase
 {
-	protected function getMenuType()
-	{
-		return MenuType::Publication;
-	}
+    protected function getMenuType()
+    {
+        return MenuType::Publication;
+    }
 
-	protected function renderHeaderContent()
-	{
-		print <<<EOH
+    protected function renderHeaderContent()
+    {
+        print <<<EOH
 <script type="text/javascript" src="assets/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="assets/PartLookup.js"></script>
 EOH;
-	}
+    }
 
-	protected function renderBodyContent()
-	{
-		print <<<EOH
+    protected function renderBodyContent()
+    {
+        print <<<EOH
 <h1>Add Publication</h1>
 
 <div id="addformdiv"><form id="addform" action="publication.php" method="POST" name="f">
 <fieldset><legend id="plum">Essentials</legend><ul>
 <li><label for="company">Company:</label><select id="company" name="company">
 EOH;
-		$selected = -1;
-		foreach ($this->_manxDb->getCompanyList() as $row)
-		{
-			$id = $row['id'];
-			printf('<option value="%s"%s>%s</option>' . "\n",
-				$id, ($id == $selected ? ' selected' : ''),
-				htmlspecialchars($row['name']));
-		}
-		$part = $this->quotedParam('part');
-		$pubDate = $this->quotedParam('pubdate');
-		$title = $this->quotedParam('title');
-		$documentSelected = $this->param('pt') == 'D' ? ' selected' : '';
-		$addendumSelected = $this->param('pt') == 'A' ? ' selected' : '';
-		$altPart = $this->quotedParam('altpart');
-		$revision = $this->quotedParam('revision');
-		$keywords = $this->quotedParam('keywords');
-		$notes = $this->quotedParam('notes');
-		$language = $this->quotedParam('lang');
-		print <<<EOH
+        $selected = -1;
+        foreach ($this->_manxDb->getCompanyList() as $row)
+        {
+            $id = $row['id'];
+            printf('<option value="%s"%s>%s</option>' . "\n",
+                $id, ($id == $selected ? ' selected' : ''),
+                htmlspecialchars($row['name']));
+        }
+        $part = $this->quotedParam('part');
+        $pubDate = $this->quotedParam('pubdate');
+        $title = $this->quotedParam('title');
+        $documentSelected = $this->param('pt') == 'D' ? ' selected' : '';
+        $addendumSelected = $this->param('pt') == 'A' ? ' selected' : '';
+        $altPart = $this->quotedParam('altpart');
+        $revision = $this->quotedParam('revision');
+        $keywords = $this->quotedParam('keywords');
+        $notes = $this->quotedParam('notes');
+        $language = $this->quotedParam('lang');
+        print <<<EOH
 </select>
 
 <li><label for="part">Part or order no.:</label>
@@ -81,27 +81,27 @@ EOH;
 </form></div>
 
 EOH;
-	}
+    }
 
-	public function postPage()
-	{
-		$company = $this->param('company');
-		$part = $this->param('part');
-		$pubDate = $this->param('pubdate');
-		$title = $this->param('title');
+    public function postPage()
+    {
+        $company = $this->param('company');
+        $part = $this->param('part');
+        $pubDate = $this->param('pubdate');
+        $title = $this->param('title');
 
-		$publicationType = $this->param('pt');
-		$altPart = $this->param('altpart');
-		$revision = $this->param('revision');
-		$keywords = $this->param('keywords');
-		$notes = $this->param('notes');
-		$languages = $this->param('lang', '+en');
+        $publicationType = $this->param('pt');
+        $altPart = $this->param('altpart');
+        $revision = $this->param('revision');
+        $keywords = $this->param('keywords');
+        $notes = $this->param('notes');
+        $languages = $this->param('lang', '+en');
 
-		$pubId = $this->_manx->addPublication($this->_user,
-			$company, $part, $pubDate, $title,
-			$publicationType, $altPart, $revision, $keywords, $notes,
-			$languages);
+        $pubId = $this->_manx->addPublication($this->_user,
+            $company, $part, $pubDate, $title,
+            $publicationType, $altPart, $revision, $keywords, $notes,
+            $languages);
 
-		$this->redirect(sprintf("details.php/%s,%s", $company, $pubId));
-	}
+        $this->redirect(sprintf("details.php/%s,%s", $company, $pubId));
+    }
 }

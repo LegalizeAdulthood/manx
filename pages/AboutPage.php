@@ -4,19 +4,19 @@ require_once 'PageBase.php';
 
 class AboutPage extends PageBase
 {
-	public function __construct($manx)
-	{
-		parent::__construct($manx);
-	}
+    public function __construct($manx)
+    {
+        parent::__construct($manx);
+    }
 
-	protected function getMenuType()
-	{
-		return MenuType::About;
-	}
+    protected function getMenuType()
+    {
+        return MenuType::About;
+    }
 
-	protected function renderBodyContent()
-	{
-		print <<<EOH
+    protected function renderBodyContent()
+    {
+        print <<<EOH
 <h1>About Manx</h1>
 <p>Manx is a catalog of manuals for old computers.
 Manx is an open source project <a href="http://manx.codeplex.com">hosted
@@ -36,13 +36,13 @@ Tiziano's <a href="http://1000bit.net/">1000 BiT</a> is the best
 catalogue for microcomputers.</p>
 EOH;
 
-		print "<p><strong>Manx</strong> currently knows about ";
-		$this->renderDocumentSummary();
-		print ".</p>\n";
+        print "<p><strong>Manx</strong> currently knows about ";
+        $this->renderDocumentSummary();
+        print ".</p>\n";
 
-		print "<p>Manx covers the following companies:\n";
-		$this->renderCompanyList();
-		print <<<EOH
+        print "<p>Manx covers the following companies:\n";
+        $this->renderCompanyList();
+        print <<<EOH
 </p>
 
 <p>The list below shows the websites included in Manx. As Manx is
@@ -54,10 +54,10 @@ one manual, it is worth including. This list is ordered by date of
 inclusion in Manx.</p>
 EOH;
 
-		$this->renderSiteList();
-		$version = $this->_manxDb->getManxVersion();
+        $this->renderSiteList();
+        $version = $this->_manxDb->getManxVersion();
 
-		print <<<EOH
+        print <<<EOH
 <p>Some of these sites are marked as being Low Bandwidth. They are either on
 a home DSL line, or the owner has indicated that they should not be mirrored
 with tools. It isn't a comment on the usefulness of the site!</p>
@@ -75,57 +75,57 @@ maintainer of the code.</p>
 
 <p>This is version ${version}.</p>
 EOH;
-	}
+    }
 
-	public function renderDocumentSummary()
-	{
-		echo $this->_manxDb->getDocumentCount(), ' manuals, ',
-			$this->_manxDb->getOnlineDocumentCount(), ' of which are online, at ',
-			$this->_manxDb->getSiteCount(), ' websites';
-	}
+    public function renderDocumentSummary()
+    {
+        echo $this->_manxDb->getDocumentCount(), ' manuals, ',
+            $this->_manxDb->getOnlineDocumentCount(), ' of which are online, at ',
+            $this->_manxDb->getSiteCount(), ' websites';
+    }
 
-	public function renderCompanyList()
-	{
-		try
-		{
-			$rows = $this->_manxDb->getCompanyList();
-			$count = count($rows);
-			$i = 0;
-			foreach ($rows as $row)
-			{
-				print '<a href="search.php?cp=' . $row['id'] . '">' . htmlspecialchars($row['name']) . '</a>';
-				$i++;
-				if ($i < $count)
-				{
-					print ', ';
-				}
-			}
-		}
-		catch (Exception $e)
-		{
-			print "Unexpected error: " . $e->getMessage();
-		}
-	}
+    public function renderCompanyList()
+    {
+        try
+        {
+            $rows = $this->_manxDb->getCompanyList();
+            $count = count($rows);
+            $i = 0;
+            foreach ($rows as $row)
+            {
+                print '<a href="search.php?cp=' . $row['id'] . '">' . htmlspecialchars($row['name']) . '</a>';
+                $i++;
+                if ($i < $count)
+                {
+                    print ', ';
+                }
+            }
+        }
+        catch (Exception $e)
+        {
+            print "Unexpected error: " . $e->getMessage();
+        }
+    }
 
-	public function renderSiteList()
-	{
-		try
-		{
-			print '<ul>';
-			foreach ($this->_manxDb->getSiteList() as $row)
-			{
-				print '<li><a href="' . $row['url'] . '">' . htmlspecialchars($row['description']) . '</a>';
-				if ('Y' == $row['low'])
-				{
-					print ' <span class="warning">(Low Bandwidth)</span>';
-				}
-				print '</li>';
-			}
-			print '</ul>';
-		}
-		catch (Exception $e)
-		{
-			print "Unexpected error: " . $e->getMessage();
-		}
-	}
+    public function renderSiteList()
+    {
+        try
+        {
+            print '<ul>';
+            foreach ($this->_manxDb->getSiteList() as $row)
+            {
+                print '<li><a href="' . $row['url'] . '">' . htmlspecialchars($row['description']) . '</a>';
+                if ('Y' == $row['low'])
+                {
+                    print ' <span class="warning">(Low Bandwidth)</span>';
+                }
+                print '</li>';
+            }
+            print '</ul>';
+        }
+        catch (Exception $e)
+        {
+            print "Unexpected error: " . $e->getMessage();
+        }
+    }
 }

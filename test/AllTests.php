@@ -15,16 +15,16 @@ require_once 'test/TestUrlWizardService.php';
 
 class AllTests
 {
-	public static function suite()
-	{
-		$suite = new PHPUnit_Framework_TestSuite('ManxTests');
-		foreach (array('TestAboutPage', 'TestDetailsPage', 'TestHtmlFormatter',
-			 'TestManxDatabase', 'TestPageBase', 'TestRssPage', 'TestSearcher',
-			 'TestUrlWizardPage', 'TestUrlWizardService', 'TestAdminPageBase',
-			 'TestUrlInfo', 'TestUrlTransfer') as $name)
-		{
-			$suite->addTestSuite($name);
-		}
-		return $suite;
-	}
+    public static function suite()
+    {
+        $suite = new PHPUnit_Framework_TestSuite('ManxTests');
+        foreach (array('TestAboutPage', 'TestDetailsPage', 'TestHtmlFormatter',
+             'TestManxDatabase', 'TestPageBase', 'TestRssPage', 'TestSearcher',
+             'TestUrlWizardPage', 'TestUrlWizardService', 'TestAdminPageBase',
+             'TestUrlInfo', 'TestUrlTransfer') as $name)
+        {
+            $suite->addTestSuite($name);
+        }
+        return $suite;
+    }
 }
