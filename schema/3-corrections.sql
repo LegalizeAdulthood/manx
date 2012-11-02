@@ -7710,4 +7710,11 @@ UPDATE `copy`
     SET `url` = 'http://h18002.www1.hp.com/cpq-alphaserver/technology/literature/alphaahb.pdf'
     WHERE `url` = 'ftp://ftp.compaq.com/pub/products/software/alpha-tools/documentation/current/alpha-archt/alpha-architecture.pdf';
 
+--
+-- fix bitsavers mirror urls of Wilber Williams' computer museum
+--
+
+DELETE FROM `copy`
+WHERE `url` LIKE 'http://bitsavers.org/pdf/dec/www.computer.museum.uq.edu.au_mirror%';
+
 COMMIT;
