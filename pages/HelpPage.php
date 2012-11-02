@@ -54,5 +54,3 @@ priorities with your feedback.</p>
 EOH;
 	}
 }
-
-?>

@@ -84,5 +84,3 @@ class TestRssPage extends PHPUnit_Framework_TestCase
 		$this->assertEquals(implode("\n", $expected) . "\n", $output);
 	}
 }
-
-?>

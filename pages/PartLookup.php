@@ -29,5 +29,3 @@ EOH;
 	}
 	print "</publist>\n";
 }
-
-?>

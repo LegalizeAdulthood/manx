@@ -7,5 +7,3 @@ interface IUser
 	function isAdmin();
 	function userId();
 }
-
-?>

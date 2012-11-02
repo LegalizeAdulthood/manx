@@ -8,5 +8,3 @@ interface IDateTimeProvider
 	 */
 	function now();
 }
-
-?>

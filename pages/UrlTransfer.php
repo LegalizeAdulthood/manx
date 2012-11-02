@@ -33,4 +33,3 @@ class UrlTransfer
 		return false;
 	}
 }
-?>

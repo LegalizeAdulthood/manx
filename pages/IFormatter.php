@@ -8,5 +8,3 @@ interface IFormatter
 	public function renderPageSelectionBar($start, $total, $rowsPerPage, $params);
 	public function renderResultsPage($rows, $start, $end);
 }
-
-?>

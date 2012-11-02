@@ -80,5 +80,3 @@ class Manx implements IManx
 		return $pubId;
 	}
 }
-
-?>

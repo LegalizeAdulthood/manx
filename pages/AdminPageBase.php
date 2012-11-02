@@ -48,5 +48,3 @@ abstract class AdminPageBase extends PageBase
 
 	protected abstract function postPage();
 }
-
-?>

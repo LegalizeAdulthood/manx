@@ -481,5 +481,3 @@ class FakeManxDatabase implements IManxDatabase
 	public $bitSaversIgnoredPathCalled, $bitSaversIgnoredPathLastPath,
 		$bitSaversIgnoredPathFakeResult;
 }
-
-?>

@@ -20,5 +20,3 @@ class Cookie
 		setcookie(Cookie::NAME, 'OUT', time() - 60);
 	}
 }
-
-?>

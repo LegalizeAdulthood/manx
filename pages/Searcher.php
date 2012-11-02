@@ -94,5 +94,3 @@ class Searcher implements ISearcher
 		$formatter->renderPageSelectionBar($start, $total, $rowsPerPage, $params);
 	}
 }
-
-?>

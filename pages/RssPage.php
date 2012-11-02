@@ -93,5 +93,3 @@ class RssPage extends PageBase
 		throw new Exception("renderBodyContent not used");
 	}
 }
-
-?>

@@ -101,5 +101,3 @@ class RssWriter
 		echo $this->getDocument(); 
 	}
 } 
-
-?>

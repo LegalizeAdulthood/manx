@@ -813,5 +813,3 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 		$this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
 	}
 }
-
-?>

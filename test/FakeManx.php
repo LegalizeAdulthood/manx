@@ -68,5 +68,3 @@ class FakeManx implements IManx
 	public $getDatabaseCalled;
 	public $getDatabaseFakeResult;
 }
-
-?>

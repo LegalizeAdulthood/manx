@@ -7,5 +7,3 @@ interface ISearcher
 	function renderCompanies($selected);
 	function renderSearchResults(IFormatter $formatter, $company, $keywords, $online);
 }
-
-?>

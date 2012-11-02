@@ -57,5 +57,3 @@ interface IManxDatabase
 	function getBitSaversUnknownPaths();
 	function bitSaversIgnoredPath($path);
 }
-
-?>

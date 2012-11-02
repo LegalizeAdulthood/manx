@@ -290,5 +290,3 @@ class TestUrlWizardServiceProcessRequest extends TestUrlWizardService
 		$this->assertEquals($expected, $output);
 	}
 }
-
-?>

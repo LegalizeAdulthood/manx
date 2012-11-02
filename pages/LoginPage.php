@@ -102,5 +102,3 @@ EOH;
 		parent::renderPage();
 	}
 }
-
-?>

@@ -9,5 +9,3 @@ interface IManx
 	public function addPublication($user, $company, $part, $pubDate, $title,
 		$publicationType, $altPart, $revision, $keywords, $notes, $languages);
 }
-
-?>

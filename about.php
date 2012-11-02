@@ -6,5 +6,3 @@ require_once 'pages/AboutPage.php';
 $manx = Manx::getInstance();
 $page = new AboutPage($manx);
 $page->renderPage();
-
-?>

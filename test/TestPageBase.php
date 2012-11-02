@@ -54,5 +54,3 @@ class TestPageBase extends PHPUnit_Framework_TestCase
 		$this->assertEquals('<a href="login.php?redirect=%2Fmanx%2Fabout.php">Login</a>', $output);
 	}
 }
-
-?>

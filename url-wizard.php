@@ -25,5 +25,3 @@ $manx = Manx::getInstance();
 $vars = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $_POST : $_GET;
 $page = new URLWizardPage($manx, $vars);
 $page->renderPage();
-
-?>

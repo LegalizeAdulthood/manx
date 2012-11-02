@@ -31,5 +31,3 @@ class SearchPage extends PageBase
 		$searcher->renderSearchResults($formatter, $company, $keywords, $online);
 	}
 }
-
-?>

@@ -24,5 +24,3 @@ class FakeStatement
 		return $this->fetchAllFakeResult;
 	}
 }
-
-?>

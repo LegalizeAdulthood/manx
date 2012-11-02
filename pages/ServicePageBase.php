@@ -75,5 +75,3 @@ abstract class ServicePageBase
 
 	protected abstract function methodDispatch();
 }
-
-?>

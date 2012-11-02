@@ -448,5 +448,3 @@ EOH;
 		$this->assertEquals($expected, $output);
 	}
 }
-
-?>

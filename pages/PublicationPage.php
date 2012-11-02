@@ -105,5 +105,3 @@ EOH;
 		$this->redirect(sprintf("details.php/%s,%s", $company, $pubId));
 	}
 }
-
-?>

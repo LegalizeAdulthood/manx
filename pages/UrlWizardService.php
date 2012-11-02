@@ -460,5 +460,3 @@ class UrlWizardService extends ServicePageBase
 		return false;
 	}
 }
-
-?>

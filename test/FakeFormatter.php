@@ -53,5 +53,3 @@ class FakeFormatter implements IFormatter
 		$this->renderResultsPageLastEnd = $end;
 	}
 }
-
-?>

@@ -159,5 +159,3 @@ class HtmlFormatter implements IFormatter
 		print '</tbody></table>';
 	}
 }
-
-?>

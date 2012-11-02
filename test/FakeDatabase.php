@@ -67,5 +67,3 @@ class FakeDatabase implements IDatabase
 	}
 	public $getLastInsertIdCalled, $getLastInsertIdFakeResult;
 }
-
-?>

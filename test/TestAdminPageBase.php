@@ -42,5 +42,3 @@ class TestAdminPageBase extends PHPUnit_Framework_TestCase
 		$this->assertEquals($url, $page->param('url'));
 	}
 }
-
-?>

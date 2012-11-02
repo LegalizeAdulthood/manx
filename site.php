@@ -52,5 +52,3 @@ $manx = Manx::getInstance();
 $vars = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $_POST : $_GET;
 $page = new SitePage($manx, $vars);
 $page->renderPage();
-
-?>

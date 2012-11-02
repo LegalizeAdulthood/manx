@@ -33,5 +33,3 @@ class PDODatabaseAdapter implements IDatabase
 		return $this->_pdo->lastInsertId();
 	}
 }
-
-?>

@@ -838,5 +838,3 @@ class TestDetailsPage extends PHPUnit_Framework_TestCase
 		$this->assertEquals('foo', DetailsPage::replaceNullWithEmptyStringOrTrim(" foo\t\r\n"));
 	}
 }
-
-?>

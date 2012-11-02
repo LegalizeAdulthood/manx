@@ -69,5 +69,3 @@ class User implements IUser
 		return $this->_displayName;
 	}
 }
-
-?>

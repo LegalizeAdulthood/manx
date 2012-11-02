@@ -150,5 +150,3 @@ EOH;
 		$this->redirect(sprintf("search.php?q=&cp=%d", $id));
 	}
 }
-
-?>

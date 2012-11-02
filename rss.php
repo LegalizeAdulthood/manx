@@ -8,5 +8,3 @@ $manx = Manx::getInstance();
 $dtp = new DateTimeProvider();
 $page = new RssPage($manx, $dtp);
 $page->renderPage();
-
-?>

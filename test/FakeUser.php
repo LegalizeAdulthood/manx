@@ -21,5 +21,3 @@ class FakeUser implements IUser
 		throw new Exception("userId not implemented");
 	}
 }
-
-?>

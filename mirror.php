@@ -33,5 +33,3 @@ $manx = Manx::getInstance();
 $vars = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $_POST : $_GET;
 $page = new MirrorPage($manx, $vars);
 $page->renderPage();
-
-?>

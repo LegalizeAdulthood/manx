@@ -82,5 +82,3 @@ class TestAboutPage extends PHPUnit_Framework_TestCase
 			. '<li><a href="http://www.hp.com">HP</a> <span class="warning">(Low Bandwidth)</span></li></ul>', $output);
 	}
 }
-
-?>

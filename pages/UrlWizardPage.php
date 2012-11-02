@@ -424,5 +424,3 @@ EOH;
 		return md5_file($url);
 	}
 }
-
-?>

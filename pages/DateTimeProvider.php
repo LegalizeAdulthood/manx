@@ -9,5 +9,3 @@ class DateTimeProvider implements IDateTimeProvider
 		return new DateTime();
 	}
 }
-
-?>

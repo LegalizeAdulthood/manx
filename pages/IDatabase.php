@@ -6,5 +6,3 @@ interface IDatabase
 	function execute($statement, $args);
 	function getLastInsertId();
 }
-
-?>

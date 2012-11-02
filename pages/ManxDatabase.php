@@ -702,5 +702,3 @@ class ManxDatabase implements IManxDatabase
 		return ($rows[0]['count'] > 0);
 	}
 }
-
-?>

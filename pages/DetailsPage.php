@@ -390,5 +390,3 @@ class DetailsPage extends PageBase
 		}
 	}
 }
-
-?>
