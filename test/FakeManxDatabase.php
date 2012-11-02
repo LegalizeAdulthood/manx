@@ -273,7 +273,7 @@ class FakeManxDatabase implements IManxDatabase
 	public function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes)
 	{
 		$this->notImplemented("updateCompany");
-	} 
+	}
 
 	public function getMirrors()
 	{
