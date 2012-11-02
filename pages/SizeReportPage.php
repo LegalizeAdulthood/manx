@@ -41,14 +41,12 @@ EOH;
 		{
 			if (strpos($key, 'row') === 0)
 			{
-				$update = str_replace('row', 'update', $key);
-				if (array_key_exists($update, $this->_vars) && ($this->_vars[$update] == 1))
-				{
-					list($copyId, $companyId, $pubId, $title) = explode(',', $this->_vars[$key]);
-					$size = $this->updateSizeForCopy($copyId);
-					printf('<tr><td><a href="details.php/%d,%d">%s</a></td><td>%d</td></tr>' . "\n",
-						$companyId, $pubId, $title, $size);
-				}
+				$ignore = str_replace('row', 'ignore', $key);
+				list($copyId, $companyId, $pubId, $title) = explode(',', $this->_vars[$key]);
+				$result = (array_key_exists($ignore, $this->_vars) && ($this->_vars[$ignore] == 1)) ?
+					$this->ignoreSizeForCopy($copyId) : $this->updateSizeForCopy($copyId);
+				printf('<tr><td><a href="details.php/%d,%d">%s</a></td><td>%s</td></tr>' . "\n",
+					$companyId, $pubId, $title, $result);
 			}
 		}
 		print <<<EOH
@@ -64,6 +62,12 @@ EOH;
 </p>
 
 EOH;
+	}
+
+	private function ignoreSizeForCopy($copyId)
+	{
+		$this->_manxDb->updateSizeForCopy($copyId, -1);
+		return '(ignored)';
 	}
 
 	private function updateSizeForCopy($copyId)
@@ -117,7 +121,7 @@ EOH;
 			$i = 0;
 			foreach ($rows as $row)
 			{
-				printf('<li><input type="checkbox" id="update%1$d" name="update%1$d" value="1" />' . "\n", $i);
+				printf('<li><input type="checkbox" id="ignore%1$d" name="ignore%1$d" value="1" />' . "\n", $i);
 				printf('<a href="details.php/%1$d,%2$d">%3$s</a>' . "\n",
 					$row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
 				printf('<input type="hidden" id="row%1$d" name="row%1$d" value="%2$d,%3$d,%4$d,%5$s" />' . "\n",
@@ -128,7 +132,7 @@ EOH;
 			print <<<EOH
 </ol>
 <input type="hidden" name="operation" value="repair" />
-<input type="submit" value="Repair" />
+<input type="submit" value="Ignore Checked and Repair" />
 </form>
 </div>
 

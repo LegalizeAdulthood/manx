@@ -19,6 +19,10 @@ class Company
 
 class ManxDatabase implements IManxDatabase
 {
+	/**
+	 * @param IDatabase $db
+	 * @return IManxDatabase
+	 */
 	public static function getInstanceForDatabase(IDatabase $db)
 	{
 		return new ManxDatabase($db);
