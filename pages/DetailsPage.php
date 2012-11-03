@@ -354,7 +354,13 @@ class DetailsPage extends PageBase
         }
         else
         {
-            print '<p>No copies are known to be online.  Please read the <a href="../help.php#COPIES">Help</a> before emailing the administrator.</p>';
+            print <<<EOH
+<p>No copies are known to be online.  Feel
+free to <a href="http://manx.codeplex.com/WorkItem/Create">create a bug
+report</a> on our <a href="http://manx.codeplex.com">CodePlex project</a> if
+you know of an online copy of this publication.</p>
+
+EOH;
         }
     }
 
