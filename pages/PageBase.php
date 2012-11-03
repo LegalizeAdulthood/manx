@@ -17,6 +17,7 @@ class MenuType
     const SizeReport = 10;
     const MD5Report = 11;
     const BitSavers = 12;
+    const News = 13;
 }
 
 abstract class PageBase
@@ -154,6 +155,8 @@ EOH;
 
         print '<div id="MENU">';
         $this->renderFirstMenuItem(($menu == MenuType::Search), "search.php", "Search");
+        $this->renderMenuSeparator();
+        $this->renderMenuItem(($menu == MenuType::News), "news.php", "News");
         $this->renderMenuSeparator();
         $this->renderMenuItem(($menu == MenuType::About), "about.php", "About");
         $this->renderMenuSeparator();
