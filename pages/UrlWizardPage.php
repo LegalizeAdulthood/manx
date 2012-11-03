@@ -270,25 +270,30 @@ EOH;
 
 
 EOH;
-        $this->renderTextInput('Name', 'site_name', array('maxlength' => 100,
-            'help' => 'The short, mnemonic name for the site.'));
-        $this->renderTextInput('URL', 'site_url', array('maxlength' => 200,
-            'help' => 'The main URL for the site.'));
-        $this->renderTextInput('Description', 'site_description',
-            array('maxlength' => 200,
-            'help' => 'The description for the site as used on the About page.'));
-        $this->renderTextInput('Copy Base', 'site_copy_base', array('maxlength' => 200,
-            'help' => 'The base URL for documents on the site, which may be different'
-                . ' from the site URL.'));
+        $this->renderTextInputMaxSize('Name', 'site_name', 60, 255,
+            'The short, mnemonic name for the site.');
+        $this->renderTextInputMaxSize('URL', 'site_url', 60, 255,
+            'The main URL for the site.');
+        $this->renderTextInputMaxSize('Description', 'site_description', 60, 255,
+            'The description for the site as used on the About page.');
+        $this->renderTextInputMaxSize('Copy Base', 'site_copy_base', 60, 255,
+            'The base URL for documents on the site, which may be different'
+                . ' from the site URL.');
         print <<<EOH
 <li id="site_low_field">
 <label for="site_low">Low Bandwidth?</label>
 <input type="checkbox" id="site_low" name="site_low" value="Y" />
+<img id="site_low_help_button" src="assets/help.png" width="16" height="16" />
+<div id="site_low_help" class="hidden">If checked, the site is low bandwidth.</div>
+<div id="site_low_error" class="error hidden"></div>
 </li>
 
 <li id="site_live_field">
 <label for="site_live">Live?</label>
 <input type="checkbox" id="site_live" name="site_live" value="Y" checked="checked" />
+<img id="site_live_help_button" src="assets/help.png" width="16" height="16" />
+<div id="site_live_help" class="hidden">If checked, the site is live.</div>
+<div id="site_live_error" class="error hidden"></div>
 </li>
 
 </ul>
