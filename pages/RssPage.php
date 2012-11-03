@@ -41,7 +41,7 @@ class RssPage extends PageBase
                 htmlspecialchars(trim($row['company_name']))
             ));
         $this->printTableRow('Part', $row['ph_part'] . ' ' . $row['ph_revision']);
-        $this->printTableRowFromDatabaseRow($row, 'Date', 'ph_pubdate');
+        $this->printTableRowFromDatabaseRow($row, 'Date', 'ph_pub_date');
         $this->printTableRowFromDatabaseRow($row, 'Keywords', 'ph_keywords');
         $pubId = $row['ph_pub'];
         $abstract = RssPage::replaceNullWithEmptyStringOrTrim($row['ph_abstract']);

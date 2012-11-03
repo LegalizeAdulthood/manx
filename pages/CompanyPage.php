@@ -54,7 +54,7 @@ EOH;
         $company = array(
             'id' => -1,
             'name' => '',
-            'shortname' => '',
+            'short_name' => '',
             'sort_name' => '',
             'display' => true,
             'ntoes' => '');
@@ -68,7 +68,7 @@ EOH;
     {
         $id = $company['id'];
         $name = $company['name'];
-        $shortName = $company['shortname'];
+        $shortName = $company['short_name'];
         $sortName = $company['sort_name'];
         $display = $company['display'] ? ' checked="checked"' : '';
         $notes = $company['notes'];

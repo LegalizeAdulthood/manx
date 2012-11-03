@@ -150,8 +150,8 @@ class TestHtmlFormatter extends PHPUnit_Framework_TestCase
         $formatter = HtmlFormatter::getInstance();
         $rows = FakeDatabase::createResultRowsForColumns(
             array('pub_id', 'ph_part', 'ph_title', 'pub_has_online_copies',
-                'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pubdate',
-                'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pubtype', 'tags'),
+                'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pub_date',
+                'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pub_type', 'tags'),
             array(
                 array(1, 'AA-4949A-TC', 'VT55 Programming Manual', 1, NULL, 1, 0, '1977-02', '', 1, NULL, 'D', array()),
                 array(3014, 'EK-VT55E-TM-001', "VT55-D,E,H,J DECgraphic Scope Users' Manual", 1, NULL, 1, 0, '1976-12', '', 1, NULL, 'D', array()),

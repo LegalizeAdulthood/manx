@@ -149,9 +149,13 @@ ALTER TABLE `CITEPUB` RENAME TO `cite_pub`;
 
 -- COMPANY
 ALTER TABLE `COMPANY` RENAME TO `company`;
+ALTER TABLE `company` CHANGE COLUMN `shortname`
+    `short_name` VARCHAR(50) NULL DEFAULT NULL;
 
 -- COPY
 ALTER TABLE `COPY` RENAME TO `copy`;
+ALTER TABLE `copy` CHANGE COLUMN `copyid`
+    `copy_id` INT(11) NOT NULL AUTO_INCREMENT;
 
 -- LANGUAGE
 ALTER TABLE `LANGUAGE` RENAME TO `language`;
@@ -164,6 +168,11 @@ ALTER TABLE `PUB` RENAME TO `pub`;
 
 -- PUBHISTORY
 ALTER TABLE `PUBHISTORY` RENAME TO `pub_history`;
+ALTER TABLE `pub_history`
+    CHANGE COLUMN `ph_pubtype`
+        `ph_pub_type` CHAR(1) NOT NULL DEFAULT 'D',
+    CHANGE COLUMN `ph_pubdate`
+        `ph_pub_date` VARCHAR(10) NULL DEFAULT NULL;
 
 -- PUBTAG
 ALTER TABLE `PUBTAG` RENAME TO `pub_tag`;

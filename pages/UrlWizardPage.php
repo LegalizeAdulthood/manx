@@ -60,9 +60,9 @@ class URLWizardPage extends AdminPageBase
             $languages = '+en';
             $pubId = $this->_manx->addPublication($this->_user, $company,
                 $this->param('pub_history_ph_part'),
-                $this->param('pub_history_ph_pubdate'),
+                $this->param('pub_history_ph_pub_date'),
                 $this->param('pub_history_ph_title'),
-                $this->param('pub_history_ph_pubtype'),
+                $this->param('pub_history_ph_pub_type'),
                 $this->param('pub_history_ph_alt_part'),
                 $this->param('pub_history_ph_revision'),
                 $this->param('pub_history_ph_keywords'),
@@ -358,9 +358,9 @@ EOH;
         $this->renderTextInputMaxSize('Revision', 'pub_history_ph_revision', 20, 20,
             'The revision number or letter of this publication, i.e. B');
         print <<<EOH
-<li id="pub_history_ph_pubtype_field">
-<label for="pub_history_ph_pubtype">Type</label>
-<select id="pub_history_ph_pubtype" name="pub_history_ph_pubtype">
+<li id="pub_history_ph_pub_type_field">
+<label for="pub_history_ph_pub_type">Type</label>
+<select id="pub_history_ph_pub_type" name="pub_history_ph_pub_type">
 <option value="D" selected="selected">Document</option>
 <option value="A">Amendment</option>
 </select>
@@ -368,7 +368,7 @@ EOH;
 
 
 EOH;
-        $this->renderTextInputMaxSize('Publication Date', 'pub_history_ph_pubdate', 10, 10,
+        $this->renderTextInputMaxSize('Publication Date', 'pub_history_ph_pub_date', 10, 10,
             'The date of publication, if any, i.e. 1979-02.');
         $this->renderTextInput('Abstract', 'pub_history_ph_abstract',
             array('maxlength' => 255, 'help' => 'The abstract for the publication, if any.'));

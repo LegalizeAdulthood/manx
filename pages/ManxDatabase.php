@@ -100,7 +100,7 @@ class ManxDatabase implements IManxDatabase
 
     public function getAmendmentsForPub($pubId)
     {
-        return $this->fetchAll(sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
+        return $this->fetchAll(sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pub_date` "
             . "FROM `pub` JOIN `pub_history` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=%d ORDER BY `ph_amend_serial`",
             $pubId));
     }
@@ -143,7 +143,7 @@ class ManxDatabase implements IManxDatabase
     {
         $query = sprintf("SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
                 . " FROM `copy` JOIN `mirror` ON `copy`.`site`=`mirror`.`site`"
-                . " WHERE `copyid`=%d ORDER BY `rank` DESC", $copyId);
+                . " WHERE `copy_id`=%d ORDER BY `rank` DESC", $copyId);
         $mirrors = array();
         foreach ($this->fetchAll($query) as $row)
         {
@@ -154,7 +154,7 @@ class ManxDatabase implements IManxDatabase
 
     public function getAmendedPub($pubId, $amendSerial)
     {
-        $query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pubdate`"
+        $query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pub_date`"
                 . " FROM `pub` JOIN `pub_history` ON `pub`.`pub_history`=`ph_id`"
                 . " WHERE `ph_amend_pub`=%d AND `ph_amend_serial`=%d",
             $pubId, $amendSerial);
@@ -166,7 +166,7 @@ class ManxDatabase implements IManxDatabase
         $query = sprintf("SELECT `format`,`copy`.`url`,`notes`,`size`,"
             . "`site`.`name`,`site`.`url` AS `site_url`,`site`.`description`,"
             . "`site`.`copy_base`,`site`.`low`,`copy`.`md5`,`copy`.`amend_serial`,"
-            . "`copy`.`credits`,`copyid`"
+            . "`copy`.`credits`,`copy_id`"
             . " FROM `copy`,`site`"
             . " WHERE `copy`.`site`=`site`.`siteid` AND `pub`=%d"
             . " ORDER BY `site`.`display_order`,`site`.`siteid`", $pubId);
@@ -176,7 +176,7 @@ class ManxDatabase implements IManxDatabase
     public function getDetailsForPub($pubId)
     {
         $query = sprintf('SELECT `pub_id`, `company`.`name`, '
-                . 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pubdate`, '
+                . 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pub_date`, '
                 . '`ph_title`, IFNULL(`ph_abstract`, "") AS `ph_abstract`, '
                 . 'IFNULL(`ph_revision`, "") AS `ph_revision`, `ph_ocr_file`, '
                 . '`ph_cover_image`, `ph_lang`, `ph_keywords` '
@@ -383,13 +383,13 @@ class ManxDatabase implements IManxDatabase
         $onlineClause = $online ? "`pub_has_online_copies`" : '1=1';
         $query = "SELECT `pub_id`, `ph_part`, `ph_title`,"
                 . " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
-                . " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
-                . " `ph_company`, `ph_alt_part`, `ph_pubtype`"
+                . " `pub_superseded`, `ph_pub_date`, `ph_revision`,"
+                . " `ph_company`, `ph_alt_part`, `ph_pub_type`"
             . " FROM `pub`"
             . " JOIN `pub_history` ON `pub`.`pub_history` = `ph_id`"
             . " WHERE $onlineClause $matchClause"
             . " AND `ph_company`=$company"
-            . " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
+            . " ORDER BY `ph_sort_part`, `ph_pub_date`, `pub_id`";
         return $this->fetchAll($query);
     }
 
@@ -459,7 +459,7 @@ class ManxDatabase implements IManxDatabase
         return $this->_db->execute("SELECT pub_id,ph_part,ph_title "
                 . "FROM pub JOIN pub_history ON pub_history = ph_id "
                 . "WHERE (ph_match_part LIKE ? OR ph_match_alt_part LIKE ?) AND ph_company = ? "
-                . "ORDER BY ph_sort_part, ph_pubdate LIMIT 10",
+                . "ORDER BY ph_sort_part, ph_pub_date LIMIT 10",
             array($part, $part, $company));
     }
 
@@ -470,8 +470,8 @@ class ManxDatabase implements IManxDatabase
     {
         $this->_db->execute(
             'INSERT INTO `pub_history`(`ph_created`, `ph_edited_by`, `ph_pub`, '
-                . '`ph_pubtype`, `ph_company`, `ph_part`, `ph_alt_part`, '
-                . '`ph_revision`, `ph_pubdate`, `ph_title`, `ph_keywords`, '
+                . '`ph_pub_type`, `ph_company`, `ph_part`, `ph_alt_part`, '
+                . '`ph_revision`, `ph_pub_date`, `ph_title`, `ph_keywords`, '
                 . '`ph_notes`, `ph_abstract`, `ph_lang`, '
                 . '`ph_match_part`, `ph_match_alt_part`, `ph_sort_part`) '
             . 'VALUES (now(), ?, 0, '
@@ -513,7 +513,7 @@ class ManxDatabase implements IManxDatabase
 
     function addCompany($fullName, $shortName, $sortName, $display, $notes)
     {
-        $this->_db->execute('INSERT INTO `company`(`name`,`shortname`,`sort_name`,`display`,`notes`) VALUES (?,?,?,?,?)',
+        $this->_db->execute('INSERT INTO `company`(`name`,`short_name`,`sort_name`,`display`,`notes`) VALUES (?,?,?,?,?)',
             array($fullName, $shortName, $sortName, $display ? 'Y' : 'N', $notes));
         return $this->_db->getLastInsertId();
     }
@@ -521,7 +521,7 @@ class ManxDatabase implements IManxDatabase
     function updateCompany($id, $fullName, $shortName, $sortName, $display, $notes)
     {
         $this->_db->execute("UPDATE `company` "
-                . "SET `name`=?, `shortname`=?, `sort_name`=?, `display`=?, `notes`=? "
+                . "SET `name`=?, `short_name`=?, `sort_name`=?, `display`=?, `notes`=? "
                 . "WHERE `id`=?",
             array($fullName, $shortName, $sortName, $display ? 'Y' : 'N', $notes, $id));
     }
@@ -594,8 +594,8 @@ class ManxDatabase implements IManxDatabase
     {
         return $this->execute(sprintf('SELECT `ph_pub`, `ph_company`, `ph_created`,'
             . ' `ph_title`, `company`.`name` AS `company_name`,'
-            . ' `company`.`shortname` AS `company_short_name`,'
-            . ' `ph_part`, `ph_revision`, `ph_keywords`, `ph_pubdate`,'
+            . ' `company`.`short_name` AS `company_short_name`,'
+            . ' `ph_part`, `ph_revision`, `ph_keywords`, `ph_pub_date`,'
             . ' IFNULL(`ph_abstract`, "") AS `ph_abstract`'
             . ' FROM `pub_history`, `company`'
             . ' WHERE `pub_history`.`ph_company` = `company`.`id`'
@@ -620,7 +620,7 @@ class ManxDatabase implements IManxDatabase
 
     function getZeroSizeDocuments()
     {
-        return $this->fetchAll("SELECT `copyid`,`ph_company`,`ph_pub`,`ph_title` "
+        return $this->fetchAll("SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title` "
             . "FROM `copy`,`pub_history` "
             . "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
                 . "AND (`copy`.`size` IS NULL OR `copy`.`size` = 0) "
@@ -630,26 +630,26 @@ class ManxDatabase implements IManxDatabase
 
     function getUrlForCopy($copyId)
     {
-        $rows = $this->execute("SELECT `url` FROM `copy` WHERE `copyid` = ?",
+        $rows = $this->execute("SELECT `url` FROM `copy` WHERE `copy_id` = ?",
             array($copyId));
         return $rows[0]['url'];
     }
 
     function updateSizeForCopy($copyId, $size)
     {
-        $this->execute("UPDATE `copy` SET `size` = ? WHERE `copyid` = ?",
+        $this->execute("UPDATE `copy` SET `size` = ? WHERE `copy_id` = ?",
             array($size, $copyId));
     }
 
     function updateMD5ForCopy($copyId, $md5)
     {
-        $this->execute("UPDATE `copy` SET `md5` = ? WHERE `copyid` = ?",
+        $this->execute("UPDATE `copy` SET `md5` = ? WHERE `copy_id` = ?",
             array($this->md5Value($md5), $copyId));
     }
 
     function getMissingMD5Documents()
     {
-        return $this->fetchAll("SELECT `copyid`,`ph_company`,`ph_pub`,`ph_title` "
+        return $this->fetchAll("SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title` "
             . "FROM `copy`,`pub_history` "
             . "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
             . "AND (`copy`.`md5` IS NULL) "

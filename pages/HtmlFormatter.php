@@ -115,9 +115,9 @@ class HtmlFormatter implements IFormatter
             {
                 print '<br/><small>' . htmlspecialchars($row['ph_alt_part']) . '</small>';
             }
-            print '</td><td>' . htmlspecialchars($row['ph_pubdate']) . '</td>';
+            print '</td><td>' . htmlspecialchars($row['ph_pub_date']) . '</td>';
             print '<td><a';
-            if ($row['pub_superseded'] || $row['ph_pubtype'] == 'A')
+            if ($row['pub_superseded'] || $row['ph_pub_type'] == 'A')
             {
                 print ' class="ss"';
             }
@@ -138,7 +138,7 @@ class HtmlFormatter implements IFormatter
             {
                 array_push($flags, 'Superseded');
             }
-            if ($row['ph_pubtype'] == 'A')
+            if ($row['ph_pub_type'] == 'A')
             {
                 array_push($flags, 'Amendment');
             }

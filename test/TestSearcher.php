@@ -79,11 +79,11 @@ class TestSearcher extends PHPUnit_Framework_TestCase
                 'ph_abstract' => '',
                 'pub_has_toc' => '',
                 'pub_superseded' => '',
-                'ph_pubdate' => '',
+                'ph_pub_date' => '',
                 'ph_revision' => '',
                 'ph_company' => '',
                 'ph_alt_part' => '',
-                'ph_pubtype' => '')
+                'ph_pub_type' => '')
             );
         $db->searchForPublicationsFakeResult = $rows;
         $db->getOSTagsForPubFakeResult = array('OpenVMS VAX Version 6.0');

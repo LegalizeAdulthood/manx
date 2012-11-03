@@ -38,7 +38,7 @@ class TestRssPage extends PHPUnit_Framework_TestCase
                 'company_short_name' => 'DEC',
                 'ph_part' => '0123-XXY',
                 'ph_revision' => '',
-                'ph_pubdate' => '1979-03',
+                'ph_pub_date' => '1979-03',
                 'ph_keywords' => 'foo,bar')
         );
         $manx = new FakeManx();

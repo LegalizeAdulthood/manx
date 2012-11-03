@@ -77,8 +77,8 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
             'pub_pub_id' => '-1',
             'pub_history_ph_title' => '4010 and 4010-1 Maintenance Manual',
             'pub_history_ph_revision' => 'B',
-            'pub_history_ph_pubtype' => 'D',
-            'pub_history_ph_pubdate' => '1976-04',
+            'pub_history_ph_pub_type' => 'D',
+            'pub_history_ph_pub_date' => '1976-04',
             'pub_history_ph_abstract' => 'This is the maintenance manual for Tektronix 4010 terminals.',
             'pub_history_ph_part' => '070-1183-01',
             'pub_history_ph_match_part' => '',
@@ -343,20 +343,20 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 <div id="pub_history_ph_revision_error" class="error hidden"></div>
 </li>
 
-<li id="pub_history_ph_pubtype_field">
-<label for="pub_history_ph_pubtype">Type</label>
-<select id="pub_history_ph_pubtype" name="pub_history_ph_pubtype">
+<li id="pub_history_ph_pub_type_field">
+<label for="pub_history_ph_pub_type">Type</label>
+<select id="pub_history_ph_pub_type" name="pub_history_ph_pub_type">
 <option value="D" selected="selected">Document</option>
 <option value="A">Amendment</option>
 </select>
 </li>
 
-<li id="pub_history_ph_pubdate_field">
-<label for="pub_history_ph_pubdate">Publication Date</label>
-<input type="text" id="pub_history_ph_pubdate" name="pub_history_ph_pubdate" size="10" maxlength="10" value="" />
-<img id="pub_history_ph_pubdate_help_button" src="assets/help.png" width="16" height="16" />
-<div id="pub_history_ph_pubdate_help" class="hidden">The date of publication, if any, i.e. 1979-02.</div>
-<div id="pub_history_ph_pubdate_error" class="error hidden"></div>
+<li id="pub_history_ph_pub_date_field">
+<label for="pub_history_ph_pub_date">Publication Date</label>
+<input type="text" id="pub_history_ph_pub_date" name="pub_history_ph_pub_date" size="10" maxlength="10" value="" />
+<img id="pub_history_ph_pub_date_help_button" src="assets/help.png" width="16" height="16" />
+<div id="pub_history_ph_pub_date_help" class="hidden">The date of publication, if any, i.e. 1979-02.</div>
+<div id="pub_history_ph_pub_date_error" class="error hidden"></div>
 </li>
 
 <li id="pub_history_ph_abstract_field">

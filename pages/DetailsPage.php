@@ -65,7 +65,7 @@ class DetailsPage extends PageBase
                 htmlspecialchars(trim($row['name']))
             ));
         $this->printTableRow('Part', $row['ph_part'] . ' ' . $row['ph_revision']);
-        $this->printTableRowFromDatabaseRow($row, 'Date', 'ph_pubdate');
+        $this->printTableRowFromDatabaseRow($row, 'Date', 'ph_pub_date');
         $this->printTableRowFromDatabaseRow($row, 'Keywords', 'ph_keywords');
         $this->renderLanguage($row['ph_lang']);
         $pubId = $row['pub_id'];
@@ -124,7 +124,7 @@ class DetailsPage extends PageBase
         {
             $amend = sprintf('<a href="../details.php/%d,%d"><cite>%s</cite></a>', $row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
             $amend = DetailsPage::partPrefix($row['ph_part']) . $amend;
-            $amend .= DetailsPage::formatPubDate($row['ph_pubdate']);
+            $amend .= DetailsPage::formatPubDate($row['ph_pub_date']);
             $amend .= $this->renderOSTagsForPub($pubId);
             array_push($amendments, $amend);
         }
@@ -329,13 +329,13 @@ class DetailsPage extends PageBase
                 $amend = sprintf("<a href=\"../details.php/%d,%d\"><cite>%s</cite></a>",
                     $amendRow['ph_company'], $amendRow['pub_id'], htmlspecialchars($amendRow['ph_title']));
                 $amend = DetailsPage::partPrefix($amendRow['ph_part']) . $amend;
-                $amend .= DetailsPage::formatPubDate($amendRow['ph_pubdate']);
+                $amend .= DetailsPage::formatPubDate($amendRow['ph_pub_date']);
                 $amend .= $this->renderOSTagsForPub($amendRow['pub_id']);
                 printf("<tr>\n<td>Amended to:</td>\n<td>%s</td>\n</tr>\n", $amend);
             }
 
             $mirrorCount = 0;
-            foreach ($this->_manxDb->getMirrorsForCopy($row['copyid']) as $mirror)
+            foreach ($this->_manxDb->getMirrorsForCopy($row['copy_id']) as $mirror)
             {
                 if (++$mirrorCount == 1)
                 {

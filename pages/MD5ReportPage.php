@@ -127,7 +127,7 @@ EOH;
                 printf('<a href="details.php/%1$d,%2$d">%3$s</a>' . "\n",
                     $row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
                 printf('<input type="hidden" id="row%1$d" name="row%1$d" value="%2$d,%3$d,%4$d,%5$s" />' . "\n",
-                    $i, $row['copyid'], $row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
+                    $i, $row['copy_id'], $row['ph_company'], $row['ph_pub'], htmlspecialchars($row['ph_title']));
                 print "</li>\n";
                 ++$i;
             }

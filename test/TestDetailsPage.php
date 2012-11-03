@@ -195,7 +195,7 @@ class TestDetailsPage extends PHPUnit_Framework_TestCase
         $this->createInstance();
         $pubId = 3;
         $this->_db->getAmendmentsForPubFakeResult = FakeDatabase::createResultRowsForColumns(
-            array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pubdate'),
+            array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pub_date'),
             array(array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
                 array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09')));
         $this->_db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
@@ -609,7 +609,7 @@ class TestDetailsPage extends PHPUnit_Framework_TestCase
     {
         $this->createInstance();
         $this->_db->getCopiesForPubFakeResult = FakeDatabase::createResultRowsForColumns(
-            array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copyid'),
+            array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
             array(
                 array('PDF', 'http://vt100.net/mirror/hcps/306aamg1.pdf', NULL, 49351262, 'VT100.net', 'http://vt100.net/', "Paul Williams' VT100.net", 'http://vt100.net/', 'N', NULL, NULL, NULL, 7165),
                 array('PDF', 'http://bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf', 'Missing page 4-49', 12023683, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '15a565c18a743c558203f776ee3d6d87', NULL, NULL, 9214)
@@ -723,7 +723,7 @@ class TestDetailsPage extends PHPUnit_Framework_TestCase
     {
         $this->createInstance();
         $this->_db->getCopiesForPubFakeResult = FakeDatabase::createResultRowsForColumns(
-            array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copyid'),
+            array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
             array(
                 array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, 10277)
                 ));
@@ -733,7 +733,7 @@ class TestDetailsPage extends PHPUnit_Framework_TestCase
             'http://computer-refuge.org/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
             'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf');
         $this->_db->getAmendedPubFakeResult = array('ph_company' => 57, 'pub_id' => 17971, 'ph_part' => 'AB81-14G',
-            'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pubdate' => '1984-02');
+            'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pub_date' => '1984-02');
 
         $this->startOutputCapture();
         $this->_page->renderCopies(123);
@@ -781,7 +781,7 @@ class TestDetailsPage extends PHPUnit_Framework_TestCase
         $_SERVER['PATH_INFO'] = '/1,3';
         $this->_db = new FakeManxDatabase();
         $rows = FakeDatabase::createResultRowsForColumns(
-            array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract',
+            array('pub_id', 'name', 'ph_part', 'ph_pub_date', 'ph_title', 'ph_abstract',
                 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
             array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL,
                 '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));

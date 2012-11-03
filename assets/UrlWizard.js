@@ -190,7 +190,7 @@ $(function()
         var keywords = (data.part + ' ' + data.title).trim();
         show("publication_fields");
         $("#pub_history_ph_title").val(data.title);
-        $("#pub_history_ph_pubdate").val(data.pub_date);
+        $("#pub_history_ph_pub_date").val(data.pub_date);
         $("#pub_history_ph_part").val(data.part);
 
         $("#pub_search_keywords").val(keywords);
@@ -203,7 +203,7 @@ $(function()
     {
         hide("publication_fields");
         $("#pub_history_ph_title").val('');
-        $("#pub_history_ph_pubdate").val('');
+        $("#pub_history_ph_pub_date").val('');
         $("#pub_history_ph_part").val('');
 
         $("#pub_search_keywords").val('');
@@ -417,8 +417,8 @@ $(function()
             var fn = show_or_hide("pub_pub_id");
             fn("pub_history_ph_title_field");
             fn("pub_history_ph_revision_field");
-            fn("pub_history_ph_pubtype_field");
-            fn("pub_history_ph_pubdate_field");
+            fn("pub_history_ph_pub_type_field");
+            fn("pub_history_ph_pub_date_field");
             fn("pub_history_ph_abstract_field");
             fn("pub_history_ph_part_field");
             fn("pub_history_ph_alt_part_field");

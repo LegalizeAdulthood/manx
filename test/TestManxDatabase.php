@@ -96,12 +96,12 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testGetAmendmentsForPub()
     {
         $this->createInstance();
-        $query = "SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pubdate` "
+        $query = "SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pub_date` "
             . "FROM `pub` JOIN `pub_history` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
         $pubId = 3;
         $this->configureStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
-                array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pubdate'),
+                array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pub_date'),
                 array(array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
                     array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09'))));
         $amendments = $this->_manxDb->getAmendmentsForPub($pubId);
@@ -191,7 +191,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $copyId = 7165;
         $query = "SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
                 . " FROM `copy` JOIN `mirror` ON `copy`.`site`=`mirror`.`site`"
-                . " WHERE `copyid`=7165 ORDER BY `rank` DESC";
+                . " WHERE `copy_id`=7165 ORDER BY `rank` DESC";
         $expected = array('http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
             'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
             'http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
@@ -210,11 +210,11 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->createInstance();
         $pubId = 17970;
         $amendSerial = 7;
-        $query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pubdate`"
+        $query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pub_date`"
                     . " FROM `pub` JOIN `pub_history` ON `pub`.`pub_history`=`ph_id`"
                     . " WHERE `ph_amend_pub`=%d AND `ph_amend_serial`=%d", $pubId, $amendSerial);
         $expected = array('ph_company' => 7, 'pub_id' => 57, 'ph_part' => 'AB81-14G',
-                'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pubdate' => '1984-02');
+                'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pub_date' => '1984-02');
         $this->configureStatementFetchResult($query, $expected);
         $amended = $this->_manxDb->getAmendedPub($pubId, $amendSerial);
         $this->assertQueryCalledForSql($query);
@@ -228,13 +228,13 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $query = "SELECT `format`,`copy`.`url`,`notes`,`size`,"
             . "`site`.`name`,`site`.`url` AS `site_url`,`site`.`description`,"
             . "`site`.`copy_base`,`site`.`low`,`copy`.`md5`,`copy`.`amend_serial`,"
-            . "`copy`.`credits`,`copyid`"
+            . "`copy`.`credits`,`copy_id`"
             . " FROM `copy`,`site`"
             . " WHERE `copy`.`site`=`site`.`siteid` AND `pub`=123"
             . " ORDER BY `site`.`display_order`,`site`.`siteid`";
         $this->configureStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
-            array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copyid'),
+            array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
             array(
                 array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, 10277)
                 )));
@@ -249,7 +249,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->createInstance();
         $pubId = 3;
         $query = 'SELECT `pub_id`, `company`.`name`, '
-            . 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pubdate`, '
+            . 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pub_date`, '
             . '`ph_title`, IFNULL(`ph_abstract`, "") AS `ph_abstract`, '
             . 'IFNULL(`ph_revision`, "") AS `ph_revision`, `ph_ocr_file`, '
             . '`ph_cover_image`, `ph_lang`, `ph_keywords` '
@@ -258,7 +258,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
             . 'JOIN `company` ON `ph_company`=`company`.`id` '
             . 'WHERE 1=1 AND `pub_id`=3';
         $rows = FakeDatabase::createResultRowsForColumns(
-            array('pub_id', 'name', 'ph_part', 'ph_pubdate', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
+            array('pub_id', 'name', 'ph_part', 'ph_pub_date', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
             array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
         $this->configureStatementFetchResult($query, $rows[0]);
         $details = $this->_manxDb->getDetailsForPub($pubId);
@@ -338,20 +338,20 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $rows = array(
             array('pub_id' => 1, 'ph_part' => '', 'ph_title' => '', 'pub_has_online_copies' => '',
                 'ph_abstract' => '', 'pub_has_toc' => '', 'pub_superseded' => '',
-                'ph_pubdate' => '', 'ph_revision' => '', 'ph_company' => '', 'ph_alt_part' => '',
-                'ph_pubtype' => '')
+                'ph_pub_date' => '', 'ph_revision' => '', 'ph_company' => '', 'ph_alt_part' => '',
+                'ph_pub_type' => '')
             );
         $keywords = array('graphics', 'terminal');
         $matchClause = ManxDatabase::matchClauseForSearchWords($keywords);
         $company = 1;
         $query = "SELECT `pub_id`, `ph_part`, `ph_title`,"
             . " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
-            . " `pub_superseded`, `ph_pubdate`, `ph_revision`,"
-            . " `ph_company`, `ph_alt_part`, `ph_pubtype` FROM `pub`"
+            . " `pub_superseded`, `ph_pub_date`, `ph_revision`,"
+            . " `ph_company`, `ph_alt_part`, `ph_pub_type` FROM `pub`"
             . " JOIN `pub_history` ON `pub`.`pub_history` = `ph_id`"
             . " WHERE `pub_has_online_copies` $matchClause"
             . " AND `ph_company`=$company"
-            . " ORDER BY `ph_sort_part`, `ph_pubdate`, `pub_id`";
+            . " ORDER BY `ph_sort_part`, `ph_pub_date`, `pub_id`";
         $this->configureStatementFetchAllResults($query, $rows);
         $pubs = $this->_manxDb->searchForPublications($company, $keywords, true);
         $this->assertQueryCalledForSql($query);
@@ -414,8 +414,8 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->createInstance();
         $count = 200;
         $query = sprintf('SELECT `ph_pub`, `ph_company`, `ph_created`, `ph_title`, '
-            . '`company`.`name` AS `company_name`, `company`.`shortname` AS `company_short_name`, '
-            . '`ph_part`, `ph_revision`, `ph_keywords`, `ph_pubdate`, '
+            . '`company`.`name` AS `company_name`, `company`.`short_name` AS `company_short_name`, '
+            . '`ph_part`, `ph_revision`, `ph_keywords`, `ph_pub_date`, '
             . 'IFNULL(`ph_abstract`, "") AS `ph_abstract` '
             . 'FROM `pub_history`, `company` '
             . 'WHERE `pub_history`.`ph_company` = `company`.`id` '
@@ -564,7 +564,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testGetZeroSizeDocuments()
     {
         $this->createInstance();
-        $query = "SELECT `copyid`,`ph_company`,`ph_pub`,`ph_title` "
+        $query = "SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title` "
             . "FROM `copy`,`pub_history` "
             . "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
             . "AND (`copy`.`size` IS NULL OR `copy`.`size` = 0) "
@@ -572,13 +572,13 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
             . " LIMIT 0,10";
         $this->configureStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
-                array('copyid', 'ph_company', 'ph_pub', 'ph_title'),
+                array('copy_id', 'ph_company', 'ph_pub', 'ph_title'),
                 array(array('66', '1', '2', 'IM1 Schematic'))));
         $this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
         $rows = $this->_manxDb->getZeroSizeDocuments();
         $this->assertQueryCalledForSql($query);
         $this->assertEquals(1, count($rows));
-        $this->assertEquals(66, $rows[0]['copyid']);
+        $this->assertEquals(66, $rows[0]['copy_id']);
         $this->assertEquals(1, $rows[0]['ph_company']);
         $this->assertEquals(2, $rows[0]['ph_pub']);
         $this->assertEquals('IM1 Schematic', $rows[0]['ph_title']);
@@ -587,7 +587,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testGetUrlForCopy()
     {
         $this->createInstance();
-        $query = "SELECT `url` FROM `copy` WHERE `copyid` = ?";
+        $query = "SELECT `url` FROM `copy` WHERE `copy_id` = ?";
         $url = 'http://www.example.com/foo.pdf';
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('url'),
@@ -602,7 +602,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testUpdateSizeForCopy()
     {
         $this->createInstance();
-        $query = "UPDATE `copy` SET `size` = ? WHERE `copyid` = ?";
+        $query = "UPDATE `copy` SET `size` = ? WHERE `copy_id` = ?";
         $copyId = 5;
         $size = 4096;
         $this->_manxDb->updateSizeForCopy($copyId, $size);
@@ -616,7 +616,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testUpdateMD5ForCopy()
     {
         $this->createInstance();
-        $query = "UPDATE `copy` SET `md5` = ? WHERE `copyid` = ?";
+        $query = "UPDATE `copy` SET `md5` = ? WHERE `copy_id` = ?";
         $copyId = 5;
         $md5 = 'e7e98fb955892f73507d7b3a1874f9ee';
         $this->_manxDb->updateMD5ForCopy($copyId, $md5);
@@ -630,7 +630,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testGetMissingMD5Documents()
     {
         $this->createInstance();
-        $query = "SELECT `copyid`,`ph_company`,`ph_pub`,`ph_title` "
+        $query = "SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title` "
             . "FROM `copy`,`pub_history` "
             . "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
             . "AND (`copy`.`md5` IS NULL) "
@@ -638,13 +638,13 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
             . " LIMIT 0,10";
         $this->configureStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
-                array('copyid', 'ph_company', 'ph_pub', 'ph_title'),
+                array('copy_id', 'ph_company', 'ph_pub', 'ph_title'),
                 array(array('66', '1', '2', 'IM1 Schematic'))));
         $this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
         $rows = $this->_manxDb->getMissingMD5Documents();
         $this->assertQueryCalledForSql($query);
         $this->assertEquals(1, count($rows));
-        $this->assertEquals(66, $rows[0]['copyid']);
+        $this->assertEquals(66, $rows[0]['copy_id']);
         $this->assertEquals(1, $rows[0]['ph_company']);
         $this->assertEquals(2, $rows[0]['ph_pub']);
         $this->assertEquals('IM1 Schematic', $rows[0]['ph_title']);
@@ -779,8 +779,8 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals(1, count($this->_db->executeLastStatements));
         $this->assertEquals('INSERT INTO `pub_history`(`ph_created`, `ph_edited_by`, `ph_pub`, '
-                . '`ph_pubtype`, `ph_company`, `ph_part`, `ph_alt_part`, '
-                . '`ph_revision`, `ph_pubdate`, `ph_title`, `ph_keywords`, '
+                . '`ph_pub_type`, `ph_company`, `ph_part`, `ph_alt_part`, '
+                . '`ph_revision`, `ph_pub_date`, `ph_title`, `ph_keywords`, '
                 . '`ph_notes`, `ph_abstract`, `ph_lang`, '
                 . '`ph_match_part`, `ph_match_alt_part`, `ph_sort_part`) '
                 . 'VALUES (now(), ?, 0, '
@@ -789,16 +789,16 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
                 . '?, ?, ?, '
                 . '?, ?, ?)',
             $this->_db->executeLastStatements[0]);
-        list($ph_edited_by, $ph_pubtype, $ph_company,
-            $ph_part, $ph_alt_part, $ph_revision, $ph_pubdate, $ph_title,
+        list($ph_edited_by, $ph_pub_type, $ph_company,
+            $ph_part, $ph_alt_part, $ph_revision, $ph_pub_date, $ph_title,
             $ph_keywords, $ph_notes, $ph_abstract, $ph_lang) = $this->_db->executeLastArgs[0];
         $this->assertEquals($user, $ph_edited_by);
-        $this->assertEquals($publicationType, $ph_pubtype);
+        $this->assertEquals($publicationType, $ph_pub_type);
         $this->assertEquals($company, $ph_company);
         $this->assertEquals($part, $ph_part);
         $this->assertEquals($altPart, $ph_alt_part);
         $this->assertEquals($revision, $ph_revision);
-        $this->assertEquals($pubDate, $ph_pubdate);
+        $this->assertEquals($pubDate, $ph_pub_date);
         $this->assertEquals($title, $ph_title);
         $this->assertEquals($keywords, $ph_keywords);
         $this->assertEquals($notes, $ph_notes);
