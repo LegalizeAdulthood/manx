@@ -414,7 +414,8 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->createInstance();
         $count = 200;
         $query = sprintf('SELECT `ph_pub`, `ph_company`, `ph_created`, `ph_title`, '
-            . '`company`.`name` AS `company_name`, `ph_part`, `ph_revision`, `ph_keywords`, `ph_pubdate`, '
+            . '`company`.`name` AS `company_name`, `company`.`shortname` AS `company_short_name`, '
+            . '`ph_part`, `ph_revision`, `ph_keywords`, `ph_pubdate`, '
             . 'IFNULL(`ph_abstract`, "") AS `ph_abstract` '
             . 'FROM `pub_history`, `company` '
             . 'WHERE `pub_history`.`ph_company` = `company`.`id` '

@@ -593,6 +593,7 @@ class ManxDatabase implements IManxDatabase
     {
         return $this->execute(sprintf('SELECT `ph_pub`, `ph_company`, `ph_created`,'
             . ' `ph_title`, `company`.`name` AS `company_name`,'
+            . ' `company`.`shortname` AS `company_short_name`,'
             . ' `ph_part`, `ph_revision`, `ph_keywords`, `ph_pubdate`,'
             . ' IFNULL(`ph_abstract`, "") AS `ph_abstract`'
             . ' FROM `pub_history`, `company`'

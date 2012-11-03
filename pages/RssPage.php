@@ -24,7 +24,7 @@ class RssPage extends PageBase
             $this->_rss->item($pub['ph_title'], $link, $description,
                 array(
                     'pubDate' => $pubDate->format(DateTime::RFC1123),
-                    'category' => $pub['company_name']
+                    'category' => $pub['company_short_name']
                 ));
         }
     }
