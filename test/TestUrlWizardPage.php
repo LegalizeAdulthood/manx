@@ -361,7 +361,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 
 <li id="pub_history_ph_abstract_field">
 <label for="pub_history_ph_abstract">Abstract</label>
-<input type="text" id="pub_history_ph_abstract" name="pub_history_ph_abstract" maxlength="255" value="" />
+<input type="text" id="pub_history_ph_abstract" name="pub_history_ph_abstract" size="60" maxlength="2048" value="" />
 <img id="pub_history_ph_abstract_help_button" src="assets/help.png" width="16" height="16" />
 <div id="pub_history_ph_abstract_help" class="hidden">The abstract for the publication, if any.</div>
 <div id="pub_history_ph_abstract_error" class="error hidden"></div>

@@ -172,7 +172,9 @@ ALTER TABLE `pub_history`
     CHANGE COLUMN `ph_pubtype`
         `ph_pub_type` CHAR(1) NOT NULL DEFAULT 'D',
     CHANGE COLUMN `ph_pubdate`
-        `ph_pub_date` VARCHAR(10) NULL DEFAULT NULL;
+        `ph_pub_date` VARCHAR(10) NULL DEFAULT NULL,
+    CHANGE COLUMN `ph_abstract`
+        `ph_abstract` VARCHAR(2048) NULL DEFAULT NULL;
 
 -- PUBTAG
 ALTER TABLE `PUBTAG` RENAME TO `pub_tag`;

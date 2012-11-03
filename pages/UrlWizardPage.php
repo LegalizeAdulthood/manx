@@ -370,8 +370,8 @@ EOH;
 EOH;
         $this->renderTextInputMaxSize('Publication Date', 'pub_history_ph_pub_date', 10, 10,
             'The date of publication, if any, i.e. 1979-02.');
-        $this->renderTextInput('Abstract', 'pub_history_ph_abstract',
-            array('maxlength' => 255, 'help' => 'The abstract for the publication, if any.'));
+        $this->renderTextInputMaxSize('Abstract', 'pub_history_ph_abstract', 60, 2048,
+            'The abstract for the publication, if any.');
         $this->renderTextInput('Part #', 'pub_history_ph_part',
             array('maxlength' => 50, 'help' => 'The part number for this publication, if any.'));
         $this->renderTextInput('Alternative Part #', 'pub_history_ph_alt_part',
