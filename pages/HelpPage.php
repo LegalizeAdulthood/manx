@@ -4,11 +4,6 @@ require_once 'PageBase.php';
 
 class HelpPage extends PageBase
 {
-    public function __construct($manx)
-    {
-        parent::__construct($manx);
-    }
-
     protected function getMenuType()
     {
         return MenuType::Help;
