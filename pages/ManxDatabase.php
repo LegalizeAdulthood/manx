@@ -72,7 +72,7 @@ class ManxDatabase implements IManxDatabase
 
     public function getSiteList()
     {
-        return $this->fetchAll("SELECT `url`,`description`,`low` FROM `site` WHERE `live`='Y' ORDER BY `siteid`");
+        return $this->fetchAll("SELECT `url`,`description`,`low` FROM `site` WHERE `live`='Y' ORDER BY `site_id`");
     }
 
     public function getCompanyList()
@@ -168,8 +168,8 @@ class ManxDatabase implements IManxDatabase
             . "`site`.`copy_base`,`site`.`low`,`copy`.`md5`,`copy`.`amend_serial`,"
             . "`copy`.`credits`,`copy_id`"
             . " FROM `copy`,`site`"
-            . " WHERE `copy`.`site`=`site`.`siteid` AND `pub`=%d"
-            . " ORDER BY `site`.`display_order`,`site`.`siteid`", $pubId);
+            . " WHERE `copy`.`site`=`site`.`site_id` AND `pub`=%d"
+            . " ORDER BY `site`.`display_order`,`site`.`site_id`", $pubId);
         return $this->fetchAll($query);
     }
 

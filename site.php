@@ -36,7 +36,7 @@ class SitePage extends AdminPageBase
                     . "<td>%s</td>"
                     . "<td align=\"center\">%d</td>"
                     . "</tr>\n",
-                $site['siteid'], $site['name'], $site['url'], $site['description'],
+                $site['site_id'], $site['name'], $site['url'], $site['description'],
                 $site['copy_base'], $site['low'], $site['live'], $site['display_order']);
         }
         print "</table>\n";

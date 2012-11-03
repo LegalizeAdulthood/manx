@@ -46,7 +46,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testGetSiteList()
     {
         $this->createInstance();
-        $query = "SELECT `url`,`description`,`low` FROM `site` WHERE `live`='Y' ORDER BY `siteid`";
+        $query = "SELECT `url`,`description`,`low` FROM `site` WHERE `live`='Y' ORDER BY `site_id`";
         $this->configureStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
                 array('url', 'description', 'low'),
@@ -230,8 +230,8 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
             . "`site`.`copy_base`,`site`.`low`,`copy`.`md5`,`copy`.`amend_serial`,"
             . "`copy`.`credits`,`copy_id`"
             . " FROM `copy`,`site`"
-            . " WHERE `copy`.`site`=`site`.`siteid` AND `pub`=123"
-            . " ORDER BY `site`.`display_order`,`site`.`siteid`";
+            . " WHERE `copy`.`site`=`site`.`site_id` AND `pub`=123"
+            . " ORDER BY `site`.`display_order`,`site`.`site_id`";
         $this->configureStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
             array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),

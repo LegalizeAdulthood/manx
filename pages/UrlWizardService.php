@@ -91,8 +91,8 @@ class UrlWizardService extends ServicePageBase
 
     private function siteIsBitSavers($data)
     {
-        return array_key_exists('siteid', $data['site'])
-            && $data['site']['siteid'] == Site::BitSavers;
+        return array_key_exists('site_id', $data['site'])
+            && $data['site']['site_id'] == Site::BitSavers;
     }
 
     private function determineUrlData(&$data)
@@ -166,7 +166,7 @@ class UrlWizardService extends ServicePageBase
         {
             foreach ($this->_sites as $site)
             {
-                if ($site['siteid'] == $id)
+                if ($site['site_id'] == $id)
                 {
                     return $site;
                 }

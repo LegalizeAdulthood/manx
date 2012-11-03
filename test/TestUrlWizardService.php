@@ -159,7 +159,7 @@ class TestUrlWizardServiceProcessRequest extends TestUrlWizardService
     {
         return self::databaseRowFromDictionary(
             array(
-                'siteid' => '3',
+                'site_id' => '3',
                 'name' => 'bitsavers',
                 'url' => 'http://bitsavers.org/',
                 'description' => "Al Kossow's Bitsavers",

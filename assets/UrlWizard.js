@@ -85,7 +85,7 @@ $(function()
             $("#copy_link").attr('href', data.url);
         }
         show("copy_site_field");
-        $("#copy_site").val(data.site.siteid);
+        $("#copy_site").val(data.site.site_id);
         show("copy_format_field");
         $("#copy_format").val(data.format);
         $("#copy_size").val(data.size);

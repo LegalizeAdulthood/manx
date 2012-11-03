@@ -234,7 +234,7 @@ EOH;
 
         foreach ($this->_db->getSites() as $site)
         {
-            printf("<option value=\"%d\">%s</option>\n", $site['siteid'], $site['url']);
+            printf("<option value=\"%d\">%s</option>\n", $site['site_id'], $site['url']);
         }
         print <<<EOH
 </select>
