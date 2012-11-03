@@ -110,6 +110,14 @@ $(function()
         copy_url.data('pub_id', json.pub_id);
         copy_url.data('title', json.title);
     };
+    var reset_exists = function()
+    {
+        var copy_url = $("#copy_url");
+        copy_url.removeData('exists');
+        copy_url.removeData('company');
+        copy_url.removeData('pub_id');
+        copy_url.removeData('title');
+    }
     var validate_copy_exists = function()
     {
         var copy_url = $("#copy_url");
@@ -361,6 +369,7 @@ $(function()
                         }
                         else
                         {
+                            reset_exists();
                             set_copy(json);
                             set_bitsavers(json);
                             show_or_hide("copy_site")("site_fields");
