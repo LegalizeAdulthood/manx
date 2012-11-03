@@ -237,6 +237,6 @@ EOH;
             . "<tr><td>&nbsp;</td></tr>\n"
             . "<tr><td class=\"version\" align=\"right\">version %s</td></tr>\n"
             . "</table></div>\n",
-            MANX_VERSION);
+            $this->_manxDb->getManxVersion());
     }
 }

@@ -39,9 +39,9 @@ CREATE TABLE IF NOT EXISTS `bitsavers_unknown` (
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Schema version 2
+-- Manx version 2.0.3
 --
-INSERT INTO `properties` (`name`,`value`) VALUES ('version', '2');
+INSERT INTO `properties` (`name`,`value`) VALUES ('version', '2.0.3');
 
 --
 -- BitSavers directories
