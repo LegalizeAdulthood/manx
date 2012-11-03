@@ -10,6 +10,12 @@ body
     color: #fff;
     padding: 0.3em
 }
+
+#AUTH .version
+{
+    font-size: small;
+}
+
 .field
 {
     margin: 0.5em 1em

@@ -235,7 +235,7 @@ EOH;
         }
         printf("</tr>\n"
             . "<tr><td>&nbsp;</td></tr>\n"
-            . "<tr><td align=\"right\">Version %s</td></tr>\n"
+            . "<tr><td class=\"version\" align=\"right\">version %s</td></tr>\n"
             . "</table></div>\n",
             MANX_VERSION);
     }
