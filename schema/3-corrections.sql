@@ -7614,7 +7614,7 @@ BEGIN
         'N',
         'Y'
     );
-    SELECT `siteid` FROM `site` WHERE `name` = `site_name` INTO `new_site_id`;
+    SELECT `site_id` FROM `site` WHERE `name` = `site_name` INTO `new_site_id`;
     UPDATE `copy`
         SET `url` = REPLACE(`url`, `old_copy_base`, `site_copy_base`),
             `site` = `new_site_id`
@@ -7651,22 +7651,14 @@ CALL `manx_site_migrater`('hcps',
 DROP PROCEDURE `manx_site_migrater`;
 
 --
--- Update Howard M. Harte's mirror that used to be on vt100.net
---
-UPDATE `site`
-    SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte', 'http://manx.classiccmp.org/mirror/harte'),
-        `description` = REPLACE(`description`, 'VT100.net', 'manx.classiccmp.org')
-    WHERE `siteid` = 49;
-UPDATE `copy`
-    SET `url` = REPLACE(`url`, 'http://vt100.net/mirror/harte/', 'http://manx.classiccmp.org/mirror/harte/')
-    WHERE `site` = 49;
-
---
--- Add bitsavers mirrors for Wilbur Williams' Computer Museum
+-- Add bitsavers mirrors for Wilber Williams' Computer Museum and...
+-- ...delete copies at broken bitsavers mirror urls.
 --
 INSERT INTO `mirror`(`site`, `original_stem`, `copy_stem`, `rank`)
 SELECT 2, 'http://www.computer.museum.uq.edu.au/', CONCAT(`copy_stem`, 'www.computer.museum.uq.edu.au/'), `rank`
 FROM `mirror` WHERE `site` = 3;
+DELETE FROM `copy`
+WHERE `url` LIKE 'http://bitsavers.org/pdf/dec/www.computer.museum.uq.edu.au_mirror%';
 
 --
 -- Add manx mirror for vt100.net content
@@ -7711,10 +7703,13 @@ UPDATE `copy`
     WHERE `url` = 'ftp://ftp.compaq.com/pub/products/software/alpha-tools/documentation/current/alpha-archt/alpha-architecture.pdf';
 
 --
--- fix bitsavers mirror urls of Wilber Williams' computer museum
+-- Add manx.classiccmp.org/mirror/harte as a real mirror...
+-- ...and remove copies manually duplicated copies and fake mirror site
 --
 
-DELETE FROM `copy`
-WHERE `url` LIKE 'http://bitsavers.org/pdf/dec/www.computer.museum.uq.edu.au_mirror%';
+INSERT INTO `mirror`(`site`, `original_stem`, `copy_stem`, `rank`)
+VALUES (43, 'http://www.hartetechnologies.com/manuals/', 'http://manx.classiccmp.org/mirror/harte/', 1);
+DELETE FROM `copy` WHERE `site` = 49;
+DELETE FROM `site` WHERE `site_id` = 49;
 
 COMMIT;
