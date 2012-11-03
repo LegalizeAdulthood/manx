@@ -213,7 +213,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 
 <li id="site_name_field">
 <label for="site_name">Name</label>
-<input type="text" id="site_name" name="site_name" maxlength="100" value="" />
+<input type="text" id="site_name" name="site_name" size="60" maxlength="100" value="" />
 <img id="site_name_help_button" src="assets/help.png" width="16" height="16" />
 <div id="site_name_help" class="hidden">The short, mnemonic name for the site.</div>
 <div id="site_name_error" class="error hidden"></div>
@@ -221,7 +221,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 
 <li id="site_url_field">
 <label for="site_url">URL</label>
-<input type="text" id="site_url" name="site_url" maxlength="200" value="" />
+<input type="text" id="site_url" name="site_url" size="60" maxlength="200" value="" />
 <img id="site_url_help_button" src="assets/help.png" width="16" height="16" />
 <div id="site_url_help" class="hidden">The main URL for the site.</div>
 <div id="site_url_error" class="error hidden"></div>
@@ -229,7 +229,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 
 <li id="site_description_field">
 <label for="site_description">Description</label>
-<input type="text" id="site_description" name="site_description" maxlength="200" value="" />
+<input type="text" id="site_description" name="site_description" size="60" maxlength="200" value="" />
 <img id="site_description_help_button" src="assets/help.png" width="16" height="16" />
 <div id="site_description_help" class="hidden">The description for the site as used on the About page.</div>
 <div id="site_description_error" class="error hidden"></div>
@@ -237,7 +237,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 
 <li id="site_copy_base_field">
 <label for="site_copy_base">Copy Base</label>
-<input type="text" id="site_copy_base" name="site_copy_base" maxlength="200" value="" />
+<input type="text" id="site_copy_base" name="site_copy_base" size="60" maxlength="200" value="" />
 <img id="site_copy_base_help_button" src="assets/help.png" width="16" height="16" />
 <div id="site_copy_base_help" class="hidden">The base URL for documents on the site, which may be different from the site URL.</div>
 <div id="site_copy_base_error" class="error hidden"></div>
@@ -246,11 +246,17 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 <li id="site_low_field">
 <label for="site_low">Low Bandwidth?</label>
 <input type="checkbox" id="site_low" name="site_low" value="Y" />
+<img id="site_low_help_button" src="assets/help.png" width="16" height="16" />
+<div id="site_low_help" class="hidden">If checked, the site is low bandwidth.</div>
+<div id="site_low_error" class="error hidden"></div>
 </li>
 
 <li id="site_live_field">
 <label for="site_live">Live?</label>
 <input type="checkbox" id="site_live" name="site_live" value="Y" checked="checked" />
+<img id="site_live_help_button" src="assets/help.png" width="16" height="16" />
+<div id="site_live_help" class="hidden">If checked, the site is live.</div>
+<div id="site_live_error" class="error hidden"></div>
 </li>
 
 </ul>

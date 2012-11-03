@@ -270,13 +270,13 @@ EOH;
 
 
 EOH;
-        $this->renderTextInputMaxSize('Name', 'site_name', 60, 255,
+        $this->renderTextInputMaxSize('Name', 'site_name', 60, 100,
             'The short, mnemonic name for the site.');
-        $this->renderTextInputMaxSize('URL', 'site_url', 60, 255,
+        $this->renderTextInputMaxSize('URL', 'site_url', 60, 200,
             'The main URL for the site.');
-        $this->renderTextInputMaxSize('Description', 'site_description', 60, 255,
+        $this->renderTextInputMaxSize('Description', 'site_description', 60, 200,
             'The description for the site as used on the About page.');
-        $this->renderTextInputMaxSize('Copy Base', 'site_copy_base', 60, 255,
+        $this->renderTextInputMaxSize('Copy Base', 'site_copy_base', 60, 200,
             'The base URL for documents on the site, which may be different'
                 . ' from the site URL.');
         print <<<EOH
