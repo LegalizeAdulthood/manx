@@ -1,5 +1,7 @@
 <?php
 
+define('MANX_VERSION', '2.0.3');
+
 interface IManx
 {
     public function getDatabase();

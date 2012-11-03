@@ -224,7 +224,7 @@ EOH;
     protected function renderAuthorization()
     {
         $user = User::getInstanceFromSession($this->_manxDb);
-        print '<div id="AUTH">' . $user->displayName() . ' | ';
+        print "<div id=\"AUTH\"><table>\n<tr><td>" . $user->displayName() . ' | ';
         if ($user->isLoggedIn())
         {
             $this->renderLogoutLink();
@@ -233,6 +233,10 @@ EOH;
         {
             $this->renderLoginLink($_SERVER);
         }
-        print "</div>\n";
+        printf("</tr>\n"
+            . "<tr><td>&nbsp;</td></tr>\n"
+            . "<tr><td align=\"right\">Version %s</td></tr>\n"
+            . "</table></div>\n",
+            MANX_VERSION);
     }
 }
