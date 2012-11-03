@@ -13,9 +13,11 @@ class AboutPage extends PageBase
     {
         print <<<EOH
 <h1>About Manx</h1>
+
 <p>Manx is a catalog of manuals for old computers.
-Manx is an open source project <a href="http://manx.codeplex.com">hosted
-on CodePlex</a>.</p>
+Manx is an <a href="http://manx.codeplex.com">open source project</a> hosted
+on <a href="http://www.codeplex.com">CodePlex</a>.</p>
+
 <p>Many of these manuals can't be found by search engines because the
 manuals have been scanned but haven't been converted to text.  Google
 can index deep into these scanned documents because they will OCR scanned
@@ -29,12 +31,11 @@ and keywords of these manuals.</p>
 mainframes, or associated devices such as terminals and printers.
 Tiziano's <a href="http://1000bit.net/">1000 BiT</a> is the best
 catalogue for microcomputers.</p>
-EOH;
 
+EOH;
         print "<p><strong>Manx</strong> currently knows about ";
         $this->renderDocumentSummary();
         print ".</p>\n";
-
         print "<p>Manx covers the following companies:\n";
         $this->renderCompanyList();
         print <<<EOH
@@ -48,10 +49,7 @@ a work item</a> for the Data component. Even if a site only contains
 one manual, it is worth including. This list is ordered by date of
 inclusion in Manx.</p>
 EOH;
-
         $this->renderSiteList();
-        $version = $this->_manxDb->getManxVersion();
-
         print <<<EOH
 <p>Some of these sites are marked as being Low Bandwidth. They are either on
 a home DSL line, or the owner has indicated that they should not be mirrored
@@ -64,11 +62,12 @@ entered all the initial data.  Thank you, Paul!</p>
 
 <p>Jay West provides hosting services for Manx.  Thank you, Jay!</p>
 
-<p>Richard Thomson rewrote manx in PHP when Paul
-Williams took his implementation offline.  Richard is the current
-maintainer of the code.</p>
+<p><a href="http://www.jetbrains.com">JetBrains</a> donated a license of the
+<a href="http://www.jetbrains.com/phpstorm/">PHPStorm PHP development environment</a>
+for use in developing this code.  Thank you, JetBrains!</p>
 
-<p>This is version ${version}.</p>
+<p>Richard Thomson rewrote manx in PHP when Paul Williams took his
+implementation offline.  Richard is the current maintainer of the code.</p>
 EOH;
     }
 
