@@ -245,7 +245,8 @@ class FakeManxDatabase implements IManxDatabase
         $getPublicationsForPartNumberFakeResult;
 
     public function addPubHistory($userId, $publicationType, $company, $part,
-        $altpart, $revision, $pubDate, $title, $keywords, $notes, $languages)
+        $altPart, $revision, $pubDate, $title, $keywords, $notes, $abstract,
+        $languages)
     {
         $this->notImplemented("addPubHistory");
     }

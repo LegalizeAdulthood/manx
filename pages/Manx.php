@@ -70,11 +70,12 @@ class Manx implements IManx
     }
 
     public function addPublication($user, $company, $part, $pubDate, $title,
-        $publicationType, $altPart, $revision, $keywords, $notes, $languages)
+        $publicationType, $altPart, $revision, $keywords, $notes, $abstract,
+        $languages)
     {
         $pubHistoryId = $this->_manxDb->addPubHistory($user->userId(),
             $publicationType, $company, $part, $altPart, $revision, $pubDate,
-            $title, $keywords, $notes, $languages);
+            $title, $keywords, $notes, $abstract, $languages);
         $pubId = $this->_manxDb->addPublication($pubHistoryId);
         $this->_manxDb->updatePubHistoryPubId($pubHistoryId, $pubId);
         return $pubId;

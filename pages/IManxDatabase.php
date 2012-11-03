@@ -25,7 +25,8 @@ interface IManxDatabase
     function getUserFromSessionId($sessionId);
     function getPublicationsForPartNumber($part, $company);
     function addPubHistory($userId, $publicationType, $company, $part,
-        $altpart, $revision, $pubDate, $title, $keywords, $notes, $languages);
+        $altPart, $revision, $pubDate, $title, $keywords, $notes, $abstract,
+        $languages);
     function addPublication($pubHistoryId);
     function updatePubHistoryPubId($pubHistoryId, $pubId);
     function getCompanyForId($id);

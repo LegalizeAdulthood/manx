@@ -79,7 +79,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
             'pub_history_ph_revision' => 'B',
             'pub_history_ph_pubtype' => 'D',
             'pub_history_ph_pubdate' => '1976-04',
-            'pub_history_ph_abstract' => '',
+            'pub_history_ph_abstract' => 'This is the maintenance manual for Tektronix 4010 terminals.',
             'pub_history_ph_part' => '070-1183-01',
             'pub_history_ph_match_part' => '',
             'pub_history_ph_sort_part' => '',
@@ -105,6 +105,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_manx->addPublicationCalled);
         $this->assertEquals($vars['pub_history_ph_title'], $this->_manx->addPublicationLastTitle);
         $this->assertEquals($vars['pub_history_ph_keywords'], $this->_manx->addPublicationLastKeywords);
+        $this->assertEquals($vars['pub_history_ph_abstract'], $this->_manx->addPublicationLastAbstract);
         $this->assertTrue($db->addSupersessionCalled);
         $this->assertEquals(5634, $db->addSupersessionLastOldPub);
         $this->assertEquals(19690, $db->addSupersessionLastNewPub);

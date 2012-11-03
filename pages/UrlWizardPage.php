@@ -67,6 +67,7 @@ class URLWizardPage extends AdminPageBase
                 $this->param('pub_history_ph_revision'),
                 $this->param('pub_history_ph_keywords'),
                 $this->param('pub_history_ph_notes'),
+                $this->param('pub_history_ph_abstract'),
                 $languages);
         }
         return $pubId;

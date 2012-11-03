@@ -465,23 +465,24 @@ class ManxDatabase implements IManxDatabase
 
     // Add pub_history row, with ph_pub = 0
     function addPubHistory($userId, $publicationType, $company, $part,
-        $altPart, $revision, $pubDate, $title, $keywords, $notes, $languages)
+        $altPart, $revision, $pubDate, $title, $keywords, $notes, $abstract,
+        $languages)
     {
         $this->_db->execute(
             'INSERT INTO `pub_history`(`ph_created`, `ph_edited_by`, `ph_pub`, '
                 . '`ph_pubtype`, `ph_company`, `ph_part`, `ph_alt_part`, '
                 . '`ph_revision`, `ph_pubdate`, `ph_title`, `ph_keywords`, '
-                . '`ph_notes`, `ph_lang`, '
+                . '`ph_notes`, `ph_abstract`, `ph_lang`, '
                 . '`ph_match_part`, `ph_match_alt_part`, `ph_sort_part`) '
             . 'VALUES (now(), ?, 0, '
                 . '?, ?, ?, ?, '
                 . '?, ?, ?, ?, '
-                . '?, ?, '
+                . '?, ?, ?, '
                 . '?, ?, ?)',
             array($userId,
                 $publicationType, $company, $part, $altPart,
                 $revision, $pubDate, $title, $keywords,
-                $notes, $languages,
+                $notes, $abstract, $languages,
                 ManxDatabase::normalizePartNumber($part),
                     ManxDatabase::normalizePartNumber($altPart),
                     ManxDatabase::sortPartNumber($company, $part)

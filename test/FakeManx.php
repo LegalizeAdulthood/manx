@@ -27,7 +27,8 @@ class FakeManx implements IManx
     public $getUserFromSessionFakeResult;
 
     public function addPublication($user, $company, $part, $pubDate, $title,
-        $publicationType, $altPart, $revision, $keywords, $notes, $languages)
+        $publicationType, $altPart, $revision, $keywords, $notes, $abstract,
+        $languages)
     {
         $this->addPublicationCalled = true;
         $this->addPublicationLastUser = $user;
@@ -40,6 +41,7 @@ class FakeManx implements IManx
         $this->addPublicationLastRevision = $revision;
         $this->addPublicationLastKeywords = $keywords;
         $this->addPublicationLastNotes = $notes;
+        $this->addPublicationLastAbstract = $abstract;
         $this->addPublicationLastLanguages = $languages;
         return $this->addPublicationFakeResult;
     }
@@ -49,7 +51,7 @@ class FakeManx implements IManx
         $addPublicationLastTitle, $addPublicationLastPublicationType,
         $addPublicationLastAltPart, $addPublicationLastRevision,
         $addPublicationLastKeywords, $addPublicationLastNotes,
-        $addPublicationLastLanguages;
+        $addPublicationLastLanguages, $addPublicationLastAbstract;
     public $addPublicationFakeResult;
 
     public function getSites()

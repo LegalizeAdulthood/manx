@@ -7,5 +7,6 @@ interface IManx
     public function logout();
     public function getUserFromSession();
     public function addPublication($user, $company, $part, $pubDate, $title,
-        $publicationType, $altPart, $revision, $keywords, $notes, $languages);
+        $publicationType, $altPart, $revision, $keywords, $notes, $abstract,
+        $languages);
 }

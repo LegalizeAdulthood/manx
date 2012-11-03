@@ -758,6 +758,54 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertFalse($ignored);
     }
 
+    public function testAddPubHistory()
+    {
+        $this->createInstance();
+        $user = 2;
+        $publicationType = '';
+        $company = 10;
+        $part = '070-10-1100';
+        $altPart = '070-10-1101';
+        $revision = '';
+        $pubDate = '1976-10-31';
+        $title = 'Maintenance manual for the Frobnicator';
+        $keywords = 'frobnicator';
+        $notes = 'Only manual known to exist.';
+        $abstract = 'This manual contains maintenance procedures for the frobnicator.';
+        $languages = '+en';
+        $this->_manxDb->addPubHistory($user, $publicationType, $company,
+            $part, $altPart, $revision, $pubDate, $title,
+            $keywords, $notes, $abstract, $languages);
+        $this->assertTrue($this->_db->executeCalled);
+        $this->assertEquals(1, count($this->_db->executeLastStatements));
+        $this->assertEquals('INSERT INTO `pub_history`(`ph_created`, `ph_edited_by`, `ph_pub`, '
+                . '`ph_pubtype`, `ph_company`, `ph_part`, `ph_alt_part`, '
+                . '`ph_revision`, `ph_pubdate`, `ph_title`, `ph_keywords`, '
+                . '`ph_notes`, `ph_abstract`, `ph_lang`, '
+                . '`ph_match_part`, `ph_match_alt_part`, `ph_sort_part`) '
+                . 'VALUES (now(), ?, 0, '
+                . '?, ?, ?, ?, '
+                . '?, ?, ?, ?, '
+                . '?, ?, ?, '
+                . '?, ?, ?)',
+            $this->_db->executeLastStatements[0]);
+        list($ph_edited_by, $ph_pubtype, $ph_company,
+            $ph_part, $ph_alt_part, $ph_revision, $ph_pubdate, $ph_title,
+            $ph_keywords, $ph_notes, $ph_abstract, $ph_lang) = $this->_db->executeLastArgs[0];
+        $this->assertEquals($user, $ph_edited_by);
+        $this->assertEquals($publicationType, $ph_pubtype);
+        $this->assertEquals($company, $ph_company);
+        $this->assertEquals($part, $ph_part);
+        $this->assertEquals($altPart, $ph_alt_part);
+        $this->assertEquals($revision, $ph_revision);
+        $this->assertEquals($pubDate, $ph_pubdate);
+        $this->assertEquals($title, $ph_title);
+        $this->assertEquals($keywords, $ph_keywords);
+        $this->assertEquals($notes, $ph_notes);
+        $this->assertEquals($abstract, $ph_abstract);
+        $this->assertEquals($languages, $ph_lang);
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");
