@@ -178,16 +178,30 @@ EOH;
 <input type="text" id="$id" name="$id"$width$maxLength$readOnly value="" />
 
 EOH;
-        if (array_key_exists('help', $options))
+        $hasHelp = array_key_exists('help', $options);
+        if ($hasHelp)
         {
-            $help = $options['help'];
             print <<<EOH
 <img id="${id}_help_button" src="assets/help.png" width="16" height="16" />
-<div id="${id}_help" class="hidden">$help</div>
-<div id="${id}_error" class="error hidden"></div>
 
 EOH;
         }
+        if (array_key_exists('working', $options))
+        {
+            print "<span id=\"${id}_working\" class=\"hidden working\">Working...</span>\n";
+        }
+        if ($hasHelp)
+        {
+            $help = $options['help'];
+            print <<<EOH
+<div id="${id}_help" class="hidden">$help</div>
+
+EOH;
+        }
+        print <<<EOH
+<div id="${id}_error" class="error hidden"></div>
+
+EOH;
         print <<<EOH
 </li>
 
@@ -216,8 +230,9 @@ EOH;
 
 
 EOH;
-        $this->renderTextInputMaxSize('Document URL', 'copy_url', 60, 255,
-            'The complete URL for the document.');
+        $this->renderTextInput('Document URL', 'copy_url',
+            array('size' => 60, 'maxlength' => 255, 'working' => true,
+                'help' => 'The complete URL for the document.'));
         $this->renderTextInput('Mirror Document URL', 'copy_mirror_url',
             array('class' => 'hidden', 'size' => 60, 'maxlength' => 255,
                 'readonly' => true,
@@ -342,7 +357,8 @@ EOH;
 
 EOH;
         $this->renderTextInput('Search Keywords', 'pub_search_keywords',
-            array('size' => 40, 'help' => 'Search keywords to locate a known publication.'));
+            array('size' => 40, 'working' => true,
+                'help' => 'Search keywords to locate a known publication.'));
         print <<<EOH
 <li id="pub_pub_id_field">
 <label for="pub_pub_id">Publication</label>
@@ -395,8 +411,8 @@ EOH;
 
 EOH;
         $this->renderTextInput('Search keywords', 'supersession_search_keywords',
-            array('size' => 40,
-                'help' => 'Search keywords to locate publications superseded by or superceding this publication.'));
+            array('size' => 40, 'working' => true,
+                'help' => 'Search keywords to locate publications superseded by or superseding this publication.'));
         print <<<EOH
 <li id="supersession_old_pub_field">
 <label for="supersession_old_pub">Supersedes</label>

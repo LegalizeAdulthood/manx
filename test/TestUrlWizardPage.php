@@ -151,6 +151,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 <label for="copy_url">Document URL</label>
 <input type="text" id="copy_url" name="copy_url" size="60" maxlength="255" value="" />
 <img id="copy_url_help_button" src="assets/help.png" width="16" height="16" />
+<span id="copy_url_working" class="hidden working">Working...</span>
 <div id="copy_url_help" class="hidden">The complete URL for the document.</div>
 <div id="copy_url_error" class="error hidden"></div>
 </li>
@@ -316,6 +317,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 <label for="pub_search_keywords">Search Keywords</label>
 <input type="text" id="pub_search_keywords" name="pub_search_keywords" size="40" value="" />
 <img id="pub_search_keywords_help_button" src="assets/help.png" width="16" height="16" />
+<span id="pub_search_keywords_working" class="hidden working">Working...</span>
 <div id="pub_search_keywords_help" class="hidden">Search keywords to locate a known publication.</div>
 <div id="pub_search_keywords_error" class="error hidden"></div>
 </li>
@@ -426,7 +428,8 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 <label for="supersession_search_keywords">Search keywords</label>
 <input type="text" id="supersession_search_keywords" name="supersession_search_keywords" size="40" value="" />
 <img id="supersession_search_keywords_help_button" src="assets/help.png" width="16" height="16" />
-<div id="supersession_search_keywords_help" class="hidden">Search keywords to locate publications superseded by or superceding this publication.</div>
+<span id="supersession_search_keywords_working" class="hidden working">Working...</span>
+<div id="supersession_search_keywords_help" class="hidden">Search keywords to locate publications superseded by or superseding this publication.</div>
 <div id="supersession_search_keywords_error" class="error hidden"></div>
 </li>
 

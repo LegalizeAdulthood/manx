@@ -273,46 +273,50 @@ $(function()
         $.post("url-wizard-service.php", data, callback, "json");
     };
 
-    var pub_search = function(search_keywords, error_id, callback)
+    var ajax_error_handler = function(error_id)
+    {
+        return function(e, response, settings, exception)
+        {
+            if (settings.data.indexOf('error_id=' + error_id + '&') == 0)
+            {
+                show(error_id);
+                $(this).html(response.responseText);
+            }
+        };
+    };
+
+    var pub_search = function(id_base, callback)
     {
         var company_id = $("#company_id").val();
+        var error_id = id_base + '_error';
+        var working_id = id_base + '_working';
         if (company_id != -1)
         {
+            $("#" + error_id).ajaxError(ajax_error_handler(error_id));
+            show(working_id);
             wizard_service(
                 {
                     'error_id': error_id,
                     'method': "pub-search",
                     'company': $("#company_id").val(),
-                    'keywords': search_keywords
+                    'keywords': $("#" + id_base).val()
                 },
-                callback);
+                function(json)
+                {
+                    callback(json);
+                    hide(working_id);
+                });
         }
-    };
-
-    var ajax_error_handler = function(id)
-    {
-        return function(e, jqxhr, settings, exception)
-        {
-            if (settings.data.indexOf('error_id=' + id + '&') == 0)
-            {
-                show("pub_search_keywords_error");
-                $(this).html(jqxhr.responseText);
-            }
-        };
     };
 
     var search_for_publications = function()
     {
-        var error_id = 'pub_search_keywords_error';
-        $("#" + error_id).ajaxError(ajax_error_handler(error_id));
-        pub_search($("#pub_search_keywords").val(), error_id, set_publication_search_results);
+        pub_search('pub_search_keywords', set_publication_search_results);
     };
 
     var search_for_supersessions = function()
     {
-        var error_id = 'supersession_search_keywords_error';
-        $("#" + error_id).ajaxError(ajax_error_handler(error_id));
-        pub_search($("#supersession_search_keywords").val(), error_id, set_supersessions);
+        pub_search('supersession_search_keywords', set_supersessions);
     };
 
     var clear_errors = function()
@@ -348,6 +352,7 @@ $(function()
             var url = $("#copy_url").val();
             if (url.length > 0)
             {
+                show("copy_url_working");
                 wizard_service(
                     {
                         'error_id': 'copy_url_error',
@@ -377,6 +382,7 @@ $(function()
                             set_publication(json);
                             show("supersession_fields");
                         }
+                        hide("copy_url_working");
                     });
             }
             else
