@@ -104,7 +104,7 @@ class UrlWizardService extends ServicePageBase
             return;
         }
         list($data['pub_date'], $fileBase) = UrlWizardService::extractPubDate($matches[1]);
-        $data['title'] = implode(' ', explode('_', $fileBase));
+        $data['title'] = UrlWizardService::titleForFileBase($fileBase);
         $data['format'] = $this->_db->getFormatForExtension($matches[2]);
     }
 
@@ -285,30 +285,6 @@ class UrlWizardService extends ServicePageBase
         return false;
     }
 
-    private function determineSiteForHost($host)
-    {
-        $matchingPrefix = '';
-        $matchingSite = array();
-        foreach ($this->_sites as $site)
-        {
-            $siteBase = $site['copy_base'];
-            if (strlen($siteBase) == 0)
-            {
-                $siteBase = $site['url'];
-            }
-            $siteComponents = parse_url($siteBase);
-            if ($host == $siteComponents['host'])
-            {
-                if (strlen($siteBase) > strlen($matchingPrefix))
-                {
-                    $matchingPrefix = $siteBase;
-                    $matchingSite = $site;
-                }
-            }
-        }
-        return $matchingSite;
-    }
-
     private static function months()
     {
         return array('jan' => '01', 'feb' => '02', 'mar' => '03',
@@ -349,14 +325,13 @@ class UrlWizardService extends ServicePageBase
             {
                 $data['part'] = array_shift($parts);
             }
-            $lastPart = count($parts)-1;
             $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
             $data['title'] = implode(' ', $parts);
         }
         else
         {
-            $data['pubs'] = $this->findPublicationsForKeywords($company, array($parts[0]));
-            $data['title'] = $parts[0];
+            $data['pubs'] = $this->findPublicationsForKeywords($company, array($fileBase));
+            $data['title'] = self::titleForFileBase($fileBase);
         }
         $data['format'] = $this->_db->getFormatForExtension($extension);
     }
@@ -458,5 +433,24 @@ class UrlWizardService extends ServicePageBase
         }
 
         return false;
+    }
+
+    public static function titleForFileBase($fileBase)
+    {
+        if (strpos($fileBase, '_') === false && 1 == preg_match('/[a-z][A-Z]/', $fileBase))
+        {
+            $words = array();
+            $pieces = preg_split('/([a-z])([A-Z])/', $fileBase, -1, PREG_SPLIT_DELIM_CAPTURE);
+            $i = 0;
+            array_push($words, $pieces[$i + 0] . $pieces[$i + 1]);
+            $i += 2;
+            for (; $i < count($pieces) - 2; $i += 3)
+            {
+                array_push($words, $pieces[$i + 0] . $pieces[$i + 1] . $pieces[$i + 2]);
+            }
+            array_push($words, $pieces[$i + 0] . $pieces[$i + 1]);
+            return implode(' ', $words);
+        }
+        return str_replace('_', ' ', $fileBase);
     }
 }

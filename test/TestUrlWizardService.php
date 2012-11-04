@@ -120,6 +120,31 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, UrlWizardService::comparePublications($left, $right));
     }
 
+    public function testTitleForFileBaseWithUnderscores()
+    {
+        $this->assertEquals('Foo Bar Gronky', UrlWizardService::titleForFileBase('Foo_Bar_Gronky'));
+    }
+
+    public function testTitleForFileBaseWithSpaces()
+    {
+        $this->assertEquals('Foo Bar Gronky', UrlWizardService::titleForFileBase('Foo_Bar Gronky'));
+    }
+
+    public function testTitleForFileBaseWithMixedCase()
+    {
+        $this->assertEquals('Foo Bar Gronky', UrlWizardService::titleForFileBase('FooBarGronky'));
+    }
+
+    public function testTitleForFileBaseWithMixedCaseTwoWords()
+    {
+        $this->assertEquals('Foo Bar', UrlWizardService::titleForFileBase('FooBar'));
+    }
+
+    public function testTitleForFileBaseWithMixedCaseFourWords()
+    {
+        $this->assertEquals('Foo Bar Blobby Phlegm', UrlWizardService::titleForFileBase('FooBarBlobbyPhlegm'));
+    }
+
     private function createPublicationsForCompare($leftPart, $leftRev, $leftTitle, $rightPart, $rightRev, $rightTitle)
     {
         $columns = array('ph_pub', 'ph_part', 'ph_revision', 'ph_title');
