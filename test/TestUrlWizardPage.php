@@ -323,7 +323,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 </li>
 
 <li id="pub_pub_id_field">
-<label for="pub_pub_id">Publication</label>
+<label for="pub_pub_id"><span id="pub_pub_id_label">Publication</span><a id="pub_pub_id_link" class="hidden">Publication</a></label>
 <select id="pub_pub_id" name="pub_pub_id">
 <option value="-1">(New Publication)</option>
 </select>
@@ -434,14 +434,14 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 </li>
 
 <li id="supersession_old_pub_field">
-<label for="supersession_old_pub">Supersedes</label>
+<label for="supersession_old_pub"><span id="supersession_old_pub_label">Supersedes</span><a id="supersession_old_pub_link" class="hidden">Supersedes</a></label>
 <select id="supersession_old_pub" name="supersession_old_pub">
 <option value="-1">(None)</option>
 </select>
 </li>
 
 <li id="supersession_new_pub_field">
-<label for="supersession_new_pub">Superseded by</label>
+<label for="supersession_new_pub"><span id="supersession_new_pub_label">Superseded by</span><a id="supersession_new_pub_link" class="hidden">Superseded by</a></label>
 <select id="supersession_new_pub" name="supersession_new_pub">
 <option value="-1">(None)</option>
 </select>
