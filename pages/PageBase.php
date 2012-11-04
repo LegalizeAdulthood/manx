@@ -131,6 +131,7 @@ EOH;
     {
         if ($this->_user->isAdmin())
         {
+            print "<div class=\"menu\">\n";
             //$this->renderMenuSeparator();
             //$this->renderMenuItem($menu == MenuType::Company, "company.php", "Company");
             $this->renderMenuSeparator();
@@ -146,6 +147,8 @@ EOH;
             $this->renderMenuItem($menu == MenuType::Mirror, "mirror.php", "Mirror");
             $this->renderMenuItem($menu == MenuType::SizeReport, "size-report.php", "Size Report");
             $this->renderMenuItem($menu == MenuType::MD5Report, "md5-report.php", "MD5 Report");
+            $this->renderMenuSeparator();
+            print "</div>\n";
         }
     }
 
@@ -153,7 +156,7 @@ EOH;
     {
         $menu = $this->getMenuType();
 
-        print '<div id="MENU">';
+        print '<div class="menu">';
         $this->renderFirstMenuItem(($menu == MenuType::Search), "search.php", "Search");
         $this->renderMenuSeparator();
         $this->renderMenuItem(($menu == MenuType::News), "news.php", "News");
@@ -161,8 +164,8 @@ EOH;
         $this->renderMenuItem(($menu == MenuType::About), "about.php", "About");
         $this->renderMenuSeparator();
         $this->renderMenuItem(($menu == MenuType::Help), "help.php", "Help");
-        $this->renderAdminMenu($menu);
         print "</div>\n";
+        $this->renderAdminMenu($menu);
     }
 
     protected function renderBodyHeader()

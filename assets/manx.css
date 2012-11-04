@@ -163,13 +163,14 @@ ul.citelist li
 {
     display: none
 }
-#MENU
+
+.menu
 {
     background-color: #089698;
     padding: 3px 10px;
     margin-top: 1px
 }
-#MENU a
+.menu a
 {
     color: #eee;
     text-decoration: none;
@@ -177,22 +178,22 @@ ul.citelist li
     border-right: 1px solid #eee;
     padding: 3px 10px
 }
-#MENU a.first
+.menu a.first
 {
     border-left: 1px solid #eee
 }
-#MENU a:hover
+.menu a:hover
 {
     background-color: #ff8f35;
     color: #000
 }
-#MENU a.firston
+.menu a.firston
 {
     border-left: 1px solid #eee;
     background-color: #ff8f35;
     color: #000
 }
-#MENU a.on
+.menu a.on
 {
     background-color: #ff8f35;
     color: #000
