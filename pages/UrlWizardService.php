@@ -355,7 +355,7 @@ class UrlWizardService extends ServicePageBase
         }
         else
         {
-            $data['pubs'] = $this->findPublicationsForKeywords($company, $parts[0]);
+            $data['pubs'] = $this->findPublicationsForKeywords($company, array($parts[0]));
             $data['title'] = $parts[0];
         }
         $data['format'] = $this->_db->getFormatForExtension($extension);

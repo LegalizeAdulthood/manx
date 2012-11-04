@@ -296,7 +296,7 @@ $(function()
             if (settings.data.indexOf('error_id=' + id + '&') == 0)
             {
                 show("pub_search_keywords_error");
-                $(this).html(jqxdr.responseText);
+                $(this).html(jqxhr.responseText);
             }
         };
     };
