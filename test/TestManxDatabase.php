@@ -806,6 +806,26 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals($languages, $ph_lang);
     }
 
+    public function testAddSupersession()
+    {
+        $this->createInstance();
+        $oldPub = 213;
+        $newPub = 563;
+        $this->_db->getLastInsertIdFakeResult = 969;
+        $result = $this->_manxDb->addSupersession($oldPub, $newPub);
+        $this->assertTrue($this->_db->executeCalled);
+        $this->assertEquals(2, count($this->_db->executeLastStatements));
+        $this->assertStringStartsWith("INSERT INTO `supersession`", $this->_db->executeLastStatements[0]);
+        $this->assertEquals(2, count($this->_db->executeLastArgs[0]));
+        $this->assertEquals($oldPub, $this->_db->executeLastArgs[0][0]);
+        $this->assertEquals($newPub, $this->_db->executeLastArgs[0][1]);
+        $this->assertStringStartsWith("UPDATE `pub` SET `pub_superseded` = 1", $this->_db->executeLastStatements[1]);
+        $this->assertEquals(1, count($this->_db->executeLastArgs[1]));
+        $this->assertEquals($oldPub, $this->_db->executeLastArgs[1][0]);
+        $this->assertTrue($this->_db->getLastInsertIdCalled);
+        $this->assertEquals(969, $result);
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");

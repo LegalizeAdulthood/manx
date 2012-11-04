@@ -554,7 +554,10 @@ class ManxDatabase implements IManxDatabase
     {
         $this->_db->execute('INSERT INTO `supersession`(`old_pub`,`new_pub`) VALUES (?,?)',
             array($oldPub, $newPub));
-        return $this->_db->getLastInsertId();
+        $result = $this->_db->getLastInsertId();
+        $this->_db->execute('UPDATE `pub` SET `pub_superseded` = 1 WHERE `pub_id` = ?',
+            array($oldPub));
+        return $result;
     }
 
     function addSite($name, $url, $description, $copy_base, $low, $live)
