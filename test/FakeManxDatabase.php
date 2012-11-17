@@ -55,6 +55,11 @@ class FakeManxDatabase implements IManxDatabase
         $this->getMostRecentDocumentsFakeResult = array();
         $this->copyExistsForUrlCalled = false;
         $this->copyExistsForUrlFakeResult = false;
+        $this->copyExistsForUrlFakeResults = array();
+        $this->bitSaversIgnoredPathCalled = false;
+        $this->bitSaversIgnoredPathFakeResult = false;
+        $this->addBitSaversUnknownPathCalled = false;
+        $this->addBitSaversUnknownPathLastPaths = array();
     }
 
     public function getDocumentCount()
@@ -378,11 +383,15 @@ class FakeManxDatabase implements IManxDatabase
     {
         $this->copyExistsForUrlCalled = true;
         $this->copyExistsForUrlLastUrl = $url;
+        if (array_key_exists($url, $this->copyExistsForUrlFakeResults))
+        {
+            return $this->copyExistsForUrlFakeResults[$url];
+        }
         return $this->copyExistsForUrlFakeResult;
     }
     public $copyExistsForUrlCalled,
         $copyExistsForUrlLastUrl,
-        $copyExistsForUrlFakeResult;
+        $copyExistsForUrlFakeResult, $copyExistsForUrlFakeResults;
 
     function getZeroSizeDocuments()
     {
@@ -448,9 +457,9 @@ class FakeManxDatabase implements IManxDatabase
     function addBitSaversUnknownPath($path)
     {
         $this->addBitSaversUnknownPathCalled = true;
-        $this->addBitSaversUnknownPathLastPath = $path;
+        $this->addBitSaversUnknownPathLastPaths[] = $path;
     }
-    public $addBitSaversUnknownPathCalled, $addBitSaversUnknownPathLastPath;
+    public $addBitSaversUnknownPathCalled, $addBitSaversUnknownPathLastPaths;
 
     function ignoreBitSaversPath($path)
     {

@@ -1,8 +1,7 @@
 <?php
 
 require_once 'AdminPageBase.php';
-require_once 'UrlInfo.php';
-require_once 'UrlTransfer.php';
+require_once 'BitSaversPageFactory.php';
 
 define('WHATS_NEW_FILE', '../private/bitsavers-WhatsNew.txt');
 define('WHATS_NEW_URL', 'http://bitsavers.trailing-edge.com/pdf/Whatsnew.txt');
@@ -10,9 +9,17 @@ define('TIMESTAMP_PROPERTY', 'bitsavers_whats_new_timestamp');
 
 class BitSaversPage extends AdminPageBase
 {
-    public function __construct($manx, $vars)
+    private $_factory;
+
+    public function __construct($manx, $vars, IBitSaversPageFactory $factory = null)
     {
         parent::__construct($manx, $vars);
+        if ($factory === null)
+        {
+            print_r("constructing factory\n");
+            $factory = new BitSaversPageFactory();
+        }
+        $this->_factory = $factory;
         if ($this->needWhatsNewFile())
         {
             $this->getWhatsNewFile();
@@ -26,11 +33,11 @@ class BitSaversPage extends AdminPageBase
         {
             return true;
         }
-        $urlInfo = new UrlInfo(WHATS_NEW_URL);
+        $urlInfo = $this->_factory->createUrlInfo(WHATS_NEW_URL);
         $lastModified = $urlInfo->lastModified();
         if ($lastModified === false)
         {
-            $lastModified = time();
+            $lastModified = $this->_factory->getCurrentTime();
         }
         $this->_manxDb->setProperty(TIMESTAMP_PROPERTY, $lastModified);
         return $lastModified > $timeStamp;
@@ -38,9 +45,9 @@ class BitSaversPage extends AdminPageBase
 
     private function getWhatsNewFile()
     {
-        $transfer = new UrlTransfer(WHATS_NEW_URL);
+        $transfer = $this->_factory->createUrlTransfer(WHATS_NEW_URL);
         $transfer->get(WHATS_NEW_FILE);
-        $this->_manxDb->setProperty(TIMESTAMP_PROPERTY, time());
+        $this->_manxDb->setProperty(TIMESTAMP_PROPERTY, $this->_factory->getCurrentTime());
     }
 
     private function parseWhatsNewFile()
@@ -50,26 +57,25 @@ class BitSaversPage extends AdminPageBase
             return;
         }
 
-        $whatsNew = fopen(WHATS_NEW_FILE, 'r');
+        $whatsNew = $this->_factory->openFile(WHATS_NEW_FILE, 'r');
         $this->skipHeader($whatsNew);
         $i = 0;
-        while (!feof($whatsNew) && $i < 100)
+        while (!$whatsNew->eof() && $i < 100)
         {
-            $line = trim(fgets($whatsNew));
+            $line = trim($whatsNew->getString());
             if (strlen($line) && $this->pathUnknown($line))
             {
                 $this->addUnknownPath($line);
                 ++$i;
             }
         }
-        fclose($whatsNew);
     }
 
     private function skipHeader($whatsNew)
     {
-        while (!feof($whatsNew))
+        while (!$whatsNew->eof())
         {
-            if (strpos(trim(fgets($whatsNew)), '=======') === 0)
+            if (strpos(trim($whatsNew->getString()), '=======') === 0)
             {
                 return;
             }
@@ -94,6 +100,12 @@ class BitSaversPage extends AdminPageBase
 
     protected function postPage()
     {
+        $this->ignorePaths();
+        PageBase::renderPage();
+    }
+
+    protected function ignorePaths()
+    {
         $ignored = array();
         for ($i = 0; $i < 10; ++$i)
         {
@@ -110,7 +122,6 @@ class BitSaversPage extends AdminPageBase
                 $this->_manxDb->ignoreBitSaversPath($path);
             }
         }
-        PageBase::renderPage();
     }
 
     protected function renderBodyContent()

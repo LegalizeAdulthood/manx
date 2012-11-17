@@ -2,6 +2,7 @@
 
 require_once 'test/TestAboutPage.php';
 require_once 'test/TestAdminPageBase.php';
+require_once 'test/TestBitSaversPage.php';
 require_once 'test/TestDetailsPage.php';
 require_once 'test/TestHtmlFormatter.php';
 require_once 'test/TestManxDatabase.php';
@@ -21,7 +22,7 @@ class AllTests
         foreach (array('TestAboutPage', 'TestDetailsPage', 'TestHtmlFormatter',
              'TestManxDatabase', 'TestPageBase', 'TestRssPage', 'TestSearcher',
              'TestUrlWizardPage', 'TestUrlWizardService', 'TestAdminPageBase',
-             'TestUrlInfo', 'TestUrlTransfer') as $name)
+             'TestUrlInfo', 'TestUrlTransfer', 'TestBitSaversPage') as $name)
         {
             $suite->addTestSuite($name);
         }

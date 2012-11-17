@@ -2,7 +2,12 @@
 
 require_once 'CurlApi.php';
 
-class UrlTransfer
+interface IUrlTransfer
+{
+    function get($destination);
+}
+
+class UrlTransfer implements IUrlTransfer
 {
     private $_url;
     private $_api;

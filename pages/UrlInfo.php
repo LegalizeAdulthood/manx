@@ -2,7 +2,13 @@
 
 require_once 'CurlApi.php';
 
-class UrlInfo
+interface IUrlInfo
+{
+    function size();
+    function lastModified();
+}
+
+class UrlInfo implements IUrlInfo
 {
     private $_api;
     private $_url;
