@@ -30,7 +30,10 @@ class UrlTransfer implements IUrlTransfer
         fclose($stream);
         if ($httpStatus == 200)
         {
-            unlink($destination);
+            if (file_exists($destination))
+            {
+                unlink($destination);
+            }
             rename($tempDestination, $destination);
             return true;
         }

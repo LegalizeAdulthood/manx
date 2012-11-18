@@ -16,13 +16,13 @@ class BitSaversPage extends AdminPageBase
         parent::__construct($manx, $vars);
         if ($factory === null)
         {
-            print_r("constructing factory\n");
             $factory = new BitSaversPageFactory();
         }
         $this->_factory = $factory;
         if ($this->needWhatsNewFile())
         {
             $this->getWhatsNewFile();
+            $this->parseWhatsNewFile();
         }
     }
 
@@ -52,21 +52,14 @@ class BitSaversPage extends AdminPageBase
 
     private function parseWhatsNewFile()
     {
-        if ($this->_manxDb->getBitSaversUnknownPathCount() >= 10)
-        {
-            return;
-        }
-
         $whatsNew = $this->_factory->openFile(WHATS_NEW_FILE, 'r');
         $this->skipHeader($whatsNew);
-        $i = 0;
-        while (!$whatsNew->eof() && $i < 100)
+        while (!$whatsNew->eof())
         {
             $line = trim($whatsNew->getString());
             if (strlen($line) && $this->pathUnknown($line))
             {
                 $this->addUnknownPath($line);
-                ++$i;
             }
         }
     }
@@ -126,28 +119,87 @@ class BitSaversPage extends AdminPageBase
 
     protected function renderBodyContent()
     {
-        $this->parseWhatsNewFile();
+        $total = $this->_manxDb->getBitSaversUnknownPathCount();
+        if ($total == 0)
+        {
+            print <<<EOH
+<h1>No New BitSavers Publications Found</h1>
+
+EOH;
+            return;
+        }
+
         print <<<EOH
 <h1>New BitSavers Publications</h1>
 
-<form action="bitsavers.php" method="POST">
-<ol>
 
 EOH;
-        $unknownPaths = $this->_manxDb->getBitSaversUnknownPaths();
+        $start = array_key_exists('start', $this->_vars) ? $this->_vars['start'] : 0;
+        $unknownPaths = $this->_manxDb->getBitSaversUnknownPaths($start);
+        $this->renderPageSelectionBar($start, $total);
+
+        print <<<EOH
+<form action="bitsavers.php" method="POST">
+<input type="hidden" name="start" value="$start" />
+<table>
+
+EOH;
         $num = min(10, count($unknownPaths));
         for ($i = 0; $i < $num; ++$i)
         {
             $path = $unknownPaths[$i]['path'];
-            printf('<li><input type="checkbox" id="ignore%1$d" name="ignore%1$d" value="%2$s" />' . "\n", $i, $path);
-            printf('<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/%1$s">%1$s</a></li>' . "\n", trim($path));
+            printf('<tr><td>%1$d.</td><td><input type="checkbox" id="ignore%2$d" name="ignore%2$d" value="%3$s" />' . "\n" .
+                '<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/%3$s">%3$s</a></td></tr>' . "\n",
+                $i + 1, $i, trim($path));
         }
         print <<<EOH
-</ol>
+</table>
 <input type="submit" value="Ignore" />
 </form>
 
 EOH;
 
+    }
+
+    protected function renderPageSelectionBar($start, $total)
+    {
+        print '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;';
+        $rowsPerPage = 10;
+        if ($start != 0)
+        {
+            printf('<a href="bitsavers.php?start=%s"><b>Previous</b></a>&nbsp;&nbsp;',
+                max(0, $start - $rowsPerPage));
+        }
+
+        $firstPage = intval($start / (10 * $rowsPerPage)) * 10 + 1;
+        $lastPageNum = intval(($total + $rowsPerPage - 1) / $rowsPerPage);
+        $lastPageStart = ($lastPageNum - 1) * $rowsPerPage;
+        $currPageNum = $firstPage;
+        $currPageStart = ($currPageNum - 1) * $rowsPerPage;
+
+        $numIndices = 0;
+        while ($numIndices++ < 10)
+        {
+            if ($start == $currPageStart)
+            {
+                print '<b class="currpage">' . $currPageNum . '</b>&nbsp;&nbsp;';
+            }
+            else
+            {
+                print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d">%2$d</a>&nbsp;&nbsp;',
+                    $currPageStart, $currPageNum);
+            }
+            ++$currPageNum;
+            $currPageStart += $rowsPerPage;
+            if ($currPageStart > $lastPageStart)
+            {
+                break;
+            }
+        }
+        if ($start != $lastPageStart)
+        {
+            print '<a href="bitsavers.php?start=' . ($start + $rowsPerPage) . '"><b>Next</b></a>';
+        }
+        print "</div>\n";
     }
 }

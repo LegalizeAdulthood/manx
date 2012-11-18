@@ -52,6 +52,11 @@ class BitSaversPageTester extends BitSaversPage
     {
         parent::ignorePaths();
     }
+
+    public function renderPageSelectionBar($start, $total)
+    {
+        parent::renderPageSelectionBar($start, $total);
+    }
 }
 
 class TestBitSaversPage extends PHPUnit_Framework_TestCase
@@ -89,6 +94,9 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testConstructWithNoTimeStampPropertyGetsWhatsNewFile()
     {
         $this->_db->getPropertyFakeResult = false;
+        $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
+            'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
+        $this->_file->getStringFakeResults = array_merge(array('======='), $paths);
 
         $this->createPage();
 
@@ -96,6 +104,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->assertFalse(is_null($this->_page));
         $this->assertPropertyRead(TIMESTAMP_PROPERTY);
         $this->assertWhatsNewFileTransferred();
+        $this->assertFileParsedPaths($paths);
     }
 
     public function testConstructWithNoLastModifiedGetsWhatsNewFile()
@@ -138,40 +147,31 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->assertEquals(MenuType::BitSavers, $this->_page->getMenuType());
     }
 
-    private static function createResultRowsForSingleColumn($column, $items)
-    {
-        for ($i = 0; $i < count($items); ++$i)
-        {
-            $items[$i] = array($items[$i]);
-        }
-        return FakeDatabase::createResultRowsForColumns(array($column), $items);
-    }
-
     public function testRenderBodyContentWithPlentyOfPaths()
     {
         $this->createPageWithoutFetchingWhatsNewFile();
         $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
-        $this->_db->getBitSaversUnknownPathsFakeResult = self::createResultRowsForSingleColumn('path', $paths);
+        $this->_db->getBitSaversUnknownPathsFakeResult = self::createResultRowsForUnknownPaths($paths);
         ob_start();
         $this->_page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
         $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsCalled);
+        $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths), $output);
     }
 
     public function testRenderBodyContentGetsNewPaths()
     {
         $this->createPageWithoutFetchingWhatsNewFile();
-        $this->_db->getBitSaversUnknownPathCountFakeResult = 0;
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
-        $this->_file->getStringFakeResults = array_merge(array('======='), $paths);
+        $this->_db->getBitSaversUnknownPathCountFakeResult = count($paths);
         $this->configureCopiesExistForPaths($paths);
-        $this->_db->getBitSaversUnknownPathsFakeResult = self::createResultRowsForSingleColumn('path', $paths);
+        $this->_db->getBitSaversUnknownPathsFakeResult = self::createResultRowsForUnknownPaths($paths);
         ob_start();
 
         $this->_page->renderBodyContent();
@@ -179,6 +179,44 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $output = ob_get_contents();
         ob_end_clean();
 
+        $this->assertEquals(self::expectedOutputForPaths($paths), $output);
+    }
+
+    public function testIgnorePaths()
+    {
+        $ignoredPath = 'dec/1.pdf';
+        $this->createPageWithoutFetchingWhatsNewFile(array('ignore0' => $ignoredPath));
+        $this->_page->ignorePaths();
+        $this->assertTrue($this->_db->ignoreBitSaversPathCalled);
+        $this->assertEquals($ignoredPath, $this->_db->ignoreBitSaversPathLastPath);
+    }
+
+    public function testRenderPageSelectionBarOnePage()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0));
+        ob_start();
+        $this->_page->renderPageSelectionBar(0, 10);
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertEquals(
+            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>' . "\n",
+            $output);
+    }
+
+    public function testRenderBodyContentNoDocuments()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile();
+        $this->_db->getBitSaversUnknownPathCountFakeResult = 0;
+        ob_start();
+        $this->_page->renderBodyContent();
+        $output = ob_get_contents();
+        ob_end_clean();
+        $this->assertEquals("<h1>No New BitSavers Publications Found</h1>\n", $output);
+    }
+
+    private function assertFileParsedPaths($paths)
+    {
         $this->assertTrue($this->_factory->openFileCalled);
         $this->assertEquals(WHATS_NEW_FILE, $this->_factory->openFileLastPath);
         $this->assertEquals('r', $this->_factory->openFileLastMode);
@@ -190,16 +228,16 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         {
             $this->assertContains($path, $this->_db->addBitSaversUnknownPathLastPaths);
         }
-        $this->assertEquals(self::expectedOutputForPaths($paths), $output);
     }
 
-    public function testIgnorePaths()
+    private static function createResultRowsForUnknownPaths($items)
     {
-        $ignoredPath = 'dec/1.pdf';
-        $this->createPageWithoutFetchingWhatsNewFile(array('ignore0' => $ignoredPath));
-        $this->_page->ignorePaths();
-        $this->assertTrue($this->_db->ignoreBitSaversPathCalled);
-        $this->assertEquals($ignoredPath, $this->_db->ignoreBitSaversPathLastPath);
+        $id = 1;
+        for ($i = 0; $i < count($items); ++$i)
+        {
+            $items[$i] = array($id++, $items[$i]);
+        }
+        return FakeDatabase::createResultRowsForColumns(array('id', 'path'), $items);
     }
 
     private function configureCopiesExistForPaths($paths)
@@ -217,23 +255,27 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $expected = <<<EOH
 <h1>New BitSavers Publications</h1>
 
+<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>
 <form action="bitsavers.php" method="POST">
-<ol>
+<input type="hidden" name="start" value="0" />
+<table>
 
 EOH;
         $i = 0;
+        $n = 1;
         foreach ($paths as $path)
         {
             $item = <<<EOH
-<li><input type="checkbox" id="ignore$i" name="ignore$i" value="$path" />
-<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/$path">$path</a></li>
+<tr><td>$n.</td><td><input type="checkbox" id="ignore$i" name="ignore$i" value="$path" />
+<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/$path">$path</a></td></tr>
 
 EOH;
             $expected = $expected . $item;
             ++$i;
+            ++$n;
         }
         $trailer = <<<EOH
-</ol>
+</table>
 <input type="submit" value="Ignore" />
 </form>
 

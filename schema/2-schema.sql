@@ -33,9 +33,11 @@ CREATE TABLE IF NOT EXISTS `format_extension` (
 --
 
 CREATE TABLE IF NOT EXISTS `bitsavers_unknown` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
   `path` VARCHAR(255) NOT NULL,
   `ignored` TINYINT(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`path`)
+  PRIMARY KEY (`id`),
+  UNIQUE (`path`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --

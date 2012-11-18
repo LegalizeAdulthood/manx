@@ -701,37 +701,21 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo/frob.jpg', $this->_db->executeLastArgs[0][0]);
     }
 
-    public function testGetBitSaversUnknownPathCount()
-    {
-        $this->createInstance();
-        $expectedCount = 3;
-        $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
-            array('count'), array(array($expectedCount)));
-        $count = $this->_manxDb->getBitSaversUnknownPathCount();
-        $this->assertTrue($this->_db->executeCalled);
-        $this->assertEquals(2, count($this->_db->executeLastStatements));
-        $this->assertStringStartsWith("DELETE `bitsavers_unknown` FROM `bitsavers_unknown`",
-            $this->_db->executeLastStatements[0]);
-        $this->assertEquals(0, count($this->_db->executeLastArgs[0]));
-        $this->assertStringStartsWith("SELECT COUNT(*) AS `count` FROM `bitsavers_unknown`",
-            $this->_db->executeLastStatements[1]);
-        $this->assertEquals(0, count($this->_db->executeLastArgs[1]));
-        $this->assertEquals($expectedCount, $count);
-    }
-
     public function testGetBitSaversUnknownPaths()
     {
         $this->createInstance();
+        $path1 = 'foo/bar.jpg';
+        $path2 = 'foo/foo.jpg';
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
-            array('path'), array(array('foo/bar.jpg'), array('foo/foo.jpg')));
-        $paths = $this->_manxDb->getBitSaversUnknownPaths();
+            array('path'), array(array($path1), array($path2)));
+        $paths = $this->_manxDb->getBitSaversUnknownPaths(0);
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals(1, count($this->_db->executeLastStatements));
         $this->assertEquals(1, count($this->_db->executeLastArgs));
         $this->assertStringStartsWith("SELECT `path` FROM `bitsavers_unknown`", $this->_db->executeLastStatements[0]);
         $this->assertEquals(0, count($this->_db->executeLastArgs[0]));
-        $this->assertEquals('foo/bar.jpg', $paths[0]['path']);
-        $this->assertEquals('foo/foo.jpg', $paths[1]['path']);
+        $this->assertEquals($path1, $paths[0]['path']);
+        $this->assertEquals($path2, $paths[1]['path']);
     }
 
     public function testBitSaversIgnoredPathTrue()

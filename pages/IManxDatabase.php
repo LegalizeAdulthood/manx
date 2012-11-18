@@ -55,6 +55,6 @@ interface IManxDatabase
     function addBitSaversUnknownPath($path);
     function ignoreBitSaversPath($path);
     function getBitSaversUnknownPathCount();
-    function getBitSaversUnknownPaths();
+    function getBitSaversUnknownPaths($start);
     function bitSaversIgnoredPath($path);
 }

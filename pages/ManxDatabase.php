@@ -685,7 +685,6 @@ class ManxDatabase implements IManxDatabase
         $this->execute("UPDATE `bitsavers_unknown` SET `ignored` = 1 WHERE `path` = ?",
             array($path));
     }
-
     function getBitSaversUnknownPathCount()
     {
         $count = $this->execute("DELETE `bitsavers_unknown` FROM `bitsavers_unknown` "
@@ -695,9 +694,9 @@ class ManxDatabase implements IManxDatabase
         return $rows[0]['count'];
     }
 
-    function getBitSaversUnknownPaths()
+    function getBitSaversUnknownPaths($start)
     {
-        return $this->execute("SELECT `path` FROM `bitsavers_unknown` WHERE `ignored` = 0", array());
+        return $this->execute("SELECT `path` FROM `bitsavers_unknown` WHERE `ignored` = 0 ORDER BY `id` LIMIT $start, 10", array());
     }
 
     function bitSaversIgnoredPath($path)
