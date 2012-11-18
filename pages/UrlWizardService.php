@@ -396,14 +396,21 @@ class UrlWizardService extends ServicePageBase
         $company = $this->param('company');
         $ignoredWords = array();
         $keywords = Searcher::filterSearchKeywords($this->param('keywords'), $ignoredWords);
-        $data = $this->findPublicationsForKeywords($company, $keywords);
-        $filtered = Searcher::filterSearchKeywords($keywords[0], $ignoredWords);
-        if (count($filtered))
+        if (count($keywords))
         {
-            $data = $this->mergePubs($data, $this->findPublicationsForKeywords($company, $filtered));
+            $data = $this->findPublicationsForKeywords($company, $keywords);
+            $filtered = Searcher::filterSearchKeywords($keywords[0], $ignoredWords);
+            if (count($filtered))
+            {
+                $data = $this->mergePubs($data, $this->findPublicationsForKeywords($company, $filtered));
+            }
+            $data = array_values($data);
+            usort($data, array('UrlWizardService', 'comparePublications'));
         }
-        $data = array_values($data);
-        usort($data, array('UrlWizardService', 'comparePublications'));
+        else
+        {
+            $data = array();
+        }
         return $data;
     }
 
