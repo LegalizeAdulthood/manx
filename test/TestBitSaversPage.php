@@ -53,9 +53,9 @@ class BitSaversPageTester extends BitSaversPage
         parent::ignorePaths();
     }
 
-    public function renderPageSelectionBar($start, $total)
+    public function renderPageSelectionBar($start, $total, $sortById)
     {
-        parent::renderPageSelectionBar($start, $total);
+        parent::renderPageSelectionBar($start, $total, $sortById);
     }
 }
 
@@ -153,15 +153,36 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
-        $this->_db->getBitSaversUnknownPathsFakeResult = self::createResultRowsForUnknownPaths($paths);
+        $idStart = 110;
+        $this->_db->getBitSaversUnknownPathsOrderedByIdFakeResult =
+            self::createResultRowsForUnknownPaths($paths, $idStart);
         ob_start();
         $this->_page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
         $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getBitSaversUnknownPathsCalled);
-        $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsLastStart);
-        $this->assertEquals(self::expectedOutputForPaths($paths), $output);
+        $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByIdCalled);
+        $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
+        $this->assertEquals(self::expectedOutputForPaths($paths, $idStart), $output);
+    }
+
+    public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile(array('sort' => SORT_ORDER_BY_PATH));
+        $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
+        $paths = array('dec/Z.pdf', 'dec/Y.pdf', 'dec/X.pdf', 'dec/W.pdf', 'dec/V.pdf',
+            'dec/U.pdf', 'dec/T.pdf', 'dec/S.pdf', 'dec/R.pdf', 'dec/Q.pdf');
+        $idStart = 110;
+        $this->_db->getBitSaversUnknownPathsOrderedByPathFakeResult =
+            self::createResultRowsForUnknownPaths($paths, $idStart);
+        ob_start();
+        $this->_page->renderBodyContent();
+        $output = ob_get_contents();
+        ob_end_clean();
+        $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByPathCalled);
+        $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
+        $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false), $output);
     }
 
     public function testRenderBodyContentGetsNewPaths()
@@ -171,7 +192,8 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
         $this->_db->getBitSaversUnknownPathCountFakeResult = count($paths);
         $this->configureCopiesExistForPaths($paths);
-        $this->_db->getBitSaversUnknownPathsFakeResult = self::createResultRowsForUnknownPaths($paths);
+        $this->_db->getBitSaversUnknownPathsOrderedByIdFakeResult =
+            self::createResultRowsForUnknownPaths($paths);
         ob_start();
 
         $this->_page->renderBodyContent();
@@ -195,12 +217,60 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     {
         $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0));
         ob_start();
-        $this->_page->renderPageSelectionBar(0, 10);
+        $this->_page->renderPageSelectionBar(0, 10, true);
         $output = ob_get_contents();
         ob_end_clean();
 
         $this->assertEquals(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>' . "\n",
+            $output);
+    }
+
+    public function testRenderPageSelectionBarManyPages()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0));
+        ob_start();
+        $this->_page->renderPageSelectionBar(0, 1234, true);
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertEquals(
+            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=20">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=30">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=40">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=50">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=60">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=70">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=80">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=90">10</a>&nbsp;&nbsp;'
+                . '<a href="bitsavers.php?start=10"><b>Next</b></a>'
+                . '</div>' . "\n",
+            $output);
+    }
+
+    public function testRenderPageSelectionBarManyPagesByPath()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH));
+        ob_start();
+        $this->_page->renderPageSelectionBar(0, 1234, false);
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertEquals(
+            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10&sort=bypath">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=20&sort=bypath">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=30&sort=bypath">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=40&sort=bypath">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=50&sort=bypath">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=60&sort=bypath">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=70&sort=bypath">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=80&sort=bypath">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=90&sort=bypath">10</a>&nbsp;&nbsp;'
+                . '<a href="bitsavers.php?start=10&sort=bypath"><b>Next</b></a>'
+                . '</div>' . "\n",
             $output);
     }
 
@@ -230,9 +300,9 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         }
     }
 
-    private static function createResultRowsForUnknownPaths($items)
+    private static function createResultRowsForUnknownPaths($items, $idStart = 1)
     {
-        $id = 1;
+        $id = $idStart;
         for ($i = 0; $i < count($items); ++$i)
         {
             $items[$i] = array($id++, $items[$i]);
@@ -250,8 +320,19 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->_db->copyExistsForUrlFakeResults = $existing;
     }
 
-    private static function expectedOutputForPaths($paths)
+    private static function expectedOutputForPaths($paths, $idStart = 1, $sortById = true)
     {
+        if ($sortById)
+        {
+            $expectedIdHeader = 'Id';
+            $expectedPathHeader = '<a href="bitsavers.php?sort=bypath">Path</a>';
+        }
+        else
+        {
+            $expectedIdHeader = '<a href="bitsavers.php?sort=byid">Id</a>';
+            $expectedPathHeader = 'Path';
+        }
+
         $expected = <<<EOH
 <h1>New BitSavers Publications</h1>
 
@@ -259,10 +340,11 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 <form action="bitsavers.php" method="POST">
 <input type="hidden" name="start" value="0" />
 <table>
+<tr><th>$expectedIdHeader</th><th>$expectedPathHeader</th></tr>
 
 EOH;
         $i = 0;
-        $n = 1;
+        $n = $idStart;
         foreach ($paths as $path)
         {
             $item = <<<EOH

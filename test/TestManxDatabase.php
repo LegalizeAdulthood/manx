@@ -701,21 +701,42 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo/frob.jpg', $this->_db->executeLastArgs[0][0]);
     }
 
-    public function testGetBitSaversUnknownPaths()
+    public function testGetBitSaversUnknownPathsOrderedById()
     {
         $this->createInstance();
         $path1 = 'foo/bar.jpg';
         $path2 = 'foo/foo.jpg';
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
-            array('path'), array(array($path1), array($path2)));
-        $paths = $this->_manxDb->getBitSaversUnknownPaths(0);
+            array('path', 'id'), array(array($path1, '1'), array($path2, '2')));
+        $paths = $this->_manxDb->getBitSaversUnknownPathsOrderedById(0);
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals(1, count($this->_db->executeLastStatements));
         $this->assertEquals(1, count($this->_db->executeLastArgs));
-        $this->assertStringStartsWith("SELECT `path` FROM `bitsavers_unknown`", $this->_db->executeLastStatements[0]);
+        $this->assertStringStartsWith("SELECT `path`,`id` FROM `bitsavers_unknown`", $this->_db->executeLastStatements[0]);
         $this->assertEquals(0, count($this->_db->executeLastArgs[0]));
         $this->assertEquals($path1, $paths[0]['path']);
+        $this->assertEquals(1, $paths[0]['id']);
         $this->assertEquals($path2, $paths[1]['path']);
+        $this->assertEquals(2, $paths[1]['id']);
+    }
+
+    public function testGetBitSaversUnknownPathsOrderedByPath()
+    {
+        $this->createInstance();
+        $path1 = 'foo/foo.jpg';
+        $path2 = 'foo/bar.jpg';
+        $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
+            array('path', 'id'), array(array($path1, '1'), array($path2, '2')));
+        $paths = $this->_manxDb->getBitSaversUnknownPathsOrderedById(0);
+        $this->assertTrue($this->_db->executeCalled);
+        $this->assertEquals(1, count($this->_db->executeLastStatements));
+        $this->assertEquals(1, count($this->_db->executeLastArgs));
+        $this->assertStringStartsWith("SELECT `path`,`id` FROM `bitsavers_unknown`", $this->_db->executeLastStatements[0]);
+        $this->assertEquals(0, count($this->_db->executeLastArgs[0]));
+        $this->assertEquals($path1, $paths[0]['path']);
+        $this->assertEquals(1, $paths[0]['id']);
+        $this->assertEquals($path2, $paths[1]['path']);
+        $this->assertEquals(2, $paths[1]['id']);
     }
 
     public function testBitSaversIgnoredPathTrue()

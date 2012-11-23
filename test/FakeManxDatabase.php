@@ -60,8 +60,8 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversIgnoredPathFakeResult = false;
         $this->addBitSaversUnknownPathCalled = false;
         $this->addBitSaversUnknownPathLastPaths = array();
-        $this->getBitSaversUnknownPathsCalled = false;
-        $this->getBitSaversUnknownPathsFakeResult = array();
+        $this->getBitSaversUnknownPathsOrderedByIdCalled = false;
+        $this->getBitSaversUnknownPathsOrderedByIdFakeResult = array();
         $this->ignoreBitSaversPathCalled = false;
         $this->setPropertyCalled = false;
         $this->getPropertyCalled = false;
@@ -485,14 +485,25 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $getBitSaversUnknownPathCountCalled, $getBitSaversUnknownPathCountFakeResult;
 
-    function getBitSaversUnknownPaths($start)
+    function getBitSaversUnknownPathsOrderedById($start)
     {
-        $this->getBitSaversUnknownPathsCalled = true;
-        $this->getBitSaversUnknownPathsLastStart = $start;
-        return $this->getBitSaversUnknownPathsFakeResult;
+        $this->getBitSaversUnknownPathsOrderedByIdCalled = true;
+        $this->getBitSaversUnknownPathsOrderedByIdLastStart = $start;
+        return $this->getBitSaversUnknownPathsOrderedByIdFakeResult;
     }
-    public $getBitSaversUnknownPathsCalled, $getBitSaversUnknownPathsLastStart,
-        $getBitSaversUnknownPathsFakeResult;
+    public $getBitSaversUnknownPathsOrderedByIdCalled,
+        $getBitSaversUnknownPathsOrderedByIdLastStart,
+        $getBitSaversUnknownPathsOrderedByIdFakeResult;
+
+    function getBitSaversUnknownPathsOrderedByPath($start)
+    {
+        $this->getBitSaversUnknownPathsOrderedByPathCalled = true;
+        $this->getBitSaversUnknownPathsOrderedByPathLastStart = $start;
+        return $this->getBitSaversUnknownPathsOrderedByPathFakeResult;
+    }
+    public $getBitSaversUnknownPathsOrderedByPathCalled,
+        $getBitSaversUnknownPathsOrderedByPathLastStart,
+        $getBitSaversUnknownPathsOrderedByPathFakeResult;
 
     function bitSaversIgnoredPath($path)
     {

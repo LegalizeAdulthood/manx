@@ -6,6 +6,8 @@ require_once 'BitSaversPageFactory.php';
 define('WHATS_NEW_FILE', '../private/bitsavers-WhatsNew.txt');
 define('WHATS_NEW_URL', 'http://bitsavers.trailing-edge.com/pdf/Whatsnew.txt');
 define('TIMESTAMP_PROPERTY', 'bitsavers_whats_new_timestamp');
+define('SORT_ORDER_BY_ID', 'byid');
+define('SORT_ORDER_BY_PATH', 'bypath');
 
 class BitSaversPage extends AdminPageBase
 {
@@ -135,13 +137,30 @@ EOH;
 
 EOH;
         $start = array_key_exists('start', $this->_vars) ? $this->_vars['start'] : 0;
-        $unknownPaths = $this->_manxDb->getBitSaversUnknownPaths($start);
-        $this->renderPageSelectionBar($start, $total);
+        $sortOrder = array_key_exists('sort', $this->_vars) ? $this->_vars['sort'] : SORT_ORDER_BY_ID;
+        $sortById = $sortOrder == SORT_ORDER_BY_ID;
+        $unknownPaths = $sortById ?
+            $this->_manxDb->getBitSaversUnknownPathsOrderedById($start)
+            : $this->_manxDb->getBitSaversUnknownPathsOrderedByPath($start);
+        $this->renderPageSelectionBar($start, $total, $sortById);
+        $startParam = $start > 0 ? sprintf('start=%1$d&', $start) : '';
+        if ($sortById)
+        {
+            $idHeader = 'Id';
+            $pathHeader = sprintf('<a href="bitsavers.php?%1$s%2$s">Path</a>', $startParam, 'sort=' . SORT_ORDER_BY_PATH);
+        }
+        else
+        {
+            $idHeader = sprintf('<a href="bitsavers.php?%1$s%2$s">Id</a>',
+                $startParam, 'sort=' . SORT_ORDER_BY_ID);
+            $pathHeader = 'Path';
+        }
 
         print <<<EOH
 <form action="bitsavers.php" method="POST">
 <input type="hidden" name="start" value="$start" />
 <table>
+<tr><th>$idHeader</th><th>$pathHeader</th></tr>
 
 EOH;
         $num = min(10, count($unknownPaths));
@@ -150,7 +169,7 @@ EOH;
             $path = $unknownPaths[$i]['path'];
             printf('<tr><td>%1$d.</td><td><input type="checkbox" id="ignore%2$d" name="ignore%2$d" value="%3$s" />' . "\n" .
                 '<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/%3$s">%3$s</a></td></tr>' . "\n",
-                $i + 1, $i, trim($path));
+                $unknownPaths[$i]['id'], $i, trim($path));
         }
         print <<<EOH
 </table>
@@ -161,14 +180,15 @@ EOH;
 
     }
 
-    protected function renderPageSelectionBar($start, $total)
+    protected function renderPageSelectionBar($start, $total, $sortById)
     {
+        $linkParam = $sortById ? '' : '&sort=' . SORT_ORDER_BY_PATH;
         print '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;';
         $rowsPerPage = 10;
         if ($start != 0)
         {
-            printf('<a href="bitsavers.php?start=%s"><b>Previous</b></a>&nbsp;&nbsp;',
-                max(0, $start - $rowsPerPage));
+            printf('<a href="bitsavers.php?start=%1$d%2$s"><b>Previous</b></a>&nbsp;&nbsp;',
+                max(0, $start - $rowsPerPage), $linkParam);
         }
 
         $firstPage = intval($start / (10 * $rowsPerPage)) * 10 + 1;
@@ -186,8 +206,8 @@ EOH;
             }
             else
             {
-                print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d">%2$d</a>&nbsp;&nbsp;',
-                    $currPageStart, $currPageNum);
+                print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d%3$s">%2$d</a>&nbsp;&nbsp;',
+                    $currPageStart, $currPageNum, $linkParam);
             }
             ++$currPageNum;
             $currPageStart += $rowsPerPage;
@@ -198,7 +218,7 @@ EOH;
         }
         if ($start != $lastPageStart)
         {
-            print '<a href="bitsavers.php?start=' . ($start + $rowsPerPage) . '"><b>Next</b></a>';
+            printf('<a href="bitsavers.php?start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $linkParam);
         }
         print "</div>\n";
     }
