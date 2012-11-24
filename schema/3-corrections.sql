@@ -3213,7 +3213,6 @@ VALUES (1, 'http://vt100.net/', 'http://manx.classiccmp.org/mirror/vt100.net/', 
 --
 -- Update ftp.digital.com URLs
 --
-
 UPDATE `copy`
     SET `url` = REPLACE(`url`,
         'ftp://ftp.digital.com/pub/DEC/Alpha/misc/',
@@ -3233,7 +3232,6 @@ UPDATE `copy`
 --
 -- Update vt100.net PDF directory URLs
 --
-
 UPDATE `copy`
     SET `url` = CONCAT(`url`, REPLACE(REVERSE(SUBSTRING_INDEX(REVERSE(`url`), '/', 2)), '/', '.pdf'))
     WHERE `site`=1 AND `url` LIKE '%/' AND `format` = 'PDF';
@@ -3241,7 +3239,6 @@ UPDATE `copy`
 --
 -- Fix ftp.compaq.com URL
 --
-
 UPDATE `copy`
     SET `url` = 'http://h18002.www1.hp.com/cpq-alphaserver/technology/literature/alphaahb.pdf'
     WHERE `url` = 'ftp://ftp.compaq.com/pub/products/software/alpha-tools/documentation/current/alpha-archt/alpha-architecture.pdf';
@@ -3250,10 +3247,368 @@ UPDATE `copy`
 -- Add manx.classiccmp.org/mirror/harte as a real mirror...
 -- ...and remove copies manually duplicated copies and fake mirror site
 --
-
 INSERT INTO `mirror`(`site`, `original_stem`, `copy_stem`, `rank`)
 VALUES (43, 'http://www.hartetechnologies.com/manuals/', 'http://manx.classiccmp.org/mirror/harte/', 1);
 DELETE FROM `copy` WHERE `site` = 49;
 DELETE FROM `site` WHERE `site_id` = 49;
+
+--
+-- Fix www.sun.com URLs
+--
+UPDATE `site`
+    SET `url` = 'http://www.oracle.com/us/sun/index.htm',
+        `description` = 'Oracle\'s Sun Microsystems page'
+    WHERE `site_id` = 40;
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc2.ws/800-5166-10/800-5166-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/800-5166-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc2.ws/800-5661-11/800-5661-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/800-5661-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc10.ws/800-6358-11/800-6358-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/800-6358-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ctr2k.srvr/800-6975-16/800-6975-16.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/800-6975-16.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ctr2k.srvr/800-6993-13/800-6993-13.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/800-6993-13.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ctr2k.srvr/800-7481-10/800-7481-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/800-7481-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ctr2k.srvr/801-2007-18/801-2007-18.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-2007-18.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc.classic/801-2176-13/801-2176-13.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-2176-13.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/sparc1k.srvr/801-2196-10/801-2196-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-2196-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/sparc1k.srvr/801-2893-13/801-2893-13.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-2893-13.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/sparc1k.srvr/801-2895-15/801-2895-15.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-2895-15.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/sparc1k.srvr/801-2900-12/801-2900-12.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-2900-12.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/sparc1k.srvr/801-2916-10/801-2916-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-2916-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc.voyager/801-3872-12/801-3872-12.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-3872-12.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/sfe.sbus/801-6109-11/801-6109-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-6109-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc20.ws/801-6189-12/801-6189-12.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-6189-12.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc5.ws/801-6393-11/801-6393-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-6393-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc5.ws/801-6396-11/801-6396-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-6396-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19086-01/atm10/801-6572-11/801-6572-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-6572-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/sparc1k.srvr/801-7670-11/801-7670-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/801-7670-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/sfe.sbus/802-1304-10/802-1304-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-1304-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc4.ws/802-1529-10/802-1529-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-1529-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19532-01/802-2143-11/802-2143-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-2143-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19532-01/802-2145-11/802-2145-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-2145-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19532-01/802-2344-10/802-2344-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-2344-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19532-01/802-2345-11/802-2345-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-2345-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra2.ws/802-2561-11/802-2561-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-2561-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra2.ws/802-2562-11/802-2562-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-2562-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ctr2k.srvr/802-2700-10/802-2700-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-2700-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19294-01/802-3228-11/802-3228-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-3228-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra1.ws/802-3815-10/802-3815-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-3815-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra1.ws/802-3816-10/802-3816-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-3816-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra1.ws/802-3819-10/802-3819-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-3819-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent6k.srvr/802-3844-11/802-3844-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-3844-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent6k.srvr/802-3845-11/802-3845-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-3845-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent3k.srvr/802-3846-10/802-3846-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-3846-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra1.ws/802-4145-10/802-4145-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-4145-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra1.ws/802-4147-11/802-4147-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-4147-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra1.ws/802-4148-11/802-4148-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-4148-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra1.ws/802-4149-10/802-4149-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-4149-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19294-01/802-4161-11/802-4161-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-4161-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19086-01/atm4u1/802-4439-10/802-4439-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-4439-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19086-01/atm155.adapt.20/802-4505-10/802-4505-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-4505-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/swift.sbus/802-4535-10/802-4535-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-4535-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent6k.srvr/802-5030-11/802-5030-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-5030-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-5031-13/802-5031-13.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-5031-13.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-5032-15/802-5032-15.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-5032-15.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-5033-11/802-5033-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-5033-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-5034-10/802-5034-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-5034-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/fddi.sbus40/802-5144-10/802-5144-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-5144-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/fddi.sbus40/802-5145-10/802-5145-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-5145-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-5579-13/802-5579-13.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-5579-13.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19555-01/802-5688-10/802-5688-10.pdf '
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-5688-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra2.ws/802-5936-15/802-5936-15.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-5936-15.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19620-01/802-6020-13/802-6020-13.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6020-13.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/swift.sbus/802-6021-10/802-6021-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6021-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/sfe.sbus/802-6022-11/802-6022-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6022-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent3k.srvr/802-6050-11/802-6050-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6050-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-6051-11/802-6051-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6051-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-6084-11/802-6084-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6084-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-6244-10/802-6244-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6244-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc4.ws/802-6464-10/802-6464-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6464-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19086-01/atm155.adapt.21/802-6504-10/802-6504-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6504-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-6615-10/802-6615-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6615-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/swift.pci/802-6628-11/802-6628-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6628-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-6633-10/802-6633-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6633-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/fddi.sbus50/802-6674-10/802-6674-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6674-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent3k.srvr/802-6717-10/802-6717-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6717-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent45.srvr/802-6740-11/802-6740-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6740-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/swift.sbus/802-6749-10/802-6749-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6749-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra1.ws/802-6951-10/802-6951-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-6951-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc5.ws/802-7085-10/802-7085-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7085-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-7248-10/802-7248-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7248-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent4k.srvr/802-7249-11/802-7249-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7249-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7294-10/802-7294-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7294-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7295-10/802-7295-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7295-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7299-10/802-7299-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7299-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7300-10/802-7300-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7300-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7301-10/802-7301-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7301-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7302-10/802-7302-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7302-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7303-10/802-7303-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7303-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7304-10/802-7304-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7304-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7305-10/802-7305-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7305-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7306-10/802-7306-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7306-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7307-10/802-7307-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7307-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7308-10/802-7308-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7308-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19504-01/802-7309-10/802-7309-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7309-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-7543-10/802-7543-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7543-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19549-01/802-7572-11/802-7572-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7572-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19552-01/802-7573-16/802-7573-16.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7573-16.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19394-01/802-7712-10/802-7712-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7712-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra30.ws/802-7715-11/802-7715-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7715-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra30.ws/802-7716-11/802-7716-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7716-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra30.ws/802-7718-10/802-7718-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7718-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra30.ws/802-7719-12/802-7719-12.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7719-12.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra30.ws/802-7720-10/802-7720-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7720-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra1.ws/802-7723-10/802-7723-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7723-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra2.ws/802-7724-10/802-7724-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7724-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/802-7725-11/802-7725-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7725-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19086-01/atm21/802-7736-10/802-7736-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/802-7736-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/805-0028-10/805-0028-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-0028-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/805-0847-10/805-0847-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-0847-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra2.ws/805-0936-14/805-0936-14.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-0936-14.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra2.ws/805-0937-10/805-0937-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-0937-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/805-1026-10/805-1026-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-1026-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19113-01/giga.ether.sbus/805-1139-10/805-1139-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-1139-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/805-1372-11/805-1372-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-1372-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra1.ws/805-1766-10/805-1766-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-1766-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/ultra2.ws/805-1767-10/805-1767-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-1767-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/805-2629-11/805-2629-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-2629-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/805-2630-11/805-2630-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-2630-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/805-2631-11/805-2631-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-2631-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/805-2632-11/805-2632-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-2632-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/805-2704-11/805-2704-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-2704-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19095-01/ent35.srvr/805-2817-11/805-2817-11.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-2817-11.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc.voyager/805-5233-10/805-5233-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/805-5233-10.pdf';
+UPDATE `copy`
+    SET `url` = 'http://docs.oracle.com/cd/E19127-01/sparc10.ws/806-2222-10/806-2222-10.pdf'
+    WHERE `url` = 'http://www.sun.com/products-n-solutions/hardware/docs/pdf/806-2222-10.pdf';
 
 COMMIT;
