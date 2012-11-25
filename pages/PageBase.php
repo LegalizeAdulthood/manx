@@ -213,14 +213,15 @@ EOH;
         {
             $redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
         }
-        $prefix = PageBase::getRelativePrefixFromPathInfo();
-        printf('<a href="%slogin.php?redirect=%s">Login</a>', $prefix, urlencode($redirect));
+        printf('<a href="https://%s/login.php?redirect=%s">Login</a>',
+            $server['SERVER_NAME'], urlencode($redirect));
     }
 
-    private function renderLogoutLink()
+    private function renderLogoutLink($server)
     {
         $prefix = PageBase::getRelativePrefixFromPathInfo();
-        printf('<a href="%slogin.php?LOGO=1&redirect=%ssearch.php">Logout</a>', $prefix, $prefix);
+        printf('<a href="http://%s/login.php?LOGO=1&redirect=%ssearch.php">Logout</a>',
+            $server['SERVER_NAME'], $prefix);
     }
 
     protected function renderAuthorization()
@@ -229,7 +230,7 @@ EOH;
         print "<div id=\"AUTH\"><table>\n<tr><td>" . $user->displayName() . ' | ';
         if ($user->isLoggedIn())
         {
-            $this->renderLogoutLink();
+            $this->renderLogoutLink($_SERVER);
         }
         else
         {
