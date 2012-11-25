@@ -237,8 +237,9 @@ EOH;
     private function renderLogoutLink($server)
     {
         $prefix = PageBase::getRelativePrefixFromPathInfo();
-        printf('<a href="http://%s/login.php?LOGO=1&redirect=%ssearch.php">Logout</a>',
-            $server['SERVER_NAME'], $prefix);
+        $absolutePrefix = PageBase::getAbsolutePrefixFromScriptName($server);
+        printf('<a href="http://%s/%slogin.php?LOGO=1&redirect=%ssearch.php">Logout</a>',
+            $server['SERVER_NAME'], $absolutePrefix, $prefix);
     }
 
     protected function renderAuthorization()
