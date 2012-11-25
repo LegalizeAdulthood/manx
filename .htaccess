@@ -1,1 +1,2 @@
 DirectoryIndex search.php
+Redirect /maintenance.html /search.php
