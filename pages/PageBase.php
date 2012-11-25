@@ -210,7 +210,7 @@ EOH;
     {
         $parts = explode('/', $server['SCRIPT_NAME']);
         array_shift($parts);
-        if (count($parts) > 0)
+        if (count($parts) > 1)
         {
             array_pop($parts);
             $prefix = implode('/', $parts) . '/';

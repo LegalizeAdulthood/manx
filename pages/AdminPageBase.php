@@ -33,7 +33,10 @@ abstract class AdminPageBase extends PageBase
     {
         if (!$this->_user->isLoggedIn())
         {
-            $this->redirect("login.php?redirect=" . urlencode($_SERVER['PHP_SELF']));
+            $host = $_SERVER['SERVER_NAME'];
+            $absolutePrefix = PageBase::getAbsolutePrefixFromScriptName($_SERVER);
+            $this->redirect(sprintf("https://%s/%slogin.php?redirect=%s",
+                $host, $absolutePrefix, urlencode($_SERVER['PHP_SELF'])));
             return;
         }
 
