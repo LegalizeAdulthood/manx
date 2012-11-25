@@ -1,3 +1,0 @@
-publist { display: table; border: 1px solid #ccc; border-collapse: collapse; margin: 10px }
-pub { display: table-row }
-part, title { display: table-cell; padding: 0.2em; border: 1px solid #ccc }
