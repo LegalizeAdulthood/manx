@@ -254,7 +254,7 @@ EOH;
         {
             $this->renderLoginLink($_SERVER);
         }
-        printf("</tr>\n"
+        printf("</td></tr>\n"
             . "<tr><td>&nbsp;</td></tr>\n"
             . "<tr><td class=\"version\" align=\"right\">version %s</td></tr>\n"
             . "</table></div>\n",
