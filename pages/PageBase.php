@@ -206,6 +206,22 @@ EOH;
             : '';
     }
 
+    public static function getAbsolutePrefixFromScriptName($server)
+    {
+        $parts = explode('/', $server['SCRIPT_NAME']);
+        array_shift($parts);
+        if (count($parts) > 0)
+        {
+            array_pop($parts);
+            $prefix = implode('/', $parts) . '/';
+        }
+        else
+        {
+            $prefix = '';
+        }
+        return $prefix;
+    }
+
     public function renderLoginLink($server)
     {
         $redirect = $server['PHP_SELF'];
@@ -213,8 +229,9 @@ EOH;
         {
             $redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
         }
-        printf('<a href="https://%s/login.php?redirect=%s">Login</a>',
-            $server['SERVER_NAME'], urlencode($redirect));
+        $prefix = PageBase::getAbsolutePrefixFromScriptName($server);
+        printf('<a href="https://%s/%slogin.php?redirect=%s">Login</a>',
+            $server['SERVER_NAME'], $prefix, urlencode($redirect));
     }
 
     private function renderLogoutLink($server)

@@ -50,8 +50,10 @@ class TestPageBase extends PHPUnit_Framework_TestCase
     {
         $this->createInstance();
         $this->startOutputCapture();
-        $this->_page->renderLoginLink(array('PHP_SELF' => '/manx/about.php', 'SERVER_NAME' => 'localhost'));
+        $this->_page->renderLoginLink(array('PHP_SELF' => '/manx/about.php',
+            'SCRIPT_NAME' => '/manx/about.php',
+            'SERVER_NAME' => 'localhost'));
         $output = $this->finishOutputCapture();
-        $this->assertEquals('<a href="https://localhost/login.php?redirect=%2Fmanx%2Fabout.php">Login</a>', $output);
+        $this->assertEquals('<a href="https://localhost/manx/login.php?redirect=%2Fmanx%2Fabout.php">Login</a>', $output);
     }
 }
