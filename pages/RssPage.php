@@ -20,7 +20,7 @@ class RssPage extends PageBase
             $pubId = $pub['ph_pub'];
             $link = sprintf('details.php/%d,%d', $pub['ph_company'], $pubId);
             $description = $this->getItemDescription($pub);
-            $pubDate = new DateTime($pub['ph_created']);
+            $pubDate = new DateTime($pub['ph_created'], new DateTimeZone('UTC'));
             $this->_rss->item($pub['ph_title'], $link, $description,
                 array(
                     'pubDate' => $pubDate->format(DateTime::RFC1123),

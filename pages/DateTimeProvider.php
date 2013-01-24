@@ -6,6 +6,6 @@ class DateTimeProvider implements IDateTimeProvider
 {
     public function now()
     {
-        return new DateTime();
+        return new DateTime("now", new DateTimeZone('UTC'));
     }
 }
