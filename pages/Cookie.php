@@ -17,6 +17,7 @@ class Cookie
 
     public static function delete()
     {
+		date_default_timezone_set('America/Chicago');
         setcookie(Cookie::NAME, 'OUT', time() - 60);
     }
 }

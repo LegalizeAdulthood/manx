@@ -23,6 +23,7 @@ class User implements IUser
         $row = $manxDb->getUserFromSessionId(Cookie::get());
         if (array_key_exists('user_id', $row))
         {
+			date_default_timezone_set('America/Chicago');
             if (time() - strtotime($row['last_impression']) > 30*60)
             {
                 $manxDb->deleteUserSession(Cookie::get());

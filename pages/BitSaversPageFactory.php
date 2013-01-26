@@ -24,6 +24,7 @@ class BitSaversPageFactory implements IBitSaversPageFactory
 
     function getCurrentTime()
     {
+		date_default_timezone_set('America/Chicago');
         return time();
     }
 }
