@@ -467,23 +467,30 @@ $(function()
 
     $("input[name='next']").click(function(event)
         {
+            var next = $("input[name='next']");
+            var cancel = function()
+            {
+                event.preventDefault();
+                next.show();
+            };
             try
             {
+                next.hide();
                 if (!validate_data())
                 {
                     $('.form_container').after('<p class="error">There is an error!</p>');
-                    event.preventDefault();
+                    cancel();
                 }
                 else if (!confirm("Add this information?"))
                 {
-                    event.preventDefault();
+                    cancel();
                 }
             }
             catch (e)
             {
                 $('.form_container').after('<p>There was an exception!  FUCK!</p>'
                     + '<dl><dt>' + e.name + '</dt><dd>' + e.message + '</dd></dl>');
-                event.preventDefault();
+                cancel();
             }
         });
 
