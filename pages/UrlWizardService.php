@@ -117,7 +117,7 @@ class UrlWizardService extends ServicePageBase
             $lastPart = count($parts)-1;
             $year = strtolower($parts[$lastPart]);
             $months = UrlWizardService::months();
-            if (is_numeric($year))
+            if (is_numeric($year) && $year > 9)
             {
                 if ($year < 100)
                 {

@@ -55,6 +55,13 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
         $this->assertTrue(UrlWizardService::urlComponentsMatch(parse_url($url), parse_url($site)));
     }
 
+    public function testExtractPubDateSingleTrailingDigit()
+    {
+        list($date, $newFileBase) = UrlWizardService::extractPubDate('foo_bar_3');
+        $this->assertEquals('', $date);
+        $this->assertEquals('foo_bar_3', $newFileBase);
+    }
+
     public function testExtractPubDateSeparateMonthYear()
     {
         $this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar_1975');
