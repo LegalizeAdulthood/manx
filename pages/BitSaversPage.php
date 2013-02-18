@@ -167,9 +167,10 @@ EOH;
         for ($i = 0; $i < $num; ++$i)
         {
             $path = $unknownPaths[$i]['path'];
+            $urlPath = self::escapeSpecialChars(trim($path));
             printf('<tr><td>%1$d.</td><td><input type="checkbox" id="ignore%2$d" name="ignore%2$d" value="%3$s" />' . "\n" .
-                '<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/%3$s">%3$s</a></td></tr>' . "\n",
-                $unknownPaths[$i]['id'], $i, trim($path));
+                '<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/%4$s">%3$s</a></td></tr>' . "\n",
+                $unknownPaths[$i]['id'], $i, $path, $urlPath);
         }
         print <<<EOH
 </table>
@@ -241,5 +242,10 @@ EOH;
                 $start + 10000, $linkParam);
         }
         print "</div>\n";
+    }
+
+    public static function escapeSpecialChars($path)
+    {
+        return str_replace("#", urlencode("#"), $path);
     }
 }

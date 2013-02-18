@@ -152,7 +152,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->createPageWithoutFetchingWhatsNewFile();
         $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
-            'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
+            'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
         $idStart = 110;
         $this->_db->getBitSaversUnknownPathsOrderedByIdFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
@@ -362,6 +362,12 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
             $output);
     }
 
+    public function testEscapeSpecialChars()
+    {
+        $this->assertEquals("microCornucopia/Micro_Cornucopia_%2350_Nov89.pdf",
+            BitSaversPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
+    }
+
     public function testRenderPageSelectionBarManyPagesByPath()
     {
         $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH));
@@ -460,9 +466,10 @@ EOH;
         $n = $idStart;
         foreach ($paths as $path)
         {
+            $urlPath = BitSaversPage::escapeSpecialChars($path);
             $item = <<<EOH
 <tr><td>$n.</td><td><input type="checkbox" id="ignore$i" name="ignore$i" value="$path" />
-<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/$path">$path</a></td></tr>
+<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/$urlPath">$path</a></td></tr>
 
 EOH;
             $expected = $expected . $item;

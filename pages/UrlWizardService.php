@@ -326,7 +326,7 @@ class UrlWizardService extends ServicePageBase
                 $data['part'] = array_shift($parts);
             }
             $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
-            $data['title'] = implode(' ', $parts);
+            $data['title'] = self::titleForFileBase(implode(' ', $parts));
         }
         else
         {
@@ -444,7 +444,7 @@ class UrlWizardService extends ServicePageBase
 
     public static function titleForFileBase($fileBase)
     {
-        $title = str_replace('_', ' ', $fileBase);
+        $title = str_replace('_', ' ', str_replace(urlencode('#'), '#', $fileBase));
         if (1 == preg_match('/[a-z][A-Z]/', $title))
         {
             $words = array();

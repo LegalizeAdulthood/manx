@@ -127,6 +127,11 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, UrlWizardService::comparePublications($left, $right));
     }
 
+    public function testTitleForBaseWithPoundSign()
+    {
+        $this->assertTitleForFileBase('Micro Cornucopia #50', 'Micro_Cornucopia_%2350');
+    }
+
     public function testTitleForFileBaseWithUnderscores()
     {
         $this->assertTitleForFileBase('Foo Bar Gronky', 'Foo_Bar_Gronky');

@@ -2,6 +2,7 @@
 
 require_once 'Manx.php';
 require_once 'AdminPageBase.php';
+require_once 'BitSaversPage.php';
 require_once 'UrlInfo.php';
 
 class URLWizardPage extends AdminPageBase
@@ -145,7 +146,7 @@ class URLWizardPage extends AdminPageBase
 EOH;
         if (array_key_exists('url', $this->_vars))
         {
-            $url = $this->_vars['url'];
+            $url = BitSaversPage::escapeSpecialChars($this->_vars['url']);
             print <<<EOH
 <script type="text/javascript">
 $(function()
