@@ -122,27 +122,37 @@ class TestUrlWizardService extends PHPUnit_Framework_TestCase
 
     public function testTitleForFileBaseWithUnderscores()
     {
-        $this->assertEquals('Foo Bar Gronky', UrlWizardService::titleForFileBase('Foo_Bar_Gronky'));
+        $this->assertTitleForFileBase('Foo Bar Gronky', 'Foo_Bar_Gronky');
     }
 
     public function testTitleForFileBaseWithSpaces()
     {
-        $this->assertEquals('Foo Bar Gronky', UrlWizardService::titleForFileBase('Foo_Bar Gronky'));
+        $this->assertTitleForFileBase('Foo Bar Gronky', 'Foo_Bar Gronky');
     }
 
     public function testTitleForFileBaseWithMixedCase()
     {
-        $this->assertEquals('Foo Bar Gronky', UrlWizardService::titleForFileBase('FooBarGronky'));
+        $this->assertTitleForFileBase('Foo Bar Gronky', 'FooBarGronky');
+    }
+
+    public function testTitleMixedCaseAndUnderscores()
+    {
+        $this->assertTitleForFileBase('TI CBL Real World Math Guidebook', 'TI_CBL_RealWorldMath_Guidebook');
     }
 
     public function testTitleForFileBaseWithMixedCaseTwoWords()
     {
-        $this->assertEquals('Foo Bar', UrlWizardService::titleForFileBase('FooBar'));
+        $this->assertTitleForFileBase('Foo Bar', 'FooBar');
     }
 
     public function testTitleForFileBaseWithMixedCaseFourWords()
     {
-        $this->assertEquals('Foo Bar Blobby Phlegm', UrlWizardService::titleForFileBase('FooBarBlobbyPhlegm'));
+        $this->assertTitleForFileBase('Foo Bar Blobby Phlegm', 'FooBarBlobbyPhlegm');
+    }
+
+    private function assertTitleForFileBase($title, $fileBase)
+    {
+        $this->assertEquals($title, UrlWizardService::titleForFileBase($fileBase));
     }
 
     private function createPublicationsForCompare($leftPart, $leftRev, $leftTitle, $rightPart, $rightRev, $rightTitle)

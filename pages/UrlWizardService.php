@@ -444,10 +444,11 @@ class UrlWizardService extends ServicePageBase
 
     public static function titleForFileBase($fileBase)
     {
-        if (strpos($fileBase, '_') === false && 1 == preg_match('/[a-z][A-Z]/', $fileBase))
+        $title = str_replace('_', ' ', $fileBase);
+        if (1 == preg_match('/[a-z][A-Z]/', $title))
         {
             $words = array();
-            $pieces = preg_split('/([a-z])([A-Z])/', $fileBase, -1, PREG_SPLIT_DELIM_CAPTURE);
+            $pieces = preg_split('/([a-z])([A-Z])/', $title, -1, PREG_SPLIT_DELIM_CAPTURE);
             $i = 0;
             array_push($words, $pieces[$i + 0] . $pieces[$i + 1]);
             $i += 2;
@@ -456,8 +457,8 @@ class UrlWizardService extends ServicePageBase
                 array_push($words, $pieces[$i + 0] . $pieces[$i + 1] . $pieces[$i + 2]);
             }
             array_push($words, $pieces[$i + 0] . $pieces[$i + 1]);
-            return implode(' ', $words);
+            $title = implode(' ', $words);
         }
-        return str_replace('_', ' ', $fileBase);
+        return $title;
     }
 }
