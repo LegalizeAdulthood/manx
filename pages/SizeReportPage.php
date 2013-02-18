@@ -15,6 +15,25 @@ class SizeReportPage extends AdminPageBase
         PageBase::renderPage();
     }
 
+    protected function renderHeaderContent()
+    {
+        print <<<EOH
+<script type="text/javascript" src="assets/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+$(function()
+{
+    var button = $("input[type='submit']");
+    button.click(function(event)
+    {
+        button.hide();
+        $("#form_container").after('<p><span style="color: #009193;">Working...</span></p>');
+    });
+});
+</script>
+
+EOH;
+    }
+
     protected function renderBodyContent()
     {
         if (array_key_exists('operation', $this->_vars) && $this->_vars['operation'] == 'repair')
@@ -132,7 +151,7 @@ EOH;
             print <<<EOH
 </ol>
 <input type="hidden" name="operation" value="repair" />
-<input type="submit" value="Ignore Checked and Repair" />
+<input type="submit" name="repair" value="Ignore Checked and Repair" />
 </form>
 </div>
 
