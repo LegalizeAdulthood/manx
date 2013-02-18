@@ -185,6 +185,16 @@ EOH;
         $linkParam = $sortById ? '' : '&sort=' . SORT_ORDER_BY_PATH;
         print '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;';
         $rowsPerPage = 10;
+        if ($start - 10000 >= 0)
+        {
+            print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&lt;&lt;</b></a>&nbsp;&nbsp;',
+                $start - 10000, $linkParam);
+        }
+        if ($start - 1000 >= 0)
+        {
+            print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&lt;</b></a>&nbsp;&nbsp;',
+                $start - 1000, $linkParam);
+        }
         if ($start != 0)
         {
             printf('<a href="bitsavers.php?start=%1$d%2$s"><b>Previous</b></a>&nbsp;&nbsp;',
@@ -219,6 +229,16 @@ EOH;
         if ($start != $lastPageStart)
         {
             printf('<a href="bitsavers.php?start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $linkParam);
+        }
+        if ($start + 1000 < $total)
+        {
+            print sprintf('&nbsp;&nbsp;<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&gt;</b></a>',
+                $start + 1000, $linkParam);
+        }
+        if ($start + 10000 < $total)
+        {
+            print sprintf('&nbsp;&nbsp;<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&gt;&gt;</b></a>',
+                $start + 10000, $linkParam);
         }
         print "</div>\n";
     }

@@ -245,7 +245,119 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
                 . '<a class="navpage" href="bitsavers.php?start=70">8</a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=80">9</a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=90">10</a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=10"><b>Next</b></a>'
+                . '<a href="bitsavers.php?start=10"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1000"><b>&gt;</b></a>'
+                . '</div>' . "\n",
+            $output);
+    }
+
+    public function testRenderPageSelectionBarManyManyPages()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0));
+        ob_start();
+        $this->_page->renderPageSelectionBar(0, 12340, true);
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertEquals(
+            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=20">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=30">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=40">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=50">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=60">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=70">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=80">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=90">10</a>&nbsp;&nbsp;'
+                . '<a href="bitsavers.php?start=10"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1000"><b>&gt;</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10000"><b>&gt;&gt;</b></a>'
+                . '</div>' . "\n",
+            $output);
+    }
+
+    public function testRenderPageSelectionBarManyPreviousPages()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 1100));
+        ob_start();
+        $this->_page->renderPageSelectionBar(1100, 1234, true);
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertEquals(
+            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=100"><b>&lt;</b></a>&nbsp;&nbsp;'
+                . '<a href="bitsavers.php?start=1090"><b>Previous</b></a>&nbsp;&nbsp;'
+                . '<b class="currpage">111</b>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1110">112</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1120">113</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1130">114</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1140">115</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1150">116</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1160">117</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1170">118</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1180">119</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1190">120</a>&nbsp;&nbsp;'
+                . '<a href="bitsavers.php?start=1110"><b>Next</b></a>'
+                . '</div>' . "\n",
+            $output);
+    }
+
+    public function testRenderPageSelectionBar10KPreviousPages()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 10000));
+        ob_start();
+        $this->_page->renderPageSelectionBar(10000, 12340, true);
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertEquals(
+            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=0"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=9000"><b>&lt;</b></a>&nbsp;&nbsp;'
+                . '<a href="bitsavers.php?start=9990"><b>Previous</b></a>&nbsp;&nbsp;'
+                . '<b class="currpage">1001</b>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10010">1002</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10020">1003</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10030">1004</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10040">1005</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10050">1006</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10060">1007</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10070">1008</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10080">1009</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10090">1010</a>&nbsp;&nbsp;'
+                . '<a href="bitsavers.php?start=10010"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=11000"><b>&gt;</b></a>'
+                . '</div>' . "\n",
+            $output);
+    }
+
+    public function testRenderPageSelectionBarManyManyPreviousPages()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 11000));
+        ob_start();
+        $this->_page->renderPageSelectionBar(11000, 12340, true);
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertEquals(
+            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1000"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10000"><b>&lt;</b></a>&nbsp;&nbsp;'
+                . '<a href="bitsavers.php?start=10990"><b>Previous</b></a>&nbsp;&nbsp;'
+                . '<b class="currpage">1101</b>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=11010">1102</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=11020">1103</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=11030">1104</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=11040">1105</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=11050">1106</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=11060">1107</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=11070">1108</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=11080">1109</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=11090">1110</a>&nbsp;&nbsp;'
+                . '<a href="bitsavers.php?start=11010"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=12000"><b>&gt;</b></a>'
                 . '</div>' . "\n",
             $output);
     }
@@ -269,7 +381,8 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
                 . '<a class="navpage" href="bitsavers.php?start=70&sort=bypath">8</a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=80&sort=bypath">9</a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=90&sort=bypath">10</a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=10&sort=bypath"><b>Next</b></a>'
+                . '<a href="bitsavers.php?start=10&sort=bypath"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1000&sort=bypath"><b>&gt;</b></a>'
                 . '</div>' . "\n",
             $output);
     }
