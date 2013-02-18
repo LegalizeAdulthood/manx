@@ -14,6 +14,11 @@ class NewsPage extends PageBase
         print <<<EOH
 <h1>News</h1>
 
+<h2>Version 2.0.4</h2>
+
+<p>This is a minor update that incorporates various usability improvements
+and bug fixes related to adding new documents.</p>
+
 <h2>Version 2.0.3</h2>
 
 <p>This second version of the open source manx application brings a number
