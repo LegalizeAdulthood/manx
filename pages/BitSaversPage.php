@@ -159,6 +159,7 @@ EOH;
         print <<<EOH
 <form action="bitsavers.php" method="POST">
 <input type="hidden" name="start" value="$start" />
+<input type="hidden" name="sort" value="$sortOrder" />
 <table>
 <tr><th>$idHeader</th><th>$pathHeader</th></tr>
 
