@@ -485,24 +485,28 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $getBitSaversUnknownPathCountCalled, $getBitSaversUnknownPathCountFakeResult;
 
-    function getBitSaversUnknownPathsOrderedById($start)
+    function getBitSaversUnknownPathsOrderedById($start, $ascending)
     {
         $this->getBitSaversUnknownPathsOrderedByIdCalled = true;
         $this->getBitSaversUnknownPathsOrderedByIdLastStart = $start;
+        $this->getBitSaversUnknownPathsOrderedByIdLastAscending = $ascending;
         return $this->getBitSaversUnknownPathsOrderedByIdFakeResult;
     }
     public $getBitSaversUnknownPathsOrderedByIdCalled,
         $getBitSaversUnknownPathsOrderedByIdLastStart,
+        $getBitSaversUnknownPathsOrderedByIdLastAscending,
         $getBitSaversUnknownPathsOrderedByIdFakeResult;
 
-    function getBitSaversUnknownPathsOrderedByPath($start)
+    function getBitSaversUnknownPathsOrderedByPath($start, $ascending)
     {
         $this->getBitSaversUnknownPathsOrderedByPathCalled = true;
         $this->getBitSaversUnknownPathsOrderedByPathLastStart = $start;
+        $this->getBitSaversUnknownPathsOrderedByPathLastAscending = $ascending;
         return $this->getBitSaversUnknownPathsOrderedByPathFakeResult;
     }
     public $getBitSaversUnknownPathsOrderedByPathCalled,
         $getBitSaversUnknownPathsOrderedByPathLastStart,
+            $getBitSaversUnknownPathsOrderedByPathLastAscending,
         $getBitSaversUnknownPathsOrderedByPathFakeResult;
 
     function bitSaversIgnoredPath($path)

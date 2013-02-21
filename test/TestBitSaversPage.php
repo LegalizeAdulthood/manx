@@ -170,6 +170,26 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     {
         $this->createPageWithoutFetchingWhatsNewFile(array('sort' => SORT_ORDER_BY_PATH));
         $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
+        $paths = array('dec/Q.pdf', 'dec/R.pdf', 'dec/S.pdf', 'dec/T.pdf', 'dec/U.pdf',
+            'dec/V.pdf', 'dec/W.pdf', 'dec/X.pdf', 'dec/Y.pdf', 'dec/Z.pdf');
+        $idStart = 110;
+        $this->_db->getBitSaversUnknownPathsOrderedByPathFakeResult =
+            self::createResultRowsForUnknownPaths($paths, $idStart);
+        ob_start();
+        $this->_page->renderBodyContent();
+        $output = ob_get_contents();
+        ob_end_clean();
+        $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByPathCalled);
+        $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByPathLastAscending);
+        $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
+        $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false), $output);
+    }
+
+    public function testRenderBodyContentWithPlentyOfPathsOrderedByPathDescending()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile(array('sort' => SORT_ORDER_BY_PATH_DESCENDING));
+        $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
         $paths = array('dec/Z.pdf', 'dec/Y.pdf', 'dec/X.pdf', 'dec/W.pdf', 'dec/V.pdf',
             'dec/U.pdf', 'dec/T.pdf', 'dec/S.pdf', 'dec/R.pdf', 'dec/Q.pdf');
         $idStart = 110;
@@ -181,8 +201,9 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         ob_end_clean();
         $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByPathCalled);
+        $this->assertFalse($this->_db->getBitSaversUnknownPathsOrderedByPathLastAscending);
         $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
-        $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false), $output);
+        $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false, false), $output);
     }
 
     public function testRenderBodyContentGetsNewPaths()
@@ -439,19 +460,21 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->_db->copyExistsForUrlFakeResults = $existing;
     }
 
-    private static function expectedOutputForPaths($paths, $idStart = 1, $sortById = true)
+    private static function expectedOutputForPaths($paths, $idStart = 1, $sortById = true, $ascending = true)
     {
         if ($sortById)
         {
-            $sortValue = 'byid';
-            $expectedIdHeader = 'Id';
+            $sortValue = $ascending ? 'byid' : 'byiddesc';
+            $nextSortValue = $ascending ? 'byiddesc' : 'byid';
+            $expectedIdHeader = sprintf('<a href="bitsavers.php?sort=%1$s">Id</a>', $nextSortValue);
             $expectedPathHeader = '<a href="bitsavers.php?sort=bypath">Path</a>';
         }
         else
         {
-            $sortValue = 'bypath';
+            $sortValue = $ascending ? 'bypath' : 'bypathdesc';
+            $nextSortValue = $ascending ? 'bypathdesc' : 'bypath';
             $expectedIdHeader = '<a href="bitsavers.php?sort=byid">Id</a>';
-            $expectedPathHeader = 'Path';
+            $expectedPathHeader = sprintf('<a href="bitsavers.php?sort=%1$s">Path</a>', $nextSortValue);
         }
 
         $expected = <<<EOH

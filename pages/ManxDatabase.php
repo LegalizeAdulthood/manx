@@ -694,14 +694,16 @@ class ManxDatabase implements IManxDatabase
         return $rows[0]['count'];
     }
 
-    function getBitSaversUnknownPathsOrderedById($start)
+    function getBitSaversUnknownPathsOrderedById($start, $ascending)
     {
-        return $this->execute("SELECT `path`,`id` FROM `bitsavers_unknown` WHERE `ignored` = 0 ORDER BY `id` LIMIT $start, 10", array());
+        $order = $ascending ? 'ASC' : 'DESC';
+        return $this->execute("SELECT `path`,`id` FROM `bitsavers_unknown` WHERE `ignored` = 0 ORDER BY `id` $order LIMIT $start, 10", array());
     }
 
-    function getBitSaversUnknownPathsOrderedByPath($start)
+    function getBitSaversUnknownPathsOrderedByPath($start, $ascending)
     {
-        return $this->execute("SELECT `path`,`id` FROM `bitsavers_unknown` WHERE `ignored` = 0 ORDER BY `path` LIMIT $start, 10", array());
+        $order = $ascending ? 'ASC' : 'DESC';
+        return $this->execute("SELECT `path`,`id` FROM `bitsavers_unknown` WHERE `ignored` = 0 ORDER BY `path` $order LIMIT $start, 10", array());
     }
 
     function bitSaversIgnoredPath($path)

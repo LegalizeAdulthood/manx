@@ -7,7 +7,9 @@ define('WHATS_NEW_FILE', '../private/bitsavers-WhatsNew.txt');
 define('WHATS_NEW_URL', 'http://bitsavers.trailing-edge.com/pdf/Whatsnew.txt');
 define('TIMESTAMP_PROPERTY', 'bitsavers_whats_new_timestamp');
 define('SORT_ORDER_BY_ID', 'byid');
+define('SORT_ORDER_BY_ID_DESCENDING', 'byiddesc');
 define('SORT_ORDER_BY_PATH', 'bypath');
+define('SORT_ORDER_BY_PATH_DESCENDING', 'bypathdesc');
 
 class BitSaversPage extends AdminPageBase
 {
@@ -138,23 +140,24 @@ EOH;
 EOH;
         $start = array_key_exists('start', $this->_vars) ? $this->_vars['start'] : 0;
         $sortOrder = array_key_exists('sort', $this->_vars) ? $this->_vars['sort'] : SORT_ORDER_BY_ID;
-        $sortById = $sortOrder == SORT_ORDER_BY_ID;
+        $sortById = ($sortOrder == SORT_ORDER_BY_ID) || ($sortOrder == SORT_ORDER_BY_ID_DESCENDING);
         $unknownPaths = $sortById ?
-            $this->_manxDb->getBitSaversUnknownPathsOrderedById($start)
-            : $this->_manxDb->getBitSaversUnknownPathsOrderedByPath($start);
+            $this->_manxDb->getBitSaversUnknownPathsOrderedById($start, $sortOrder == SORT_ORDER_BY_ID)
+            : $this->_manxDb->getBitSaversUnknownPathsOrderedByPath($start, $sortOrder == SORT_ORDER_BY_PATH);
         $this->renderPageSelectionBar($start, $total, $sortById);
         $startParam = $start > 0 ? sprintf('start=%1$d&', $start) : '';
         if ($sortById)
         {
-            $idHeader = 'Id';
-            $pathHeader = sprintf('<a href="bitsavers.php?%1$s%2$s">Path</a>', $startParam, 'sort=' . SORT_ORDER_BY_PATH);
+            $idSortParam = ($sortOrder == SORT_ORDER_BY_ID) ? SORT_ORDER_BY_ID_DESCENDING : SORT_ORDER_BY_ID;
+            $pathSortParam = SORT_ORDER_BY_PATH;
         }
         else
         {
-            $idHeader = sprintf('<a href="bitsavers.php?%1$s%2$s">Id</a>',
-                $startParam, 'sort=' . SORT_ORDER_BY_ID);
-            $pathHeader = 'Path';
+            $idSortParam = SORT_ORDER_BY_ID;
+            $pathSortParam = ($sortOrder == SORT_ORDER_BY_PATH) ? SORT_ORDER_BY_PATH_DESCENDING : SORT_ORDER_BY_PATH;
         }
+        $idHeader = sprintf('<a href="bitsavers.php?%1$s%2$s">Id</a>', $startParam, 'sort=' . $idSortParam);
+        $pathHeader = sprintf('<a href="bitsavers.php?%1$s%2$s">Path</a>', $startParam, 'sort=' . $pathSortParam);
 
         print <<<EOH
 <form action="bitsavers.php" method="POST">

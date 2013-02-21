@@ -708,7 +708,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $path2 = 'foo/foo.jpg';
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('path', 'id'), array(array($path1, '1'), array($path2, '2')));
-        $paths = $this->_manxDb->getBitSaversUnknownPathsOrderedById(0);
+        $paths = $this->_manxDb->getBitSaversUnknownPathsOrderedById(0, true);
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals(1, count($this->_db->executeLastStatements));
         $this->assertEquals(1, count($this->_db->executeLastArgs));
@@ -727,11 +727,12 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $path2 = 'foo/bar.jpg';
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('path', 'id'), array(array($path1, '1'), array($path2, '2')));
-        $paths = $this->_manxDb->getBitSaversUnknownPathsOrderedById(0);
+        $paths = $this->_manxDb->getBitSaversUnknownPathsOrderedById(0, true);
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals(1, count($this->_db->executeLastStatements));
         $this->assertEquals(1, count($this->_db->executeLastArgs));
         $this->assertStringStartsWith("SELECT `path`,`id` FROM `bitsavers_unknown`", $this->_db->executeLastStatements[0]);
+        $this->assertContains("ORDER BY `id` ASC", $this->_db->executeLastStatements[0]);
         $this->assertEquals(0, count($this->_db->executeLastArgs[0]));
         $this->assertEquals($path1, $paths[0]['path']);
         $this->assertEquals(1, $paths[0]['id']);
