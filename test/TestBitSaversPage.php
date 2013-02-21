@@ -443,11 +443,13 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     {
         if ($sortById)
         {
+            $sortValue = 'byid';
             $expectedIdHeader = 'Id';
             $expectedPathHeader = '<a href="bitsavers.php?sort=bypath">Path</a>';
         }
         else
         {
+            $sortValue = 'bypath';
             $expectedIdHeader = '<a href="bitsavers.php?sort=byid">Id</a>';
             $expectedPathHeader = 'Path';
         }
@@ -458,6 +460,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 <div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>
 <form action="bitsavers.php" method="POST">
 <input type="hidden" name="start" value="0" />
+<input type="hidden" name="sort" value="$sortValue" />
 <table>
 <tr><th>$expectedIdHeader</th><th>$expectedPathHeader</th></tr>
 
