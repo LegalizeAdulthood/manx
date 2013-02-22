@@ -53,9 +53,9 @@ class BitSaversPageTester extends BitSaversPage
         parent::ignorePaths();
     }
 
-    public function renderPageSelectionBar($start, $total, $sortById)
+    public function renderPageSelectionBar($start, $total)
     {
-        parent::renderPageSelectionBar($start, $total, $sortById);
+        parent::renderPageSelectionBar($start, $total);
     }
 }
 
@@ -236,9 +236,9 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarOnePage()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0));
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
-        $this->_page->renderPageSelectionBar(0, 10, true);
+        $this->_page->renderPageSelectionBar(0, 10);
         $output = ob_get_contents();
         ob_end_clean();
 
@@ -249,9 +249,9 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarManyPages()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0));
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
-        $this->_page->renderPageSelectionBar(0, 1234, true);
+        $this->_page->renderPageSelectionBar(0, 1234);
         $output = ob_get_contents();
         ob_end_clean();
 
@@ -274,7 +274,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarManyManyPages()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0));
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
         $this->_page->renderPageSelectionBar(0, 12340, true);
         $output = ob_get_contents();
@@ -300,7 +300,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarManyPreviousPages()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 1100));
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 1100, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
         $this->_page->renderPageSelectionBar(1100, 1234, true);
         $output = ob_get_contents();
@@ -327,7 +327,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBar10KPreviousPages()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 10000));
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 10000, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
         $this->_page->renderPageSelectionBar(10000, 12340, true);
         $output = ob_get_contents();
@@ -356,9 +356,9 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarManyManyPreviousPages()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 11000));
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 11000, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
-        $this->_page->renderPageSelectionBar(11000, 12340, true);
+        $this->_page->renderPageSelectionBar(11000, 12340);
         $output = ob_get_contents();
         ob_end_clean();
 
@@ -393,7 +393,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     {
         $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH));
         ob_start();
-        $this->_page->renderPageSelectionBar(0, 1234, false);
+        $this->_page->renderPageSelectionBar(0, 1234);
         $output = ob_get_contents();
         ob_end_clean();
 
@@ -410,6 +410,31 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
                 . '<a class="navpage" href="bitsavers.php?start=90&sort=bypath">10</a>&nbsp;&nbsp;'
                 . '<a href="bitsavers.php?start=10&sort=bypath"><b>Next</b></a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=1000&sort=bypath"><b>&gt;</b></a>'
+                . '</div>' . "\n",
+            $output);
+    }
+
+    public function testRenderPageSelectionBarManyPagesByPathDescending()
+    {
+        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH_DESCENDING));
+        ob_start();
+        $this->_page->renderPageSelectionBar(0, 1234);
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertEquals(
+            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=10&sort=bypathdesc">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=20&sort=bypathdesc">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=30&sort=bypathdesc">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=40&sort=bypathdesc">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=50&sort=bypathdesc">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=60&sort=bypathdesc">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=70&sort=bypathdesc">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=80&sort=bypathdesc">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=90&sort=bypathdesc">10</a>&nbsp;&nbsp;'
+                . '<a href="bitsavers.php?start=10&sort=bypathdesc"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="bitsavers.php?start=1000&sort=bypathdesc"><b>&gt;</b></a>'
                 . '</div>' . "\n",
             $output);
     }
@@ -512,7 +537,7 @@ EOH;
         return $expected;
     }
 
-    private function createPageWithoutFetchingWhatsNewFile($vars = array())
+    private function createPageWithoutFetchingWhatsNewFile($vars = array('sort' => SORT_ORDER_BY_ID))
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->lastModifiedFakeResult = '10';

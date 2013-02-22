@@ -144,7 +144,7 @@ EOH;
         $unknownPaths = $sortById ?
             $this->_manxDb->getBitSaversUnknownPathsOrderedById($start, $sortOrder == SORT_ORDER_BY_ID)
             : $this->_manxDb->getBitSaversUnknownPathsOrderedByPath($start, $sortOrder == SORT_ORDER_BY_PATH);
-        $this->renderPageSelectionBar($start, $total, $sortById);
+        $this->renderPageSelectionBar($start, $total);
         $startParam = $start > 0 ? sprintf('start=%1$d&', $start) : '';
         if ($sortById)
         {
@@ -185,25 +185,26 @@ EOH;
 
     }
 
-    protected function renderPageSelectionBar($start, $total, $sortById)
+    protected function renderPageSelectionBar($start, $total)
     {
-        $linkParam = $sortById ? '' : '&sort=' . SORT_ORDER_BY_PATH;
+        $sortOrder = $this->_vars['sort'];
+        $sortParam = ($sortOrder == SORT_ORDER_BY_ID) ? '' : '&sort=' . $sortOrder;
         print '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;';
         $rowsPerPage = 10;
         if ($start - 10000 >= 0)
         {
             print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&lt;&lt;</b></a>&nbsp;&nbsp;',
-                $start - 10000, $linkParam);
+                $start - 10000, $sortParam);
         }
         if ($start - 1000 >= 0)
         {
             print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&lt;</b></a>&nbsp;&nbsp;',
-                $start - 1000, $linkParam);
+                $start - 1000, $sortParam);
         }
         if ($start != 0)
         {
             printf('<a href="bitsavers.php?start=%1$d%2$s"><b>Previous</b></a>&nbsp;&nbsp;',
-                max(0, $start - $rowsPerPage), $linkParam);
+                max(0, $start - $rowsPerPage), $sortParam);
         }
 
         $firstPage = intval($start / (10 * $rowsPerPage)) * 10 + 1;
@@ -222,7 +223,7 @@ EOH;
             else
             {
                 print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d%3$s">%2$d</a>&nbsp;&nbsp;',
-                    $currPageStart, $currPageNum, $linkParam);
+                    $currPageStart, $currPageNum, $sortParam);
             }
             ++$currPageNum;
             $currPageStart += $rowsPerPage;
@@ -233,17 +234,17 @@ EOH;
         }
         if ($start != $lastPageStart)
         {
-            printf('<a href="bitsavers.php?start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $linkParam);
+            printf('<a href="bitsavers.php?start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $sortParam);
         }
         if ($start + 1000 < $total)
         {
             print sprintf('&nbsp;&nbsp;<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&gt;</b></a>',
-                $start + 1000, $linkParam);
+                $start + 1000, $sortParam);
         }
         if ($start + 10000 < $total)
         {
             print sprintf('&nbsp;&nbsp;<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&gt;&gt;</b></a>',
-                $start + 10000, $linkParam);
+                $start + 10000, $sortParam);
         }
         print "</div>\n";
     }
