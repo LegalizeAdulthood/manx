@@ -91,14 +91,23 @@ class UrlWizardService extends ServicePageBase
 
     private function siteIsBitSavers($data)
     {
+        return $this->siteMatchesId($data, Site::BitSavers);
+    }
+
+    private function siteMatchesId($data, $siteId)
+    {
         return array_key_exists('site_id', $data['site'])
-            && $data['site']['site_id'] == Site::BitSavers;
+            && $data['site']['site_id'] == $siteId;
     }
 
     private function determineUrlData(&$data)
     {
         $url = $data['url'];
         $matches = array();
+        if (substr($url, strlen($url) - 4, 4) == '.tgz')
+        {
+            $url = substr($url, 0, strlen($url) - 4);
+        }
         if (1 != preg_match('|^.*/([^/]+)\.([^./]+)$|', $url, $matches))
         {
             return;
