@@ -47,7 +47,7 @@ class UrlInfo implements IUrlInfo
         $httpStatus = $this->httpStatus();
         $this->close();
 
-        $value = '';
+        $value = false;
         if ($httpStatus == 200)
         {
             $value = $this->getHeaderValue($result, $header);
