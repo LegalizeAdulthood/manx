@@ -187,7 +187,8 @@ EOH;
 
     protected function renderPageSelectionBar($start, $total)
     {
-        $sortOrder = $this->_vars['sort'];
+        $sortOrder = array_key_exists('sort', $this->_vars) ?
+            $this->_vars['sort'] : SORT_ORDER_BY_ID;
         $sortParam = ($sortOrder == SORT_ORDER_BY_ID) ? '' : '&sort=' . $sortOrder;
         print '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;';
         $rowsPerPage = 10;
