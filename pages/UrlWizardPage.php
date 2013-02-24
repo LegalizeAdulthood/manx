@@ -137,6 +137,18 @@ class URLWizardPage extends AdminPageBase
         return $md5;
     }
 
+    private function renderInitialData($id, $var)
+    {
+        if (array_key_exists($var, $this->_vars))
+        {
+            $val = str_replace('"', '\"', $this->_vars[$var]);
+            print <<<EOH
+    $('#$id').data('initial', "$val");
+
+EOH;
+        }
+    }
+
     protected function renderHeaderContent()
     {
         $this->renderLink("stylesheet", "text/css", "assets/UrlWizard.css");
@@ -152,10 +164,19 @@ EOH;
 $(function()
 {
     var copy_url = $("#copy_url");
+
+EOH;
+            $this->renderInitialData('company_id', 'cp');
+            $this->renderInitialData('pub_history_ph_title', 'title');
+            $this->renderInitialData('pub_history_ph_part', 'partNumber');
+            $this->renderInitialData('pub_history_ph_pub_date', 'pubDate');
+            $this->renderInitialData('pub_history_ph_abstract', 'abstract');
+            print <<<EOH
     copy_url.val("${url}");
     copy_url.change();
 });
 </script>
+
 EOH;
         }
     }
