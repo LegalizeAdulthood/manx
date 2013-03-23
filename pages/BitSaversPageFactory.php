@@ -2,6 +2,7 @@
 
 require_once 'File.php';
 require_once 'IBitSaversPageFactory.php';
+require_once 'IDateTimeProvider.php';
 require_once 'UrlInfo.php';
 require_once 'UrlTransfer.php';
 
@@ -24,7 +25,7 @@ class BitSaversPageFactory implements IBitSaversPageFactory
 
     function getCurrentTime()
     {
-		date_default_timezone_set('America/Chicago');
+        date_default_timezone_set(TIME_ZONE);
         return time();
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+require_once 'IDateTimeProvider.php';
 require_once 'IManxDatabase.php';
 require_once 'IUser.php';
 require_once 'Cookie.php';
@@ -23,7 +24,7 @@ class User implements IUser
         $row = $manxDb->getUserFromSessionId(Cookie::get());
         if (array_key_exists('user_id', $row))
         {
-			date_default_timezone_set('America/Chicago');
+            date_default_timezone_set(TIME_ZONE);
             if (time() - strtotime($row['last_impression']) > 30*60)
             {
                 $manxDb->deleteUserSession(Cookie::get());
