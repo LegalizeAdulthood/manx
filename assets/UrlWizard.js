@@ -69,6 +69,15 @@ $(function()
             'This value is required and cannot be empty.');
     };
 
+    var validate_field_non_empty_lower_case = function(input_id)
+    {
+        var value = $("#" + input_id).val().trim();
+        return clear_or_set_error_label(
+            (value.length === 0) || (value.match(/^[^A-Z]*$/) === null),
+            input_id,
+            'This value is required, cannot be empty and must be lower case.');
+    };
+
     var validate_combo_box = function(combo_id, field_validator)
     {
         return ($("#" + combo_id).val() != -1) || field_validator();
@@ -193,7 +202,7 @@ $(function()
     {
         return validate_field_non_empty("company_name")
             && validate_field_non_empty("company_short_name")
-            && validate_field_non_empty("company_sort_name");
+            && validate_field_non_empty_lower_case("company_sort_name");
     };
 
     var set_publication_initial_field = function(key)
