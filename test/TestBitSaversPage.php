@@ -91,23 +91,28 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->_factory->openFileFakeResult = $this->_file;
     }
 
-    public function testConstructWithNoTimeStampPropertyGetsWhatsNewFile()
+    public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
     {
         $this->_db->getPropertyFakeResult = false;
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
-        $this->_file->getStringFakeResults = array_merge(array('======='), $paths);
+        $lines = array();
+        foreach ($paths as $path)
+        {
+            array_push($lines, '2013-10-07 21:02:00 ' . $path);
+        }
+        $this->_file->getStringFakeResults = array_merge($lines);
 
         $this->createPage();
 
         $this->assertTrue(is_object($this->_page));
         $this->assertFalse(is_null($this->_page));
         $this->assertPropertyRead(TIMESTAMP_PROPERTY);
-        $this->assertWhatsNewFileTransferred();
+        $this->assertIndexByDateFileTransferred();
         $this->assertFileParsedPaths($paths);
     }
 
-    public function testConstructWithNoLastModifiedGetsWhatsNewFile()
+    public function testConstructWithNoLastModifiedGetsIndexByDateFile()
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->lastModifiedFakeResult = false;
@@ -116,12 +121,12 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->createPage();
 
         $this->assertTrue($this->_factory->createUrlInfoCalled);
-        $this->assertEquals(WHATS_NEW_URL, $this->_factory->createUrlInfoLastUrl);
+        $this->assertEquals(INDEX_BY_DATE_URL, $this->_factory->createUrlInfoLastUrl);
         $this->assertTrue($this->_info->lastModifiedCalled);
-        $this->assertWhatsNewFileTransferred();
+        $this->assertIndexByDateFileTransferred();
     }
 
-    public function testConstructWithLastModifiedEqualsTimeStampDoesNotGetWhatsNewFile()
+    public function testConstructWithLastModifiedEqualsTimeStampDoesNotGetIndexByDateFile()
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->lastModifiedFakeResult = '10';
@@ -131,25 +136,25 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->_factory->createUrlTransferCalled);
     }
 
-    public function testConstructWithLastModifiedNewerThanTimeStampGetsWhatsNewFile()
+    public function testConstructWithLastModifiedNewerThanTimeStampGetsIndexByDateFile()
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->lastModifiedFakeResult = '20';
 
         $this->createPage();
 
-        $this->assertWhatsNewFileTransferred();
+        $this->assertIndexByDateFileTransferred();
     }
 
     public function testMenuTypeIsBitSaversPage()
     {
-        $this->createPageWithoutFetchingWhatsNewFile();
+        $this->createPageWithoutFetchingIndexByDateFile();
         $this->assertEquals(MenuType::BitSavers, $this->_page->getMenuType());
     }
 
     public function testRenderBodyContentWithPlentyOfPaths()
     {
-        $this->createPageWithoutFetchingWhatsNewFile();
+        $this->createPageWithoutFetchingIndexByDateFile();
         $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
@@ -168,7 +173,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('sort' => SORT_ORDER_BY_PATH));
+        $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH));
         $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
         $paths = array('dec/Q.pdf', 'dec/R.pdf', 'dec/S.pdf', 'dec/T.pdf', 'dec/U.pdf',
             'dec/V.pdf', 'dec/W.pdf', 'dec/X.pdf', 'dec/Y.pdf', 'dec/Z.pdf');
@@ -188,7 +193,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPathDescending()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('sort' => SORT_ORDER_BY_PATH_DESCENDING));
+        $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH_DESCENDING));
         $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
         $paths = array('dec/Z.pdf', 'dec/Y.pdf', 'dec/X.pdf', 'dec/W.pdf', 'dec/V.pdf',
             'dec/U.pdf', 'dec/T.pdf', 'dec/S.pdf', 'dec/R.pdf', 'dec/Q.pdf');
@@ -208,7 +213,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderBodyContentGetsNewPaths()
     {
-        $this->createPageWithoutFetchingWhatsNewFile();
+        $this->createPageWithoutFetchingIndexByDateFile();
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
         $this->_db->getBitSaversUnknownPathCountFakeResult = count($paths);
@@ -228,7 +233,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testIgnorePaths()
     {
         $ignoredPath = 'dec/1.pdf';
-        $this->createPageWithoutFetchingWhatsNewFile(array('ignore0' => $ignoredPath));
+        $this->createPageWithoutFetchingIndexByDateFile(array('ignore0' => $ignoredPath));
         $this->_page->ignorePaths();
         $this->assertTrue($this->_db->ignoreBitSaversPathCalled);
         $this->assertEquals($ignoredPath, $this->_db->ignoreBitSaversPathLastPath);
@@ -236,7 +241,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarOnePage()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
         $this->_page->renderPageSelectionBar(0, 10);
         $output = ob_get_contents();
@@ -249,7 +254,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarManyPages()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
         $this->_page->renderPageSelectionBar(0, 1234);
         $output = ob_get_contents();
@@ -274,7 +279,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarManyManyPages()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
         $this->_page->renderPageSelectionBar(0, 12340, true);
         $output = ob_get_contents();
@@ -300,7 +305,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarManyPreviousPages()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 1100, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 1100, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
         $this->_page->renderPageSelectionBar(1100, 1234, true);
         $output = ob_get_contents();
@@ -327,7 +332,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBar10KPreviousPages()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 10000, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 10000, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
         $this->_page->renderPageSelectionBar(10000, 12340, true);
         $output = ob_get_contents();
@@ -356,7 +361,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarManyManyPreviousPages()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 11000, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 11000, 'sort' => SORT_ORDER_BY_ID));
         ob_start();
         $this->_page->renderPageSelectionBar(11000, 12340);
         $output = ob_get_contents();
@@ -391,7 +396,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarManyPagesByPath()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH));
+        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH));
         ob_start();
         $this->_page->renderPageSelectionBar(0, 1234);
         $output = ob_get_contents();
@@ -416,7 +421,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderPageSelectionBarManyPagesByPathDescending()
     {
-        $this->createPageWithoutFetchingWhatsNewFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH_DESCENDING));
+        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH_DESCENDING));
         ob_start();
         $this->_page->renderPageSelectionBar(0, 1234);
         $output = ob_get_contents();
@@ -441,7 +446,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
     public function testRenderBodyContentNoDocuments()
     {
-        $this->createPageWithoutFetchingWhatsNewFile();
+        $this->createPageWithoutFetchingIndexByDateFile();
         $this->_db->getBitSaversUnknownPathCountFakeResult = 0;
         ob_start();
         $this->_page->renderBodyContent();
@@ -453,7 +458,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     private function assertFileParsedPaths($paths)
     {
         $this->assertTrue($this->_factory->openFileCalled);
-        $this->assertEquals(WHATS_NEW_FILE, $this->_factory->openFileLastPath);
+        $this->assertEquals(INDEX_BY_DATE_FILE, $this->_factory->openFileLastPath);
         $this->assertEquals('r', $this->_factory->openFileLastMode);
         $this->assertTrue($this->_file->eofCalled);
         $this->assertTrue($this->_file->getStringCalled);
@@ -537,7 +542,7 @@ EOH;
         return $expected;
     }
 
-    private function createPageWithoutFetchingWhatsNewFile($vars = array('sort' => SORT_ORDER_BY_ID))
+    private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->lastModifiedFakeResult = '10';
@@ -557,12 +562,12 @@ EOH;
         $this->assertEquals($name, $this->_db->getPropertyLastName);
     }
 
-    private function assertWhatsNewFileTransferred()
+    private function assertIndexByDateFileTransferred()
     {
         $this->assertTrue($this->_factory->createUrlTransferCalled);
-        $this->assertEquals(WHATS_NEW_URL, $this->_factory->createUrlTransferLastUrl);
+        $this->assertEquals(INDEX_BY_DATE_URL, $this->_factory->createUrlTransferLastUrl);
         $this->assertTrue($this->_transfer->getCalled);
-        $this->assertEquals(WHATS_NEW_FILE, $this->_transfer->getLastDestination);
+        $this->assertEquals(INDEX_BY_DATE_FILE, $this->_transfer->getLastDestination);
         $this->assertTrue($this->_db->setPropertyCalled);
     }
 }

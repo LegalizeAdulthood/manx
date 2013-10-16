@@ -3,8 +3,8 @@
 require_once 'AdminPageBase.php';
 require_once 'BitSaversPageFactory.php';
 
-define('WHATS_NEW_FILE', '../private/bitsavers-WhatsNew.txt');
-define('WHATS_NEW_URL', 'http://bitsavers.trailing-edge.com/pdf/Whatsnew.txt');
+define('INDEX_BY_DATE_FILE', '../private/bitsavers-IndexByDate.txt');
+define('INDEX_BY_DATE_URL', 'http://bitsavers.trailing-edge.com/pdf/IndexByDate.txt');
 define('TIMESTAMP_PROPERTY', 'bitsavers_whats_new_timestamp');
 define('SORT_ORDER_BY_ID', 'byid');
 define('SORT_ORDER_BY_ID_DESCENDING', 'byiddesc');
@@ -23,21 +23,21 @@ class BitSaversPage extends AdminPageBase
             $factory = new BitSaversPageFactory();
         }
         $this->_factory = $factory;
-        if ($this->needWhatsNewFile())
+        if ($this->needIndexByDateFile())
         {
-            $this->getWhatsNewFile();
-            $this->parseWhatsNewFile();
+            $this->getIndexByDateFile();
+            $this->parseIndexByDateFile();
         }
     }
 
-    private function needWhatsNewFile()
+    private function needIndexByDateFile()
     {
         $timeStamp = $this->_manxDb->getProperty(TIMESTAMP_PROPERTY);
         if ($timeStamp === false)
         {
             return true;
         }
-        $urlInfo = $this->_factory->createUrlInfo(WHATS_NEW_URL);
+        $urlInfo = $this->_factory->createUrlInfo(INDEX_BY_DATE_URL);
         $lastModified = $urlInfo->lastModified();
         if ($lastModified === false)
         {
@@ -47,34 +47,22 @@ class BitSaversPage extends AdminPageBase
         return $lastModified > $timeStamp;
     }
 
-    private function getWhatsNewFile()
+    private function getIndexByDateFile()
     {
-        $transfer = $this->_factory->createUrlTransfer(WHATS_NEW_URL);
-        $transfer->get(WHATS_NEW_FILE);
+        $transfer = $this->_factory->createUrlTransfer(INDEX_BY_DATE_URL);
+        $transfer->get(INDEX_BY_DATE_FILE);
         $this->_manxDb->setProperty(TIMESTAMP_PROPERTY, $this->_factory->getCurrentTime());
     }
 
-    private function parseWhatsNewFile()
+    private function parseIndexByDateFile()
     {
-        $whatsNew = $this->_factory->openFile(WHATS_NEW_FILE, 'r');
-        $this->skipHeader($whatsNew);
-        while (!$whatsNew->eof())
+        $indexByDate = $this->_factory->openFile(INDEX_BY_DATE_FILE, 'r');
+        while (!$indexByDate->eof())
         {
-            $line = trim($whatsNew->getString());
+            $line = substr(trim($indexByDate->getString()), 20);
             if (strlen($line) && $this->pathUnknown($line))
             {
                 $this->addUnknownPath($line);
-            }
-        }
-    }
-
-    private function skipHeader($whatsNew)
-    {
-        while (!$whatsNew->eof())
-        {
-            if (strpos(trim($whatsNew->getString()), '=======') === 0)
-            {
-                return;
             }
         }
     }
