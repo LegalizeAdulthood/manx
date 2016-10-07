@@ -3,7 +3,7 @@
 require_once 'AdminPageBase.php';
 require_once 'BitSaversPageFactory.php';
 
-define('INDEX_BY_DATE_FILE', '../private/bitsavers-IndexByDate.txt');
+define('INDEX_BY_DATE_FILE', '../../private/manx/bitsavers-IndexByDate.txt');
 define('INDEX_BY_DATE_URL', 'http://bitsavers.trailing-edge.com/pdf/IndexByDate.txt');
 define('TIMESTAMP_PROPERTY', 'bitsavers_whats_new_timestamp');
 define('SORT_ORDER_BY_ID', 'byid');

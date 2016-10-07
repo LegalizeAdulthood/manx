@@ -1,6 +1,6 @@
 <?php
 
-const TIME_ZONE = 'America/Chicago';
+const TIME_ZONE = 'America/Denver';
 
 interface IDateTimeProvider
 {

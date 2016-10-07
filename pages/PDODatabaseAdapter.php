@@ -6,7 +6,7 @@ class PDODatabaseAdapter implements IDatabase
 {
     public static function getInstance()
     {
-        $config = explode(" ", trim(file_get_contents("../private/config.txt")));
+        $config = explode(" ", trim(file_get_contents("../../private/manx/config.txt")));
         $pdo = new PDO($config[0], $config[1], $config[2]);
         return new PDODatabaseAdapter($pdo);
     }
