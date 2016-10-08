@@ -22,7 +22,7 @@ class BitSaversCleaner
     private $_factory;
     private $_logger;
 
-    public function __construct(IManx $manx, IBitSaversPageFactory $factory, ILogger $logger)
+    public function __construct(IManx $manx, IBitSaversPageFactory $factory, ILogger $logger = null)
     {
         $this->_manx = $manx;
         $this->_db = $manx->getDatabase();
