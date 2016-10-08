@@ -67,4 +67,18 @@ class TestBitSaversCleaner extends PHPUnit_Framework_TestCase
 
         $this->assertFalse($this->_db->removeBitSaversUnknownPathByIdCalled);
     }
+
+    public function testPathsEscapeSpecialChars()
+    {
+        $this->_db->getAllBitSaversUnknownPathsResult = array(
+            array('id' => 1, 'path' => 'foo/path#1.pdf')
+        );
+        $urlInfo = new FakeUrlInfo();
+        $urlInfo->existsFakeResult = true;
+        $this->_factory->createUrlInfoFakeResult = $urlInfo;
+
+        $this->_cleaner->removeNonExistentUnknownPaths();
+
+        $this->assertEquals('http://bitsavers.trailing-edge.com/pdf/foo/path%231.pdf', $this->_factory->createUrlInfoLastUrl);
+    }
 }

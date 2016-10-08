@@ -35,12 +35,18 @@ class BitSaversCleaner
         foreach($this->_db->getAllBitSaversUnknownPaths() as $row)
         {
             $path = $row['path'];
-            $urlInfo = $this->_factory->createUrlInfo('http://bitsavers.trailing-edge.com/pdf/' . $path);
+            $url = 'http://bitsavers.trailing-edge.com/pdf/' . self::escapeSpecialChars($path);
+            $urlInfo = $this->_factory->createUrlInfo($url);
             if (!$urlInfo->exists())
             {
                 $this->_db->removeBitSaversUnknownPathById($row['id']);
                 $this->_logger->log('Path: ' . $path);
             }
         }
+    }
+
+    private static function escapeSpecialChars($path)
+    {
+        return str_replace("#", urlencode("#"), $path);
     }
 }
