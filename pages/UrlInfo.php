@@ -6,6 +6,7 @@ interface IUrlInfo
 {
     function size();
     function lastModified();
+    function httpStatus();
 }
 
 class UrlInfo implements IUrlInfo

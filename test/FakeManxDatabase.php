@@ -70,6 +70,10 @@ class FakeManxDatabase implements IManxDatabase
         $this->updateSizeForCopyCalled = false;
         $this->getUrlForCopyCalled = false;
         $this->getZeroSizeDocumentsCalled = false;
+        $this->getAllBitSaversUnknownPathsCalled = false;
+        $this->getAllBitSaversUnknownPathsResult = array();
+        $this->removeBitSaversUnknownPathByIdCalled = false;
+        $this->removeBitSaversUnknownPathByIdLastId = -1;
     }
 
     public function getDocumentCount()
@@ -517,4 +521,18 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $bitSaversIgnoredPathCalled, $bitSaversIgnoredPathLastPath,
         $bitSaversIgnoredPathFakeResult;
+
+    function getAllBitSaversUnknownPaths()
+    {
+        $this->getAllBitSaversUnknownPathsCalled = true;
+        return $this->getAllBitSaversUnknownPathsResult;
+    }
+    public $getAllBitSaversUnknownPathsCalled, $getAllBitSaversUnknownPathsResult;
+
+    function removeBitSaversUnknownPathById($id)
+    {
+        $this->removeBitSaversUnknownPathByIdCalled = true;
+        $this->removeBitSaversUnknownPathByIdLastId = $id;
+    }
+    public $removeBitSaversUnknownPathByIdCalled, $removeBitSaversUnknownPathByIdLastId;
 }

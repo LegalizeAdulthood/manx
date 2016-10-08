@@ -15,4 +15,11 @@ class FakeUrlInfo implements IUrlInfo
         return $this->lastModifiedFakeResult;
     }
     public $lastModifiedCalled, $lastModifiedFakeResult;
+
+    function httpStatus()
+    {
+        $this->httpStatusCalled = true;
+        return $this->httpStatusFakeResult;
+    }
+    public $httpStatusCalled, $httpStatusLastUrl, $httpStatusFakeResult;
 }

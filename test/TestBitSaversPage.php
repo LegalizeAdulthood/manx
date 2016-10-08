@@ -2,39 +2,11 @@
 
 require_once 'pages/BitSaversPage.php';
 require_once 'test/FakeBitSaversPageFactory.php';
+require_once 'test/FakeFile.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeUrlInfo.php';
 require_once 'test/FakeUrlTransfer.php';
-
-class FakeFile implements IFile
-{
-    private $_line;
-
-    public function __construct()
-    {
-        $this->_line = 0;
-        $this->getStringCalled = false;
-        $this->getStringFakeResults = array();
-    }
-
-    function eof()
-    {
-        $this->eofCalled = true;
-        return $this->_line >= count($this->getStringFakeResults);
-    }
-    public $eofCalled;
-
-    function getString()
-    {
-        $this->getStringCalled = true;
-        if ($this->_line < count($this->getStringFakeResults))
-        {
-            return $this->getStringFakeResults[$this->_line++];
-        }
-    }
-    public $getStringCalled, $getStringFakeResults;
-}
 
 class BitSaversPageTester extends BitSaversPage
 {
