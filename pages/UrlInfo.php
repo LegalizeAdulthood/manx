@@ -6,7 +6,7 @@ interface IUrlInfo
 {
     function size();
     function lastModified();
-    function httpStatus();
+    function exists();
 }
 
 class UrlInfo implements IUrlInfo
@@ -65,7 +65,14 @@ class UrlInfo implements IUrlInfo
         return $value;
     }
 
-    public function httpStatus()
+    public function exists()
+    {
+        $exists = $this->size() !== false;
+        $this->close();
+        return $exists;
+    }
+
+    private function httpStatus()
     {
         return $this->_api->getinfo($this->_session, CURLINFO_HTTP_CODE);
     }

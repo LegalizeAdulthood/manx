@@ -16,10 +16,10 @@ class FakeUrlInfo implements IUrlInfo
     }
     public $lastModifiedCalled, $lastModifiedFakeResult;
 
-    function httpStatus()
+    function exists()
     {
-        $this->httpStatusCalled = true;
-        return $this->httpStatusFakeResult;
+        $this->existsCalled = true;
+        return $this->existsFakeResult;
     }
-    public $httpStatusCalled, $httpStatusLastUrl, $httpStatusFakeResult;
+    public $existsCalled, $existsFakeResult;
 }
