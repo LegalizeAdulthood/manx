@@ -67,9 +67,7 @@ class UrlInfo implements IUrlInfo
 
     public function exists()
     {
-        $exists = $this->size() !== false;
-        $this->close();
-        return $exists;
+        return $this->size() !== false;
     }
 
     private function httpStatus()
