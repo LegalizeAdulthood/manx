@@ -1,3 +1,2 @@
 DirectoryIndex search.php
 Redirect /maintenance.html /search.php
-php_flag magic_quotes_gpc Off
