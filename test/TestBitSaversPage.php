@@ -121,6 +121,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testMenuTypeIsBitSaversPage()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
+
         $this->assertEquals(MenuType::BitSavers, $this->_page->getMenuType());
     }
 
@@ -133,10 +134,12 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $idStart = 110;
         $this->_db->getBitSaversUnknownPathsOrderedByIdFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
+
         ob_start();
         $this->_page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
+
         $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByIdCalled);
         $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
@@ -152,10 +155,12 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $idStart = 110;
         $this->_db->getBitSaversUnknownPathsOrderedByPathFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
+
         ob_start();
         $this->_page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
+
         $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByPathCalled);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByPathLastAscending);
@@ -172,10 +177,12 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $idStart = 110;
         $this->_db->getBitSaversUnknownPathsOrderedByPathFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
+
         ob_start();
         $this->_page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
+
         $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByPathCalled);
         $this->assertFalse($this->_db->getBitSaversUnknownPathsOrderedByPathLastAscending);
@@ -192,10 +199,9 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->configureCopiesExistForPaths($paths);
         $this->_db->getBitSaversUnknownPathsOrderedByIdFakeResult =
             self::createResultRowsForUnknownPaths($paths);
+
         ob_start();
-
         $this->_page->renderBodyContent();
-
         $output = ob_get_contents();
         ob_end_clean();
 
@@ -214,6 +220,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderPageSelectionBarOnePage()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
+
         ob_start();
         $this->_page->renderPageSelectionBar(0, 10);
         $output = ob_get_contents();
@@ -227,6 +234,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderPageSelectionBarManyPages()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
+
         ob_start();
         $this->_page->renderPageSelectionBar(0, 1234);
         $output = ob_get_contents();
@@ -252,6 +260,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderPageSelectionBarManyManyPages()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
+
         ob_start();
         $this->_page->renderPageSelectionBar(0, 12340, true);
         $output = ob_get_contents();
@@ -278,6 +287,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderPageSelectionBarManyPreviousPages()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 1100, 'sort' => SORT_ORDER_BY_ID));
+
         ob_start();
         $this->_page->renderPageSelectionBar(1100, 1234, true);
         $output = ob_get_contents();
@@ -305,6 +315,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderPageSelectionBar10KPreviousPages()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 10000, 'sort' => SORT_ORDER_BY_ID));
+
         ob_start();
         $this->_page->renderPageSelectionBar(10000, 12340, true);
         $output = ob_get_contents();
@@ -334,6 +345,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderPageSelectionBarManyManyPreviousPages()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 11000, 'sort' => SORT_ORDER_BY_ID));
+
         ob_start();
         $this->_page->renderPageSelectionBar(11000, 12340);
         $output = ob_get_contents();
@@ -360,15 +372,22 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
             $output);
     }
 
-    public function testEscapeSpecialChars()
+    public function testPoundSignEscaped()
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia_%2350_Nov89.pdf",
             BitSaversPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
     }
 
+    public function testSpaceEscaped()
+    {
+        $this->assertEquals("microCornucopia/Micro_Cornucopia%2050_Nov89.pdf",
+            BitSaversPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
+    }
+
     public function testRenderPageSelectionBarManyPagesByPath()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH));
+
         ob_start();
         $this->_page->renderPageSelectionBar(0, 1234);
         $output = ob_get_contents();
@@ -394,6 +413,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderPageSelectionBarManyPagesByPathDescending()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH_DESCENDING));
+
         ob_start();
         $this->_page->renderPageSelectionBar(0, 1234);
         $output = ob_get_contents();
@@ -420,10 +440,12 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     {
         $this->createPageWithoutFetchingIndexByDateFile();
         $this->_db->getBitSaversUnknownPathCountFakeResult = 0;
+
         ob_start();
         $this->_page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
+
         $this->assertEquals("<h1>No New BitSavers Publications Found</h1>\n", $output);
     }
 

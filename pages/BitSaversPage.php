@@ -241,6 +241,6 @@ EOH;
 
     public static function escapeSpecialChars($path)
     {
-        return str_replace(" ", urlencode(" "), str_replace("#", urlencode("#"), $path));
+        return str_replace(" ", "%20", str_replace("#", urlencode("#"), $path));
     }
 }
