@@ -60,8 +60,6 @@ with tools. It isn't a comment on the usefulness of the site!</p>
 <p>Paul Williams wrote the original implementation of Manx in perl and
 entered all the initial data.  Thank you, Paul!</p>
 
-<p>Jay West provides hosting services for Manx.  Thank you, Jay!</p>
-
 <p><a href="http://www.jetbrains.com">JetBrains</a> donated a license of the
 <a href="http://www.jetbrains.com/phpstorm/">PHPStorm PHP development environment</a>
 for use in developing this code.  Thank you, JetBrains!</p>
