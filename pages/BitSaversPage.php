@@ -240,6 +240,6 @@ EOH;
 
     public static function escapeSpecialChars($path)
     {
-        return str_replace("#", urlencode("#"), $path);
+        return str_replace(" ", urlencode(" "), str_replace("#", urlencode("#"), $path));
     }
 }
