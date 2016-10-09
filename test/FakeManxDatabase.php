@@ -76,7 +76,7 @@ class FakeManxDatabase implements IManxDatabase
         $this->removeBitSaversUnknownPathByIdLastId = -1;
         $this->getPossiblyMovedUnknownPathsCalled = false;
         $this->getPossiblyMovedUnknownPathsFakeResult = array();
-        $this->bitsaversFileMovedCalled = false;
+        $this->bitSaversFileMovedCalled = false;
     }
 
     public function getDocumentCount()
@@ -546,12 +546,12 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $getPossiblyMovedUnknownPathsCalled, $getPossiblyMovedUnknownPathsFakeResult;
 
-    function bitsaversFileMoved($copyId, $pathId, $url)
+    function bitSaversFileMoved($copyId, $pathId, $url)
     {
-        $this->bitsaversFileMovedCalled = true;
-        $this->bitsaversFileMovedLastCopyId = $copyId;
-        $this->bitsaversFileMovedLastPathId = $pathId;
-        $this->bitsaversFileMovedLastUrl = $url;
+        $this->bitSaversFileMovedCalled = true;
+        $this->bitSaversFileMovedLastCopyId = $copyId;
+        $this->bitSaversFileMovedLastPathId = $pathId;
+        $this->bitSaversFileMovedLastUrl = $url;
     }
-    public $bitsaversFileMovedCalled, $bitsaversFileMovedLastCopyId, $bitsaversFileMovedLastPathId, $bitsaversFileMovedLastUrl;
+    public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
 }

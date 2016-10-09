@@ -99,9 +99,9 @@ class TestBitSaversCleaner extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_factory->createUrlInfoCalled);
         $this->assertEquals('http://bitsavers.trailing-edge.com/pdf/hp/newDir/foo.pdf', $this->_factory->createUrlInfoLastUrl);
         $this->assertTrue($urlInfo->md5Called);
-        $this->assertTrue($this->_db->bitsaversFileMovedCalled);
-        $this->assertEquals(10, $this->_db->bitsaversFileMovedLastCopyId);
-        $this->assertEquals(16, $this->_db->bitsaversFileMovedLastPathId);
-        $this->assertEquals('http://bitsavers.org/pdf/hp/newDir/foo.pdf', $this->_db->bitsaversFileMovedLastUrl);
+        $this->assertTrue($this->_db->bitSaversFileMovedCalled);
+        $this->assertEquals(10, $this->_db->bitSaversFileMovedLastCopyId);
+        $this->assertEquals(16, $this->_db->bitSaversFileMovedLastPathId);
+        $this->assertEquals('http://bitsavers.org/pdf/hp/newDir/foo.pdf', $this->_db->bitSaversFileMovedLastUrl);
     }
 }

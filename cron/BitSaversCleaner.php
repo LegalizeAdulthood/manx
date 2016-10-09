@@ -53,7 +53,7 @@ class BitSaversCleaner
             $urlInfo = $this->_factory->createUrlInfo('http://bitsavers.trailing-edge.com/pdf/' . $path);
             if ($urlInfo->md5() == $row['md5'])
             {
-                $this->_db->bitsaversFileMoved($row['copy_id'], $row['path_id'], 'http://bitsavers.org/pdf/' . $path);
+                $this->_db->bitSaversFileMoved($row['copy_id'], $row['path_id'], 'http://bitsavers.org/pdf/' . $path);
                 $this->_logger->log('Path: ' . $path);
             }
         }

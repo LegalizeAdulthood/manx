@@ -732,7 +732,7 @@ class ManxDatabase implements IManxDatabase
             array($bitSaversId[0]['site_id']));
     }
 
-    function bitsaversFileMoved($copyId, $pathId, $url)
+    function bitSaversFileMoved($copyId, $pathId, $url)
     {
         $this->execute("DELETE FROM bitsavers_unknown WHERE id = ?", array($pathId));
         $this->execute("UPDATE copy SET url = ? WHERE copy_id = ?", array($url, $copyId));
