@@ -67,7 +67,7 @@ class TestRssPage extends PHPUnit_Framework_TestCase
             '<rss version="2.0">',
             '  <channel>',
             '    <title>New Documents on Manx</title>',
-            '    <link>http://manx.classiccmp.org</link>',
+            '    <link>http://manx-docs.org</link>',
             '    <description>A list of the most recently created documents in the Manx database.</description>',
             "    <lastBuildDate>Thu, 03 Dec 1964 15:00:00 -0400</lastBuildDate>",
             '    <language>en-us</language>',

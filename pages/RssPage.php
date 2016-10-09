@@ -12,7 +12,7 @@ class RssPage extends PageBase
     {
         parent::__construct($manx);
         $this->_rss = new RssWriter($dateTimeProvider);
-        $this->_rss->beginChannel('New Documents on Manx', 'http://manx.classiccmp.org',
+        $this->_rss->beginChannel('New Documents on Manx', 'http://manx-docs.org',
                 'A list of the most recently created documents in the Manx database.')
             ->language('en-us');
         foreach ($this->_manxDb->getMostRecentDocuments(200) as $pub)
