@@ -45,6 +45,20 @@ class BitSaversCleaner
         }
     }
 
+    public function updateMovedFiles()
+    {
+        foreach($this->_db->getPossiblyMovedUnknownPaths() as $row)
+        {
+            $path = $row['path'];
+            $urlInfo = $this->_factory->createUrlInfo('http://bitsavers.trailing-edge.com/pdf/' . $path);
+            if ($urlInfo->md5() == $row['md5'])
+            {
+                $this->_db->bitsaversFileMoved($row['copy_id'], $row['path_id'], 'http://bitsavers.org/pdf/' . $path);
+                $this->_logger->log('Path: ' . $path);
+            }
+        }
+    }
+
     private static function escapeSpecialChars($path)
     {
         return str_replace("#", urlencode("#"), $path);

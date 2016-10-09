@@ -60,4 +60,6 @@ interface IManxDatabase
     function bitSaversIgnoredPath($path);
     function getAllBitSaversUnknownPaths();
     function removeBitSaversUnknownPathById($id);
+    function getPossiblyMovedUnknownPaths();
+    function bitsaversFileMoved($copyId, $pathId, $url);
 }

@@ -722,4 +722,19 @@ class ManxDatabase implements IManxDatabase
     {
         return $this->execute("DELETE FROM `bitsavers_unknown` WHERE `id` = ?", array($id));
     }
+
+    function getPossiblyMovedUnknownPaths()
+    {
+        $bitsaversId = $this->execute("SELECT site_id FROM site WHERE site.name = 'bitsavers'", array());
+        return $this->execute("SELECT bitsavers_unknown.path, bitsavers_unknown.id as `path_id`, copy.url, copy.copy_id, copy.md5 FROM copy, bitsavers_unknown".
+                " WHERE copy.site = ?" .
+                " AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1)) = REVERSE(SUBSTRING_INDEX(REVERSE(bitsavers_unknown.path), '/', 1));",
+            array($bitSaversId[0]['site_id']));
+    }
+
+    function bitsaversFileMoved($copyId, $pathId, $url)
+    {
+        $this->execute("DELETE FROM bitsavers_unknown WHERE id = ?", array($pathId));
+        $this->execute("UPDATE copy SET url = ? WHERE copy_id = ?", array($url, $copyId));
+    }
 }

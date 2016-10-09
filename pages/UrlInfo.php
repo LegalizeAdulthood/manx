@@ -7,6 +7,7 @@ interface IUrlInfo
     function size();
     function lastModified();
     function exists();
+    function md5();
 }
 
 class UrlInfo implements IUrlInfo
@@ -19,6 +20,11 @@ class UrlInfo implements IUrlInfo
     {
         $this->_url = $url;
         $this->_api = is_null($api) ? CurlApi::getInstance() : $api;
+    }
+
+    public function md5()
+    {
+        return md5_file($this->_url);
     }
 
     public function size()

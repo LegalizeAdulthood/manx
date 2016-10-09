@@ -8,4 +8,14 @@ $manx = Manx::getInstance();
 $factory = new BitSaversPageFactory();
 $cleaner = new BitSaversCleaner($manx, $factory);
 
-$cleaner->removeNonExistentUnknownPaths();
+if (count($argv) > 1)
+{
+    if ($argv[1] == 'existence')
+    {
+        $cleaner->removeNonExistentUnknownPaths();
+    }
+    else if ($argv[1] == 'moved')
+    {
+        $cleaner->updateMovedFiles();
+    }
+}

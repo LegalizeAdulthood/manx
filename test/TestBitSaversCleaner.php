@@ -81,4 +81,27 @@ class TestBitSaversCleaner extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('http://bitsavers.trailing-edge.com/pdf/foo/path%231.pdf', $this->_factory->createUrlInfoLastUrl);
     }
+
+    public function testMovedFilesAreUpdated()
+    {
+        $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
+        $this->_db->getPossiblyMovedUnknownPathsFakeResult = array(
+            array('path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
+                'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'md5' => $md5)
+        );
+        $urlInfo = new FakeUrlInfo();
+        $urlInfo->md5FakeResult = $md5;
+        $this->_factory->createUrlInfoFakeResult = $urlInfo;
+
+        $this->_cleaner->updateMovedFiles();
+
+        $this->assertTrue($this->_db->getPossiblyMovedUnknownPathsCalled);
+        $this->assertTrue($this->_factory->createUrlInfoCalled);
+        $this->assertEquals('http://bitsavers.trailing-edge.com/pdf/hp/newDir/foo.pdf', $this->_factory->createUrlInfoLastUrl);
+        $this->assertTrue($urlInfo->md5Called);
+        $this->assertTrue($this->_db->bitsaversFileMovedCalled);
+        $this->assertEquals(10, $this->_db->bitsaversFileMovedLastCopyId);
+        $this->assertEquals(16, $this->_db->bitsaversFileMovedLastPathId);
+        $this->assertEquals('http://bitsavers.org/pdf/hp/newDir/foo.pdf', $this->_db->bitsaversFileMovedLastUrl);
+    }
 }

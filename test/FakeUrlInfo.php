@@ -22,4 +22,11 @@ class FakeUrlInfo implements IUrlInfo
         return $this->existsFakeResult;
     }
     public $existsCalled, $existsFakeResult;
+
+    function md5()
+    {
+        $this->md5Called = true;
+        return $this->md5FakeResult;
+    }
+    public $md5Called, $md5FakeResult;
 }
