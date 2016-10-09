@@ -725,7 +725,7 @@ class ManxDatabase implements IManxDatabase
 
     function getPossiblyMovedUnknownPaths()
     {
-        $bitsaversId = $this->execute("SELECT site_id FROM site WHERE site.name = 'bitsavers'", array());
+        $bitSaversId = $this->execute("SELECT site_id FROM site WHERE site.name = 'bitsavers'", array());
         return $this->execute("SELECT bitsavers_unknown.path, bitsavers_unknown.id as `path_id`, copy.url, copy.copy_id, copy.md5 FROM copy, bitsavers_unknown".
                 " WHERE copy.site = ?" .
                 " AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1)) = REVERSE(SUBSTRING_INDEX(REVERSE(bitsavers_unknown.path), '/', 1));",
