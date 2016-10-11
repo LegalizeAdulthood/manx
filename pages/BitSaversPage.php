@@ -69,7 +69,8 @@ class BitSaversPage extends AdminPageBase
 
     private function pathUnknown($line)
     {
-        return $this->_manxDb->copyExistsForUrl('http://bitsavers.org/pdf/' . $line) === false
+        $url = 'http://bitsavers.org/pdf' . self::escapeSpecialChars($line);
+        return $this->_manxDb->copyExistsForUrl($url) === false
             && $this->_manxDb->bitSaversIgnoredPath($line) === false;
     }
 
