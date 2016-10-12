@@ -18,7 +18,7 @@ class RssPage extends PageBase
         foreach ($this->_manxDb->getMostRecentDocuments(200) as $pub)
         {
             $pubId = $pub['ph_pub'];
-            $link = sprintf('details.php/%d,%d', $pub['ph_company'], $pubId);
+            $link = sprintf('http://manx-docs.org/details.php/%d,%d', $pub['ph_company'], $pubId);
             $description = $this->getItemDescription($pub);
             $pubDate = new DateTime($pub['ph_created'], new DateTimeZone('UTC'));
             $this->_rss->item($pub['ph_title'], $link, $description,
@@ -36,7 +36,7 @@ class RssPage extends PageBase
         echo '<div style="margin: 10px"><p><strong style="color: #089698; background-color: transparent;">', $row['ph_title'], "</strong></p>\n";
         echo '<table><tbody>';
         $this->printTableRowNoEncode('Company',
-            sprintf('<a href="../search.php?cp=%d&q=">%s</a>',
+            sprintf('<a href="http://manx-docs.org/search.php?cp=%d&q=">%s</a>',
                 $companyId,
                 htmlspecialchars(trim($row['company_name']))
             ));

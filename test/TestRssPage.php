@@ -54,7 +54,7 @@ class TestRssPage extends PHPUnit_Framework_TestCase
         ob_end_clean();
         $desc = htmlspecialchars(implode("\n", array(
             '<div style="margin: 10px"><p><strong style="color: #089698; background-color: transparent;">The Foo Manual</strong></p>',
-            '<table><tbody><tr><td>Company:</td><td><a href="../search.php?cp=5&q=">Digital Equipment Corporation</a></td></tr>',
+            '<table><tbody><tr><td>Company:</td><td><a href="http://manx-docs.org/search.php?cp=5&q=">Digital Equipment Corporation</a></td></tr>',
             '<tr><td>Part:</td><td>0123-XXY</td></tr>',
             '<tr><td>Date:</td><td>1979-03</td></tr>',
             '<tr><td>Keywords:</td><td>foo,bar</td></tr>',
@@ -73,7 +73,7 @@ class TestRssPage extends PHPUnit_Framework_TestCase
             '    <language>en-us</language>',
             '    <item>',
             '      <title>The Foo Manual</title>',
-            '      <link>details.php/5,1211</link>',
+            '      <link>http://manx-docs.org/details.php/5,1211</link>',
             '      <description>' . $desc . '</description>',
             '      <pubDate>Mon, 24 Nov 1980 15:00:00 -0600</pubDate>',
             '      <category>DEC</category>',
