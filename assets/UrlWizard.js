@@ -439,7 +439,7 @@ $(function()
                         reset_exists();
                         set_copy(json);
                         set_bitsavers(json);
-						set_chiclassiccmp(json);
+                        set_chiclassiccmp(json);
                         show_or_hide("copy_site")("site_fields");
                         set_company(json);
                         set_publication(json);
