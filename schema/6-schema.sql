@@ -3,13 +3,11 @@
 --
 
 CREATE TABLE IF NOT EXISTS `company_chiclassiccmp` (
-  `id` INT(11) NOT NULL,
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
   `company_id` INT(11) NOT NULL,
   `directory` VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`company_id`)
-    REFERENCES `company`(`id`)
-	ON DELETE CASCADE,
+  UNIQUE KEY (`company_id`),
   UNIQUE KEY (`directory`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
