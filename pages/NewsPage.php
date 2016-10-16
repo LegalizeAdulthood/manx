@@ -14,6 +14,11 @@ class NewsPage extends PageBase
         print <<<EOH
 <h1>News</h1>
 
+<h2>Version 2.0.5</h2>
+
+<p>Minor bug fixes and support for a ChiClassicCmp front-end to the
+URL Wizard.</p>
+
 <h2>Version 2.0.4</h2>
 
 <p>This is a minor update that incorporates various usability improvements
