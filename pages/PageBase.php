@@ -18,6 +18,7 @@ class MenuType
     const MD5Report = 11;
     const BitSavers = 12;
     const News = 13;
+    const ChiClassicCmp = 14;
 }
 
 abstract class PageBase
@@ -136,6 +137,7 @@ EOH;
             //$this->renderMenuItem($menu == MenuType::Company, "company.php", "Company");
             $this->renderFirstMenuItem($menu == MenuType::UrlWizard, "url-wizard.php", "URL Wizard");
             $this->renderMenuItem($menu == MenuType::BitSavers, "bitsavers.php", "BitSavers");
+            $this->renderMenuItem($menu == MenuType::ChiClassicCmp, "chiclassiccmp.php", "ChiClassicCmp");
             //$this->renderMenuItem($menu == MenuType::Publication, "publication.php", "Publication");
             //$this->renderMenuSeparator();
             //$this->renderMenuItem($menu == MenuType::Copy, "copy.php", "Copy");

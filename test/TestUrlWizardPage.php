@@ -47,7 +47,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $this->assertFalse(is_null($page));
     }
 
-    public function testPostPage()
+    public function testDocumentAdded()
     {
         $this->_manx = new FakeManx();
         $this->_manx->addPublicationFakeResult = 19690;
@@ -56,6 +56,86 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $vars = array(
+            'bitsavers_directory' => '',
+            'chiclassiccmp_directory' => '',
+            'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
+            'copy_format' => 'PDF',
+            'copy_site' => '3',
+            'copy_notes' => '',
+            'copy_size' => '',
+            'copy_md5' => '',
+            'copy_credits' => '',
+            'copy_amend_serial' => '',
+            'site_name' => '',
+            'site_url' => '',
+            'site_description' => '',
+            'site_copy_base' => '',
+            'company_id' => '5',
+            'company_name' => '',
+            'company_short_name' => '',
+            'company_sort_name' => '',
+            'company_notes' => '',
+            'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
+            'pub_pub_id' => '-1',
+            'pub_history_ph_title' => '4010 and 4010-1 Maintenance Manual',
+            'pub_history_ph_revision' => 'B',
+            'pub_history_ph_pub_type' => 'D',
+            'pub_history_ph_pub_date' => '1976-04',
+            'pub_history_ph_abstract' => 'This is the maintenance manual for Tektronix 4010 terminals.',
+            'pub_history_ph_part' => '070-1183-01',
+            'pub_history_ph_match_part' => '',
+            'pub_history_ph_sort_part' => '',
+            'pub_history_ph_alt_part' => '',
+            'pub_history_ph_match_alt_part' => '',
+            'pub_history_ph_keywords' => 'terminal graphics',
+            'pub_history_ph_notes' => '',
+            'pub_history_ph_class' => '',
+            'pub_history_ph_amend_pub' => '',
+            'pub_history_ph_amend_serial' => '',
+            'supersession_search_keywords' => '4010 Maintenance Manual',
+            'supersession_old_pub' => '5634',
+            'next' => 'Next+%3E');
+        $page = new URLWizardPageTester($this->_manx, $vars);
+        $md5 = '01234567890123456789012345678901';
+        $page->md5ForFileFakeResult = $md5;
+        ob_start();
+
+        $page->postPage();
+
+        $output = ob_get_contents();
+        $this->assertFalse($db->addCompanyCalled);
+        $this->assertTrue($this->_manx->addPublicationCalled);
+        $this->assertEquals($vars['pub_history_ph_title'], $this->_manx->addPublicationLastTitle);
+        $this->assertEquals($vars['pub_history_ph_keywords'], $this->_manx->addPublicationLastKeywords);
+        $this->assertEquals($vars['pub_history_ph_abstract'], $this->_manx->addPublicationLastAbstract);
+        $this->assertTrue($db->addSupersessionCalled);
+        $this->assertEquals(5634, $db->addSupersessionLastOldPub);
+        $this->assertEquals(19690, $db->addSupersessionLastNewPub);
+        $this->assertFalse($db->addSiteCalled);
+        $this->assertTrue($db->addCopyCalled);
+        $this->assertEquals(19690, $db->addCopyLastPubId);
+        $this->assertEquals($vars['copy_format'], $db->addCopyLastFormat);
+        $this->assertEquals($vars['copy_site'], $db->addCopyLastSiteId);
+        $this->assertEquals(rawurldecode($vars['copy_url']), $db->addCopyLastUrl);
+        $this->assertEquals($vars['copy_notes'], $db->addCopyLastNotes);
+        $this->assertEquals($vars['copy_size'], $db->addCopyLastSize);
+        $this->assertEquals($md5, $db->addCopyLastMd5);
+        $this->assertEquals($vars['copy_credits'], $db->addCopyLastCredits);
+        $this->assertEquals($vars['copy_amend_serial'], $db->addCopyLastAmendSerial);
+        $this->assertTrue($page->redirectCalled);
+    }
+
+    public function testNewBitSaversDirectoryAdded()
+    {
+        $this->_manx = new FakeManx();
+        $this->_manx->addPublicationFakeResult = 19690;
+        $db = new FakeManxDatabase();
+        $this->_manx->getDatabaseFakeResult = $db;
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $vars = array(
+            'bitsavers_directory' => '',
+            'chiclassiccmp_directory' => '',
             'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
             'copy_format' => 'PDF',
             'copy_site' => '3',
@@ -204,8 +284,10 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 </fieldset>
 
 <fieldset id="bitsavers_field" class="hidden">
-<input type="hidden" id="bitsavers_new_directory" name="bitsavers_new_directory" value="false" />
 <input type="hidden" id="bitsavers_directory" name="bitsavers_directory" value="" />
+</fieldset>
+<fieldset id="chiclassiccmp_field" class="hidden">
+<input type="hidden" id="chiclassiccmp_directory" name="chiclassiccmp_directory" value="" />
 </fieldset>
 
 <fieldset id="site_fields" class="hidden">

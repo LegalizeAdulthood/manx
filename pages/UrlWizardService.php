@@ -24,29 +24,31 @@ require_once 'Searcher.php';
 require_once 'ServicePageBase.php';
 require_once 'CurlApi.php';
 require_once 'UrlInfo.php';
+require_once 'UrlInfoFactory.php';
 
 class Site
 {
     const BitSavers = 3;
+    const ChiClassicCmp = 58;
 }
 
 class UrlWizardService extends ServicePageBase
 {
     /** @var array */
     private $_sites;
-    /** @var ICurlApi */
-    private $_curlApi;
+    /** @var IUrlInfoFactory */
+    private $_urlInfoFactory;
 
-    public function __construct($manx, $vars, $curlApi = null)
+    public function __construct($manx, $vars, $urlInfoFactory = null)
     {
         parent::__construct($manx, $vars);
-        $this->_curlApi = is_null($curlApi) ? CurlApi::getInstance() : $curlApi;
+        $this->_urlInfoFactory = is_null($urlInfoFactory) ? new UrlInfoFactory() : $urlInfoFactory;
     }
 
     private function determineData()
     {
         $url = $this->param('url');
-        $urlInfo = new UrlInfo($url, $this->_curlApi);
+        $urlInfo = $this->_urlInfoFactory->createUrlInfo($url);
         $size = $urlInfo->size();
         if ($size === false)
         {
@@ -68,6 +70,10 @@ class UrlWizardService extends ServicePageBase
         if ($this->siteIsBitSavers($data))
         {
             $this->determineBitSaversData($data);
+        }
+        else if ($this->siteIsChiClassicCmp($data))
+        {
+            $this->determineChiClassicCmpData($data);
         }
         else
         {
@@ -92,6 +98,11 @@ class UrlWizardService extends ServicePageBase
     private function siteIsBitSavers($data)
     {
         return $this->siteMatchesId($data, Site::BitSavers);
+    }
+
+    private function siteIsChiClassicCmp($data)
+    {
+        return $this->siteMatchesId($data, Site::ChiClassicCmp);
     }
 
     private function siteMatchesId($data, $siteId)
@@ -312,6 +323,49 @@ class UrlWizardService extends ServicePageBase
         $company = $this->_db->getCompanyForBitSaversDirectory($companyDir);
         $data['company'] = $company;
         $data['bitsavers_directory'] = $companyDir;
+
+        $fileName = array_pop($dirs);
+        $dotPos = strrpos($fileName, '.');
+        if ($dotPos === false)
+        {
+            $fileBase = $fileName;
+            $extension = '';
+        }
+        else
+        {
+            $fileParts = explode('.', $fileName);
+            $extension = array_pop($fileParts);
+            $fileBase = implode('.', $fileParts);
+        }
+        list($data['pub_date'], $fileBase) = UrlWizardService::extractPubDate($fileBase);
+        $parts = explode('_', $fileBase);
+        if (count($parts) > 1)
+        {
+            if (1 == preg_match('/[0-9][0-9]+/', $parts[0]))
+            {
+                $data['part'] = array_shift($parts);
+            }
+            $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
+            $data['title'] = self::titleForFileBase(implode(' ', $parts));
+        }
+        else
+        {
+            $data['pubs'] = $this->findPublicationsForKeywords($company, array($fileBase));
+            $data['title'] = self::titleForFileBase($fileBase);
+        }
+        $data['format'] = $this->_db->getFormatForExtension($extension);
+    }
+
+    private function determineChiClassicCmpData(&$data)
+    {
+        $url = $data['url'];
+        $urlComponents = parse_url($url);
+        $dirs = explode('/', $urlComponents['path']);
+        $companyDir = $dirs[4];
+
+        $company = $this->_db->getCompanyForChiClassicCmpDirectory($companyDir);
+        $data['company'] = $company;
+        $data['chiclassiccmp_directory'] = $companyDir;
 
         $fileName = array_pop($dirs);
         $dotPos = strrpos($fileName, '.');

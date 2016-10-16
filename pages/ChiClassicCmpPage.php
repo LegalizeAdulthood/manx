@@ -4,11 +4,11 @@ require_once 'AdminPageBase.php';
 require_once 'BitSaversPageFactory.php';
 require_once 'UnknownPathDefs.php';
 
-define('INDEX_BY_DATE_FILE', '../../private/manx/bitsavers-IndexByDate.txt');
-define('INDEX_BY_DATE_URL', 'http://bitsavers.trailing-edge.com/pdf/IndexByDate.txt');
-define('TIMESTAMP_PROPERTY', 'bitsavers_whats_new_timestamp');
+define('CCC_INDEX_BY_DATE_FILE', '../../private/manx/chiClassicCmp-IndexByDate.txt');
+define('CCC_INDEX_BY_DATE_URL', 'http://chiclassiccomp.org/docs/content/IndexByDate.txt');
+define('CCC_TIMESTAMP_PROPERTY', 'chiclassiccmp_whats_new_timestamp');
 
-class BitSaversPage extends AdminPageBase
+class ChiClassicCmpPage extends AdminPageBase
 {
     private $_factory;
 
@@ -29,31 +29,31 @@ class BitSaversPage extends AdminPageBase
 
     private function needIndexByDateFile()
     {
-        $timeStamp = $this->_manxDb->getProperty(TIMESTAMP_PROPERTY);
+        $timeStamp = $this->_manxDb->getProperty(CCC_TIMESTAMP_PROPERTY);
         if ($timeStamp === false)
         {
             return true;
         }
-        $urlInfo = $this->_factory->createUrlInfo(INDEX_BY_DATE_URL);
+        $urlInfo = $this->_factory->createUrlInfo(CCC_INDEX_BY_DATE_URL);
         $lastModified = $urlInfo->lastModified();
         if ($lastModified === false)
         {
             $lastModified = $this->_factory->getCurrentTime();
         }
-        $this->_manxDb->setProperty(TIMESTAMP_PROPERTY, $lastModified);
+        $this->_manxDb->setProperty(CCC_TIMESTAMP_PROPERTY, $lastModified);
         return $lastModified > $timeStamp;
     }
 
     private function getIndexByDateFile()
     {
-        $transfer = $this->_factory->createUrlTransfer(INDEX_BY_DATE_URL);
-        $transfer->get(INDEX_BY_DATE_FILE);
-        $this->_manxDb->setProperty(TIMESTAMP_PROPERTY, $this->_factory->getCurrentTime());
+        $transfer = $this->_factory->createUrlTransfer(CCC_INDEX_BY_DATE_URL);
+        $transfer->get(CCC_INDEX_BY_DATE_FILE);
+        $this->_manxDb->setProperty(CCC_TIMESTAMP_PROPERTY, $this->_factory->getCurrentTime());
     }
 
     private function parseIndexByDateFile()
     {
-        $indexByDate = $this->_factory->openFile(INDEX_BY_DATE_FILE, 'r');
+        $indexByDate = $this->_factory->openFile(CCC_INDEX_BY_DATE_FILE, 'r');
         while (!$indexByDate->eof())
         {
             $line = substr(trim($indexByDate->getString()), 20);
@@ -66,19 +66,19 @@ class BitSaversPage extends AdminPageBase
 
     private function pathUnknown($line)
     {
-        $url = 'http://bitsavers.org/pdf' . self::escapeSpecialChars($line);
+        $url = 'http://chiclassiccomp.org/docs/content/' . self::escapeSpecialChars($line);
         return $this->_manxDb->copyExistsForUrl($url) === false
             && $this->_manxDb->bitSaversIgnoredPath($line) === false;
     }
 
     private function addUnknownPath($line)
     {
-        $this->_manxDb->addBitSaversUnknownPath($line);
+        $this->_manxDb->addChiClassicCmpUnknownPath($line);
     }
 
     protected function getMenuType()
     {
-        return MenuType::BitSavers;
+        return MenuType::ChiClassicCmp;
     }
 
     protected function postPage()
@@ -102,34 +102,34 @@ class BitSaversPage extends AdminPageBase
         {
             foreach ($ignored as $path)
             {
-                $this->_manxDb->ignoreBitSaversPath($path);
+                $this->_manxDb->ignoreChiClassicCmpPath($path);
             }
         }
     }
 
     protected function renderBodyContent()
     {
-        $total = $this->_manxDb->getBitSaversUnknownPathCount();
+        $total = $this->_manxDb->getChiClassicCmpUnknownPathCount();
         if ($total == 0)
         {
             print <<<EOH
-<h1>No New BitSavers Publications Found</h1>
+<h1>No New ChiClassicCmp Publications Found</h1>
 
 EOH;
             return;
         }
 
         print <<<EOH
-<h1>New BitSavers Publications</h1>
+<h1>New ChiClassicCmp Publications</h1>
 
 
 EOH;
         $start = array_key_exists('start', $this->_vars) ? $this->_vars['start'] : 0;
-        $sortOrder = array_key_exists('sort', $this->_vars) ? $this->_vars['sort'] : SORT_ORDER_BY_ID;
+        $sortOrder = array_key_exists('sort', $this->_vars) ? $this->_vars['sort'] : CCC_SORT_ORDER_BY_ID;
         $sortById = ($sortOrder == SORT_ORDER_BY_ID) || ($sortOrder == SORT_ORDER_BY_ID_DESCENDING);
         $unknownPaths = $sortById ?
-            $this->_manxDb->getBitSaversUnknownPathsOrderedById($start, $sortOrder == SORT_ORDER_BY_ID)
-            : $this->_manxDb->getBitSaversUnknownPathsOrderedByPath($start, $sortOrder == SORT_ORDER_BY_PATH);
+            $this->_manxDb->getChiClassicCmpUnknownPathsOrderedById($start, $sortOrder == SORT_ORDER_BY_ID)
+            : $this->_manxDb->getChiClassicCmpUnknownPathsOrderedByPath($start, $sortOrder == SORT_ORDER_BY_PATH);
         $this->renderPageSelectionBar($start, $total);
         $startParam = $start > 0 ? sprintf('start=%1$d&', $start) : '';
         if ($sortById)
@@ -142,11 +142,11 @@ EOH;
             $idSortParam = SORT_ORDER_BY_ID;
             $pathSortParam = ($sortOrder == SORT_ORDER_BY_PATH) ? SORT_ORDER_BY_PATH_DESCENDING : SORT_ORDER_BY_PATH;
         }
-        $idHeader = sprintf('<a href="bitsavers.php?%1$s%2$s">Id</a>', $startParam, 'sort=' . $idSortParam);
-        $pathHeader = sprintf('<a href="bitsavers.php?%1$s%2$s">Path</a>', $startParam, 'sort=' . $pathSortParam);
+        $idHeader = sprintf('<a href="chiclassiccmp.php?%1$s%2$s">Id</a>', $startParam, 'sort=' . $idSortParam);
+        $pathHeader = sprintf('<a href="chiclassiccmp.php?%1$s%2$s">Path</a>', $startParam, 'sort=' . $pathSortParam);
 
         print <<<EOH
-<form action="bitsavers.php" method="POST">
+<form action="chiclassiccmp.php" method="POST">
 <input type="hidden" name="start" value="$start" />
 <input type="hidden" name="sort" value="$sortOrder" />
 <table>
@@ -160,7 +160,7 @@ EOH;
             $urlPath = self::escapeSpecialChars(trim($path));
             $checked = preg_match('/.*\.(jpg|bin|tif|dat|zip|txt)$/i', $path) ? 'checked' : '';
             printf('<tr><td>%1$d.</td><td><input type="checkbox" id="ignore%2$d" name="ignore%2$d" value="%3$s" %5$s/>' . "\n" .
-                '<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/%4$s">%3$s</a></td></tr>' . "\n",
+                '<a href="url-wizard.php?url=http://chiclassiccomp.org/docs/content/%4$s">%3$s</a></td></tr>' . "\n",
                 $unknownPaths[$i]['id'], $i, $path, $urlPath, $checked);
         }
         print <<<EOH
@@ -181,17 +181,17 @@ EOH;
         $rowsPerPage = 10;
         if ($start - 10000 >= 0)
         {
-            print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&lt;&lt;</b></a>&nbsp;&nbsp;',
+            print sprintf('<a class="navpage" href="chiclassiccmp.php?start=%1$d%2$s"><b>&lt;&lt;</b></a>&nbsp;&nbsp;',
                 $start - 10000, $sortParam);
         }
         if ($start - 1000 >= 0)
         {
-            print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&lt;</b></a>&nbsp;&nbsp;',
+            print sprintf('<a class="navpage" href="chiclassiccmp.php?start=%1$d%2$s"><b>&lt;</b></a>&nbsp;&nbsp;',
                 $start - 1000, $sortParam);
         }
         if ($start != 0)
         {
-            printf('<a href="bitsavers.php?start=%1$d%2$s"><b>Previous</b></a>&nbsp;&nbsp;',
+            printf('<a href="chiclassiccmp.php?start=%1$d%2$s"><b>Previous</b></a>&nbsp;&nbsp;',
                 max(0, $start - $rowsPerPage), $sortParam);
         }
 
@@ -210,7 +210,7 @@ EOH;
             }
             else
             {
-                print sprintf('<a class="navpage" href="bitsavers.php?start=%1$d%3$s">%2$d</a>&nbsp;&nbsp;',
+                print sprintf('<a class="navpage" href="chiclassiccmp.php?start=%1$d%3$s">%2$d</a>&nbsp;&nbsp;',
                     $currPageStart, $currPageNum, $sortParam);
             }
             ++$currPageNum;
@@ -222,16 +222,16 @@ EOH;
         }
         if ($start != $lastPageStart)
         {
-            printf('<a href="bitsavers.php?start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $sortParam);
+            printf('<a href="chiclassiccmp.php?start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $sortParam);
         }
         if ($start + 1000 < $total)
         {
-            print sprintf('&nbsp;&nbsp;<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&gt;</b></a>',
+            print sprintf('&nbsp;&nbsp;<a class="navpage" href="chiclassiccmp.php?start=%1$d%2$s"><b>&gt;</b></a>',
                 $start + 1000, $sortParam);
         }
         if ($start + 10000 < $total)
         {
-            print sprintf('&nbsp;&nbsp;<a class="navpage" href="bitsavers.php?start=%1$d%2$s"><b>&gt;&gt;</b></a>',
+            print sprintf('&nbsp;&nbsp;<a class="navpage" href="chiclassiccmp.php?start=%1$d%2$s"><b>&gt;&gt;</b></a>',
                 $start + 10000, $sortParam);
         }
         print "</div>\n";
@@ -239,6 +239,6 @@ EOH;
 
     public static function escapeSpecialChars($path)
     {
-        return str_replace(" ", "%20", str_replace("#", urlencode("#"), $path));
+        return str_replace(" ", "%20", str_replace("#", urlencode("#"), str_replace("&", urlencode("&"), $path)));
     }
 }

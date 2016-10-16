@@ -24,7 +24,7 @@ class URLWizardPage extends AdminPageBase
     protected function postPage()
     {
         $company = $this->addCompany();
-        $this->addBitSaversDirectory($company);
+        $this->addSiteCompanyDirectory($company);
         $pubId = $this->addPublication($company);
         $this->addSupersession($pubId);
         $siteId = $this->addSite();
@@ -42,6 +42,21 @@ class URLWizardPage extends AdminPageBase
                 true, $this->param('company_notes'));
         }
         return $company;
+    }
+
+    private function addSiteCompanyDirectory($companyId)
+    {
+        $this->addChiClassicCmpDirectory($companyId);
+        $this->addBitSaversDirectory($companyId);
+    }
+
+    private function addChiClassicCmpDirectory($companyId)
+    {
+        $directory = $this->param('chiclassiccmp_directory');
+        if (strlen($directory) > 0)
+        {
+            $this->_db->addChiClassicCmpDirectory($companyId, $directory);
+        }
     }
 
     private function addBitSaversDirectory($companyId)
@@ -297,8 +312,10 @@ EOH;
 </fieldset>
 
 <fieldset id="bitsavers_field" class="hidden">
-<input type="hidden" id="bitsavers_new_directory" name="bitsavers_new_directory" value="false" />
 <input type="hidden" id="bitsavers_directory" name="bitsavers_directory" value="" />
+</fieldset>
+<fieldset id="chiclassiccmp_field" class="hidden">
+<input type="hidden" id="chiclassiccmp_directory" name="chiclassiccmp_directory" value="" />
 </fieldset>
 
 <fieldset id="site_fields" class="hidden">

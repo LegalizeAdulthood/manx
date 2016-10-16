@@ -6,8 +6,10 @@ class FakeUrlInfo implements IUrlInfo
 {
     function size()
     {
-        throw new BadMethodCallException();
+        $this->sizeCalled = true;
+        return $this->sizeFakeResult;
     }
+    public $sizeCalled, $sizeFakeResult;
 
     function lastModified()
     {
