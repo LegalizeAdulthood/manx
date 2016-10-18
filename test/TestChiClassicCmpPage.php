@@ -66,8 +66,18 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
     public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
     {
         $this->_db->getPropertyFakeResult = false;
-        $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
-            'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
+        $paths = array(
+            'computing/_Punchedcards/Sears.jpg',
+            'computing/_Punchedcards/harrisbankhollerithcard2.png',
+            'computing/DEC/Pathworks/AA-MF87D-TH_PathworksDOSWindowsSupportGuide_Aug91.pdf',
+            'computing/Morrow/Morrow_TRICEPBrochure.pdf',
+            'telephony/BellSystem/512-740-405-I03_7028+7028M+27028+27028MSetsSpeakerphone4A_Apr79.pdf',
+            'telephony/BellSystem/512-700-100-I2_4ASpeakerphoneSystem_Sept74.pdf',
+            'telephony/BellSystem/512-700-100-I4_4ASpeakerphoneSystem_May78.pdf',
+            'telephony/BellSystem/100-100-101_35-TypeTestSets.pdf',
+            'computing/IBM/Mainframe/Hardware/System/GC20-2021-2_Guide4381Processor_Apr86.pdf',
+            'telephony/SouthernBell/PTC320-L1_Relay&ApparatusAdjustment_BellSystemPracticesUnit1.pdf'
+        );
         $lines = array();
         foreach ($paths as $path)
         {
