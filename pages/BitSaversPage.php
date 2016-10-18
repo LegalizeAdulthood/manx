@@ -1,10 +1,11 @@
 <?php
 
 require_once 'AdminPageBase.php';
+require_once 'Config.php';
 require_once 'BitSaversPageFactory.php';
 require_once 'UnknownPathDefs.php';
 
-define('INDEX_BY_DATE_FILE', '../../private/manx/bitsavers-IndexByDate.txt');
+define('INDEX_BY_DATE_FILE', 'bitsavers-IndexByDate.txt');
 define('INDEX_BY_DATE_URL', 'http://bitsavers.trailing-edge.com/pdf/IndexByDate.txt');
 define('TIMESTAMP_PROPERTY', 'bitsavers_whats_new_timestamp');
 
@@ -47,13 +48,13 @@ class BitSaversPage extends AdminPageBase
     private function getIndexByDateFile()
     {
         $transfer = $this->_factory->createUrlTransfer(INDEX_BY_DATE_URL);
-        $transfer->get(INDEX_BY_DATE_FILE);
+        $transfer->get(PRIVATE_DIR . INDEX_BY_DATE_FILE);
         $this->_manxDb->setProperty(TIMESTAMP_PROPERTY, $this->_factory->getCurrentTime());
     }
 
     private function parseIndexByDateFile()
     {
-        $indexByDate = $this->_factory->openFile(INDEX_BY_DATE_FILE, 'r');
+        $indexByDate = $this->_factory->openFile(PRIVATE_DIR . INDEX_BY_DATE_FILE, 'r');
         while (!$indexByDate->eof())
         {
             $line = substr(trim($indexByDate->getString()), 20);

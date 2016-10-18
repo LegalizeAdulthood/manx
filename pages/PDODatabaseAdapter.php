@@ -1,12 +1,13 @@
 <?php
 
+require_once 'Config.php';
 require_once 'IDatabase.php';
 
 class PDODatabaseAdapter implements IDatabase
 {
     public static function getInstance()
     {
-        $config = explode(" ", trim(file_get_contents("../../private/manx/config.txt")));
+        $config = explode(" ", trim(file_get_contents(PRIVATE_DIR . "config.txt")));
         $pdo = new PDO($config[0], $config[1], $config[2]);
         return new PDODatabaseAdapter($pdo);
     }

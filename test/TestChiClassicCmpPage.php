@@ -462,7 +462,7 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
     private function assertFileParsedPaths($paths)
     {
         $this->assertTrue($this->_factory->openFileCalled);
-        $this->assertEquals(CCC_INDEX_BY_DATE_FILE, $this->_factory->openFileLastPath);
+        $this->assertEquals(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE, $this->_factory->openFileLastPath);
         $this->assertEquals('r', $this->_factory->openFileLastMode);
         $this->assertTrue($this->_file->eofCalled);
         $this->assertTrue($this->_file->getStringCalled);
@@ -571,7 +571,7 @@ EOH;
         $this->assertTrue($this->_factory->createUrlTransferCalled);
         $this->assertEquals(CCC_INDEX_BY_DATE_URL, $this->_factory->createUrlTransferLastUrl);
         $this->assertTrue($this->_transfer->getCalled);
-        $this->assertEquals(CCC_INDEX_BY_DATE_FILE, $this->_transfer->getLastDestination);
+        $this->assertEquals(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE, $this->_transfer->getLastDestination);
         $this->assertTrue($this->_db->setPropertyCalled);
     }
 }

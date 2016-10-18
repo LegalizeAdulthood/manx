@@ -2,9 +2,10 @@
 
 require_once 'AdminPageBase.php';
 require_once 'BitSaversPageFactory.php';
+require_once 'Config.php';
 require_once 'UnknownPathDefs.php';
 
-define('CCC_INDEX_BY_DATE_FILE', '../../private/manx/chiClassicCmp-IndexByDate.txt');
+define('CCC_INDEX_BY_DATE_FILE', 'chiClassicCmp-IndexByDate.txt');
 define('CCC_INDEX_BY_DATE_URL', 'http://chiclassiccomp.org/docs/content/IndexByDate.txt');
 define('CCC_TIMESTAMP_PROPERTY', 'chiclassiccmp_whats_new_timestamp');
 
@@ -47,13 +48,13 @@ class ChiClassicCmpPage extends AdminPageBase
     private function getIndexByDateFile()
     {
         $transfer = $this->_factory->createUrlTransfer(CCC_INDEX_BY_DATE_URL);
-        $transfer->get(CCC_INDEX_BY_DATE_FILE);
+        $transfer->get(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE);
         $this->_manxDb->setProperty(CCC_TIMESTAMP_PROPERTY, $this->_factory->getCurrentTime());
     }
 
     private function parseIndexByDateFile()
     {
-        $indexByDate = $this->_factory->openFile(CCC_INDEX_BY_DATE_FILE, 'r');
+        $indexByDate = $this->_factory->openFile(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE, 'r');
         while (!$indexByDate->eof())
         {
             $line = substr(trim($indexByDate->getString()), 20);
