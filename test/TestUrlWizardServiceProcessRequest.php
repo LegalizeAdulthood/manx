@@ -153,11 +153,11 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
         $this->assertEquals('univac', $this->_db->getCompanyForBitSaversDirectoryLastDir);
     }
 
-    public function testChiClassicCmpUrlLookup()
+    public function testChiClassicCompUrlLookup()
     {
-        $this->_db->getSitesFakeResult = self::sitesResultsForChiClassicCmp();
+        $this->_db->getSitesFakeResult = self::sitesResultsForChiClassicComp();
         $this->_db->getMirrorsFakeResult = array();
-        $this->_db->getCompanyForChiClassicCmpDirectoryFakeResult = '66';
+        $this->_db->getCompanyForChiClassicCompDirectoryFakeResult = '66';
         $urlBase = '/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf';
         $vars = self::varsForUrlLookup('http://chiclassiccomp.org' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
@@ -172,20 +172,20 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
             'mirror_url' => '',
             'size' => 1266,
             'valid' => true,
-            'site' => self::chiClassicCmpSiteRow(),
+            'site' => self::chiClassicCompSiteRow(),
             'company' => '66',
             'part' => '6064A-5M-668',
             'pub_date' => '',
             'title' => 'MDR-1000Brochure',
             'format' => 'PDF',
-            'chiclassiccmp_directory' => 'Motorola',
+            'chiclassiccomp_directory' => 'Motorola',
             'pubs' => array()
         ));
         $this->assertEquals($expected, $output);
         $this->assertTrue($this->_db->getSitesCalled);
         $this->assertTrue($this->_db->getFormatForExtensionCalled);
-        $this->assertTrue($this->_db->getCompanyForChiClassicCmpDirectoryCalled);
-        $this->assertEquals('Motorola', $this->_db->getCompanyForChiClassicCmpDirectoryLastDir);
+        $this->assertTrue($this->_db->getCompanyForChiClassicCompDirectoryCalled);
+        $this->assertEquals('Motorola', $this->_db->getCompanyForChiClassicCompDirectoryLastDir);
     }
 
     private static function databaseRowFromDictionary(array $dict)
@@ -206,9 +206,9 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
         return array(self::bitSaversSiteRow());
     }
 
-    private static function sitesResultsForChiClassicCmp()
+    private static function sitesResultsForChiClassicComp()
     {
-        return array(self::chiClassicCmpSiteRow());
+        return array(self::chiClassicCompSiteRow());
     }
 
     private static function bitSaversSiteRow()
@@ -226,12 +226,12 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
             ));
     }
 
-    private static function chiClassicCmpSiteRow()
+    private static function chiClassicCompSiteRow()
     {
         return self::databaseRowFromDictionary(
             array(
                 'site_id' => '58',
-                'name' => 'ChiClassicCmp',
+                'name' => 'ChiClassicComp',
                 'url' => 'http://chiclassiccomp.org/',
                 'description' => "Chicago Classic Computing's document archive",
                 'copy_base' => 'http://chiclassiccomp.org/docs/content/',

@@ -4,7 +4,7 @@ require_once 'test/TestAboutPage.php';
 require_once 'test/TestAdminPageBase.php';
 require_once 'test/TestBitSaversPage.php';
 require_once 'test/TestBitSaversCleaner.php';
-require_once 'test/TestChiClassicCmpPage.php';
+require_once 'test/TestChiClassicCompPage.php';
 require_once 'test/TestDetailsPage.php';
 require_once 'test/TestHtmlFormatter.php';
 require_once 'test/TestManxDatabase.php';
@@ -26,7 +26,7 @@ class AllTests
              'TestManxDatabase', 'TestPageBase', 'TestRssPage', 'TestSearcher',
              'TestUrlWizardPage', 'TestUrlWizardService', 'TestAdminPageBase',
              'TestUrlInfo', 'TestUrlTransfer', 'TestBitSaversPage',
-             'TestBitSaversCleaner', 'TestChiClassicCmpPage',
+             'TestBitSaversCleaner', 'TestChiClassicCompPage',
              'TestUrlWizardServiceProcessRequest') as $name)
         {
             $suite->addTestSuite($name);

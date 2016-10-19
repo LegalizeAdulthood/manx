@@ -29,7 +29,7 @@ require_once 'UrlInfoFactory.php';
 class Site
 {
     const BitSavers = 3;
-    const ChiClassicCmp = 58;
+    const ChiClassicComp = 58;
 }
 
 class UrlWizardService extends ServicePageBase
@@ -71,9 +71,9 @@ class UrlWizardService extends ServicePageBase
         {
             $this->determineBitSaversData($data);
         }
-        else if ($this->siteIsChiClassicCmp($data))
+        else if ($this->siteIsChiClassicComp($data))
         {
-            $this->determineChiClassicCmpData($data);
+            $this->determineChiClassicCompData($data);
         }
         else
         {
@@ -100,9 +100,9 @@ class UrlWizardService extends ServicePageBase
         return $this->siteMatchesId($data, Site::BitSavers);
     }
 
-    private function siteIsChiClassicCmp($data)
+    private function siteIsChiClassicComp($data)
     {
-        return $this->siteMatchesId($data, Site::ChiClassicCmp);
+        return $this->siteMatchesId($data, Site::ChiClassicComp);
     }
 
     private function siteMatchesId($data, $siteId)
@@ -356,16 +356,16 @@ class UrlWizardService extends ServicePageBase
         $data['format'] = $this->_db->getFormatForExtension($extension);
     }
 
-    private function determineChiClassicCmpData(&$data)
+    private function determineChiClassicCompData(&$data)
     {
         $url = $data['url'];
         $urlComponents = parse_url($url);
         $dirs = explode('/', $urlComponents['path']);
         $companyDir = $dirs[4];
 
-        $company = $this->_db->getCompanyForChiClassicCmpDirectory($companyDir);
+        $company = $this->_db->getCompanyForChiClassicCompDirectory($companyDir);
         $data['company'] = $company;
-        $data['chiclassiccmp_directory'] = $companyDir;
+        $data['chiclassiccomp_directory'] = $companyDir;
 
         $fileName = array_pop($dirs);
         $dotPos = strrpos($fileName, '.');

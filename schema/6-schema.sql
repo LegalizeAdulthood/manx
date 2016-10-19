@@ -1,8 +1,8 @@
 --
--- Table structure for table `company_chiclassiccmp`
+-- Table structure for table `company_chiclassiccomp`
 --
 
-CREATE TABLE IF NOT EXISTS `company_chiclassiccmp` (
+CREATE TABLE IF NOT EXISTS `company_chiclassiccomp` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `company_id` INT(11) NOT NULL,
   `directory` VARCHAR(255) NOT NULL DEFAULT '',
@@ -12,10 +12,10 @@ CREATE TABLE IF NOT EXISTS `company_chiclassiccmp` (
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table `chiclassiccmp_unknown`
+-- Table structure for table `chiclassiccomp_unknown`
 --
 
-CREATE TABLE IF NOT EXISTS `chiclassiccmp_unknown` (
+CREATE TABLE IF NOT EXISTS `chiclassiccomp_unknown` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `path` VARCHAR(255) NOT NULL,
   `ignored` TINYINT(1) NOT NULL DEFAULT 0,
@@ -24,9 +24,9 @@ CREATE TABLE IF NOT EXISTS `chiclassiccmp_unknown` (
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- ChiClassicCmp directories
+-- chiclassiccomp directories
 --
-INSERT INTO `company_chiclassiccmp`(`company_id`,`directory`) VALUES
+INSERT INTO `company_chiclassiccomp`(`company_id`,`directory`) VALUES
     (101, 'Altos'),
 	(120, 'AnnArborTerminals'),
     (46,  'Apple'),

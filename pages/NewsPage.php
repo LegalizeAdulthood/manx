@@ -16,7 +16,7 @@ class NewsPage extends PageBase
 
 <h2>Version 2.0.5</h2>
 
-<p>Minor bug fixes and support for a ChiClassicCmp front-end to the
+<p>Minor bug fixes and support for a ChiClassicComp front-end to the
 URL Wizard.</p>
 
 <h2>Version 2.0.4</h2>

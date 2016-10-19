@@ -739,76 +739,76 @@ class ManxDatabase implements IManxDatabase
         $this->execute("UPDATE copy SET url = ? WHERE copy_id = ?", array($url, $copyId));
     }
 
-    function addChiClassicCmpUnknownPath($path)
+    function addChiClassicCompUnknownPath($path)
     {
-        $this->execute("INSERT INTO `chiclassiccmp_unknown`(`path`) VALUES (?)",
+        $this->execute("INSERT INTO `chiclassiccomp_unknown`(`path`) VALUES (?)",
             array($path));
     }
 
-    function ignoreChiClassicCmpPath($path)
+    function ignoreChiClassicCompPath($path)
     {
-        $this->execute("UPDATE `chiclassiccmp_unknown` SET `ignored` = 1 WHERE `path` = ?",
+        $this->execute("UPDATE `chiclassiccomp_unknown` SET `ignored` = 1 WHERE `path` = ?",
             array($path));
     }
 
-    function getChiClassicCmpUnknownPathCount()
+    function getChiClassicCompUnknownPathCount()
     {
-        $chiClassicCmpSite = $this->execute("SELECT `site_id` FROM `site` WHERE `name`='ChiClassicComp'");
-        $chiClassicCmpSite = $chiClassicCmpSite[0]['site_id'];
-        $count = $this->execute("DELETE `chiclassiccmp_unknown` FROM `chiclassiccmp_unknown` "
+        $chiClassicCompSite = $this->execute("SELECT `site_id` FROM `site` WHERE `name`='ChiClassicComp'");
+        $chiClassicCompSite = $chiClassicCompSite[0]['site_id'];
+        $count = $this->execute("DELETE `chiclassiccomp_unknown` FROM `chiclassiccomp_unknown` "
             . "INNER JOIN `copy` ON `url` = CONCAT('http://chiclassiccomp.org/docs/content/', `path`) "
-            . "WHERE `site` = ?", array($chiClassicCmpSite));
-        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `chiclassiccmp_unknown` WHERE `ignored` = 0", array());
+            . "WHERE `site` = ?", array($chiClassicCompSite));
+        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `chiclassiccomp_unknown` WHERE `ignored` = 0", array());
         return $rows[0]['count'];
     }
 
-    function getChiClassicCmpUnknownPathsOrderedById($start, $ascending)
+    function getChiClassicCompUnknownPathsOrderedById($start, $ascending)
     {
         $order = $ascending ? 'ASC' : 'DESC';
-        return $this->execute("SELECT `path`,`id` FROM `chiclassiccmp_unknown` WHERE `ignored` = 0 ORDER BY `id` $order LIMIT $start, 10", array());
+        return $this->execute("SELECT `path`,`id` FROM `chiclassiccomp_unknown` WHERE `ignored` = 0 ORDER BY `id` $order LIMIT $start, 10", array());
     }
 
-    function getChiClassicCmpUnknownPathsOrderedByPath($start, $ascending)
+    function getChiClassicCompUnknownPathsOrderedByPath($start, $ascending)
     {
         $order = $ascending ? 'ASC' : 'DESC';
-        return $this->execute("SELECT `path`,`id` FROM `chiclassiccmp_unknown` WHERE `ignored` = 0 ORDER BY `path` $order LIMIT $start, 10", array());
+        return $this->execute("SELECT `path`,`id` FROM `chiclassiccomp_unknown` WHERE `ignored` = 0 ORDER BY `path` $order LIMIT $start, 10", array());
     }
 
-    function chiClassicCmpIgnoredPath($path)
+    function chiClassicCompIgnoredPath($path)
     {
-        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `chiclassiccmp_unknown` WHERE `path` = ? AND `ignored` = 1",
+        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `chiclassiccomp_unknown` WHERE `path` = ? AND `ignored` = 1",
             array($path));
         return ($rows[0]['count'] > 0);
     }
 
-    function getAllChiClassicCmpUnknownPaths()
+    function getAllChiClassicCompUnknownPaths()
     {
-        return $this->execute("SELECT `id`,`path` FROM `chiclassiccmp_unknown` ORDER BY `id`", array());
+        return $this->execute("SELECT `id`,`path` FROM `chiclassiccomp_unknown` ORDER BY `id`", array());
     }
 
-    function removeChiClassicCmpUnknownPathById($id)
+    function removeChiClassicCompUnknownPathById($id)
     {
-        return $this->execute("DELETE FROM `chiclassiccmp_unknown` WHERE `id` = ?", array($id));
+        return $this->execute("DELETE FROM `chiclassiccomp_unknown` WHERE `id` = ?", array($id));
     }
 
-    function getChiClassicCmpPossiblyMovedUnknownPaths()
+    function getChiClassicCompPossiblyMovedUnknownPaths()
     {
-        $chiClassicCmpId = $this->execute("SELECT site_id FROM site WHERE site.name = 'ChiClassicComp'", array());
-        return $this->execute("SELECT chiclassiccmp_unknown.path, chiclassiccmp_unknown.id as `path_id`, copy.url, copy.copy_id, copy.md5 FROM copy, chiclassiccmp_unknown".
+        $chiClassicCompId = $this->execute("SELECT site_id FROM site WHERE site.name = 'ChiClassicComp'", array());
+        return $this->execute("SELECT chiclassiccomp_unknown.path, chiclassiccomp_unknown.id as `path_id`, copy.url, copy.copy_id, copy.md5 FROM copy, chiclassiccomp_unknown".
                 " WHERE copy.site = ?" .
-                " AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1)) = REVERSE(SUBSTRING_INDEX(REVERSE(chiclassiccmp_unknown.path), '/', 1));",
-            array($chiClassicCmpId[0]['site_id']));
+                " AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1)) = REVERSE(SUBSTRING_INDEX(REVERSE(chiclassiccomp_unknown.path), '/', 1));",
+            array($chiClassicCompId[0]['site_id']));
     }
 
-    function chiClassicCmpFileMoved($copyId, $pathId, $url)
+    function chiClassicCompFileMoved($copyId, $pathId, $url)
     {
-        $this->execute("DELETE FROM chiclassiccmp_unknown WHERE id = ?", array($pathId));
+        $this->execute("DELETE FROM chiclassiccomp_unknown WHERE id = ?", array($pathId));
         $this->execute("UPDATE copy SET url = ? WHERE copy_id = ?", array($url, $copyId));
     }
 
-    function getCompanyForChiClassicCmpDirectory($dir)
+    function getCompanyForChiClassicCompDirectory($dir)
     {
-        $rows = $this->execute("SELECT `company_id` FROM `company_chiclassiccmp` WHERE `directory`=?",
+        $rows = $this->execute("SELECT `company_id` FROM `company_chiclassiccomp` WHERE `directory`=?",
             array($dir));
         return (count($rows) > 0) ? $rows[0]['company_id'] : -1;
     }

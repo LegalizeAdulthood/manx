@@ -1,6 +1,6 @@
 <?php
 
-require_once 'pages/ChiClassicCmpPage.php';
+require_once 'pages/ChiClassicCompPage.php';
 require_once 'test/FakeBitSaversPageFactory.php';
 require_once 'test/FakeFile.php';
 require_once 'test/FakeManx.php';
@@ -8,7 +8,7 @@ require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeUrlInfo.php';
 require_once 'test/FakeUrlTransfer.php';
 
-class ChiClassicCmpPageTester extends ChiClassicCmpPage
+class ChiClassicCompPageTester extends ChiClassicCompPage
 {
     public function getMenuType()
     {
@@ -31,7 +31,7 @@ class ChiClassicCmpPageTester extends ChiClassicCmpPage
     }
 }
 
-class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
+class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
 {
     private $_vars;
     /** @var FakeManxDatabase */
@@ -44,7 +44,7 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
     private $_info;
     /** @var FakeUrlTransfer */
     private $_transfer;
-    /** @var ChiClassicCmpPageTester */
+    /** @var ChiClassicCompPageTester */
     private $_page;
     /** @var FakeFile */
     private $_file;
@@ -128,21 +128,21 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
         $this->assertIndexByDateFileTransferred();
     }
 
-    public function testMenuTypeIsChiClassicCmpPage()
+    public function testMenuTypeIsChiClassicCompPage()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
 
-        $this->assertEquals(MenuType::ChiClassicCmp, $this->_page->getMenuType());
+        $this->assertEquals(MenuType::ChiClassicComp, $this->_page->getMenuType());
     }
 
     public function testRenderBodyContentWithPlentyOfPaths()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
-        $this->_db->getChiClassicCmpUnknownPathCountFakeResult = 10;
+        $this->_db->getChiClassicCompUnknownPathCountFakeResult = 10;
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
         $idStart = 110;
-        $this->_db->getChiClassicCmpUnknownPathsOrderedByIdFakeResult =
+        $this->_db->getChiClassicCompUnknownPathsOrderedByIdFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
 
         ob_start();
@@ -150,20 +150,20 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getChiClassicCmpUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getChiClassicCmpUnknownPathsOrderedByIdCalled);
-        $this->assertEquals(0, $this->_db->getChiClassicCmpUnknownPathsOrderedByIdLastStart);
+        $this->assertTrue($this->_db->getChiClassicCompUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByIdCalled);
+        $this->assertEquals(0, $this->_db->getChiClassicCompUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart), $output);
     }
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH));
-        $this->_db->getChiClassicCmpUnknownPathCountFakeResult = 10;
+        $this->_db->getChiClassicCompUnknownPathCountFakeResult = 10;
         $paths = array('dec/Q.pdf', 'dec/R.pdf', 'dec/S.pdf', 'dec/T.pdf', 'dec/U.pdf',
             'dec/V.pdf', 'dec/W.pdf', 'dec/X.pdf', 'dec/Y.pdf', 'dec/Z.pdf');
         $idStart = 110;
-        $this->_db->getChiClassicCmpUnknownPathsOrderedByPathFakeResult =
+        $this->_db->getChiClassicCompUnknownPathsOrderedByPathFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
 
         ob_start();
@@ -171,21 +171,21 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getChiClassicCmpUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getChiClassicCmpUnknownPathsOrderedByPathCalled);
-        $this->assertTrue($this->_db->getChiClassicCmpUnknownPathsOrderedByPathLastAscending);
-        $this->assertEquals(0, $this->_db->getChiClassicCmpUnknownPathsOrderedByIdLastStart);
+        $this->assertTrue($this->_db->getChiClassicCompUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByPathCalled);
+        $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByPathLastAscending);
+        $this->assertEquals(0, $this->_db->getChiClassicCompUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false), $output);
     }
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPathDescending()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH_DESCENDING));
-        $this->_db->getChiClassicCmpUnknownPathCountFakeResult = 10;
+        $this->_db->getChiClassicCompUnknownPathCountFakeResult = 10;
         $paths = array('dec/Z.pdf', 'dec/Y.pdf', 'dec/X.pdf', 'dec/W.pdf', 'dec/V.pdf',
             'dec/U.pdf', 'dec/T.pdf', 'dec/S.pdf', 'dec/R.pdf', 'dec/Q.pdf');
         $idStart = 110;
-        $this->_db->getChiClassicCmpUnknownPathsOrderedByPathFakeResult =
+        $this->_db->getChiClassicCompUnknownPathsOrderedByPathFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
 
         ob_start();
@@ -193,10 +193,10 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getChiClassicCmpUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getChiClassicCmpUnknownPathsOrderedByPathCalled);
-        $this->assertFalse($this->_db->getChiClassicCmpUnknownPathsOrderedByPathLastAscending);
-        $this->assertEquals(0, $this->_db->getChiClassicCmpUnknownPathsOrderedByIdLastStart);
+        $this->assertTrue($this->_db->getChiClassicCompUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByPathCalled);
+        $this->assertFalse($this->_db->getChiClassicCompUnknownPathsOrderedByPathLastAscending);
+        $this->assertEquals(0, $this->_db->getChiClassicCompUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false, false), $output);
     }
 
@@ -205,9 +205,9 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
         $this->createPageWithoutFetchingIndexByDateFile();
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
-        $this->_db->getChiClassicCmpUnknownPathCountFakeResult = count($paths);
+        $this->_db->getChiClassicCompUnknownPathCountFakeResult = count($paths);
         $this->configureCopiesExistForPaths($paths);
-        $this->_db->getChiClassicCmpUnknownPathsOrderedByIdFakeResult =
+        $this->_db->getChiClassicCompUnknownPathsOrderedByIdFakeResult =
             self::createResultRowsForUnknownPaths($paths);
 
         ob_start();
@@ -223,8 +223,8 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
         $ignoredPath = 'dec/1.pdf';
         $this->createPageWithoutFetchingIndexByDateFile(array('ignore0' => $ignoredPath));
         $this->_page->ignorePaths();
-        $this->assertTrue($this->_db->ignoreChiClassicCmpPathCalled);
-        $this->assertEquals($ignoredPath, $this->_db->ignoreChiClassicCmpPathLastPath);
+        $this->assertTrue($this->_db->ignoreChiClassicCompPathCalled);
+        $this->assertEquals($ignoredPath, $this->_db->ignoreChiClassicCompPathLastPath);
     }
 
     public function testRenderPageSelectionBarOnePage()
@@ -252,17 +252,17 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=20">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=30">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=40">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=50">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=60">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=70">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=80">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=90">10</a>&nbsp;&nbsp;'
-                . '<a href="chiclassiccmp.php?start=10"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1000"><b>&gt;</b></a>'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=20">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=30">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=40">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=50">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=60">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=70">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=80">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=90">10</a>&nbsp;&nbsp;'
+                . '<a href="chiclassiccomp.php?start=10"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1000"><b>&gt;</b></a>'
                 . '</div>' . "\n",
             $output);
     }
@@ -278,18 +278,18 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=20">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=30">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=40">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=50">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=60">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=70">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=80">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=90">10</a>&nbsp;&nbsp;'
-                . '<a href="chiclassiccmp.php?start=10"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1000"><b>&gt;</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10000"><b>&gt;&gt;</b></a>'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=20">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=30">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=40">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=50">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=60">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=70">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=80">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=90">10</a>&nbsp;&nbsp;'
+                . '<a href="chiclassiccomp.php?start=10"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1000"><b>&gt;</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10000"><b>&gt;&gt;</b></a>'
                 . '</div>' . "\n",
             $output);
     }
@@ -305,19 +305,19 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=100"><b>&lt;</b></a>&nbsp;&nbsp;'
-                . '<a href="chiclassiccmp.php?start=1090"><b>Previous</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=100"><b>&lt;</b></a>&nbsp;&nbsp;'
+                . '<a href="chiclassiccomp.php?start=1090"><b>Previous</b></a>&nbsp;&nbsp;'
                 . '<b class="currpage">111</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1110">112</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1120">113</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1130">114</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1140">115</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1150">116</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1160">117</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1170">118</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1180">119</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1190">120</a>&nbsp;&nbsp;'
-                . '<a href="chiclassiccmp.php?start=1110"><b>Next</b></a>'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1110">112</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1120">113</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1130">114</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1140">115</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1150">116</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1160">117</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1170">118</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1180">119</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1190">120</a>&nbsp;&nbsp;'
+                . '<a href="chiclassiccomp.php?start=1110"><b>Next</b></a>'
                 . '</div>' . "\n",
             $output);
     }
@@ -333,21 +333,21 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=0"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=9000"><b>&lt;</b></a>&nbsp;&nbsp;'
-                . '<a href="chiclassiccmp.php?start=9990"><b>Previous</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=0"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=9000"><b>&lt;</b></a>&nbsp;&nbsp;'
+                . '<a href="chiclassiccomp.php?start=9990"><b>Previous</b></a>&nbsp;&nbsp;'
                 . '<b class="currpage">1001</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10010">1002</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10020">1003</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10030">1004</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10040">1005</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10050">1006</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10060">1007</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10070">1008</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10080">1009</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10090">1010</a>&nbsp;&nbsp;'
-                . '<a href="chiclassiccmp.php?start=10010"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=11000"><b>&gt;</b></a>'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10010">1002</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10020">1003</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10030">1004</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10040">1005</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10050">1006</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10060">1007</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10070">1008</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10080">1009</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10090">1010</a>&nbsp;&nbsp;'
+                . '<a href="chiclassiccomp.php?start=10010"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=11000"><b>&gt;</b></a>'
                 . '</div>' . "\n",
             $output);
     }
@@ -363,21 +363,21 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1000"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10000"><b>&lt;</b></a>&nbsp;&nbsp;'
-                . '<a href="chiclassiccmp.php?start=10990"><b>Previous</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1000"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10000"><b>&lt;</b></a>&nbsp;&nbsp;'
+                . '<a href="chiclassiccomp.php?start=10990"><b>Previous</b></a>&nbsp;&nbsp;'
                 . '<b class="currpage">1101</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=11010">1102</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=11020">1103</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=11030">1104</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=11040">1105</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=11050">1106</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=11060">1107</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=11070">1108</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=11080">1109</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=11090">1110</a>&nbsp;&nbsp;'
-                . '<a href="chiclassiccmp.php?start=11010"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=12000"><b>&gt;</b></a>'
+                . '<a class="navpage" href="chiclassiccomp.php?start=11010">1102</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=11020">1103</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=11030">1104</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=11040">1105</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=11050">1106</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=11060">1107</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=11070">1108</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=11080">1109</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=11090">1110</a>&nbsp;&nbsp;'
+                . '<a href="chiclassiccomp.php?start=11010"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=12000"><b>&gt;</b></a>'
                 . '</div>' . "\n",
             $output);
     }
@@ -385,13 +385,13 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
     public function testPoundSignEscaped()
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia_%2350_Nov89.pdf",
-            ChiClassicCmpPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
+            ChiClassicCompPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
     }
 
     public function testSpaceEscaped()
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia%2050_Nov89.pdf",
-            ChiClassicCmpPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
+            ChiClassicCompPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
     }
 
     public function testRenderPageSelectionBarManyPagesByPath()
@@ -405,17 +405,17 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10&sort=bypath">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=20&sort=bypath">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=30&sort=bypath">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=40&sort=bypath">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=50&sort=bypath">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=60&sort=bypath">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=70&sort=bypath">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=80&sort=bypath">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=90&sort=bypath">10</a>&nbsp;&nbsp;'
-                . '<a href="chiclassiccmp.php?start=10&sort=bypath"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1000&sort=bypath"><b>&gt;</b></a>'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10&sort=bypath">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=20&sort=bypath">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=30&sort=bypath">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=40&sort=bypath">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=50&sort=bypath">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=60&sort=bypath">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=70&sort=bypath">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=80&sort=bypath">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=90&sort=bypath">10</a>&nbsp;&nbsp;'
+                . '<a href="chiclassiccomp.php?start=10&sort=bypath"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1000&sort=bypath"><b>&gt;</b></a>'
                 . '</div>' . "\n",
             $output);
     }
@@ -431,17 +431,17 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=10&sort=bypathdesc">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=20&sort=bypathdesc">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=30&sort=bypathdesc">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=40&sort=bypathdesc">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=50&sort=bypathdesc">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=60&sort=bypathdesc">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=70&sort=bypathdesc">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=80&sort=bypathdesc">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=90&sort=bypathdesc">10</a>&nbsp;&nbsp;'
-                . '<a href="chiclassiccmp.php?start=10&sort=bypathdesc"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="chiclassiccmp.php?start=1000&sort=bypathdesc"><b>&gt;</b></a>'
+                . '<a class="navpage" href="chiclassiccomp.php?start=10&sort=bypathdesc">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=20&sort=bypathdesc">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=30&sort=bypathdesc">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=40&sort=bypathdesc">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=50&sort=bypathdesc">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=60&sort=bypathdesc">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=70&sort=bypathdesc">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=80&sort=bypathdesc">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=90&sort=bypathdesc">10</a>&nbsp;&nbsp;'
+                . '<a href="chiclassiccomp.php?start=10&sort=bypathdesc"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="chiclassiccomp.php?start=1000&sort=bypathdesc"><b>&gt;</b></a>'
                 . '</div>' . "\n",
             $output);
     }
@@ -449,14 +449,14 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
     public function testRenderBodyContentNoDocuments()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
-        $this->_db->getChiClassicCmpUnknownPathCountFakeResult = 0;
+        $this->_db->getChiClassicCompUnknownPathCountFakeResult = 0;
 
         ob_start();
         $this->_page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertEquals("<h1>No New ChiClassicCmp Publications Found</h1>\n", $output);
+        $this->assertEquals("<h1>No New ChiClassicComp Publications Found</h1>\n", $output);
     }
 
     private function assertFileParsedPaths($paths)
@@ -467,10 +467,10 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_file->eofCalled);
         $this->assertTrue($this->_file->getStringCalled);
         $this->assertTrue($this->_db->copyExistsForUrlCalled);
-        $this->assertTrue($this->_db->addChiClassicCmpUnknownPathCalled);
+        $this->assertTrue($this->_db->addChiClassicCompUnknownPathCalled);
         foreach ($paths as $path)
         {
-            $this->assertContains($path, $this->_db->addChiClassicCmpUnknownPathLastPaths);
+            $this->assertContains($path, $this->_db->addChiClassicCompUnknownPathLastPaths);
         }
     }
 
@@ -500,22 +500,22 @@ class TestChiClassicCmpPage extends PHPUnit_Framework_TestCase
         {
             $sortValue = $ascending ? 'byid' : 'byiddesc';
             $nextSortValue = $ascending ? 'byiddesc' : 'byid';
-            $expectedIdHeader = sprintf('<a href="chiclassiccmp.php?sort=%1$s">Id</a>', $nextSortValue);
-            $expectedPathHeader = '<a href="chiclassiccmp.php?sort=bypath">Path</a>';
+            $expectedIdHeader = sprintf('<a href="chiclassiccomp.php?sort=%1$s">Id</a>', $nextSortValue);
+            $expectedPathHeader = '<a href="chiclassiccomp.php?sort=bypath">Path</a>';
         }
         else
         {
             $sortValue = $ascending ? 'bypath' : 'bypathdesc';
             $nextSortValue = $ascending ? 'bypathdesc' : 'bypath';
-            $expectedIdHeader = '<a href="chiclassiccmp.php?sort=byid">Id</a>';
-            $expectedPathHeader = sprintf('<a href="chiclassiccmp.php?sort=%1$s">Path</a>', $nextSortValue);
+            $expectedIdHeader = '<a href="chiclassiccomp.php?sort=byid">Id</a>';
+            $expectedPathHeader = sprintf('<a href="chiclassiccomp.php?sort=%1$s">Path</a>', $nextSortValue);
         }
 
         $expected = <<<EOH
-<h1>New ChiClassicCmp Publications</h1>
+<h1>New ChiClassicComp Publications</h1>
 
 <div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>
-<form action="chiclassiccmp.php" method="POST">
+<form action="chiclassiccomp.php" method="POST">
 <input type="hidden" name="start" value="0" />
 <input type="hidden" name="sort" value="$sortValue" />
 <table>
@@ -526,7 +526,7 @@ EOH;
         $n = $idStart;
         foreach ($paths as $path)
         {
-            $urlPath = ChiClassicCmpPage::escapeSpecialChars($path);
+            $urlPath = ChiClassicCompPage::escapeSpecialChars($path);
             $item = <<<EOH
 <tr><td>$n.</td><td><input type="checkbox" id="ignore$i" name="ignore$i" value="$path" />
 <a href="url-wizard.php?url=http://chiclassiccomp.org/docs/content/$urlPath">$path</a></td></tr>
@@ -557,7 +557,7 @@ EOH;
     {
         $_SERVER['PATH_INFO'] = '';
         $this->_vars = $vars;
-        $this->_page = new ChiClassicCmpPageTester($this->_manx, $this->_vars, $this->_factory);
+        $this->_page = new ChiClassicCompPageTester($this->_manx, $this->_vars, $this->_factory);
     }
 
     private function assertPropertyRead($name)

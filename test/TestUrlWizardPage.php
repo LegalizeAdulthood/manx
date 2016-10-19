@@ -57,7 +57,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $vars = array(
             'bitsavers_directory' => '',
-            'chiclassiccmp_directory' => '',
+            'chiclassiccomp_directory' => '',
             'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
             'copy_format' => 'PDF',
             'copy_site' => '3',
@@ -135,7 +135,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $vars = array(
             'bitsavers_directory' => '',
-            'chiclassiccmp_directory' => '',
+            'chiclassiccomp_directory' => '',
             'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
             'copy_format' => 'PDF',
             'copy_site' => '3',
@@ -286,8 +286,8 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 <fieldset id="bitsavers_field" class="hidden">
 <input type="hidden" id="bitsavers_directory" name="bitsavers_directory" value="" />
 </fieldset>
-<fieldset id="chiclassiccmp_field" class="hidden">
-<input type="hidden" id="chiclassiccmp_directory" name="chiclassiccmp_directory" value="" />
+<fieldset id="chiclassiccomp_field" class="hidden">
+<input type="hidden" id="chiclassiccomp_directory" name="chiclassiccomp_directory" value="" />
 </fieldset>
 
 <fieldset id="site_fields" class="hidden">

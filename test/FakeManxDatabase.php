@@ -555,95 +555,95 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
 
-    function addChiClassicCmpUnknownPath($path)
+    function addChiClassicCompUnknownPath($path)
     {
-        $this->addChiClassicCmpUnknownPathCalled = true;
-        $this->addChiClassicCmpUnknownPathLastPaths[] = $path;
+        $this->addChiClassicCompUnknownPathCalled = true;
+        $this->addChiClassicCompUnknownPathLastPaths[] = $path;
     }
-    public $addChiClassicCmpUnknownPathCalled, $addChiClassicCmpUnknownPathLastPaths;
+    public $addChiClassicCompUnknownPathCalled, $addChiClassicCompUnknownPathLastPaths;
 
-    function ignoreChiClassicCmpPath($path)
+    function ignoreChiClassicCompPath($path)
     {
-        $this->ignoreChiClassicCmpPathCalled = true;
-        $this->ignoreChiClassicCmpPathLastPath = $path;
+        $this->ignoreChiClassicCompPathCalled = true;
+        $this->ignoreChiClassicCompPathLastPath = $path;
     }
-    public $ignoreChiClassicCmpPathCalled, $ignoreChiClassicCmpPathLastPath;
+    public $ignoreChiClassicCompPathCalled, $ignoreChiClassicCompPathLastPath;
 
-    function getChiClassicCmpUnknownPathCount()
+    function getChiClassicCompUnknownPathCount()
     {
-        $this->getChiClassicCmpUnknownPathCountCalled = true;
-        return $this->getChiClassicCmpUnknownPathCountFakeResult;
+        $this->getChiClassicCompUnknownPathCountCalled = true;
+        return $this->getChiClassicCompUnknownPathCountFakeResult;
     }
-    public $getChiClassicCmpUnknownPathCountCalled, $getChiClassicCmpUnknownPathCountFakeResult;
+    public $getChiClassicCompUnknownPathCountCalled, $getChiClassicCompUnknownPathCountFakeResult;
 
-    function getChiClassicCmpUnknownPathsOrderedById($start, $ascending)
+    function getChiClassicCompUnknownPathsOrderedById($start, $ascending)
     {
-        $this->getChiClassicCmpUnknownPathsOrderedByIdCalled = true;
-        $this->getChiClassicCmpUnknownPathsOrderedByIdLastStart = $start;
-        $this->getChiClassicCmpUnknownPathsOrderedByIdLastAscending = $ascending;
-        return $this->getChiClassicCmpUnknownPathsOrderedByIdFakeResult;
+        $this->getChiClassicCompUnknownPathsOrderedByIdCalled = true;
+        $this->getChiClassicCompUnknownPathsOrderedByIdLastStart = $start;
+        $this->getChiClassicCompUnknownPathsOrderedByIdLastAscending = $ascending;
+        return $this->getChiClassicCompUnknownPathsOrderedByIdFakeResult;
     }
-    public $getChiClassicCmpUnknownPathsOrderedByIdCalled,
-        $getChiClassicCmpUnknownPathsOrderedByIdLastStart,
-        $getChiClassicCmpUnknownPathsOrderedByIdLastAscending,
-        $getChiClassicCmpUnknownPathsOrderedByIdFakeResult;
+    public $getChiClassicCompUnknownPathsOrderedByIdCalled,
+        $getChiClassicCompUnknownPathsOrderedByIdLastStart,
+        $getChiClassicCompUnknownPathsOrderedByIdLastAscending,
+        $getChiClassicCompUnknownPathsOrderedByIdFakeResult;
 
-    function getChiClassicCmpUnknownPathsOrderedByPath($start, $ascending)
+    function getChiClassicCompUnknownPathsOrderedByPath($start, $ascending)
     {
-        $this->getChiClassicCmpUnknownPathsOrderedByPathCalled = true;
-        $this->getChiClassicCmpUnknownPathsOrderedByPathLastStart = $start;
-        $this->getChiClassicCmpUnknownPathsOrderedByPathLastAscending = $ascending;
-        return $this->getChiClassicCmpUnknownPathsOrderedByPathFakeResult;
+        $this->getChiClassicCompUnknownPathsOrderedByPathCalled = true;
+        $this->getChiClassicCompUnknownPathsOrderedByPathLastStart = $start;
+        $this->getChiClassicCompUnknownPathsOrderedByPathLastAscending = $ascending;
+        return $this->getChiClassicCompUnknownPathsOrderedByPathFakeResult;
     }
-    public $getChiClassicCmpUnknownPathsOrderedByPathCalled,
-        $getChiClassicCmpUnknownPathsOrderedByPathLastStart,
-            $getChiClassicCmpUnknownPathsOrderedByPathLastAscending,
-        $getChiClassicCmpUnknownPathsOrderedByPathFakeResult;
+    public $getChiClassicCompUnknownPathsOrderedByPathCalled,
+        $getChiClassicCompUnknownPathsOrderedByPathLastStart,
+            $getChiClassicCompUnknownPathsOrderedByPathLastAscending,
+        $getChiClassicCompUnknownPathsOrderedByPathFakeResult;
 
-    function chiClassicCmpIgnoredPath($path)
+    function chiClassicCompIgnoredPath($path)
     {
-        $this->chiClassicCmpIgnoredPathCalled = true;
-        $this->chiClassicCmpIgnoredPathLastPath = $path;
-        return $this->chiClassicCmpIgnoredPathFakeResult;
+        $this->chiClassicCompIgnoredPathCalled = true;
+        $this->chiClassicCompIgnoredPathLastPath = $path;
+        return $this->chiClassicCompIgnoredPathFakeResult;
     }
-    public $chiClassicCmpIgnoredPathCalled, $chiClassicCmpIgnoredPathLastPath,
-        $chiClassicCmpIgnoredPathFakeResult;
+    public $chiClassicCompIgnoredPathCalled, $chiClassicCompIgnoredPathLastPath,
+        $chiClassicCompIgnoredPathFakeResult;
 
-    function getAllChiClassicCmpUnknownPaths()
+    function getAllChiClassicCompUnknownPaths()
     {
-        $this->getAllChiClassicCmpUnknownPathsCalled = true;
-        return $this->getAllChiClassicCmpUnknownPathsResult;
+        $this->getAllChiClassicCompUnknownPathsCalled = true;
+        return $this->getAllChiClassicCompUnknownPathsResult;
     }
-    public $getAllChiClassicCmpUnknownPathsCalled, $getAllChiClassicCmpUnknownPathsResult;
+    public $getAllChiClassicCompUnknownPathsCalled, $getAllChiClassicCompUnknownPathsResult;
 
-    function removeChiClassicCmpUnknownPathById($id)
+    function removeChiClassicCompUnknownPathById($id)
     {
-        $this->removeChiClassicCmpUnknownPathByIdCalled = true;
-        $this->removeChiClassicCmpUnknownPathByIdLastId = $id;
+        $this->removeChiClassicCompUnknownPathByIdCalled = true;
+        $this->removeChiClassicCompUnknownPathByIdLastId = $id;
     }
-    public $removeChiClassicCmpUnknownPathByIdCalled, $removeChiClassicCmpUnknownPathByIdLastId;
+    public $removeChiClassicCompUnknownPathByIdCalled, $removeChiClassicCompUnknownPathByIdLastId;
 
-    function getChiClassicCmpPossiblyMovedUnknownPaths()
+    function getChiClassicCompPossiblyMovedUnknownPaths()
     {
-        $this->getChiClassicCmpPossiblyMovedUnknownPathsCalled = true;
-        return $this->getChiClassicCmpPossiblyMovedUnknownPathsFakeResult;
+        $this->getChiClassicCompPossiblyMovedUnknownPathsCalled = true;
+        return $this->getChiClassicCompPossiblyMovedUnknownPathsFakeResult;
     }
-    public $getChiClassicCmpPossiblyMovedUnknownPathsCalled, $getChiClassicCmpPossiblyMovedUnknownPathsFakeResult;
+    public $getChiClassicCompPossiblyMovedUnknownPathsCalled, $getChiClassicCompPossiblyMovedUnknownPathsFakeResult;
 
-    function chiClassicCmpFileMoved($copyId, $pathId, $url)
+    function chiClassicCompFileMoved($copyId, $pathId, $url)
     {
-        $this->chiClassicCmpFileMovedCalled = true;
-        $this->chiClassicCmpFileMovedLastCopyId = $copyId;
-        $this->chiClassicCmpFileMovedLastPathId = $pathId;
-        $this->chiClassicCmpFileMovedLastUrl = $url;
+        $this->chiClassicCompFileMovedCalled = true;
+        $this->chiClassicCompFileMovedLastCopyId = $copyId;
+        $this->chiClassicCompFileMovedLastPathId = $pathId;
+        $this->chiClassicCompFileMovedLastUrl = $url;
     }
-    public $chiClassicCmpFileMovedCalled, $chiClassicCmpFileMovedLastCopyId, $chiClassicCmpFileMovedLastPathId, $chiClassicCmpFileMovedLastUrl;
+    public $chiClassicCompFileMovedCalled, $chiClassicCompFileMovedLastCopyId, $chiClassicCompFileMovedLastPathId, $chiClassicCompFileMovedLastUrl;
 
-    function getCompanyForChiClassicCmpDirectory($dir)
+    function getCompanyForChiClassicCompDirectory($dir)
     {
-        $this->getCompanyForChiClassicCmpDirectoryCalled = true;
-        $this->getCompanyForChiClassicCmpDirectoryLastDir = $dir;
-        return $this->getCompanyForChiClassicCmpDirectoryFakeResult;
+        $this->getCompanyForChiClassicCompDirectoryCalled = true;
+        $this->getCompanyForChiClassicCompDirectoryLastDir = $dir;
+        return $this->getCompanyForChiClassicCompDirectoryFakeResult;
     }
-    public $getCompanyForChiClassicCmpDirectoryCalled, $getCompanyForChiClassicCmpDirectoryLastDir, $getCompanyForChiClassicCmpDirectoryFakeResult;
+    public $getCompanyForChiClassicCompDirectoryCalled, $getCompanyForChiClassicCompDirectoryLastDir, $getCompanyForChiClassicCompDirectoryFakeResult;
 }

@@ -46,16 +46,16 @@ class URLWizardPage extends AdminPageBase
 
     private function addSiteCompanyDirectory($companyId)
     {
-        $this->addChiClassicCmpDirectory($companyId);
+        $this->addChiClassicCompDirectory($companyId);
         $this->addBitSaversDirectory($companyId);
     }
 
-    private function addChiClassicCmpDirectory($companyId)
+    private function addChiClassicCompDirectory($companyId)
     {
-        $directory = $this->param('chiclassiccmp_directory');
+        $directory = $this->param('chiclassiccomp_directory');
         if (strlen($directory) > 0)
         {
-            $this->_db->addChiClassicCmpDirectory($companyId, $directory);
+            $this->_db->addChiClassicCompDirectory($companyId, $directory);
         }
     }
 
@@ -314,8 +314,8 @@ EOH;
 <fieldset id="bitsavers_field" class="hidden">
 <input type="hidden" id="bitsavers_directory" name="bitsavers_directory" value="" />
 </fieldset>
-<fieldset id="chiclassiccmp_field" class="hidden">
-<input type="hidden" id="chiclassiccmp_directory" name="chiclassiccmp_directory" value="" />
+<fieldset id="chiclassiccomp_field" class="hidden">
+<input type="hidden" id="chiclassiccomp_directory" name="chiclassiccomp_directory" value="" />
 </fieldset>
 
 <fieldset id="site_fields" class="hidden">

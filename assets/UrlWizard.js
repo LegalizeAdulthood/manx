@@ -155,9 +155,9 @@ $(function()
         $("#bitsavers_directory").val(data.bitsavers_directory);
     };
 
-    var set_chiclassiccmp = function(data)
+    var set_chiclassiccomp = function(data)
     {
-        $("#chiclassiccmp_directory").val(data.chiclassiccmp_directory);
+        $("#chiclassiccomp_directory").val(data.chiclassiccomp_directory);
     };
 
     var reset_site = function()
@@ -439,7 +439,7 @@ $(function()
                         reset_exists();
                         set_copy(json);
                         set_bitsavers(json);
-                        set_chiclassiccmp(json);
+                        set_chiclassiccomp(json);
                         show_or_hide("copy_site")("site_fields");
                         set_company(json);
                         set_publication(json);

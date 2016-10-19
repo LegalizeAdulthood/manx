@@ -5,11 +5,11 @@ require_once 'BitSaversPageFactory.php';
 require_once 'Config.php';
 require_once 'UnknownPathDefs.php';
 
-define('CCC_INDEX_BY_DATE_FILE', 'chiClassicCmp-IndexByDate.txt');
+define('CCC_INDEX_BY_DATE_FILE', 'chiClassicComp-IndexByDate.txt');
 define('CCC_INDEX_BY_DATE_URL', 'http://chiclassiccomp.org/docs/content/IndexByDate.txt');
-define('CCC_TIMESTAMP_PROPERTY', 'chiclassiccmp_whats_new_timestamp');
+define('CCC_TIMESTAMP_PROPERTY', 'chiclassiccomp_whats_new_timestamp');
 
-class ChiClassicCmpPage extends AdminPageBase
+class ChiClassicCompPage extends AdminPageBase
 {
     private $_factory;
 
@@ -74,12 +74,12 @@ class ChiClassicCmpPage extends AdminPageBase
 
     private function addUnknownPath($line)
     {
-        $this->_manxDb->addChiClassicCmpUnknownPath($line);
+        $this->_manxDb->addChiClassicCompUnknownPath($line);
     }
 
     protected function getMenuType()
     {
-        return MenuType::ChiClassicCmp;
+        return MenuType::ChiClassicComp;
     }
 
     protected function postPage()
@@ -103,25 +103,25 @@ class ChiClassicCmpPage extends AdminPageBase
         {
             foreach ($ignored as $path)
             {
-                $this->_manxDb->ignoreChiClassicCmpPath($path);
+                $this->_manxDb->ignoreChiClassicCompPath($path);
             }
         }
     }
 
     protected function renderBodyContent()
     {
-        $total = $this->_manxDb->getChiClassicCmpUnknownPathCount();
+        $total = $this->_manxDb->getChiClassicCompUnknownPathCount();
         if ($total == 0)
         {
             print <<<EOH
-<h1>No New ChiClassicCmp Publications Found</h1>
+<h1>No New ChiClassicComp Publications Found</h1>
 
 EOH;
             return;
         }
 
         print <<<EOH
-<h1>New ChiClassicCmp Publications</h1>
+<h1>New ChiClassicComp Publications</h1>
 
 
 EOH;
@@ -129,8 +129,8 @@ EOH;
         $sortOrder = array_key_exists('sort', $this->_vars) ? $this->_vars['sort'] : CCC_SORT_ORDER_BY_ID;
         $sortById = ($sortOrder == SORT_ORDER_BY_ID) || ($sortOrder == SORT_ORDER_BY_ID_DESCENDING);
         $unknownPaths = $sortById ?
-            $this->_manxDb->getChiClassicCmpUnknownPathsOrderedById($start, $sortOrder == SORT_ORDER_BY_ID)
-            : $this->_manxDb->getChiClassicCmpUnknownPathsOrderedByPath($start, $sortOrder == SORT_ORDER_BY_PATH);
+            $this->_manxDb->getChiClassicCompUnknownPathsOrderedById($start, $sortOrder == SORT_ORDER_BY_ID)
+            : $this->_manxDb->getChiClassicCompUnknownPathsOrderedByPath($start, $sortOrder == SORT_ORDER_BY_PATH);
         $this->renderPageSelectionBar($start, $total);
         $startParam = $start > 0 ? sprintf('start=%1$d&', $start) : '';
         if ($sortById)
@@ -143,11 +143,11 @@ EOH;
             $idSortParam = SORT_ORDER_BY_ID;
             $pathSortParam = ($sortOrder == SORT_ORDER_BY_PATH) ? SORT_ORDER_BY_PATH_DESCENDING : SORT_ORDER_BY_PATH;
         }
-        $idHeader = sprintf('<a href="chiclassiccmp.php?%1$s%2$s">Id</a>', $startParam, 'sort=' . $idSortParam);
-        $pathHeader = sprintf('<a href="chiclassiccmp.php?%1$s%2$s">Path</a>', $startParam, 'sort=' . $pathSortParam);
+        $idHeader = sprintf('<a href="chiclassiccomp.php?%1$s%2$s">Id</a>', $startParam, 'sort=' . $idSortParam);
+        $pathHeader = sprintf('<a href="chiclassiccomp.php?%1$s%2$s">Path</a>', $startParam, 'sort=' . $pathSortParam);
 
         print <<<EOH
-<form action="chiclassiccmp.php" method="POST">
+<form action="chiclassiccomp.php" method="POST">
 <input type="hidden" name="start" value="$start" />
 <input type="hidden" name="sort" value="$sortOrder" />
 <table>
@@ -182,17 +182,17 @@ EOH;
         $rowsPerPage = 10;
         if ($start - 10000 >= 0)
         {
-            print sprintf('<a class="navpage" href="chiclassiccmp.php?start=%1$d%2$s"><b>&lt;&lt;</b></a>&nbsp;&nbsp;',
+            print sprintf('<a class="navpage" href="chiclassiccomp.php?start=%1$d%2$s"><b>&lt;&lt;</b></a>&nbsp;&nbsp;',
                 $start - 10000, $sortParam);
         }
         if ($start - 1000 >= 0)
         {
-            print sprintf('<a class="navpage" href="chiclassiccmp.php?start=%1$d%2$s"><b>&lt;</b></a>&nbsp;&nbsp;',
+            print sprintf('<a class="navpage" href="chiclassiccomp.php?start=%1$d%2$s"><b>&lt;</b></a>&nbsp;&nbsp;',
                 $start - 1000, $sortParam);
         }
         if ($start != 0)
         {
-            printf('<a href="chiclassiccmp.php?start=%1$d%2$s"><b>Previous</b></a>&nbsp;&nbsp;',
+            printf('<a href="chiclassiccomp.php?start=%1$d%2$s"><b>Previous</b></a>&nbsp;&nbsp;',
                 max(0, $start - $rowsPerPage), $sortParam);
         }
 
@@ -211,7 +211,7 @@ EOH;
             }
             else
             {
-                print sprintf('<a class="navpage" href="chiclassiccmp.php?start=%1$d%3$s">%2$d</a>&nbsp;&nbsp;',
+                print sprintf('<a class="navpage" href="chiclassiccomp.php?start=%1$d%3$s">%2$d</a>&nbsp;&nbsp;',
                     $currPageStart, $currPageNum, $sortParam);
             }
             ++$currPageNum;
@@ -223,16 +223,16 @@ EOH;
         }
         if ($start != $lastPageStart)
         {
-            printf('<a href="chiclassiccmp.php?start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $sortParam);
+            printf('<a href="chiclassiccomp.php?start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $sortParam);
         }
         if ($start + 1000 < $total)
         {
-            print sprintf('&nbsp;&nbsp;<a class="navpage" href="chiclassiccmp.php?start=%1$d%2$s"><b>&gt;</b></a>',
+            print sprintf('&nbsp;&nbsp;<a class="navpage" href="chiclassiccomp.php?start=%1$d%2$s"><b>&gt;</b></a>',
                 $start + 1000, $sortParam);
         }
         if ($start + 10000 < $total)
         {
-            print sprintf('&nbsp;&nbsp;<a class="navpage" href="chiclassiccmp.php?start=%1$d%2$s"><b>&gt;&gt;</b></a>',
+            print sprintf('&nbsp;&nbsp;<a class="navpage" href="chiclassiccomp.php?start=%1$d%2$s"><b>&gt;&gt;</b></a>',
                 $start + 10000, $sortParam);
         }
         print "</div>\n";
