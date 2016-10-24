@@ -98,11 +98,11 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
+
         ob_start();
-
         $page->postPage();
-
         $output = ob_get_contents();
+
         $this->assertFalse($db->addCompanyCalled);
         $this->assertTrue($this->_manx->addPublicationCalled);
         $this->assertEquals($vars['pub_history_ph_title'], $this->_manx->addPublicationLastTitle);
@@ -176,11 +176,11 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
+
         ob_start();
-
         $page->postPage();
-
         $output = ob_get_contents();
+
         $this->assertFalse($db->addCompanyCalled);
         $this->assertTrue($this->_manx->addPublicationCalled);
         $this->assertEquals($vars['pub_history_ph_title'], $this->_manx->addPublicationLastTitle);
@@ -213,10 +213,12 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $this->_manx->getDatabaseFakeResult = $db;
         $vars = array();
         $page = new URLWizardPageTester($this->_manx, $vars);
+
         ob_start();
         $page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
+
         $expected = <<<EOH
 <h1>URL Wizard</h1>
 
