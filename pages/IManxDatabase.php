@@ -61,6 +61,7 @@ interface IManxDatabase
     function getAllBitSaversUnknownPaths();
     function removeBitSaversUnknownPathById($id);
     function getPossiblyMovedUnknownPaths();
+    function addChiClassicCompDirectory($companyId, $directory);
     function bitSaversFileMoved($copyId, $pathId, $url);
     function addChiClassicCompUnknownPath($path);
     function ignoreChiClassicCompPath($path);

@@ -555,6 +555,14 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
 
+    function addChiClassicCompDirectory($companyId, $directory)
+    {
+        $this->addChiClassicCompDirectoryCalled = true;
+        $this->addChiClassicCompDirectoryLastCompanyId = $companyId;
+        $this->addChiClassicCompDirectoryLastDirectory = $directory;
+    }
+    public $addChiClassicCompDirectoryCalled, $addChiClassicCompDirectoryLastCompanyId, $addChiClassicCompDirectoryLastDirectory;
+
     function addChiClassicCompUnknownPath($path)
     {
         $this->addChiClassicCompUnknownPathCalled = true;

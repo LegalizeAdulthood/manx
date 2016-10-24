@@ -203,6 +203,68 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $this->assertTrue($page->redirectCalled);
     }
 
+    public function testNewChiClassicCompDirectoryAdded()
+    {
+        $this->_manx = new FakeManx();
+        $this->_manx->addPublicationFakeResult = 19690;
+        $db = new FakeManxDatabase();
+        $this->_manx->getDatabaseFakeResult = $db;
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $vars = array(
+            'bitsavers_directory' => '',
+            'chiclassiccomp_directory' => 'DEC',
+            'copy_url' => 'http%3A%2F%2Fchiclassiccomp.org%2Fdocs%2Fcontent%2Fcomputing%2FDEC%2FChicagoDECStore1.jpg',
+            'copy_format' => 'JPEG',
+            'copy_site' => '58',
+            'copy_notes' => '',
+            'copy_size' => '',
+            'copy_md5' => '',
+            'copy_credits' => '',
+            'copy_amend_serial' => '',
+            'site_name' => '',
+            'site_url' => '',
+            'site_description' => '',
+            'site_copy_base' => '',
+            'company_id' => '5',
+            'company_name' => '',
+            'company_short_name' => '',
+            'company_sort_name' => '',
+            'company_notes' => '',
+            'pub_search_keywords' => 'Chicago DEC Store1',
+            'pub_pub_id' => '-1',
+            'pub_history_ph_title' => 'Accessories & Supplies Center Chicago Brochure',
+            'pub_history_ph_revision' => '',
+            'pub_history_ph_pub_type' => 'D',
+            'pub_history_ph_pub_date' => '1979',
+            'pub_history_ph_abstract' => '',
+            'pub_history_ph_part' => '',
+            'pub_history_ph_match_part' => '',
+            'pub_history_ph_sort_part' => '',
+            'pub_history_ph_alt_part' => '',
+            'pub_history_ph_match_alt_part' => '',
+            'pub_history_ph_keywords' => '',
+            'pub_history_ph_notes' => '',
+            'pub_history_ph_class' => '',
+            'pub_history_ph_amend_pub' => '',
+            'pub_history_ph_amend_serial' => '',
+            'supersession_search_keywords' => 'Chicago DEC Store1',
+            'supersession_old_pub' => '-1',
+            'supersession_new_pub' => '-1',
+            'next' => 'Next+%3E');
+        $page = new URLWizardPageTester($this->_manx, $vars);
+        $md5 = '01234567890123456789012345678901';
+        $page->md5ForFileFakeResult = $md5;
+
+        ob_start();
+        $page->postPage();
+        $output = ob_get_contents();
+
+        $this->assertTrue($db->addChiClassicCompDirectoryCalled);
+        $this->assertEquals('DEC', $db->addChiClassicCompDirectoryLastDirectory);
+        $this->assertEquals('5', $db->addChiClassicCompDirectoryLastCompanyId);
+    }
+
     public function testRenderPage()
     {
         $this->_manx = new FakeManx();

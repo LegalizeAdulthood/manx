@@ -739,6 +739,16 @@ class ManxDatabase implements IManxDatabase
         $this->execute("UPDATE copy SET url = ? WHERE copy_id = ?", array($url, $copyId));
     }
 
+    function addChiClassicCompDirectory($companyId, $directory)
+    {
+        $row = $this->execute("SELECT * FROM `company_chiclassiccomp` WHERE `company_id`=?", array($companyId));
+        if (count($row) == 0)
+        {
+            $this->_db->execute('INSERT INTO `company_chiclassiccomp`(`company_id`,`directory`) VALUES (?,?)',
+                array($companyId, $directory));
+        }
+    }
+
     function addChiClassicCompUnknownPath($path)
     {
         $this->execute("INSERT INTO `chiclassiccomp_unknown`(`path`) VALUES (?)",
