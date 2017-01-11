@@ -158,8 +158,9 @@ EOH;
         for ($i = 0; $i < $num; ++$i)
         {
             $path = $unknownPaths[$i]['path'];
+	    $extension = pathinfo($path, PATHINFO_EXTENSION);
             $urlPath = self::escapeSpecialChars(trim($path));
-            $checked = preg_match('/.*\.(jpg|bin|tif|dat|zip|txt)$/i', $path) ? 'checked' : '';
+            $checked = (strlen($this->_manxDb->getFormatForExtension($extension)) > 0) ? '' : 'checked';
             printf('<tr><td>%1$d.</td><td><input type="checkbox" id="ignore%2$d" name="ignore%2$d" value="%3$s" %5$s/>' . "\n" .
                 '<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/%4$s">%3$s</a></td></tr>' . "\n",
                 $unknownPaths[$i]['id'], $i, $path, $urlPath, $checked);

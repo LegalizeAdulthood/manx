@@ -61,6 +61,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->_factory->createUrlTransferFakeResult = $this->_transfer;
         $this->_file = new FakeFile();
         $this->_factory->openFileFakeResult = $this->_file;
+	$this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
     }
 
     public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
@@ -144,6 +145,30 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByIdCalled);
         $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart), $output);
+    }
+
+    public function testRenderBodyContentWithIgnoredPaths()
+    {
+        $this->createPageWithoutFetchingIndexByDateFile();
+        $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
+        $paths = array('dec/1.bin', 'dec/2.zip', 'dec/3.dat', 'dec/4.u6', 'dec/5.tar',
+            'dec/6.gz', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
+        $idStart = 110;
+        $this->_db->getBitSaversUnknownPathsOrderedByIdFakeResult =
+            self::createResultRowsForUnknownPaths($paths, $idStart);
+	$this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
+	$checks = array('checked', 'checked', 'checked', 'checked', 'checked',
+	    'checked', '', '', '', '');
+
+        ob_start();
+        $this->_page->renderBodyContent();
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByIdCalled);
+        $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
+        $this->assertEquals(self::expectedOutputForCheckedPaths($paths, $checks, $idStart), $output);
     }
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
@@ -521,6 +546,60 @@ EOH;
             $urlPath = BitSaversPage::escapeSpecialChars($path);
             $item = <<<EOH
 <tr><td>$n.</td><td><input type="checkbox" id="ignore$i" name="ignore$i" value="$path" />
+<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/$urlPath">$path</a></td></tr>
+
+EOH;
+            $expected = $expected . $item;
+            ++$i;
+            ++$n;
+        }
+        $trailer = <<<EOH
+</table>
+<input type="submit" value="Ignore" />
+</form>
+
+EOH;
+        $expected = $expected . $trailer;
+        return $expected;
+    }
+
+    private static function expectedOutputForCheckedPaths($paths, $checks, $idStart = 1, $sortById = true, $ascending = true)
+    {
+        if ($sortById)
+        {
+            $sortValue = $ascending ? 'byid' : 'byiddesc';
+            $nextSortValue = $ascending ? 'byiddesc' : 'byid';
+            $expectedIdHeader = sprintf('<a href="bitsavers.php?sort=%1$s">Id</a>', $nextSortValue);
+            $expectedPathHeader = '<a href="bitsavers.php?sort=bypath">Path</a>';
+        }
+        else
+        {
+            $sortValue = $ascending ? 'bypath' : 'bypathdesc';
+            $nextSortValue = $ascending ? 'bypathdesc' : 'bypath';
+            $expectedIdHeader = '<a href="bitsavers.php?sort=byid">Id</a>';
+            $expectedPathHeader = sprintf('<a href="bitsavers.php?sort=%1$s">Path</a>', $nextSortValue);
+        }
+
+        $expected = <<<EOH
+<h1>New BitSavers Publications</h1>
+
+<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>
+<form action="bitsavers.php" method="POST">
+<input type="hidden" name="start" value="0" />
+<input type="hidden" name="sort" value="$sortValue" />
+<table>
+<tr><th>$expectedIdHeader</th><th>$expectedPathHeader</th></tr>
+
+EOH;
+        $i = 0;
+        $n = $idStart;
+        foreach ($paths as $path)
+        {
+            $urlPath = BitSaversPage::escapeSpecialChars($path);
+	    $checked = $checks[0];
+	    $checks = array_slice($checks, 1);
+            $item = <<<EOH
+<tr><td>$n.</td><td><input type="checkbox" id="ignore$i" name="ignore$i" value="$path" $checked/>
 <a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/$urlPath">$path</a></td></tr>
 
 EOH;
