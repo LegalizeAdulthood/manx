@@ -77,8 +77,8 @@ class FakeManxDatabase implements IManxDatabase
         $this->getPossiblyMovedUnknownPathsCalled = false;
         $this->getPossiblyMovedUnknownPathsFakeResult = array();
         $this->bitSaversFileMovedCalled = false;
-	$this->getFormatForExtensionCalledForExtension = array();
-	$this->getFormatForExtensionFakeResults = array();
+        $this->getFormatForExtensionCalledForExtension = array();
+        $this->getFormatForExtensionFakeResults = array();
     }
 
     public function getDocumentCount()
@@ -317,17 +317,17 @@ class FakeManxDatabase implements IManxDatabase
     {
         $this->getFormatForExtensionCalled = true;
         $this->getFormatForExtensionLastExtension = $extension;
-	$this->getFormatForExtensionCalledForExtension[$extension] = true;
-	if (array_key_exists($extension, $this->getFormatForExtensionFakeResults))
-	{
-		return $this->getFormatForExtensionFakeResults[$extension];
-	}
+        $this->getFormatForExtensionCalledForExtension[$extension] = true;
+        if (array_key_exists($extension, $this->getFormatForExtensionFakeResults))
+        {
+                return $this->getFormatForExtensionFakeResults[$extension];
+        }
         return $this->getFormatForExtensionFakeResult;
     }
     public $getFormatForExtensionCalled,
         $getFormatForExtensionLastExtension,
-	$getFormatForExtensionCalledForExtension,
-	$getFormatForExtensionFakeResults,
+        $getFormatForExtensionCalledForExtension,
+        $getFormatForExtensionFakeResults,
         $getFormatForExtensionFakeResult;
 
     public function getCompanyForBitSaversDirectory($dir)
