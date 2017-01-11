@@ -61,6 +61,7 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $this->_factory->createUrlTransferFakeResult = $this->_transfer;
         $this->_file = new FakeFile();
         $this->_factory->openFileFakeResult = $this->_file;
+        $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
     }
 
     public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
@@ -154,6 +155,30 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByIdCalled);
         $this->assertEquals(0, $this->_db->getChiClassicCompUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart), $output);
+    }
+
+    public function testRenderBodyContentWithIgnoredPaths()
+    {
+        $this->createPageWithoutFetchingIndexByDateFile();
+        $this->_db->getChiClassicCompUnknownPathCountFakeResult = 10;
+        $paths = array('dec/1.bin', 'dec/2.zip', 'dec/3.dat', 'dec/4.u6', 'dec/5.tar',
+            'dec/6.gz', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
+        $idStart = 110;
+        $this->_db->getChiClassicCompUnknownPathsOrderedByIdFakeResult =
+            self::createResultRowsForUnknownPaths($paths, $idStart);
+        $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
+        $checks = array('checked', 'checked', 'checked', 'checked', 'checked',
+            'checked', '', '', '', '');
+
+        ob_start();
+        $this->_page->renderBodyContent();
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $this->assertTrue($this->_db->getChiClassicCompUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByIdCalled);
+        $this->assertEquals(0, $this->_db->getChiClassicCompUnknownPathsOrderedByIdLastStart);
+        $this->assertEquals(self::expectedOutputForCheckedPaths($paths, $checks, $idStart), $output);
     }
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
@@ -496,6 +521,16 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
 
     private static function expectedOutputForPaths($paths, $idStart = 1, $sortById = true, $ascending = true)
     {
+        $checks = array();
+        foreach ($paths as $path)
+        {
+            $checks[] = '';
+        }
+        return self::expectedOutputForCheckedPaths($paths, $checks, $idStart, $sortById, $ascending);
+    }
+
+    private static function expectedOutputForCheckedPaths($paths, $checks, $idStart = 1, $sortById = true, $ascending = true)
+    {
         if ($sortById)
         {
             $sortValue = $ascending ? 'byid' : 'byiddesc';
@@ -527,8 +562,10 @@ EOH;
         foreach ($paths as $path)
         {
             $urlPath = ChiClassicCompPage::escapeSpecialChars($path);
+            $checked = $checks[0];
+            $checks = array_slice($checks, 1);
             $item = <<<EOH
-<tr><td>$n.</td><td><input type="checkbox" id="ignore$i" name="ignore$i" value="$path" />
+<tr><td>$n.</td><td><input type="checkbox" id="ignore$i" name="ignore$i" value="$path" $checked/>
 <a href="url-wizard.php?url=http://chiclassiccomp.org/docs/content/$urlPath">$path</a></td></tr>
 
 EOH;
