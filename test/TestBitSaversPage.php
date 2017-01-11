@@ -152,13 +152,14 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->createPageWithoutFetchingIndexByDateFile();
         $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
         $paths = array('dec/1.bin', 'dec/2.zip', 'dec/3.dat', 'dec/4.u6', 'dec/5.tar',
-            'dec/6.gz', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
+            'dec/6.gz', 'dec/7.jpg', 'dec/8.gif', 'dec/9.tif', 'dec/A#A.png');
         $idStart = 110;
         $this->_db->getBitSaversUnknownPathsOrderedByIdFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
-        $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
+        $this->_db->getFormatForExtensionFakeResults =
+            array('pdf' => 'PDF', 'jpg' => 'JPEG', 'gif' => 'GIF', 'png' => 'PNG', 'tif' => 'TIFF');
         $checks = array('checked', 'checked', 'checked', 'checked', 'checked',
-            'checked', '', '', '', '');
+            'checked', 'checked', 'checked', 'checked', 'checked');
 
         ob_start();
         $this->_page->renderBodyContent();
