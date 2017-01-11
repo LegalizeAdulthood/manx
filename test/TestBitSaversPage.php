@@ -212,7 +212,9 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     {
         $ignoredPath = 'dec/1.pdf';
         $this->createPageWithoutFetchingIndexByDateFile(array('ignore0' => $ignoredPath));
+
         $this->_page->ignorePaths();
+
         $this->assertTrue($this->_db->ignoreBitSaversPathCalled);
         $this->assertEquals($ignoredPath, $this->_db->ignoreBitSaversPathLastPath);
     }
