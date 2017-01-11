@@ -160,7 +160,7 @@ EOH;
             $path = $unknownPaths[$i]['path'];
             $extension = pathinfo($path, PATHINFO_EXTENSION);
             $urlPath = self::escapeSpecialChars(trim($path));
-            $checked = (strlen($this->_manxDb->getFormatForExtension($extension)) > 0) ? '' : 'checked';
+            $checked = self::ignoreExtension($this->_manxDb, $extension) ? 'checked' : '';
             printf('<tr><td>%1$d.</td><td><input type="checkbox" id="ignore%2$d" name="ignore%2$d" value="%3$s" %5$s/>' . "\n" .
                 '<a href="url-wizard.php?url=http://chiclassiccomp.org/docs/content/%4$s">%3$s</a></td></tr>' . "\n",
                 $unknownPaths[$i]['id'], $i, $path, $urlPath, $checked);
@@ -171,7 +171,13 @@ EOH;
 </form>
 
 EOH;
+    }
 
+    public static function ignoreExtension($manxDb, $extension)
+    {
+        $format = $manxDb->getFormatForExtension($extension);
+        $imageFormats = array('TIFF' => 1, 'PNG' => 1, 'JPEG' => 1, 'GIF' => 1);
+        return strlen($format) == 0 || array_key_exists($format, $imageFormats);
     }
 
     protected function renderPageSelectionBar($start, $total)
