@@ -2,6 +2,7 @@
 -- Table structure for table `company_chiclassiccomp`
 --
 
+DROP TABLE IF EXISTS `company_chiclassiccmp`;
 CREATE TABLE IF NOT EXISTS `company_chiclassiccomp` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `company_id` INT(11) NOT NULL,
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `company_chiclassiccomp` (
 -- Table structure for table `chiclassiccomp_unknown`
 --
 
+DROP TABLE IF EXISTS `chiclassiccmp_unknown`;
 CREATE TABLE IF NOT EXISTS `chiclassiccomp_unknown` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `path` VARCHAR(255) NOT NULL,
@@ -28,11 +30,11 @@ CREATE TABLE IF NOT EXISTS `chiclassiccomp_unknown` (
 --
 INSERT INTO `company_chiclassiccomp`(`company_id`,`directory`) VALUES
     (101, 'Altos'),
-	(120, 'AnnArborTerminals'),
+    (120, 'AnnArborTerminals'),
     (46,  'Apple'),
     (20,  'AT&T'),
-	(150, 'BellLabs'),
-	(110, 'CadoSystems'),
+    (150, 'BellLabs'),
+    (110, 'CadoSystems'),
     (92,  'CaliforniaComputerSystems'),
     (17,  'Centronics'),
     (60,  'CompuPro'),
@@ -42,7 +44,7 @@ INSERT INTO `company_chiclassiccomp`(`company_id`,`directory`) VALUES
     (44,  'DigitalResearch'),
     (27,  'Epson'),
     (84,  'Hayes'),
-	(12,  'Heathkit'),
+    (12,  'Heathkit'),
     (7,   'HP'),
     (57,  'Honeywell'),
     (19,  'IBM'),
@@ -63,7 +65,7 @@ INSERT INTO `company_chiclassiccomp`(`company_id`,`directory`) VALUES
 -- Manx version 2.0.5
 --
 UPDATE `properties`
-    SET `value` = '2.0.5'
+    SET `value` = '2.0.6'
     WHERE `name` = 'version';
 
 COMMIT;
