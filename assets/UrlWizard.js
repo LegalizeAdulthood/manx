@@ -5,32 +5,32 @@ String.prototype.trim = function()
 
 $(function()
 {
-    var show = function(id)
+    function show(id)
     {
         $("#" + id).removeClass("hidden");
-    };
+    }
 
-    var hide = function(id)
+    function hide(id)
     {
         $("#" + id).addClass("hidden");
-    };
+    }
 
     function first_item_selected(id_field)
     {
         return $("#" + id_field).val() == -1;
     }
 
-    var show_or_hide = function(id_field)
+    function show_or_hide(id_field)
     {
         return first_item_selected(id_field) ? show : hide;
-    };
+    }
 
-    var build_option = function(val, text)
+    function build_option(val, text)
     {
         return '<option value="' + val + '">' + text + '</option>';
-    };
+    }
 
-    var build_option_list = function(id, new_text, transformer, json)
+    function build_option_list(id, new_text, transformer, json)
     {
         var options = [build_option(-1, new_text)];
         for (var i = 0; i < json.length; ++i)
@@ -38,9 +38,9 @@ $(function()
             options.push(transformer(json[i]));
         }
         $("#" + id).html(options.join(''));
-    };
+    }
 
-    var clear_or_set_error_label = function(error, id, message)
+    function clear_or_set_error_label(error, id, message)
     {
         var label = $("label[for='" + id + "']");
         var error_id = id + "_error";
@@ -59,31 +59,31 @@ $(function()
             hide(error_id);
             return true;
         }
-    };
+    }
 
-    var validate_field_non_empty = function(input_id)
+    function validate_field_non_empty(input_id)
     {
         return clear_or_set_error_label(
             $("#" + input_id).val().trim().length == 0,
             input_id,
             'This value is required and cannot be empty.');
-    };
+    }
 
-    var validate_field_non_empty_lower_case = function(input_id)
+    function validate_field_non_empty_lower_case(input_id)
     {
         var value = $("#" + input_id).val().trim();
         return clear_or_set_error_label(
             (value.length === 0) || (value.match(/^[^A-Z]*$/) === null),
             input_id,
             'This value is required, cannot be empty and must be lower case.');
-    };
+    }
 
-    var validate_combo_box = function(combo_id, field_validator)
+    function validate_combo_box(combo_id, field_validator)
     {
         return ($("#" + combo_id).val() != -1) || field_validator();
-    };
+    }
 
-    var set_copy = function(data)
+    function set_copy(data)
     {
         hide("copy_text");
         show("copy_link");
@@ -103,8 +103,8 @@ $(function()
         show("copy_format_field");
         $("#copy_format").val(data.format);
         $("#copy_size").val(data.size);
-    };
-    var reset_copy = function()
+    }
+    function reset_copy()
     {
         show("copy_text");
         hide("copy_link");
@@ -115,16 +115,16 @@ $(function()
         hide("copy_format_field");
         $("#copy_format").val('');
         $("#copy_size").val(0);
-    };
-    var copy_exists = function(json)
+    }
+    function copy_exists(json)
     {
         var copy_url = $("#copy_url");
         copy_url.data('exists', json.exists);
         copy_url.data('company', json.company);
         copy_url.data('pub_id', json.pub_id);
         copy_url.data('title', json.title);
-    };
-    var reset_exists = function()
+    }
+    function reset_exists()
     {
         var copy_url = $("#copy_url");
         copy_url.removeData('exists');
@@ -132,15 +132,15 @@ $(function()
         copy_url.removeData('pub_id');
         copy_url.removeData('title');
     }
-    var validate_copy_exists = function()
+    function validate_copy_exists()
     {
         var copy_url = $("#copy_url");
         return clear_or_set_error_label(copy_url.data('exists'), "copy_url",
             'Manx already knows about <a href="details.php/'
                 + copy_url.data('company') + ',' + copy_url.data('pub_id') + '">'
                 + copy_url.data('title') + '</a>.');
-    };
-    var validate_copy = function()
+    }
+    function validate_copy()
     {
         var size = $("#copy_size").val();
         return validate_copy_exists()
@@ -148,19 +148,19 @@ $(function()
             && validate_combo_box('copy_site', validate_site)
             && validate_field_non_empty('copy_format')
             && Number(size) == size;
-    };
+    }
 
-    var set_bitsavers = function(data)
+    function set_bitsavers(data)
     {
         $("#bitsavers_directory").val(data.bitsavers_directory);
-    };
+    }
 
-    var set_chiclassiccomp = function(data)
+    function set_chiclassiccomp(data)
     {
         $("#chiclassiccomp_directory").val(data.chiclassiccomp_directory);
-    };
+    }
 
-    var reset_site = function()
+    function reset_site()
     {
         $("#site_name").val('');
         $("#site_url").val('');
@@ -168,16 +168,16 @@ $(function()
         $("#site_copy_base").val('');
         $("#site_low").val(false);
         $("#site_live").val(false);
-    };
-    var validate_site = function()
+    }
+    function validate_site()
     {
         return validate_field_non_empty("site_name")
             && validate_field_non_empty("site_url")
             && validate_field_non_empty("site_description")
             && validate_field_non_empty("site_copy_base");
-    };
+    }
 
-    var set_company = function(data)
+    function set_company(data)
     {
         var elem = $('#company_id');
         var initial_data = elem.data();
@@ -188,8 +188,8 @@ $(function()
             elem.val(initial_data['initial']);
         }
         show_hide_company_fields();
-    };
-    var show_hide_company_fields = function()
+    }
+    function show_hide_company_fields()
     {
         var toggle = show_or_hide("company_id");
         toggle("company_name_field");
@@ -197,20 +197,20 @@ $(function()
         toggle("company_short_name_field");
         toggle("company_sort_name_field");
         toggle("company_notes_field");
-    };
-    var reset_company = function()
+    }
+    function reset_company()
     {
         hide("company_fields");
         $("#company_id").val(-1);
-    };
-    var validate_company = function()
+    }
+    function validate_company()
     {
         return validate_field_non_empty("company_name")
             && validate_field_non_empty("company_short_name")
             && validate_field_non_empty_lower_case("company_sort_name");
-    };
+    }
 
-    var set_publication_initial_field = function(key)
+    function set_publication_initial_field(key)
     {
         var elem = $('#pub_history_ph_' + key);
         var data = elem.data();
@@ -218,17 +218,17 @@ $(function()
         {
             elem.val(data['initial']);
         }
-    };
+    }
 
-    var set_publication_initial_data = function()
+    function set_publication_initial_data()
     {
         set_publication_initial_field('title');
         set_publication_initial_field('pub_date');
         set_publication_initial_field('part');
         set_publication_initial_field('abstract');
-    };
+    }
 
-    var set_publication = function(data)
+    function set_publication(data)
     {
         var keywords = (data.part + ' ' + data.title).trim();
         show("publication_fields");
@@ -242,8 +242,8 @@ $(function()
 
         $("#supersession_search_keywords").val(keywords);
         search_for_supersessions();
-    };
-    var reset_publication = function()
+    }
+    function reset_publication()
     {
         hide("publication_fields");
         $("#pub_history_ph_title").val('');
@@ -253,23 +253,23 @@ $(function()
         $("#pub_search_keywords").val('');
 
         $("#supersession_search_keywords").val('');
-    };
-    var validate_publication = function()
+    }
+    function validate_publication()
     {
-        var validate_title_part_number = function()
-            {
-                var title = $("#pub_history_ph_title").val().toLowerCase().trim();
-                var part = $("#pub_history_ph_part").val().toLowerCase().trim();
-                return clear_or_set_error_label(
-                    (part.length > 0) && (title.indexOf(part) != -1),
-                    'pub_history_ph_title',
-                    'The title cannot contain the part number.');
-            };
+        function validate_title_part_number()
+        {
+            var title = $("#pub_history_ph_title").val().toLowerCase().trim();
+            var part = $("#pub_history_ph_part").val().toLowerCase().trim();
+            return clear_or_set_error_label(
+                (part.length > 0) && (title.indexOf(part) != -1),
+                'pub_history_ph_title',
+                'The title cannot contain the part number.');
+        }
         return validate_field_non_empty("pub_history_ph_title")
             && validate_title_part_number();
-    };
+    }
 
-    var set_pub_list = function(id, new_text, json)
+    function set_pub_list(id, new_text, json)
     {
         build_option_list(id, new_text,
             function(item)
@@ -278,46 +278,46 @@ $(function()
                     item.ph_part + ' ' + item.ph_revision + ' ' + item.ph_title);
             },
             json);
-    };
+    }
 
-    var set_supersessions = function(json)
+    function set_supersessions(json)
     {
-        var set_supersession_pub = function(id)
+        function set_supersession_pub(id)
         {
             set_pub_list(id, "(None)", json);
-        };
+        }
         set_supersession_pub("supersession_old_pub");
         set_supersession_pub("supersession_new_pub");
-    };
-    var reset_supersessions = function()
+    }
+    function reset_supersessions()
     {
-        var reset_option_list = function(id)
+        function reset_option_list(id)
         {
             build_option_list(id, "(None)", null, []);
-        };
+        }
         reset_option_list("supersession_old_pub");
         reset_option_list("supersession_new_pub");
-    };
-    var validate_supersession = function()
+    }
+    function validate_supersession()
     {
         return true;
-    };
+    }
 
-    var set_publication_search_results = function(json)
+    function set_publication_search_results(json)
     {
         set_pub_list("pub_pub_id", "(New Publication)", json);
-    };
-    var reset_publication_search_results = function()
+    }
+    function reset_publication_search_results()
     {
         build_option_list("pub_pub_id", "(New Publication)", null, []);
-    };
+    }
 
-    var wizard_service = function(data, callback)
+    function wizard_service(data, callback)
     {
         $.post("url-wizard-service.php", data, callback, "json");
-    };
+    }
 
-    var ajax_error_handler = function(error_id)
+    function ajax_error_handler(error_id)
     {
         return function(e, response, settings, exception)
         {
@@ -327,9 +327,9 @@ $(function()
                 $(this).html(response.responseText);
             }
         };
-    };
+    }
 
-    var pub_search = function(id_base, callback)
+    function pub_search(id_base, callback)
     {
         var company_id = $("#company_id").val();
         var error_id = id_base + '_error';
@@ -351,34 +351,34 @@ $(function()
                     hide(working_id);
                 });
         }
-    };
+    }
 
-    var search_for_publications = function()
+    function search_for_publications()
     {
         pub_search('pub_search_keywords', set_publication_search_results);
-    };
+    }
 
-    var search_for_supersessions = function()
+    function search_for_supersessions()
     {
         pub_search('supersession_search_keywords', set_supersessions);
-    };
+    }
 
-    var clear_errors = function()
+    function clear_errors()
     {
         $('div[id$="_error"]').addClass('hidden');
         $("label").removeClass('error');
-    };
+    }
 
-    var validate_data = function()
+    function validate_data()
     {
         clear_errors();
         return validate_copy()
             && validate_combo_box('company_id', validate_company)
             && validate_combo_box('pub_pub_id', validate_publication)
             && validate_combo_box("supersession_old_pub", validate_supersession);
-    };
+    }
 
-    var reset_form = function()
+    function reset_form()
     {
         reset_copy();
         reset_site();
@@ -387,9 +387,9 @@ $(function()
         hide("supersession_fields");
         reset_publication_search_results();
         reset_supersessions();
-    };
+    }
 
-    var show_hide_details_link = function(id_field)
+    function show_hide_details_link(id_field)
     {
         var link_id = id_field + '_link';
         var label_id = id_field + '_label';
@@ -407,9 +407,9 @@ $(function()
             hide(label_id);
             show(link_id);
         }
-    };
+    }
 
-    var url_lookup = function()
+    function url_lookup()
     {
         var url = $("#copy_url").val();
         if (url.length > 0)
@@ -453,7 +453,7 @@ $(function()
             reset_form();
         }
         clear_errors();
-    };
+    }
 
     $("#copy_url_error").ajaxError(ajax_error_handler('copy_url_error'));
     $("#copy_url").change(url_lookup);
@@ -508,11 +508,11 @@ $(function()
     $("input[name='next']").click(function(event)
         {
             var next = $("input[name='next']");
-            var cancel = function()
+            function cancel()
             {
                 event.preventDefault();
                 next.show();
-            };
+            }
             try
             {
                 next.hide();
