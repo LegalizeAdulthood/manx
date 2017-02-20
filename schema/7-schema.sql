@@ -8,10 +8,7 @@ CREATE TABLE IF NOT EXISTS `site_company_dir` (
   `site_id` INT(11) NOT NULL,
   `company_id` INT(11) NOT NULL,
   `directory` VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY (`site_id`),
-  UNIQUE KEY (`company_id`),
-  UNIQUE KEY (`directory`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -40,9 +37,7 @@ CREATE TABLE IF NOT EXISTS `site_unknown` (
   `site_id` INT(11) NOT NULL,
   `path` VARCHAR(255) NOT NULL,
   `ignored` TINYINT(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY (`site_id`),
-  UNIQUE KEY (`path`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
