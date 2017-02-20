@@ -543,11 +543,22 @@ class ManxDatabase implements IManxDatabase
         return (count($rows) > 0) ? $rows[0]['format'] : '';
     }
 
+    private function siteIdForName($siteName)
+    {
+        $siteId = $this->execute("SELECT `site_id` FROM `site` WHERE `name`=?", array($siteName));
+        return $siteId[0]['site_id'];
+    }
+
+    private function getCompanyForSiteDirectory($siteName, $dir)
+    {
+        $rows = $this->execute("SELECT `company_id` FROM `site_company_dir` WHERE `site_id`=? AND `directory`=?",
+            array($this->siteIdForName($siteName), $dir));
+        return (count($rows) > 0) ? $rows[0]['company_id'] : -1;
+    }
+
     function getCompanyForBitSaversDirectory($dir)
     {
-        $rows = $this->execute("SELECT `company_id` FROM `company_bitsavers` WHERE `directory`=?",
-            array($dir));
-        return (count($rows) > 0) ? $rows[0]['company_id'] : -1;
+        return $this->getCompanyForSiteDirectory("bitsavers", $dir);
     }
 
     function addSupersession($oldPub, $newPub)
@@ -583,14 +594,20 @@ class ManxDatabase implements IManxDatabase
         return is_string($md5) ? $md5 : null;
     }
 
-    function addBitSaversDirectory($companyId, $directory)
+    private function addSiteDirectory($siteName, $companyId, $directory)
     {
-        $row = $this->execute("SELECT * FROM `company_bitsavers` WHERE `company_id`=?", array($companyId));
+        $siteId = $this->siteIdForName($siteName);
+        $row = $this->execute("SELECT * FROM `site_company_dir` WHERE `site_id`=? AND `company_id`=?", array($siteId, $companyId));
         if (count($row) == 0)
         {
-            $this->_db->execute('INSERT INTO `company_bitsavers`(`company_id`,`directory`) VALUES (?,?)',
-                array($companyId, $directory));
+            $this->_db->execute('INSERT INTO `site_company_dir`(`site_id`,`company_id`,`directory`) VALUES (?,?,?)',
+                array($siteId, $companyId, $directory));
         }
+    }
+
+    function addBitSaversDirectory($companyId, $directory)
+    {
+        return $this->addSiteDirectory("bitsavers", $companyId, $directory);
     }
 
     function getMostRecentDocuments($count)
@@ -674,152 +691,187 @@ class ManxDatabase implements IManxDatabase
             array($name, $value, $value));
     }
 
+    private function addSiteUnknownPath($siteName, $path)
+    {
+        $this->execute("INSERT INTO `site_unknown`(`site`,`path`) VALUES (?,?)",
+            array($this->siteIdForName($siteName), $path));
+    }
+
     function addBitSaversUnknownPath($path)
     {
-        $this->execute("INSERT INTO `bitsavers_unknown`(`path`) VALUES (?)",
-            array($path));
+        $this->addSiteUnknownPath("bitsavers", $path);
+    }
+
+    private function ignoreSitePath($siteName, $path)
+    {
+        $this->execute("UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?",
+            array($this->siteIdForName($siteName), $path));
     }
 
     function ignoreBitSaversPath($path)
     {
-        $this->execute("UPDATE `bitsavers_unknown` SET `ignored` = 1 WHERE `path` = ?",
-            array($path));
+        $this->ignoreSitePath("bitsavers", $path);
+    }
+
+    private function getSiteUnknownPathCount($siteName)
+    {
+        $siteInfo = $this->execute("SELECT `site_id`,`copy_base` FROM `site` WHERE `name`=?", array($siteName));
+        $siteId = $siteInfo[0]['site_id'];
+        $copyBase = $siteInfo[0]['copy_base'];
+        $count = $this->execute("DELETE FROM `site_unknown` "
+            . "INNER JOIN `copy` ON `url` = CONCAT(?, `path`) "
+            . "WHERE `site` = ?", array($copyBase, $siteId));
+        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `ignored` = 0", array($siteId));
+        return $rows[0]['count'];
     }
 
     function getBitSaversUnknownPathCount()
     {
-        $count = $this->execute("DELETE `bitsavers_unknown` FROM `bitsavers_unknown` "
-            . "INNER JOIN `copy` ON `url` = CONCAT('http://bitsavers.org/pdf/', `path`) "
-            . "WHERE `site` = 3", array());
-        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `bitsavers_unknown` WHERE `ignored` = 0", array());
-        return $rows[0]['count'];
+        return $this->getSiteUnknownPathCount("bitsavers");
+    }
+
+    private function getSiteUnknownPathsOrderedById($siteName, $start, $ascending)
+    {
+        $order = $ascending ? 'ASC' : 'DESC';
+        return $this->execute("SELECT `path`,`id` FROM `site_unknown` WHERE `site`=? AND `ignored`=0 ORDER BY `id` $order LIMIT $start, 10",
+        array($this->siteIdforName($siteName)));
     }
 
     function getBitSaversUnknownPathsOrderedById($start, $ascending)
     {
+        return $this->getSiteUnknownPathsOrderedById("bitsavers", $start, $ascending);
+    }
+
+    private function getSiteUnknownPathsOrderedByPath($siteName, $start, $ascending)
+    {
         $order = $ascending ? 'ASC' : 'DESC';
-        return $this->execute("SELECT `path`,`id` FROM `bitsavers_unknown` WHERE `ignored` = 0 ORDER BY `id` $order LIMIT $start, 10", array());
+        return $this->execute("SELECT `path`,`id` FROM `site_unknown` WHERE `site_id`=? AND `ignored`=0 ORDER BY `path` $order LIMIT $start, 10",
+            array($this->siteIdForName($siteName)));
     }
 
     function getBitSaversUnknownPathsOrderedByPath($start, $ascending)
     {
-        $order = $ascending ? 'ASC' : 'DESC';
-        return $this->execute("SELECT `path`,`id` FROM `bitsavers_unknown` WHERE `ignored` = 0 ORDER BY `path` $order LIMIT $start, 10", array());
+        return $this->getSiteUnknownPathsOrderedByPath("bitsavers", $start, $ascending);
+    }
+
+    private function siteIgnoredPath($siteName, $path)
+    {
+        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `path`=? AND `ignored`=1",
+            array($this->siteIdForName($siteName), $path));
+        return ($rows[0]['count'] > 0);
     }
 
     function bitSaversIgnoredPath($path)
     {
-        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `bitsavers_unknown` WHERE `path` = ? AND `ignored` = 1",
-            array($path));
-        return ($rows[0]['count'] > 0);
+        return $this->siteIgnoredPath("bitsavers", $path);
+    }
+
+    private function getAllSiteUnknownPaths($siteName)
+    {
+        return $this->execute("SELECT `id`,`path` FROM `site_unknown` WHERE `site_id`=? ORDER BY `id`",
+            array($this->siteIdForName($siteName)));
     }
 
     function getAllBitSaversUnknownPaths()
     {
-        return $this->execute("SELECT `id`,`path` FROM `bitsavers_unknown` ORDER BY `id`", array());
+        return $this->getAllSiteUnknownPaths("bitsavers");
+    }
+
+    private function removeSiteUnknownPathById($siteName, $id)
+    {
+        return $this->execute("DELETE FROM `site_unknown` WHERE `site_id`=? AND `id`=?",
+            array($this->siteIdForName($siteName), $id));
     }
 
     function removeBitSaversUnknownPathById($id)
     {
-        return $this->execute("DELETE FROM `bitsavers_unknown` WHERE `id` = ?", array($id));
+        return $this->removeSiteUnknownPathById("bitsavers", $id);
+    }
+
+    private function getPossiblyMovedSiteUnknownPaths($siteName)
+    {
+        $siteId = $this->siteIdForName($siteName);
+        return $this->execute("SELECT site_unknown.path, site_unknown.id as `path_id`, copy.url, copy.copy_id, copy.md5 FROM copy, site_unknown".
+                " WHERE copy.site=?" .
+                " AND site_unknown.site_id=copy.site" .
+                " AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1)) = REVERSE(SUBSTRING_INDEX(REVERSE(site_unknown.path), '/', 1));",
+            array($siteId));
     }
 
     function getPossiblyMovedUnknownPaths()
     {
-        $bitSaversId = $this->execute("SELECT site_id FROM site WHERE site.name = 'bitsavers'", array());
-        return $this->execute("SELECT bitsavers_unknown.path, bitsavers_unknown.id as `path_id`, copy.url, copy.copy_id, copy.md5 FROM copy, bitsavers_unknown".
-                " WHERE copy.site = ?" .
-                " AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1)) = REVERSE(SUBSTRING_INDEX(REVERSE(bitsavers_unknown.path), '/', 1));",
-            array($bitSaversId[0]['site_id']));
+        return $this->getPossiblyMovedSiteUnknownPaths("bitsavers");
+    }
+
+    private function siteFileMoved($siteName, $copyId, $pathId, $url)
+    {
+        $siteId = $this->siteIdForName($siteName);
+        $this->execute("DELETE FROM site_unknown WHERE site_id=? AND id=?", array($siteId, $pathId));
+        $this->execute("UPDATE copy SET url=? WHERE copy_id=?", array($url, $copyId));
     }
 
     function bitSaversFileMoved($copyId, $pathId, $url)
     {
-        $this->execute("DELETE FROM bitsavers_unknown WHERE id = ?", array($pathId));
-        $this->execute("UPDATE copy SET url = ? WHERE copy_id = ?", array($url, $copyId));
+        return $this->siteFileMoved("bitsavers", $copyId, $pathId, $url);
     }
 
     function addChiClassicCompDirectory($companyId, $directory)
     {
-        $row = $this->execute("SELECT * FROM `company_chiclassiccomp` WHERE `company_id`=?", array($companyId));
-        if (count($row) == 0)
-        {
-            $this->_db->execute('INSERT INTO `company_chiclassiccomp`(`company_id`,`directory`) VALUES (?,?)',
-                array($companyId, $directory));
-        }
+        $this->addSiteDirectory("ChiClassicComp", $companyId, $directory);
     }
 
     function addChiClassicCompUnknownPath($path)
     {
-        $this->execute("INSERT INTO `chiclassiccomp_unknown`(`path`) VALUES (?)",
-            array($path));
+        $this->addSiteUnknownPath("ChiClassicComp", $path);
     }
 
     function ignoreChiClassicCompPath($path)
     {
-        $this->execute("UPDATE `chiclassiccomp_unknown` SET `ignored` = 1 WHERE `path` = ?",
-            array($path));
+        $this->ignoreSitePath("ChiClassicComp", $path);
     }
 
     function getChiClassicCompUnknownPathCount()
     {
-        $chiClassicCompSite = $this->execute("SELECT `site_id` FROM `site` WHERE `name`='ChiClassicComp'");
-        $chiClassicCompSite = $chiClassicCompSite[0]['site_id'];
-        $count = $this->execute("DELETE `chiclassiccomp_unknown` FROM `chiclassiccomp_unknown` "
-            . "INNER JOIN `copy` ON `url` = CONCAT('http://chiclassiccomp.org/docs/content/', `path`) "
-            . "WHERE `site` = ?", array($chiClassicCompSite));
-        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `chiclassiccomp_unknown` WHERE `ignored` = 0", array());
-        return $rows[0]['count'];
+        return $this->getSiteUnknownPathCount("ChiClassicComp");
     }
 
     function getChiClassicCompUnknownPathsOrderedById($start, $ascending)
     {
-        $order = $ascending ? 'ASC' : 'DESC';
-        return $this->execute("SELECT `path`,`id` FROM `chiclassiccomp_unknown` WHERE `ignored` = 0 ORDER BY `id` $order LIMIT $start, 10", array());
+        return $this->getSiteUnknownPathsOrderedById("ChiClassicComp", $start, $ascending);
     }
 
     function getChiClassicCompUnknownPathsOrderedByPath($start, $ascending)
     {
-        $order = $ascending ? 'ASC' : 'DESC';
-        return $this->execute("SELECT `path`,`id` FROM `chiclassiccomp_unknown` WHERE `ignored` = 0 ORDER BY `path` $order LIMIT $start, 10", array());
+        return $this->getSiteUnknownPathsOrderedByPath("ChiClassicComp", $start, $ascending);
     }
 
     function chiClassicCompIgnoredPath($path)
     {
-        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `chiclassiccomp_unknown` WHERE `path` = ? AND `ignored` = 1",
-            array($path));
-        return ($rows[0]['count'] > 0);
+        return $this->siteIgnoredPath("ChiClassicComp", $path);
     }
 
     function getAllChiClassicCompUnknownPaths()
     {
-        return $this->execute("SELECT `id`,`path` FROM `chiclassiccomp_unknown` ORDER BY `id`", array());
+        return $this->getAllSiteUnknownPaths("ChiClassicComp");
     }
 
     function removeChiClassicCompUnknownPathById($id)
     {
-        return $this->execute("DELETE FROM `chiclassiccomp_unknown` WHERE `id` = ?", array($id));
+        return $this->removeSiteUnknownPathById("ChiClassicComp", $id);
     }
 
     function getChiClassicCompPossiblyMovedUnknownPaths()
     {
-        $chiClassicCompId = $this->execute("SELECT site_id FROM site WHERE site.name = 'ChiClassicComp'", array());
-        return $this->execute("SELECT chiclassiccomp_unknown.path, chiclassiccomp_unknown.id as `path_id`, copy.url, copy.copy_id, copy.md5 FROM copy, chiclassiccomp_unknown".
-                " WHERE copy.site = ?" .
-                " AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1)) = REVERSE(SUBSTRING_INDEX(REVERSE(chiclassiccomp_unknown.path), '/', 1));",
-            array($chiClassicCompId[0]['site_id']));
+        return $this->getPossiblyMovedSiteUnknownPaths("ChiClassicComp");
     }
 
     function chiClassicCompFileMoved($copyId, $pathId, $url)
     {
-        $this->execute("DELETE FROM chiclassiccomp_unknown WHERE id = ?", array($pathId));
-        $this->execute("UPDATE copy SET url = ? WHERE copy_id = ?", array($url, $copyId));
+        $this->siteFileMoved("ChiClassicComp", $copyId, $pathId, $url);
     }
 
     function getCompanyForChiClassicCompDirectory($dir)
     {
-        $rows = $this->execute("SELECT `company_id` FROM `company_chiclassiccomp` WHERE `directory`=?",
-            array($dir));
-        return (count($rows) > 0) ? $rows[0]['company_id'] : -1;
+        return $this->getCompanyForSiteDirectory("ChiClassicComp", $dir);
     }
 }
