@@ -150,14 +150,9 @@ $(function()
             && Number(size) == size;
     }
 
-    function set_bitsavers(data)
+    function set_site_company_directory(data)
     {
-        $("#bitsavers_directory").val(data.bitsavers_directory);
-    }
-
-    function set_chiclassiccomp(data)
-    {
-        $("#chiclassiccomp_directory").val(data.chiclassiccomp_directory);
+        $("#site_company_directory").val(data.site_company_directory);
     }
 
     function reset_site()
@@ -438,8 +433,7 @@ $(function()
                     {
                         reset_exists();
                         set_copy(json);
-                        set_bitsavers(json);
-                        set_chiclassiccomp(json);
+                        set_site_company_directory(json);
                         show_or_hide("copy_site")("site_fields");
                         set_company(json);
                         set_publication(json);

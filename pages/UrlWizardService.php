@@ -322,7 +322,7 @@ class UrlWizardService extends ServicePageBase
 
         $company = $this->_db->getCompanyForBitSaversDirectory($companyDir);
         $data['company'] = $company;
-        $data['bitsavers_directory'] = $companyDir;
+        $data['site_company_directory'] = $companyDir;
 
         $fileName = array_pop($dirs);
         $dotPos = strrpos($fileName, '.');
@@ -365,7 +365,7 @@ class UrlWizardService extends ServicePageBase
 
         $company = $this->_db->getCompanyForChiClassicCompDirectory($companyDir);
         $data['company'] = $company;
-        $data['chiclassiccomp_directory'] = $companyDir;
+        $data['site_company_directory'] = $companyDir;
 
         $fileName = array_pop($dirs);
         $dotPos = strrpos($fileName, '.');

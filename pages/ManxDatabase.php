@@ -733,7 +733,7 @@ class ManxDatabase implements IManxDatabase
     private function getSiteUnknownPathsOrderedById($siteName, $start, $ascending)
     {
         $order = $ascending ? 'ASC' : 'DESC';
-        return $this->execute("SELECT `path`,`id` FROM `site_unknown` WHERE `site`=? AND `ignored`=0 ORDER BY `id` $order LIMIT $start, 10",
+        return $this->execute("SELECT `path`,`id` FROM `site_unknown` WHERE `site_id`=? AND `ignored`=0 ORDER BY `id` $order LIMIT $start, 10",
         array($this->siteIdforName($siteName)));
     }
 

@@ -56,8 +56,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $vars = array(
-            'bitsavers_directory' => '',
-            'chiclassiccomp_directory' => '',
+            'site_directory' => '',
             'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
             'copy_format' => 'PDF',
             'copy_site' => '3',
@@ -134,8 +133,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $vars = array(
-            'bitsavers_directory' => '',
-            'chiclassiccomp_directory' => '',
+            'site_directory' => '',
             'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
             'copy_format' => 'PDF',
             'copy_site' => '3',
@@ -212,8 +210,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $vars = array(
-            'bitsavers_directory' => '',
-            'chiclassiccomp_directory' => 'DEC',
+            'site_company_directory' => 'DEC',
             'copy_url' => 'http%3A%2F%2Fchiclassiccomp.org%2Fdocs%2Fcontent%2Fcomputing%2FDEC%2FChicagoDECStore1.jpg',
             'copy_format' => 'JPEG',
             'copy_site' => '58',
@@ -222,7 +219,7 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
             'copy_md5' => '',
             'copy_credits' => '',
             'copy_amend_serial' => '',
-            'site_name' => '',
+            'site_name' => 'ChiClassicComp',
             'site_url' => '',
             'site_description' => '',
             'site_copy_base' => '',
@@ -347,11 +344,8 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
 </ul>
 </fieldset>
 
-<fieldset id="bitsavers_field" class="hidden">
-<input type="hidden" id="bitsavers_directory" name="bitsavers_directory" value="" />
-</fieldset>
-<fieldset id="chiclassiccomp_field" class="hidden">
-<input type="hidden" id="chiclassiccomp_directory" name="chiclassiccomp_directory" value="" />
+<fieldset id="site_company_field" class="hidden">
+<input type="hidden" id="site_company_directory" name="site_company_directory" value="" />
 </fieldset>
 
 <fieldset id="site_fields" class="hidden">

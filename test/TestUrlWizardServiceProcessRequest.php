@@ -72,7 +72,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
             'pub_date' => '1979-05',
             'title' => 'Graphic 7 Monitor Preliminary Users Guide',
             'format' => 'PDF',
-            'bitsavers_directory' => 'sandersAssociates',
+            'site_company_directory' => 'sandersAssociates',
             'pubs' => array()
             ));
         $this->assertEquals($expected, $output);
@@ -113,7 +113,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
             'pub_date' => '1976-04',
             'title' => 'Rev B 4010 Maintenance Manual',
             'format' => 'PDF',
-            'bitsavers_directory' => 'tektronix',
+            'site_company_directory' => 'tektronix',
             'pubs' => array()
         ));
         $this->assertEquals($expected, $output);
@@ -146,7 +146,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
             'pub_date' => '1970',
             'title' => '1108exec UG',
             'format' => 'PDF',
-            'bitsavers_directory' => 'univac',
+            'site_company_directory' => 'univac',
             'pubs' => array()
         ));
         $this->assertEquals($expected, $output);
@@ -178,7 +178,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
             'pub_date' => '',
             'title' => 'MDR-1000Brochure',
             'format' => 'PDF',
-            'chiclassiccomp_directory' => 'Motorola',
+            'site_company_directory' => 'Motorola',
             'pubs' => array()
         ));
         $this->assertEquals($expected, $output);

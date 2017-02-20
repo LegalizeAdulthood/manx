@@ -46,13 +46,19 @@ class URLWizardPage extends AdminPageBase
 
     private function addSiteCompanyDirectory($companyId)
     {
-        $this->addChiClassicCompDirectory($companyId);
-        $this->addBitSaversDirectory($companyId);
+        if ($this->param('site_name') == 'bitsavers')
+        {
+            $this->addBitSaversDirectory($companyId);
+        }
+        else if ($this->param('site_name') == 'ChiClassicComp')
+        {
+            $this->addChiClassicCompDirectory($companyId);
+        }
     }
 
     private function addChiClassicCompDirectory($companyId)
     {
-        $directory = $this->param('chiclassiccomp_directory');
+        $directory = $this->param('site_company_directory');
         if (strlen($directory) > 0)
         {
             $this->_db->addChiClassicCompDirectory($companyId, $directory);
@@ -61,7 +67,7 @@ class URLWizardPage extends AdminPageBase
 
     private function addBitSaversDirectory($companyId)
     {
-        $directory = $this->param('bitsavers_directory');
+        $directory = $this->param('site_company_directory');
         if (strlen($directory) > 0)
         {
             $this->_db->addBitSaversDirectory($companyId, $directory);
@@ -311,11 +317,8 @@ EOH;
 </ul>
 </fieldset>
 
-<fieldset id="bitsavers_field" class="hidden">
-<input type="hidden" id="bitsavers_directory" name="bitsavers_directory" value="" />
-</fieldset>
-<fieldset id="chiclassiccomp_field" class="hidden">
-<input type="hidden" id="chiclassiccomp_directory" name="chiclassiccomp_directory" value="" />
+<fieldset id="site_company_field" class="hidden">
+<input type="hidden" id="site_company_directory" name="site_company_directory" value="" />
 </fieldset>
 
 <fieldset id="site_fields" class="hidden">
