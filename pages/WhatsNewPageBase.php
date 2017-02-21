@@ -5,8 +5,8 @@ require_once 'Config.php';
 require_once 'UnknownPathDefs.php';
 require_once 'WhatsNewPageFactory.php';
 
-define(BIT_SAVERS_SITE_NAME, 'bitsavers');
-define(CHI_CLASSIC_COMP_SITE_NAME, 'ChiClassicComp');
+define('BIT_SAVERS_SITE_NAME', 'bitsavers');
+define('CHI_CLASSIC_COMP_SITE_NAME', 'ChiClassicComp');
 
 class WhatsNewPageBase extends AdminPageBase
 {
