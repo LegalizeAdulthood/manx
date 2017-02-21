@@ -1,7 +1,7 @@
 <?php
 
 require_once 'cron/BitSaversCleaner.php';
-require_once 'test/FakeBitSaversPageFactory.php';
+require_once 'test/FakeWhatsNewPageFactory.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeUrlInfo.php';
@@ -19,7 +19,7 @@ class TestBitSaversCleaner extends PHPUnit_Framework_TestCase
     private $_db;
     /** @var FakeManx */
     private $_manx;
-    /** @var FakeBitSaversPageFactory */
+    /** @var FakeWhatsNewPageFactory */
     private $_factory;
     /** @var Logger */
     private $_logger;
@@ -31,7 +31,7 @@ class TestBitSaversCleaner extends PHPUnit_Framework_TestCase
         $this->_db = new FakeManxDatabase();
         $this->_manx = new FakeManx();
         $this->_manx->getDatabaseFakeResult = $this->_db;
-        $this->_factory = new FakeBitSaversPageFactory();
+        $this->_factory = new FakeWhatsNewPageFactory();
         $this->_logger = new FakeLogger();
         $this->_cleaner = new BitSaversCleaner($this->_manx, $this->_factory, $this->_logger);
     }

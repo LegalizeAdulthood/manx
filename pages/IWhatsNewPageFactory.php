@@ -1,6 +1,6 @@
 <?php
 
-interface IBitSaversPageFactory
+interface IWhatsNewPageFactory
 {
     function openFile($path, $mode);
     function createUrlInfo($url);

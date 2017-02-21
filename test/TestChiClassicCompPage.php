@@ -1,7 +1,7 @@
 <?php
 
 require_once 'pages/ChiClassicCompPage.php';
-require_once 'test/FakeBitSaversPageFactory.php';
+require_once 'test/FakeWhatsNewPageFactory.php';
 require_once 'test/FakeFile.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeManxDatabase.php';
@@ -38,7 +38,7 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
     private $_db;
     /** @var FakeManx */
     private $_manx;
-    /** @var FakeBitSaversPageFactory */
+    /** @var FakeWhatsNewPageFactory */
     private $_factory;
     /** @var FakeUrlInfo */
     private $_info;
@@ -54,7 +54,7 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $this->_db = new FakeManxDatabase();
         $this->_manx = new FakeManx();
         $this->_manx->getDatabaseFakeResult = $this->_db;
-        $this->_factory = new FakeBitSaversPageFactory();
+        $this->_factory = new FakeWhatsNewPageFactory();
         $this->_info = new FakeUrlInfo();
         $this->_factory->createUrlInfoFakeResult = $this->_info;
         $this->_transfer = new FakeUrlTransfer();

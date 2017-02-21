@@ -2,7 +2,7 @@
 
 require_once 'pages/BitSaversPage.php';
 
-class FakeBitSaversPageFactory implements IBitSaversPageFactory
+class FakeWhatsNewPageFactory implements IWhatsNewPageFactory
 {
     function __construct()
     {

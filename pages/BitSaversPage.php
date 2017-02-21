@@ -2,7 +2,7 @@
 
 require_once 'AdminPageBase.php';
 require_once 'Config.php';
-require_once 'BitSaversPageFactory.php';
+require_once 'WhatsNewPageFactory.php';
 require_once 'UnknownPathDefs.php';
 
 define('INDEX_BY_DATE_FILE', 'bitsavers-IndexByDate.txt');
@@ -13,12 +13,12 @@ class BitSaversPage extends AdminPageBase
 {
     private $_factory;
 
-    public function __construct($manx, $vars, IBitSaversPageFactory $factory = null)
+    public function __construct($manx, $vars, IWhatsNewPageFactory $factory = null)
     {
         parent::__construct($manx, $vars);
         if ($factory === null)
         {
-            $factory = new BitSaversPageFactory();
+            $factory = new WhatsNewPageFactory();
         }
         $this->_factory = $factory;
         if ($this->needIndexByDateFile())
