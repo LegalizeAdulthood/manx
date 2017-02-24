@@ -79,6 +79,19 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversFileMovedCalled = false;
         $this->getFormatForExtensionCalledForExtension = array();
         $this->getFormatForExtensionFakeResults = array();
+        $this->getCompanyForChiClassicCompDirectoryCalled = false;
+        $this->chiClassicCompIgnoredPathCalled = false;
+        $this->chiClassicCompIgnoredPathFakeResult = false;
+        $this->addChiClassicCompUnknownPathCalled = false;
+        $this->addChiClassicCompUnknownPathLastPaths = array();
+        $this->getChiClassicCompUnknownPathsOrderedByIdCalled = false;
+        $this->getChiClassicCompUnknownPathsOrderedByIdFakeResult = array();
+        $this->ignoreChiClassicCompPathCalled = false;
+        $this->getAllChiClassicCompUnknownPathsCalled = false;
+        $this->getAllChiClassicCompUnknownPathsResult = array();
+        $this->removeChiClassicCompUnknownPathByIdCalled = false;
+        $this->removeChiClassicCompUnknownPathByIdLastId = -1;
+        $this->chiClassicCompFileMovedCalled = false;
     }
 
     public function getDocumentCount()
