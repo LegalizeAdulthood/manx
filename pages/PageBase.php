@@ -123,32 +123,21 @@ EOH;
         }
     }
 
-    private function renderMenuSeparator()
-    {
-        print '<span class="nodisp"> | </span>';
-    }
-
     private function renderAdminMenu($menu)
     {
         if ($this->_user->isAdmin())
         {
             print "<div class=\"menu\">\n";
-            //$this->renderMenuSeparator();
             //$this->renderMenuItem($menu == MenuType::Company, "company.php", "Company");
             $this->renderFirstMenuItem($menu == MenuType::UrlWizard, "url-wizard.php", "URL Wizard");
             $this->renderMenuItem($menu == MenuType::BitSavers, "bitsavers.php", "BitSavers");
             $this->renderMenuItem($menu == MenuType::ChiClassicComp, "chiclassiccomp.php", "ChiClassicComp");
             //$this->renderMenuItem($menu == MenuType::Publication, "publication.php", "Publication");
-            //$this->renderMenuSeparator();
             //$this->renderMenuItem($menu == MenuType::Copy, "copy.php", "Copy");
-            //$this->renderMenuSeparator();
-            $this->renderMenuSeparator();
             $this->renderMenuItem($menu == MenuType::Site, "site.php", "Site");
-            $this->renderMenuSeparator();
             $this->renderMenuItem($menu == MenuType::Mirror, "mirror.php", "Mirror");
             $this->renderMenuItem($menu == MenuType::SizeReport, "size-report.php", "Size Report");
             $this->renderMenuItem($menu == MenuType::MD5Report, "md5-report.php", "MD5 Report");
-            $this->renderMenuSeparator();
             print "</div>\n";
         }
     }
@@ -159,11 +148,8 @@ EOH;
 
         print '<div class="menu">';
         $this->renderFirstMenuItem(($menu == MenuType::Search), "search.php", "Search");
-        $this->renderMenuSeparator();
         $this->renderMenuItem(($menu == MenuType::News), "news.php", "News");
-        $this->renderMenuSeparator();
         $this->renderMenuItem(($menu == MenuType::About), "about.php", "About");
-        $this->renderMenuSeparator();
         $this->renderMenuItem(($menu == MenuType::Help), "help.php", "Help");
         print "</div>\n";
         $this->renderAdminMenu($menu);
