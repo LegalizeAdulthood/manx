@@ -77,10 +77,9 @@ class FakeManxDatabase implements IManxDatabase
         $this->removeSiteUnknownPathByIdLastId = -1;
         $this->getPossiblyMovedSiteUnknownPathsCalled = false;
         $this->getPossiblyMovedSiteUnknownPathsFakeResult = array();
-        $this->bitSaversFileMovedCalled = false;
+        $this->siteFileMovedCalled = false;
         $this->getFormatForExtensionCalledForExtension = array();
         $this->getFormatForExtensionFakeResults = array();
-        $this->chiClassicCompFileMovedCalled = false;
     }
 
     public function getDocumentCount()
@@ -577,21 +576,13 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $getPossiblyMovedSiteUnknownPathsCalled, $getPossiblyMovedSiteUnknownPathsLastSiteName, $getPossiblyMovedSiteUnknownPathsFakeResult;
 
-    function bitSaversFileMoved($copyId, $pathId, $url)
+    function siteFileMoved($siteName, $copyId, $pathId, $url)
     {
-        $this->bitSaversFileMovedCalled = true;
-        $this->bitSaversFileMovedLastCopyId = $copyId;
-        $this->bitSaversFileMovedLastPathId = $pathId;
-        $this->bitSaversFileMovedLastUrl = $url;
+        $this->siteFileMovedCalled = true;
+        $this->siteFileMovedLastSiteName = $siteName;
+        $this->siteFileMovedLastCopyId = $copyId;
+        $this->siteFileMovedLastPathId = $pathId;
+        $this->siteFileMovedLastUrl = $url;
     }
-    public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
-
-    function chiClassicCompFileMoved($copyId, $pathId, $url)
-    {
-        $this->chiClassicCompFileMovedCalled = true;
-        $this->chiClassicCompFileMovedLastCopyId = $copyId;
-        $this->chiClassicCompFileMovedLastPathId = $pathId;
-        $this->chiClassicCompFileMovedLastUrl = $url;
-    }
-    public $chiClassicCompFileMovedCalled, $chiClassicCompFileMovedLastCopyId, $chiClassicCompFileMovedLastPathId, $chiClassicCompFileMovedLastUrl;
+    public $siteFileMovedCalled, $siteFileMovedLastSiteName, $siteFileMovedLastCopyId, $siteFileMovedLastPathId, $siteFileMovedLastUrl;
 }

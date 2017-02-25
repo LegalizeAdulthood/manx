@@ -748,20 +748,10 @@ class ManxDatabase implements IManxDatabase
             array($siteId));
     }
 
-    private function siteFileMoved($siteName, $copyId, $pathId, $url)
+    public function siteFileMoved($siteName, $copyId, $pathId, $url)
     {
         $siteId = $this->siteIdForName($siteName);
         $this->execute("DELETE FROM site_unknown WHERE site_id=? AND id=?", array($siteId, $pathId));
         $this->execute("UPDATE copy SET url=? WHERE copy_id=?", array($url, $copyId));
-    }
-
-    function bitSaversFileMoved($copyId, $pathId, $url)
-    {
-        return $this->siteFileMoved("bitsavers", $copyId, $pathId, $url);
-    }
-
-    function chiClassicCompFileMoved($copyId, $pathId, $url)
-    {
-        $this->siteFileMoved("ChiClassicComp", $copyId, $pathId, $url);
     }
 }
