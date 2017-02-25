@@ -58,11 +58,10 @@ interface IManxDatabase
     function getSiteUnknownPathsOrderedById($siteName, $start, $ascending);
     function getSiteUnknownPathsOrderedByPath($siteName, $start, $ascending);
     function siteIgnoredPath($siteName, $path);
-    function getAllBitSaversUnknownPaths();
+    function getAllSiteUnknownPaths($siteName);
     function removeBitSaversUnknownPathById($id);
     function getPossiblyMovedUnknownPaths();
     function bitSaversFileMoved($copyId, $pathId, $url);
-    function getAllChiClassicCompUnknownPaths();
     function removeChiClassicCompUnknownPathById($id);
     function getChiClassicCompPossiblyMovedUnknownPaths();
     function chiClassicCompFileMoved($copyId, $pathId, $url);

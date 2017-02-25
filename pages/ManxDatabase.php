@@ -726,15 +726,10 @@ class ManxDatabase implements IManxDatabase
         return ($rows[0]['count'] > 0);
     }
 
-    private function getAllSiteUnknownPaths($siteName)
+    public function getAllSiteUnknownPaths($siteName)
     {
         return $this->execute("SELECT `id`,`path` FROM `site_unknown` WHERE `site_id`=? ORDER BY `id`",
             array($this->siteIdForName($siteName)));
-    }
-
-    function getAllBitSaversUnknownPaths()
-    {
-        return $this->getAllSiteUnknownPaths("bitsavers");
     }
 
     private function removeSiteUnknownPathById($siteName, $id)
@@ -773,11 +768,6 @@ class ManxDatabase implements IManxDatabase
     function bitSaversFileMoved($copyId, $pathId, $url)
     {
         return $this->siteFileMoved("bitsavers", $copyId, $pathId, $url);
-    }
-
-    function getAllChiClassicCompUnknownPaths()
-    {
-        return $this->getAllSiteUnknownPaths("ChiClassicComp");
     }
 
     function removeChiClassicCompUnknownPathById($id)
