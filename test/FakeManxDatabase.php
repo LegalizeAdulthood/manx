@@ -75,8 +75,8 @@ class FakeManxDatabase implements IManxDatabase
         $this->getAllSiteUnknownPathsResult = array();
         $this->removeSiteUnknownPathByIdCalled = false;
         $this->removeSiteUnknownPathByIdLastId = -1;
-        $this->getPossiblyMovedUnknownPathsCalled = false;
-        $this->getPossiblyMovedUnknownPathsFakeResult = array();
+        $this->getPossiblyMovedSiteUnknownPathsCalled = false;
+        $this->getPossiblyMovedSiteUnknownPathsFakeResult = array();
         $this->bitSaversFileMovedCalled = false;
         $this->getFormatForExtensionCalledForExtension = array();
         $this->getFormatForExtensionFakeResults = array();
@@ -569,12 +569,13 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $removeSiteUnknownPathByIdCalled, $removeSiteUnknownPathByIdLastSiteName, $removeSiteUnknownPathByIdLastId;
 
-    function getPossiblyMovedUnknownPaths()
+    function getPossiblyMovedSiteUnknownPaths($siteName)
     {
-        $this->getPossiblyMovedUnknownPathsCalled = true;
-        return $this->getPossiblyMovedUnknownPathsFakeResult;
+        $this->getPossiblyMovedSiteUnknownPathsCalled = true;
+        $this->getPossiblyMovedSiteUnknownPathsLastSiteName = $siteName;
+        return $this->getPossiblyMovedSiteUnknownPathsFakeResult;
     }
-    public $getPossiblyMovedUnknownPathsCalled, $getPossiblyMovedUnknownPathsFakeResult;
+    public $getPossiblyMovedSiteUnknownPathsCalled, $getPossiblyMovedSiteUnknownPathsLastSiteName, $getPossiblyMovedSiteUnknownPathsFakeResult;
 
     function bitSaversFileMoved($copyId, $pathId, $url)
     {
@@ -584,13 +585,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversFileMovedLastUrl = $url;
     }
     public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
-
-    function getChiClassicCompPossiblyMovedUnknownPaths()
-    {
-        $this->getChiClassicCompPossiblyMovedUnknownPathsCalled = true;
-        return $this->getChiClassicCompPossiblyMovedUnknownPathsFakeResult;
-    }
-    public $getChiClassicCompPossiblyMovedUnknownPathsCalled, $getChiClassicCompPossiblyMovedUnknownPathsFakeResult;
 
     function chiClassicCompFileMoved($copyId, $pathId, $url)
     {

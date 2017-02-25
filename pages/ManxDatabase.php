@@ -738,7 +738,7 @@ class ManxDatabase implements IManxDatabase
             array($this->siteIdForName($siteName), $id));
     }
 
-    private function getPossiblyMovedSiteUnknownPaths($siteName)
+    public function getPossiblyMovedSiteUnknownPaths($siteName)
     {
         $siteId = $this->siteIdForName($siteName);
         return $this->execute("SELECT site_unknown.path, site_unknown.id as `path_id`, copy.url, copy.copy_id, copy.md5 FROM copy, site_unknown".
@@ -746,11 +746,6 @@ class ManxDatabase implements IManxDatabase
                 " AND site_unknown.site_id=copy.site" .
                 " AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1)) = REVERSE(SUBSTRING_INDEX(REVERSE(site_unknown.path), '/', 1));",
             array($siteId));
-    }
-
-    function getPossiblyMovedUnknownPaths()
-    {
-        return $this->getPossiblyMovedSiteUnknownPaths("bitsavers");
     }
 
     private function siteFileMoved($siteName, $copyId, $pathId, $url)
@@ -763,11 +758,6 @@ class ManxDatabase implements IManxDatabase
     function bitSaversFileMoved($copyId, $pathId, $url)
     {
         return $this->siteFileMoved("bitsavers", $copyId, $pathId, $url);
-    }
-
-    function getChiClassicCompPossiblyMovedUnknownPaths()
-    {
-        return $this->getPossiblyMovedSiteUnknownPaths("ChiClassicComp");
     }
 
     function chiClassicCompFileMoved($copyId, $pathId, $url)

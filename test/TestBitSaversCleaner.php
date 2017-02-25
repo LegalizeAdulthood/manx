@@ -87,7 +87,7 @@ class TestBitSaversCleaner extends PHPUnit_Framework_TestCase
     public function testMovedFilesAreUpdated()
     {
         $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
-        $this->_db->getPossiblyMovedUnknownPathsFakeResult = array(
+        $this->_db->getPossiblyMovedSiteUnknownPathsFakeResult = array(
             array('path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
                 'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'md5' => $md5)
         );
@@ -97,7 +97,8 @@ class TestBitSaversCleaner extends PHPUnit_Framework_TestCase
 
         $this->_cleaner->updateMovedFiles();
 
-        $this->assertTrue($this->_db->getPossiblyMovedUnknownPathsCalled);
+        $this->assertTrue($this->_db->getPossiblyMovedSiteUnknownPathsCalled);
+        $this->assertEquals('bitsavers', $this->_db->getPossiblyMovedSiteUnknownPathsLastSiteName);
         $this->assertTrue($this->_factory->createUrlInfoCalled);
         $this->assertEquals('http://bitsavers.trailing-edge.com/pdf/hp/newDir/foo.pdf', $this->_factory->createUrlInfoLastUrl);
         $this->assertTrue($urlInfo->md5Called);

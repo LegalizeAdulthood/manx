@@ -47,7 +47,7 @@ class BitSaversCleaner
 
     public function updateMovedFiles()
     {
-        foreach($this->_db->getPossiblyMovedUnknownPaths() as $row)
+        foreach($this->_db->getPossiblyMovedSiteUnknownPaths('bitsavers') as $row)
         {
             $path = $row['path'];
             $urlInfo = $this->_factory->createUrlInfo('http://bitsavers.trailing-edge.com/pdf/' . $path);
