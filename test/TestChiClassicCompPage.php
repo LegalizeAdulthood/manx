@@ -143,7 +143,7 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
         $idStart = 110;
-        $this->_db->getChiClassicCompUnknownPathsOrderedByIdFakeResult =
+        $this->_db->getSiteUnknownPathsOrderedByIdFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
 
         ob_start();
@@ -152,8 +152,8 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         ob_end_clean();
 
         $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByIdCalled);
-        $this->assertEquals(0, $this->_db->getChiClassicCompUnknownPathsOrderedByIdLastStart);
+        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByIdCalled);
+        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart), $output);
     }
 
@@ -164,7 +164,7 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $paths = array('dec/1.bin', 'dec/2.zip', 'dec/3.dat', 'dec/4.u6', 'dec/5.tar',
             'dec/6.gz', 'dec/7.jpg', 'dec/8.gif', 'dec/9.tif', 'dec/A#A.png');
         $idStart = 110;
-        $this->_db->getChiClassicCompUnknownPathsOrderedByIdFakeResult =
+        $this->_db->getSiteUnknownPathsOrderedByIdFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
         $this->_db->getFormatForExtensionFakeResults =
             array('pdf' => 'PDF', 'jpg' => 'JPEG', 'gif' => 'GIF', 'png' => 'PNG', 'tif' => 'TIFF');
@@ -177,8 +177,8 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         ob_end_clean();
 
         $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByIdCalled);
-        $this->assertEquals(0, $this->_db->getChiClassicCompUnknownPathsOrderedByIdLastStart);
+        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByIdCalled);
+        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForCheckedPaths($paths, $checks, $idStart), $output);
     }
 
@@ -200,7 +200,7 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
         $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByPathCalled);
         $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByPathLastAscending);
-        $this->assertEquals(0, $this->_db->getChiClassicCompUnknownPathsOrderedByIdLastStart);
+        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false), $output);
     }
 
@@ -222,7 +222,7 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
         $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByPathCalled);
         $this->assertFalse($this->_db->getChiClassicCompUnknownPathsOrderedByPathLastAscending);
-        $this->assertEquals(0, $this->_db->getChiClassicCompUnknownPathsOrderedByIdLastStart);
+        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false, false), $output);
     }
 
@@ -233,7 +233,7 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
         $this->_db->getSiteUnknownPathCountFakeResult = count($paths);
         $this->configureCopiesExistForPaths($paths);
-        $this->_db->getChiClassicCompUnknownPathsOrderedByIdFakeResult =
+        $this->_db->getSiteUnknownPathsOrderedByIdFakeResult =
             self::createResultRowsForUnknownPaths($paths);
 
         ob_start();

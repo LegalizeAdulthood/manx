@@ -55,14 +55,13 @@ interface IManxDatabase
     function addSiteUnknownPath($siteName, $path);
     function ignoreSitePath($siteName, $path);
     function getSiteUnknownPathCount($siteName);
-    function getBitSaversUnknownPathsOrderedById($start, $ascending);
+    function getSiteUnknownPathsOrderedById($siteName, $start, $ascending);
     function getBitSaversUnknownPathsOrderedByPath($start, $ascending);
     function bitSaversIgnoredPath($path);
     function getAllBitSaversUnknownPaths();
     function removeBitSaversUnknownPathById($id);
     function getPossiblyMovedUnknownPaths();
     function bitSaversFileMoved($copyId, $pathId, $url);
-    function getChiClassicCompUnknownPathsOrderedById($start, $ascending);
     function getChiClassicCompUnknownPathsOrderedByPath($start, $ascending);
     function chiClassicCompIgnoredPath($path);
     function getAllChiClassicCompUnknownPaths();

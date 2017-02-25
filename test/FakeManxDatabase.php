@@ -61,8 +61,8 @@ class FakeManxDatabase implements IManxDatabase
         $this->addSiteUnknownPathCalled = false;
         $this->addSiteUnknownPathLastSiteNames = array();
         $this->addSiteUnknownPathLastPaths = array();
-        $this->getBitSaversUnknownPathsOrderedByIdCalled = false;
-        $this->getBitSaversUnknownPathsOrderedByIdFakeResult = array();
+        $this->getSiteUnknownPathsOrderedByIdCalled = false;
+        $this->getSiteUnknownPathsOrderedByIdFakeResult = array();
         $this->ignoreSitePathCalled = false;
         $this->setPropertyCalled = false;
         $this->getPropertyCalled = false;
@@ -82,8 +82,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->getFormatForExtensionFakeResults = array();
         $this->chiClassicCompIgnoredPathCalled = false;
         $this->chiClassicCompIgnoredPathFakeResult = false;
-        $this->getChiClassicCompUnknownPathsOrderedByIdCalled = false;
-        $this->getChiClassicCompUnknownPathsOrderedByIdFakeResult = array();
         $this->getAllChiClassicCompUnknownPathsCalled = false;
         $this->getAllChiClassicCompUnknownPathsResult = array();
         $this->removeChiClassicCompUnknownPathByIdCalled = false;
@@ -521,17 +519,19 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $getSiteUnknownPathCountCalled, $getSiteUnknownPathCountLastSiteName, $getSiteUnknownPathCountFakeResult;
 
-    function getBitSaversUnknownPathsOrderedById($start, $ascending)
+    function getSiteUnknownPathsOrderedById($siteName, $start, $ascending)
     {
-        $this->getBitSaversUnknownPathsOrderedByIdCalled = true;
-        $this->getBitSaversUnknownPathsOrderedByIdLastStart = $start;
-        $this->getBitSaversUnknownPathsOrderedByIdLastAscending = $ascending;
-        return $this->getBitSaversUnknownPathsOrderedByIdFakeResult;
+        $this->getSiteUnknownPathsOrderedByIdCalled = true;
+        $this->getSiteUnknownPathsOrderedByIdLastSiteName = $siteName;
+        $this->getSiteUnknownPathsOrderedByIdLastStart = $start;
+        $this->getSiteUnknownPathsOrderedByIdLastAscending = $ascending;
+        return $this->getSiteUnknownPathsOrderedByIdFakeResult;
     }
-    public $getBitSaversUnknownPathsOrderedByIdCalled,
-        $getBitSaversUnknownPathsOrderedByIdLastStart,
-        $getBitSaversUnknownPathsOrderedByIdLastAscending,
-        $getBitSaversUnknownPathsOrderedByIdFakeResult;
+    public $getSiteUnknownPathsOrderedByIdCalled,
+        $getSiteUnknownPathsOrderedByIdLastSiteName,
+        $getSiteUnknownPathsOrderedByIdLastStart,
+        $getSiteUnknownPathsOrderedByIdLastAscending,
+        $getSiteUnknownPathsOrderedByIdFakeResult;
 
     function getBitSaversUnknownPathsOrderedByPath($start, $ascending)
     {
@@ -583,18 +583,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversFileMovedLastUrl = $url;
     }
     public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
-
-    function getChiClassicCompUnknownPathsOrderedById($start, $ascending)
-    {
-        $this->getChiClassicCompUnknownPathsOrderedByIdCalled = true;
-        $this->getChiClassicCompUnknownPathsOrderedByIdLastStart = $start;
-        $this->getChiClassicCompUnknownPathsOrderedByIdLastAscending = $ascending;
-        return $this->getChiClassicCompUnknownPathsOrderedByIdFakeResult;
-    }
-    public $getChiClassicCompUnknownPathsOrderedByIdCalled,
-        $getChiClassicCompUnknownPathsOrderedByIdLastStart,
-        $getChiClassicCompUnknownPathsOrderedByIdLastAscending,
-        $getChiClassicCompUnknownPathsOrderedByIdFakeResult;
 
     function getChiClassicCompUnknownPathsOrderedByPath($start, $ascending)
     {

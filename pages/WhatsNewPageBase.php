@@ -154,13 +154,13 @@ EOH;
         if ($this->_siteName === BIT_SAVERS_SITE_NAME)
         {
             $unknownPaths = $sortById ?
-                $this->_manxDb->getBitSaversUnknownPathsOrderedById($start, $sortOrder == SORT_ORDER_BY_ID)
+                $this->_manxDb->getSiteUnknownPathsOrderedById($this->_siteName, $start, $sortOrder == SORT_ORDER_BY_ID)
                 : $this->_manxDb->getBitSaversUnknownPathsOrderedByPath($start, $sortOrder == SORT_ORDER_BY_PATH);
         }
         else if ($this->_siteName === CHI_CLASSIC_COMP_SITE_NAME)
         {
             $unknownPaths = $sortById ?
-                $this->_manxDb->getChiClassicCompUnknownPathsOrderedById($start, $sortOrder == SORT_ORDER_BY_ID)
+                $this->_manxDb->getSiteUnknownPathsOrderedById($this->_siteName, $start, $sortOrder == SORT_ORDER_BY_ID)
                 : $this->_manxDb->getChiClassicCompUnknownPathsOrderedByPath($start, $sortOrder == SORT_ORDER_BY_PATH);
         }
         $this->renderPageSelectionBar($start, $total);
