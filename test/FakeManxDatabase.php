@@ -45,7 +45,7 @@ class FakeManxDatabase implements IManxDatabase
         $this->addSupersessionFakeResult = -1;
         $this->addCompanyCalled = false;
         $this->addSiteCalled = false;
-        $this->getCompanyForBitSaversDirectoryCalled = false;
+        $this->getCompanyForSiteDirectoryCalled = false;
         $this->getPublicationsForPartNumberCalled = false;
         $this->getPublicationsForPartNumberFakeResult = array();
         $this->getFormatForExtensionCalled = false;
@@ -80,7 +80,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversFileMovedCalled = false;
         $this->getFormatForExtensionCalledForExtension = array();
         $this->getFormatForExtensionFakeResults = array();
-        $this->getCompanyForChiClassicCompDirectoryCalled = false;
         $this->chiClassicCompIgnoredPathCalled = false;
         $this->chiClassicCompIgnoredPathFakeResult = false;
         $this->getChiClassicCompUnknownPathsOrderedByIdCalled = false;
@@ -342,15 +341,17 @@ class FakeManxDatabase implements IManxDatabase
         $getFormatForExtensionFakeResults,
         $getFormatForExtensionFakeResult;
 
-    public function getCompanyForBitSaversDirectory($dir)
+    public function getCompanyForSiteDirectory($siteName, $dir)
     {
-        $this->getCompanyForBitSaversDirectoryCalled = true;
-        $this->getCompanyForBitSaversDirectoryLastDir = $dir;
-        return $this->getCompanyForBitSaversDirectoryFakeResult;
+        $this->getCompanyForSiteDirectoryCalled = true;
+        $this->getCompanyForSiteDirectoryLastSiteName = $siteName;
+        $this->getCompanyForSiteDirectoryLastDir = $dir;
+        return $this->getCompanyForSiteDirectoryFakeResult;
     }
-    public $getCompanyForBitSaversDirectoryCalled,
-        $getCompanyForBitSaversDirectoryLastDir,
-        $getCompanyForBitSaversDirectoryFakeResult;
+    public $getCompanyForSiteDirectoryCalled,
+        $getCompanyForSiteDirectoryLastSiteName,
+        $getCompanyForSiteDirectoryLastDir,
+        $getCompanyForSiteDirectoryFakeResult;
 
     public function deleteUserSession($sessionId)
     {
@@ -655,12 +656,4 @@ class FakeManxDatabase implements IManxDatabase
         $this->chiClassicCompFileMovedLastUrl = $url;
     }
     public $chiClassicCompFileMovedCalled, $chiClassicCompFileMovedLastCopyId, $chiClassicCompFileMovedLastPathId, $chiClassicCompFileMovedLastUrl;
-
-    function getCompanyForChiClassicCompDirectory($dir)
-    {
-        $this->getCompanyForChiClassicCompDirectoryCalled = true;
-        $this->getCompanyForChiClassicCompDirectoryLastDir = $dir;
-        return $this->getCompanyForChiClassicCompDirectoryFakeResult;
-    }
-    public $getCompanyForChiClassicCompDirectoryCalled, $getCompanyForChiClassicCompDirectoryLastDir, $getCompanyForChiClassicCompDirectoryFakeResult;
 }

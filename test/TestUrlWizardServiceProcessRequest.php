@@ -33,7 +33,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
     public function testProcessRequestNonExistentUrl()
     {
         $this->_db->getMirrorsFakeResult = array();
-        $this->_db->getCompanyForBitSaversDirectoryFakeResult = '-1';
+        $this->_db->getCompanyForSiteDirectoryFakeResult = '-1';
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
         $vars = self::varsForUrlLookup($url);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
@@ -51,7 +51,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
     public function testProcessRequestNewBitSaversCompany()
     {
         $this->_db->getMirrorsFakeResult = array();
-        $this->_db->getCompanyForBitSaversDirectoryFakeResult = '-1';
+        $this->_db->getCompanyForSiteDirectoryFakeResult = '-1';
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
         $vars = self::varsForUrlLookup($url);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
@@ -77,7 +77,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
             ));
         $this->assertEquals($expected, $output);
         $this->assertTrue($this->_db->getSitesCalled);
-        $this->assertTrue($this->_db->getCompanyForBitSaversDirectoryCalled);
+        $this->assertTrue($this->_db->getCompanyForSiteDirectoryCalled);
         $this->assertTrue($this->_db->getFormatForExtensionCalled);
     }
 
@@ -92,7 +92,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
                 'rank' => '9'
                 )
             ));
-        $this->_db->getCompanyForBitSaversDirectoryFakeResult = '5';
+        $this->_db->getCompanyForSiteDirectoryFakeResult = '5';
         $urlBase = '/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf';
         $vars = self::varsForUrlLookup('http://bitsavers.trailing-edge.com' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
@@ -118,14 +118,14 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
         ));
         $this->assertEquals($expected, $output);
         $this->assertTrue($this->_db->getMirrorsCalled);
-        $this->assertTrue($this->_db->getCompanyForBitSaversDirectoryCalled);
-        $this->assertEquals('tektronix', $this->_db->getCompanyForBitSaversDirectoryLastDir);
+        $this->assertTrue($this->_db->getCompanyForSiteDirectoryCalled);
+        $this->assertEquals('tektronix', $this->_db->getCompanyForSiteDirectoryLastDir);
     }
 
     public function testWwwBitSaversOrgProcessRequestUrlLookup()
     {
         $this->_db->getMirrorsFakeResult = array();
-        $this->_db->getCompanyForBitSaversDirectoryFakeResult = '-1';
+        $this->_db->getCompanyForSiteDirectoryFakeResult = '-1';
         $urlBase = '/pdf/univac/1100/UE-637_1108execUG_1970.pdf';
         $vars = self::varsForUrlLookup('http://www.bitsavers.org' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
@@ -150,14 +150,14 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
             'pubs' => array()
         ));
         $this->assertEquals($expected, $output);
-        $this->assertEquals('univac', $this->_db->getCompanyForBitSaversDirectoryLastDir);
+        $this->assertEquals('univac', $this->_db->getCompanyForSiteDirectoryLastDir);
     }
 
     public function testChiClassicCompUrlLookup()
     {
         $this->_db->getSitesFakeResult = self::sitesResultsForChiClassicComp();
         $this->_db->getMirrorsFakeResult = array();
-        $this->_db->getCompanyForChiClassicCompDirectoryFakeResult = '66';
+        $this->_db->getCompanyForSiteDirectoryFakeResult = '66';
         $urlBase = '/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf';
         $vars = self::varsForUrlLookup('http://chiclassiccomp.org' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
@@ -184,8 +184,8 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $output);
         $this->assertTrue($this->_db->getSitesCalled);
         $this->assertTrue($this->_db->getFormatForExtensionCalled);
-        $this->assertTrue($this->_db->getCompanyForChiClassicCompDirectoryCalled);
-        $this->assertEquals('Motorola', $this->_db->getCompanyForChiClassicCompDirectoryLastDir);
+        $this->assertTrue($this->_db->getCompanyForSiteDirectoryCalled);
+        $this->assertEquals('Motorola', $this->_db->getCompanyForSiteDirectoryLastDir);
     }
 
     private static function databaseRowFromDictionary(array $dict)

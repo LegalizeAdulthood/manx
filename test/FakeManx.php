@@ -12,7 +12,6 @@ class FakeManx implements IManx
         $this->getDatabaseCalled = false;
         $this->addPublicationCalled = false;
         $this->addPublicationFakeResult = -1;
-        $this->getCompanyForBitSaversDirectoryCalled = false;
     }
 
     public function getDetailsForPathInfo($pathInfo) { throw new Exception("getDetailsForPathInfo not implemented"); }

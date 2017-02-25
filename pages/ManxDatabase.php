@@ -549,16 +549,11 @@ class ManxDatabase implements IManxDatabase
         return $siteId[0]['site_id'];
     }
 
-    private function getCompanyForSiteDirectory($siteName, $dir)
+    public function getCompanyForSiteDirectory($siteName, $dir)
     {
         $rows = $this->execute("SELECT `company_id` FROM `site_company_dir` WHERE `site_id`=? AND `directory`=?",
             array($this->siteIdForName($siteName), $dir));
         return (count($rows) > 0) ? $rows[0]['company_id'] : -1;
-    }
-
-    function getCompanyForBitSaversDirectory($dir)
-    {
-        return $this->getCompanyForSiteDirectory("bitsavers", $dir);
     }
 
     function addSupersession($oldPub, $newPub)
@@ -848,10 +843,5 @@ class ManxDatabase implements IManxDatabase
     function chiClassicCompFileMoved($copyId, $pathId, $url)
     {
         $this->siteFileMoved("ChiClassicComp", $copyId, $pathId, $url);
-    }
-
-    function getCompanyForChiClassicCompDirectory($dir)
-    {
-        return $this->getCompanyForSiteDirectory("ChiClassicComp", $dir);
     }
 }

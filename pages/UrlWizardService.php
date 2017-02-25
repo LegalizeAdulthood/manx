@@ -320,7 +320,7 @@ class UrlWizardService extends ServicePageBase
         $dirs = explode('/', $urlComponents['path']);
         $companyDir = $dirs[2];
 
-        $company = $this->_db->getCompanyForBitSaversDirectory($companyDir);
+        $company = $this->_db->getCompanyForSiteDirectory('bitsavers', $companyDir);
         $data['company'] = $company;
         $data['site_company_directory'] = $companyDir;
 
@@ -363,7 +363,7 @@ class UrlWizardService extends ServicePageBase
         $dirs = explode('/', $urlComponents['path']);
         $companyDir = $dirs[4];
 
-        $company = $this->_db->getCompanyForChiClassicCompDirectory($companyDir);
+        $company = $this->_db->getCompanyForSiteDirectory('ChiClassicComp', $companyDir);
         $data['company'] = $company;
         $data['site_company_directory'] = $companyDir;
 

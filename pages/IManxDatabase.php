@@ -35,7 +35,7 @@ interface IManxDatabase
     function getMirrors();
     function getSites();
     function getFormatForExtension($extension);
-    function getCompanyForBitSaversDirectory($dir);
+    function getCompanyForSiteDirectory($siteName, $dir);
     function deleteUserSession($sessionId);
     function addSupersession($oldPub, $newPub);
     function addSite($name, $url, $description, $copy_base, $low, $live);
@@ -71,5 +71,4 @@ interface IManxDatabase
     function removeChiClassicCompUnknownPathById($id);
     function getChiClassicCompPossiblyMovedUnknownPaths();
     function chiClassicCompFileMoved($copyId, $pathId, $url);
-    function getCompanyForChiClassicCompDirectory($dir);
 }
