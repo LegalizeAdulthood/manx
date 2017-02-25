@@ -73,15 +73,13 @@ class FakeManxDatabase implements IManxDatabase
         $this->getZeroSizeDocumentsCalled = false;
         $this->getAllSiteUnknownPathsCalled = false;
         $this->getAllSiteUnknownPathsResult = array();
-        $this->removeBitSaversUnknownPathByIdCalled = false;
-        $this->removeBitSaversUnknownPathByIdLastId = -1;
+        $this->removeSiteUnknownPathByIdCalled = false;
+        $this->removeSiteUnknownPathByIdLastId = -1;
         $this->getPossiblyMovedUnknownPathsCalled = false;
         $this->getPossiblyMovedUnknownPathsFakeResult = array();
         $this->bitSaversFileMovedCalled = false;
         $this->getFormatForExtensionCalledForExtension = array();
         $this->getFormatForExtensionFakeResults = array();
-        $this->removeChiClassicCompUnknownPathByIdCalled = false;
-        $this->removeChiClassicCompUnknownPathByIdLastId = -1;
         $this->chiClassicCompFileMovedCalled = false;
     }
 
@@ -563,12 +561,13 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $getAllSiteUnknownPathsCalled, $getAllSiteUnknownPathsLastSiteName, $getAllSiteUnknownPathsResult;
 
-    function removeBitSaversUnknownPathById($id)
+    function removeSiteUnknownPathById($siteName, $id)
     {
-        $this->removeBitSaversUnknownPathByIdCalled = true;
-        $this->removeBitSaversUnknownPathByIdLastId = $id;
+        $this->removeSiteUnknownPathByIdCalled = true;
+        $this->removeSiteUnknownPathByIdLastSiteName = $siteName;
+        $this->removeSiteUnknownPathByIdLastId = $id;
     }
-    public $removeBitSaversUnknownPathByIdCalled, $removeBitSaversUnknownPathByIdLastId;
+    public $removeSiteUnknownPathByIdCalled, $removeSiteUnknownPathByIdLastSiteName, $removeSiteUnknownPathByIdLastId;
 
     function getPossiblyMovedUnknownPaths()
     {
@@ -585,13 +584,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversFileMovedLastUrl = $url;
     }
     public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
-
-    function removeChiClassicCompUnknownPathById($id)
-    {
-        $this->removeChiClassicCompUnknownPathByIdCalled = true;
-        $this->removeChiClassicCompUnknownPathByIdLastId = $id;
-    }
-    public $removeChiClassicCompUnknownPathByIdCalled, $removeChiClassicCompUnknownPathByIdLastId;
 
     function getChiClassicCompPossiblyMovedUnknownPaths()
     {

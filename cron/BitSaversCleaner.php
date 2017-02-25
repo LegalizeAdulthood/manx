@@ -32,14 +32,14 @@ class BitSaversCleaner
 
     public function removeNonExistentUnknownPaths()
     {
-        foreach($this->_db->getAllBitSaversUnknownPaths() as $row)
+        foreach($this->_db->getAllSiteUnknownPaths('bitsavers') as $row)
         {
             $path = $row['path'];
             $url = 'http://bitsavers.trailing-edge.com/pdf/' . self::escapeSpecialChars($path);
             $urlInfo = $this->_factory->createUrlInfo($url);
             if (!$urlInfo->exists())
             {
-                $this->_db->removeBitSaversUnknownPathById($row['id']);
+                $this->_db->removeSiteUnknownPathById('bitsavers', $row['id']);
                 $this->_logger->log('Path: ' . $path);
             }
         }

@@ -51,8 +51,9 @@ class TestBitSaversCleaner extends PHPUnit_Framework_TestCase
         $this->assertEquals('bitsavers', $this->_db->getAllSiteUnknownPathsLastSiteName);
         $this->assertEquals('http://bitsavers.trailing-edge.com/pdf/foo/path.pdf', $this->_factory->createUrlInfoLastUrl);
         $this->assertTrue($urlInfo->existsCalled);
-        $this->assertTrue($this->_db->removeBitSaversUnknownPathByIdCalled);
-        $this->assertEquals(1, $this->_db->removeBitSaversUnknownPathByIdLastId);
+        $this->assertTrue($this->_db->removeSiteUnknownPathByIdCalled);
+        $this->assertEquals('bitsavers', $this->_db->removeSiteUnknownPathByIdLastSiteName);
+        $this->assertEquals(1, $this->_db->removeSiteUnknownPathByIdLastId);
     }
 
     public function testExistingPathsAreKept()
@@ -66,7 +67,7 @@ class TestBitSaversCleaner extends PHPUnit_Framework_TestCase
 
         $this->_cleaner->removeNonExistentUnknownPaths();
 
-        $this->assertFalse($this->_db->removeBitSaversUnknownPathByIdCalled);
+        $this->assertFalse($this->_db->removeSiteUnknownPathByIdCalled);
     }
 
     public function testPathsEscapeSpecialChars()
