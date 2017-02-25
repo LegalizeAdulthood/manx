@@ -151,18 +151,9 @@ EOH;
         $start = array_key_exists('start', $this->_vars) ? $this->_vars['start'] : 0;
         $sortOrder = array_key_exists('sort', $this->_vars) ? $this->_vars['sort'] : SORT_ORDER_BY_ID;
         $sortById = ($sortOrder == SORT_ORDER_BY_ID) || ($sortOrder == SORT_ORDER_BY_ID_DESCENDING);
-        if ($this->_siteName === BIT_SAVERS_SITE_NAME)
-        {
-            $unknownPaths = $sortById ?
-                $this->_manxDb->getSiteUnknownPathsOrderedById($this->_siteName, $start, $sortOrder == SORT_ORDER_BY_ID)
-                : $this->_manxDb->getBitSaversUnknownPathsOrderedByPath($start, $sortOrder == SORT_ORDER_BY_PATH);
-        }
-        else if ($this->_siteName === CHI_CLASSIC_COMP_SITE_NAME)
-        {
-            $unknownPaths = $sortById ?
-                $this->_manxDb->getSiteUnknownPathsOrderedById($this->_siteName, $start, $sortOrder == SORT_ORDER_BY_ID)
-                : $this->_manxDb->getChiClassicCompUnknownPathsOrderedByPath($start, $sortOrder == SORT_ORDER_BY_PATH);
-        }
+        $unknownPaths = $sortById ?
+            $this->_manxDb->getSiteUnknownPathsOrderedById($this->_siteName, $start, $sortOrder == SORT_ORDER_BY_ID)
+            : $this->_manxDb->getSiteUnknownPathsOrderedByPath($this->_siteName, $start, $sortOrder == SORT_ORDER_BY_PATH);
         $this->renderPageSelectionBar($start, $total);
         $startParam = $start > 0 ? sprintf('start=%1$d&', $start) : '';
         if ($sortById)

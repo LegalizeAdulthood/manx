@@ -792,7 +792,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, $paths[1]['id']);
     }
 
-    public function testGetBitSaversUnknownPathsOrderedByPath()
+    public function testGetSiteUnknownPathsOrderedByPath()
     {
         $this->createInstance();
         $this->configureBitSaversSiteLookup();
@@ -801,7 +801,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('path', 'id', 'site_id'), array(array($path2, '2', '3'), array($path1, '1', '3')));
 
-        $paths = $this->_manxDb->getBitSaversUnknownPathsOrderedByPath(0, true);
+        $paths = $this->_manxDb->getSiteUnknownPathsOrderedByPath('bitsavers', 0, true);
 
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals(2, count($this->_db->executeLastStatements));

@@ -189,7 +189,7 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $paths = array('dec/Q.pdf', 'dec/R.pdf', 'dec/S.pdf', 'dec/T.pdf', 'dec/U.pdf',
             'dec/V.pdf', 'dec/W.pdf', 'dec/X.pdf', 'dec/Y.pdf', 'dec/Z.pdf');
         $idStart = 110;
-        $this->_db->getChiClassicCompUnknownPathsOrderedByPathFakeResult =
+        $this->_db->getSiteUnknownPathsOrderedByPathFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
 
         ob_start();
@@ -198,8 +198,8 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         ob_end_clean();
 
         $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByPathCalled);
-        $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByPathLastAscending);
+        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByPathCalled);
+        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByPathLastAscending);
         $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false), $output);
     }
@@ -211,7 +211,7 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $paths = array('dec/Z.pdf', 'dec/Y.pdf', 'dec/X.pdf', 'dec/W.pdf', 'dec/V.pdf',
             'dec/U.pdf', 'dec/T.pdf', 'dec/S.pdf', 'dec/R.pdf', 'dec/Q.pdf');
         $idStart = 110;
-        $this->_db->getChiClassicCompUnknownPathsOrderedByPathFakeResult =
+        $this->_db->getSiteUnknownPathsOrderedByPathFakeResult =
             self::createResultRowsForUnknownPaths($paths, $idStart);
 
         ob_start();
@@ -220,8 +220,8 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         ob_end_clean();
 
         $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getChiClassicCompUnknownPathsOrderedByPathCalled);
-        $this->assertFalse($this->_db->getChiClassicCompUnknownPathsOrderedByPathLastAscending);
+        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByPathCalled);
+        $this->assertFalse($this->_db->getSiteUnknownPathsOrderedByPathLastAscending);
         $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false, false), $output);
     }

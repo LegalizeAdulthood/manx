@@ -533,17 +533,19 @@ class FakeManxDatabase implements IManxDatabase
         $getSiteUnknownPathsOrderedByIdLastAscending,
         $getSiteUnknownPathsOrderedByIdFakeResult;
 
-    function getBitSaversUnknownPathsOrderedByPath($start, $ascending)
+    function getSiteUnknownPathsOrderedByPath($siteName, $start, $ascending)
     {
-        $this->getBitSaversUnknownPathsOrderedByPathCalled = true;
-        $this->getBitSaversUnknownPathsOrderedByPathLastStart = $start;
-        $this->getBitSaversUnknownPathsOrderedByPathLastAscending = $ascending;
-        return $this->getBitSaversUnknownPathsOrderedByPathFakeResult;
+        $this->getSiteUnknownPathsOrderedByPathCalled = true;
+        $this->getSiteUnknownPathsOrderedByPathLastSiteName = $siteName;
+        $this->getSiteUnknownPathsOrderedByPathLastStart = $start;
+        $this->getSiteUnknownPathsOrderedByPathLastAscending = $ascending;
+        return $this->getSiteUnknownPathsOrderedByPathFakeResult;
     }
-    public $getBitSaversUnknownPathsOrderedByPathCalled,
-        $getBitSaversUnknownPathsOrderedByPathLastStart,
-            $getBitSaversUnknownPathsOrderedByPathLastAscending,
-        $getBitSaversUnknownPathsOrderedByPathFakeResult;
+    public $getSiteUnknownPathsOrderedByPathCalled,
+        $getSiteUnknownPathsOrderedByPathLastSiteName,
+        $getSiteUnknownPathsOrderedByPathLastStart,
+        $getSiteUnknownPathsOrderedByPathLastAscending,
+        $getSiteUnknownPathsOrderedByPathFakeResult;
 
     function bitSaversIgnoredPath($path)
     {
@@ -583,18 +585,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversFileMovedLastUrl = $url;
     }
     public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
-
-    function getChiClassicCompUnknownPathsOrderedByPath($start, $ascending)
-    {
-        $this->getChiClassicCompUnknownPathsOrderedByPathCalled = true;
-        $this->getChiClassicCompUnknownPathsOrderedByPathLastStart = $start;
-        $this->getChiClassicCompUnknownPathsOrderedByPathLastAscending = $ascending;
-        return $this->getChiClassicCompUnknownPathsOrderedByPathFakeResult;
-    }
-    public $getChiClassicCompUnknownPathsOrderedByPathCalled,
-        $getChiClassicCompUnknownPathsOrderedByPathLastStart,
-            $getChiClassicCompUnknownPathsOrderedByPathLastAscending,
-        $getChiClassicCompUnknownPathsOrderedByPathFakeResult;
 
     function chiClassicCompIgnoredPath($path)
     {
