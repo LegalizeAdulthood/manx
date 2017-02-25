@@ -742,11 +742,9 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testAddBitSaversUnknownPath()
     {
         $this->createInstance();
-        $this->_db->executeFakeResultsForStatement["SELECT `site_id` FROM `site` WHERE `name`=?"] =
-            FakeDatabase::createResultRowsForColumns(array('site_id'), array(array(3)));
         $query = "INSERT INTO `site_unknown`(`site`,`path`) VALUES (?,?)";
         $this->_db->executeFakeResult = null;
-
+        $this->configureBitSaversSiteLookup();
         $this->_manxDb->addBitSaversUnknownPath('foo/frob.jpg');
 
         $this->assertTrue($this->_db->executeCalled);
@@ -759,8 +757,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testIgnoreBitSaversPath()
     {
         $this->createInstance();
-        $this->_db->executeFakeResultsForStatement["SELECT `site_id` FROM `site` WHERE `name`=?"] =
-            FakeDatabase::createResultRowsForColumns(array('site_id'), array(array(3)));
+        $this->configureBitSaversSiteLookup();
         $query = "UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?";
         $this->_db->executeFakeResult = null;
 
@@ -776,8 +773,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testGetBitSaversUnknownPathsOrderedById()
     {
         $this->createInstance();
-        $this->_db->executeFakeResultsForStatement["SELECT `site_id` FROM `site` WHERE `name`=?"] =
-            FakeDatabase::createResultRowsForColumns(array('site_id'), array(array(3)));
+        $this->configureBitSaversSiteLookup();
         $path1 = 'foo/bar.jpg';
         $path2 = 'foo/foo.jpg';
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
@@ -799,8 +795,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testGetBitSaversUnknownPathsOrderedByPath()
     {
         $this->createInstance();
-        $this->_db->executeFakeResultsForStatement["SELECT `site_id` FROM `site` WHERE `name`=?"] =
-            FakeDatabase::createResultRowsForColumns(array('site_id'), array(array(3)));
+        $this->configureBitSaversSiteLookup();
         $path1 = 'foo/foo.jpg';
         $path2 = 'foo/bar.jpg';
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
@@ -823,8 +818,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testBitSaversIgnoredPathTrue()
     {
         $this->createInstance();
-        $this->_db->executeFakeResultsForStatement["SELECT `site_id` FROM `site` WHERE `name`=?"] =
-            FakeDatabase::createResultRowsForColumns(array('site_id'), array(array(3)));
+        $this->configureBitSaversSiteLookup();
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('count'), array(array(1)));
 
@@ -842,8 +836,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testBitSaversIgnoredPathFalse()
     {
         $this->createInstance();
-        $this->_db->executeFakeResultsForStatement["SELECT `site_id` FROM `site` WHERE `name`=?"] =
-            FakeDatabase::createResultRowsForColumns(array('site_id'), array(array(3)));
+        $this->configureBitSaversSiteLookup();
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('count'), array(array(0)));
 
@@ -922,6 +915,12 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals($oldPub, $this->_db->executeLastArgs[1][0]);
         $this->assertTrue($this->_db->getLastInsertIdCalled);
         $this->assertEquals(969, $result);
+    }
+
+    private function configureBitSaversSiteLookup()
+    {
+        $this->_db->executeFakeResultsForStatement["SELECT `site_id` FROM `site` WHERE `name`=?"] =
+            FakeDatabase::createResultRowsForColumns(array('site_id'), array(array(3)));
     }
 
     private function assertColumnValuesForRows($rows, $column, $values)
