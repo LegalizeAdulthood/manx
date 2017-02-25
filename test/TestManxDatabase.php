@@ -815,14 +815,14 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $paths[1]['id']);
     }
 
-    public function testBitSaversIgnoredPathTrue()
+    public function testSiteIgnoredPathTrue()
     {
         $this->createInstance();
         $this->configureBitSaversSiteLookup();
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('count'), array(array(1)));
 
-        $ignored = $this->_manxDb->bitSaversIgnoredPath('foo/bar.jpg');
+        $ignored = $this->_manxDb->siteIgnoredPath('bitsavers', 'foo/bar.jpg');
 
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals(2, count($this->_db->executeLastStatements));
@@ -833,14 +833,14 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertTrue($ignored);
     }
 
-    public function testBitSaversIgnoredPathFalse()
+    public function testSiteIgnoredPathFalse()
     {
         $this->createInstance();
         $this->configureBitSaversSiteLookup();
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('count'), array(array(0)));
 
-        $ignored = $this->_manxDb->bitSaversIgnoredPath('foo/bar.jpg');
+        $ignored = $this->_manxDb->siteIgnoredPath('bitsavers', 'foo/bar.jpg');
 
         $this->assertFalse($ignored);
     }

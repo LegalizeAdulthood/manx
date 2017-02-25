@@ -83,20 +83,8 @@ class WhatsNewPageBase extends AdminPageBase
     private function pathUnknown($line)
     {
         $url = $this->_urlBase . self::escapeSpecialChars($line);
-        if ($this->_siteName === BIT_SAVERS_SITE_NAME)
-        {
-            $ignoredPath = $this->_manxDb->bitSaversIgnoredPath($line);
-        }
-        else if ($this->_siteName === CHI_CLASSIC_COMP_SITE_NAME)
-        {
-            $ignoredPath = $this->_manxDb->chiClassicCompIgnoredPath($line);
-        }
-        else
-        {
-            $ignoredPath = false;
-        }
         return $this->_manxDb->copyExistsForUrl($url) === false
-            && $ignoredPath === false;
+            && $this->_manxDb->siteIgnoredPath($this->_siteName, $line) === false;
     }
 
     protected function getMenuType()

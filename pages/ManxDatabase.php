@@ -719,16 +719,11 @@ class ManxDatabase implements IManxDatabase
             array($this->siteIdForName($siteName)));
     }
 
-    private function siteIgnoredPath($siteName, $path)
+    public function siteIgnoredPath($siteName, $path)
     {
         $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `path`=? AND `ignored`=1",
             array($this->siteIdForName($siteName), $path));
         return ($rows[0]['count'] > 0);
-    }
-
-    function bitSaversIgnoredPath($path)
-    {
-        return $this->siteIgnoredPath("bitsavers", $path);
     }
 
     private function getAllSiteUnknownPaths($siteName)
@@ -778,11 +773,6 @@ class ManxDatabase implements IManxDatabase
     function bitSaversFileMoved($copyId, $pathId, $url)
     {
         return $this->siteFileMoved("bitsavers", $copyId, $pathId, $url);
-    }
-
-    function chiClassicCompIgnoredPath($path)
-    {
-        return $this->siteIgnoredPath("ChiClassicComp", $path);
     }
 
     function getAllChiClassicCompUnknownPaths()

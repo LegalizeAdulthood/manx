@@ -56,8 +56,8 @@ class FakeManxDatabase implements IManxDatabase
         $this->copyExistsForUrlCalled = false;
         $this->copyExistsForUrlFakeResult = false;
         $this->copyExistsForUrlFakeResults = array();
-        $this->bitSaversIgnoredPathCalled = false;
-        $this->bitSaversIgnoredPathFakeResult = false;
+        $this->siteIgnoredPathCalled = false;
+        $this->siteIgnoredPathFakeResult = false;
         $this->addSiteUnknownPathCalled = false;
         $this->addSiteUnknownPathLastSiteNames = array();
         $this->addSiteUnknownPathLastPaths = array();
@@ -80,8 +80,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversFileMovedCalled = false;
         $this->getFormatForExtensionCalledForExtension = array();
         $this->getFormatForExtensionFakeResults = array();
-        $this->chiClassicCompIgnoredPathCalled = false;
-        $this->chiClassicCompIgnoredPathFakeResult = false;
         $this->getAllChiClassicCompUnknownPathsCalled = false;
         $this->getAllChiClassicCompUnknownPathsResult = array();
         $this->removeChiClassicCompUnknownPathByIdCalled = false;
@@ -547,14 +545,17 @@ class FakeManxDatabase implements IManxDatabase
         $getSiteUnknownPathsOrderedByPathLastAscending,
         $getSiteUnknownPathsOrderedByPathFakeResult;
 
-    function bitSaversIgnoredPath($path)
+    function siteIgnoredPath($siteName, $path)
     {
-        $this->bitSaversIgnoredPathCalled = true;
-        $this->bitSaversIgnoredPathLastPath = $path;
-        return $this->bitSaversIgnoredPathFakeResult;
+        $this->siteIgnoredPathCalled = true;
+        $this->siteIgnoredPathLastSiteName = $siteName;
+        $this->siteIgnoredPathLastPath = $path;
+        return $this->siteIgnoredPathFakeResult;
     }
-    public $bitSaversIgnoredPathCalled, $bitSaversIgnoredPathLastPath,
-        $bitSaversIgnoredPathFakeResult;
+    public $siteIgnoredPathCalled,
+        $siteIgnoredPathLastSiteName,
+        $siteIgnoredPathLastPath,
+        $siteIgnoredPathFakeResult;
 
     function getAllBitSaversUnknownPaths()
     {
@@ -585,15 +586,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversFileMovedLastUrl = $url;
     }
     public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
-
-    function chiClassicCompIgnoredPath($path)
-    {
-        $this->chiClassicCompIgnoredPathCalled = true;
-        $this->chiClassicCompIgnoredPathLastPath = $path;
-        return $this->chiClassicCompIgnoredPathFakeResult;
-    }
-    public $chiClassicCompIgnoredPathCalled, $chiClassicCompIgnoredPathLastPath,
-        $chiClassicCompIgnoredPathFakeResult;
 
     function getAllChiClassicCompUnknownPaths()
     {
