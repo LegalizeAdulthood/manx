@@ -799,20 +799,20 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $path1 = 'foo/foo.jpg';
         $path2 = 'foo/bar.jpg';
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
-            array('path', 'id', 'site_id'), array(array($path1, '1', '3'), array($path2, '2', '3')));
+            array('path', 'id', 'site_id'), array(array($path2, '2', '3'), array($path1, '1', '3')));
 
-        $paths = $this->_manxDb->getSiteUnknownPathsOrderedById('bitsavers', 0, true);
+        $paths = $this->_manxDb->getBitSaversUnknownPathsOrderedByPath(0, true);
 
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals(2, count($this->_db->executeLastStatements));
         $this->assertEquals(2, count($this->_db->executeLastArgs));
         $this->assertStringStartsWith("SELECT `path`,`id` FROM `site_unknown` WHERE `site_id`=?", $this->_db->executeLastStatements[1]);
-        $this->assertContains("ORDER BY `id` ASC", $this->_db->executeLastStatements[1]);
+        $this->assertContains("ORDER BY `path` ASC", $this->_db->executeLastStatements[1]);
         $this->assertEquals(1, count($this->_db->executeLastArgs[1]));
-        $this->assertEquals($path1, $paths[0]['path']);
-        $this->assertEquals(1, $paths[0]['id']);
-        $this->assertEquals($path2, $paths[1]['path']);
-        $this->assertEquals(2, $paths[1]['id']);
+        $this->assertEquals($path2, $paths[0]['path']);
+        $this->assertEquals(2, $paths[0]['id']);
+        $this->assertEquals($path1, $paths[1]['path']);
+        $this->assertEquals(1, $paths[1]['id']);
     }
 
     public function testBitSaversIgnoredPathTrue()
