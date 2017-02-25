@@ -129,7 +129,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderBodyContentWithPlentyOfPaths()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
-        $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
+        $this->_db->getSiteUnknownPathCountFakeResult = 10;
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
         $idStart = 110;
@@ -141,7 +141,8 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
+        $this->assertEquals('bitsavers', $this->_db->getSiteUnknownPathCountLastSiteName);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByIdCalled);
         $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart), $output);
@@ -150,7 +151,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderBodyContentWithIgnoredPaths()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
-        $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
+        $this->_db->getSiteUnknownPathCountFakeResult = 10;
         $paths = array('dec/1.bin', 'dec/2.zip', 'dec/3.dat', 'dec/4.u6', 'dec/5.tar',
             'dec/6.gz', 'dec/7.jpg', 'dec/8.gif', 'dec/9.tif', 'dec/A#A.png');
         $idStart = 110;
@@ -166,7 +167,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByIdCalled);
         $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForCheckedPaths($paths, $checks, $idStart), $output);
@@ -175,7 +176,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH));
-        $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
+        $this->_db->getSiteUnknownPathCountFakeResult = 10;
         $paths = array('dec/Q.pdf', 'dec/R.pdf', 'dec/S.pdf', 'dec/T.pdf', 'dec/U.pdf',
             'dec/V.pdf', 'dec/W.pdf', 'dec/X.pdf', 'dec/Y.pdf', 'dec/Z.pdf');
         $idStart = 110;
@@ -187,7 +188,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByPathCalled);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByPathLastAscending);
         $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
@@ -197,7 +198,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPathDescending()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH_DESCENDING));
-        $this->_db->getBitSaversUnknownPathCountFakeResult = 10;
+        $this->_db->getSiteUnknownPathCountFakeResult = 10;
         $paths = array('dec/Z.pdf', 'dec/Y.pdf', 'dec/X.pdf', 'dec/W.pdf', 'dec/V.pdf',
             'dec/U.pdf', 'dec/T.pdf', 'dec/S.pdf', 'dec/R.pdf', 'dec/Q.pdf');
         $idStart = 110;
@@ -209,7 +210,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getBitSaversUnknownPathCountCalled);
+        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
         $this->assertTrue($this->_db->getBitSaversUnknownPathsOrderedByPathCalled);
         $this->assertFalse($this->_db->getBitSaversUnknownPathsOrderedByPathLastAscending);
         $this->assertEquals(0, $this->_db->getBitSaversUnknownPathsOrderedByIdLastStart);
@@ -221,7 +222,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->createPageWithoutFetchingIndexByDateFile();
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
-        $this->_db->getBitSaversUnknownPathCountFakeResult = count($paths);
+        $this->_db->getSiteUnknownPathCountFakeResult = count($paths);
         $this->configureCopiesExistForPaths($paths);
         $this->_db->getBitSaversUnknownPathsOrderedByIdFakeResult =
             self::createResultRowsForUnknownPaths($paths);
@@ -467,7 +468,7 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
     public function testRenderBodyContentNoDocuments()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
-        $this->_db->getBitSaversUnknownPathCountFakeResult = 0;
+        $this->_db->getSiteUnknownPathCountFakeResult = 0;
 
         ob_start();
         $this->_page->renderBodyContent();

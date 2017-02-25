@@ -139,18 +139,7 @@ class WhatsNewPageBase extends AdminPageBase
 
     protected function renderBodyContent()
     {
-        if ($this->_siteName === BIT_SAVERS_SITE_NAME)
-        {
-            $total = $this->_manxDb->getBitSaversUnknownPathCount();
-        }
-        else if ($this->_siteName === CHI_CLASSIC_COMP_SITE_NAME)
-        {
-            $total = $this->_manxDb->getChiClassicCompUnknownPathCount();
-        }
-        else
-        {
-            $total = 0;
-        }
+        $total = $this->_manxDb->getSiteUnknownPathCount($this->_siteName);
         $title = $this->_title;
         if ($total == 0)
         {

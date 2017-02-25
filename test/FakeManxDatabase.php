@@ -507,12 +507,13 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $ignoreBitSaversPathCalled, $ignoreBitSaversPathLastPath;
 
-    function getBitSaversUnknownPathCount()
+    function getSiteUnknownPathCount($siteName)
     {
-        $this->getBitSaversUnknownPathCountCalled = true;
-        return $this->getBitSaversUnknownPathCountFakeResult;
+        $this->getSiteUnknownPathCountCalled = true;
+        $this->getSiteUnknownPathCountLastSiteName = $siteName;
+        return $this->getSiteUnknownPathCountFakeResult;
     }
-    public $getBitSaversUnknownPathCountCalled, $getBitSaversUnknownPathCountFakeResult;
+    public $getSiteUnknownPathCountCalled, $getSiteUnknownPathCountLastSiteName, $getSiteUnknownPathCountFakeResult;
 
     function getBitSaversUnknownPathsOrderedById($start, $ascending)
     {
@@ -591,13 +592,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->ignoreChiClassicCompPathLastPath = $path;
     }
     public $ignoreChiClassicCompPathCalled, $ignoreChiClassicCompPathLastPath;
-
-    function getChiClassicCompUnknownPathCount()
-    {
-        $this->getChiClassicCompUnknownPathCountCalled = true;
-        return $this->getChiClassicCompUnknownPathCountFakeResult;
-    }
-    public $getChiClassicCompUnknownPathCountCalled, $getChiClassicCompUnknownPathCountFakeResult;
 
     function getChiClassicCompUnknownPathsOrderedById($start, $ascending)
     {
