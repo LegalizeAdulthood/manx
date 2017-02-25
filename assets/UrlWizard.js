@@ -462,6 +462,8 @@ $(function()
         {
             show_hide_company_fields();
             clear_errors();
+			search_for_publications();
+			search_for_supersessions();
         });
 
     $("#supersession_search_keywords").change(search_for_supersessions);
