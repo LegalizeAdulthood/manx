@@ -493,10 +493,11 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_file->eofCalled);
         $this->assertTrue($this->_file->getStringCalled);
         $this->assertTrue($this->_db->copyExistsForUrlCalled);
-        $this->assertTrue($this->_db->addChiClassicCompUnknownPathCalled);
+        $this->assertTrue($this->_db->addSiteUnknownPathCalled);
+        $this->assertContains('ChiClassicComp', $this->_db->addSiteUnknownPathLastSiteNames);
         foreach ($paths as $path)
         {
-            $this->assertContains($path, $this->_db->addChiClassicCompUnknownPathLastPaths);
+            $this->assertContains($path, $this->_db->addSiteUnknownPathLastPaths);
         }
     }
 

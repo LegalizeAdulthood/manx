@@ -75,7 +75,7 @@ class WhatsNewPageBase extends AdminPageBase
             $line = substr(trim($indexByDate->getString()), 20);
             if (strlen($line) && $this->pathUnknown($line))
             {
-                $this->addUnknownPath($line);
+                $this->_manxDb->addSiteUnknownPath($this->_siteName, $line);
             }
         }
     }
@@ -97,18 +97,6 @@ class WhatsNewPageBase extends AdminPageBase
         }
         return $this->_manxDb->copyExistsForUrl($url) === false
             && $ignoredPath === false;
-    }
-
-    private function addUnknownPath($line)
-    {
-        if ($this->_siteName === BIT_SAVERS_SITE_NAME)
-        {
-            $this->_manxDb->addBitSaversUnknownPath($line);
-        }
-        else if ($this->_siteName === CHI_CLASSIC_COMP_SITE_NAME)
-        {
-            $this->_manxDb->addChiClassicCompUnknownPath($line);
-        }
     }
 
     protected function getMenuType()

@@ -745,7 +745,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $query = "INSERT INTO `site_unknown`(`site`,`path`) VALUES (?,?)";
         $this->_db->executeFakeResult = null;
         $this->configureBitSaversSiteLookup();
-        $this->_manxDb->addBitSaversUnknownPath('foo/frob.jpg');
+        $this->_manxDb->addSiteUnknownPath('bitsavers', 'foo/frob.jpg');
 
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals($query, $this->_db->executeLastStatements[1]);

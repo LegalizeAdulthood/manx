@@ -52,7 +52,7 @@ interface IManxDatabase
     function getMissingMD5Documents();
     function getProperty($name);
     function setProperty($name, $value);
-    function addBitSaversUnknownPath($path);
+    function addSiteUnknownPath($siteName, $path);
     function ignoreBitSaversPath($path);
     function getBitSaversUnknownPathCount();
     function getBitSaversUnknownPathsOrderedById($start, $ascending);
@@ -63,7 +63,6 @@ interface IManxDatabase
     function getPossiblyMovedUnknownPaths();
     function addChiClassicCompDirectory($companyId, $directory);
     function bitSaversFileMoved($copyId, $pathId, $url);
-    function addChiClassicCompUnknownPath($path);
     function ignoreChiClassicCompPath($path);
     function getChiClassicCompUnknownPathCount();
     function getChiClassicCompUnknownPathsOrderedById($start, $ascending);

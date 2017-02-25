@@ -58,8 +58,9 @@ class FakeManxDatabase implements IManxDatabase
         $this->copyExistsForUrlFakeResults = array();
         $this->bitSaversIgnoredPathCalled = false;
         $this->bitSaversIgnoredPathFakeResult = false;
-        $this->addBitSaversUnknownPathCalled = false;
-        $this->addBitSaversUnknownPathLastPaths = array();
+        $this->addSiteUnknownPathCalled = false;
+        $this->addSiteUnknownPathLastSiteNames = array();
+        $this->addSiteUnknownPathLastPaths = array();
         $this->getBitSaversUnknownPathsOrderedByIdCalled = false;
         $this->getBitSaversUnknownPathsOrderedByIdFakeResult = array();
         $this->ignoreBitSaversPathCalled = false;
@@ -82,8 +83,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->getCompanyForChiClassicCompDirectoryCalled = false;
         $this->chiClassicCompIgnoredPathCalled = false;
         $this->chiClassicCompIgnoredPathFakeResult = false;
-        $this->addChiClassicCompUnknownPathCalled = false;
-        $this->addChiClassicCompUnknownPathLastPaths = array();
         $this->getChiClassicCompUnknownPathsOrderedByIdCalled = false;
         $this->getChiClassicCompUnknownPathsOrderedByIdFakeResult = array();
         $this->ignoreChiClassicCompPathCalled = false;
@@ -493,12 +492,13 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $setPropertyCalled, $setPropertyLastName, $setPropertyLastValue;
 
-    function addBitSaversUnknownPath($path)
+    function addSiteUnknownPath($siteName, $path)
     {
-        $this->addBitSaversUnknownPathCalled = true;
-        $this->addBitSaversUnknownPathLastPaths[] = $path;
+        $this->addSiteUnknownPathCalled = true;
+        $this->addSiteUnknownPathLastSiteNames[] = $siteName;
+        $this->addSiteUnknownPathLastPaths[] = $path;
     }
-    public $addBitSaversUnknownPathCalled, $addBitSaversUnknownPathLastPaths;
+    public $addSiteUnknownPathCalled, $addSiteUnknownpathLastSiteNames, $addSiteUnknownPathLastPaths;
 
     function ignoreBitSaversPath($path)
     {
@@ -584,13 +584,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->addChiClassicCompDirectoryLastDirectory = $directory;
     }
     public $addChiClassicCompDirectoryCalled, $addChiClassicCompDirectoryLastCompanyId, $addChiClassicCompDirectoryLastDirectory;
-
-    function addChiClassicCompUnknownPath($path)
-    {
-        $this->addChiClassicCompUnknownPathCalled = true;
-        $this->addChiClassicCompUnknownPathLastPaths[] = $path;
-    }
-    public $addChiClassicCompUnknownPathCalled, $addChiClassicCompUnknownPathLastPaths;
 
     function ignoreChiClassicCompPath($path)
     {

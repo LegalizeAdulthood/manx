@@ -691,15 +691,10 @@ class ManxDatabase implements IManxDatabase
             array($name, $value, $value));
     }
 
-    private function addSiteUnknownPath($siteName, $path)
+    public function addSiteUnknownPath($siteName, $path)
     {
         $this->execute("INSERT INTO `site_unknown`(`site`,`path`) VALUES (?,?)",
             array($this->siteIdForName($siteName), $path));
-    }
-
-    function addBitSaversUnknownPath($path)
-    {
-        $this->addSiteUnknownPath("bitsavers", $path);
     }
 
     private function ignoreSitePath($siteName, $path)
@@ -818,11 +813,6 @@ class ManxDatabase implements IManxDatabase
     function addChiClassicCompDirectory($companyId, $directory)
     {
         $this->addSiteDirectory("ChiClassicComp", $companyId, $directory);
-    }
-
-    function addChiClassicCompUnknownPath($path)
-    {
-        $this->addSiteUnknownPath("ChiClassicComp", $path);
     }
 
     function ignoreChiClassicCompPath($path)

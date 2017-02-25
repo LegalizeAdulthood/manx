@@ -485,10 +485,11 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_file->eofCalled);
         $this->assertTrue($this->_file->getStringCalled);
         $this->assertTrue($this->_db->copyExistsForUrlCalled);
-        $this->assertTrue($this->_db->addBitSaversUnknownPathCalled);
+        $this->assertTrue($this->_db->addSiteUnknownPathCalled);
+        $this->assertContains('bitsavers', $this->_db->addSiteUnknownPathLastSiteNames);
         foreach ($paths as $path)
         {
-            $this->assertContains($path, $this->_db->addBitSaversUnknownPathLastPaths);
+            $this->assertContains($path, $this->_db->addSiteUnknownPathLastPaths);
         }
     }
 
