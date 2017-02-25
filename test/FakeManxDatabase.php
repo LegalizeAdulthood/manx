@@ -63,7 +63,7 @@ class FakeManxDatabase implements IManxDatabase
         $this->addSiteUnknownPathLastPaths = array();
         $this->getBitSaversUnknownPathsOrderedByIdCalled = false;
         $this->getBitSaversUnknownPathsOrderedByIdFakeResult = array();
-        $this->ignoreBitSaversPathCalled = false;
+        $this->ignoreSitePathCalled = false;
         $this->setPropertyCalled = false;
         $this->getPropertyCalled = false;
         $this->getMissingMD5DocumentsCalled = false;
@@ -84,7 +84,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->chiClassicCompIgnoredPathFakeResult = false;
         $this->getChiClassicCompUnknownPathsOrderedByIdCalled = false;
         $this->getChiClassicCompUnknownPathsOrderedByIdFakeResult = array();
-        $this->ignoreChiClassicCompPathCalled = false;
         $this->getAllChiClassicCompUnknownPathsCalled = false;
         $this->getAllChiClassicCompUnknownPathsResult = array();
         $this->removeChiClassicCompUnknownPathByIdCalled = false;
@@ -506,12 +505,13 @@ class FakeManxDatabase implements IManxDatabase
     }
     public $addSiteUnknownPathCalled, $addSiteUnknownpathLastSiteNames, $addSiteUnknownPathLastPaths;
 
-    function ignoreBitSaversPath($path)
+    function ignoreSitePath($siteName, $path)
     {
-        $this->ignoreBitSaversPathCalled = true;
-        $this->ignoreBitSaversPathLastPath = $path;
+        $this->ignoreSitePathCalled = true;
+        $this->ignoreSitePathLastSiteName = $siteName;
+        $this->ignoreSitePathLastPath = $path;
     }
-    public $ignoreBitSaversPathCalled, $ignoreBitSaversPathLastPath;
+    public $ignoreSitePathCalled, $ignoreSitePathLastSiteName, $ignoreSitePathLastPath;
 
     function getSiteUnknownPathCount($siteName)
     {
@@ -583,13 +583,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversFileMovedLastUrl = $url;
     }
     public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
-
-    function ignoreChiClassicCompPath($path)
-    {
-        $this->ignoreChiClassicCompPathCalled = true;
-        $this->ignoreChiClassicCompPathLastPath = $path;
-    }
-    public $ignoreChiClassicCompPathCalled, $ignoreChiClassicCompPathLastPath;
 
     function getChiClassicCompUnknownPathsOrderedById($start, $ascending)
     {

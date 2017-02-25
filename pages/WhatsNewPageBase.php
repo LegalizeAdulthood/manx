@@ -125,14 +125,7 @@ class WhatsNewPageBase extends AdminPageBase
         {
             foreach ($ignored as $path)
             {
-                if ($this->_siteName === BIT_SAVERS_SITE_NAME)
-                {
-                    $this->_manxDb->ignoreBitSaversPath($path);
-                }
-                else if ($this->_siteName === CHI_CLASSIC_COMP_SITE_NAME)
-                {
-                    $this->_manxDb->ignoreChiClassicCompPath($path);
-                }
+                $this->_manxDb->ignoreSitePath($this->_siteName, $path);
             }
         }
     }

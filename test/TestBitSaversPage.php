@@ -242,8 +242,9 @@ class TestBitSaversPage extends PHPUnit_Framework_TestCase
 
         $this->_page->ignorePaths();
 
-        $this->assertTrue($this->_db->ignoreBitSaversPathCalled);
-        $this->assertEquals($ignoredPath, $this->_db->ignoreBitSaversPathLastPath);
+        $this->assertTrue($this->_db->ignoreSitePathCalled);
+        $this->assertEquals('bitsavers', $this->_db->ignoreSitePathLastSiteName);
+        $this->assertEquals($ignoredPath, $this->_db->ignoreSitePathLastPath);
     }
 
     public function testRenderPageSelectionBarOnePage()

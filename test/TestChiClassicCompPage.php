@@ -249,8 +249,9 @@ class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
         $ignoredPath = 'dec/1.pdf';
         $this->createPageWithoutFetchingIndexByDateFile(array('ignore0' => $ignoredPath));
         $this->_page->ignorePaths();
-        $this->assertTrue($this->_db->ignoreChiClassicCompPathCalled);
-        $this->assertEquals($ignoredPath, $this->_db->ignoreChiClassicCompPathLastPath);
+        $this->assertTrue($this->_db->ignoreSitePathCalled);
+        $this->assertEquals('ChiClassicComp', $this->_db->ignoreSitePathLastSiteName);
+        $this->assertEquals($ignoredPath, $this->_db->ignoreSitePathLastPath);
     }
 
     public function testRenderPageSelectionBarOnePage()

@@ -754,14 +754,14 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo/frob.jpg', $this->_db->executeLastArgs[1][1]);
     }
 
-    public function testIgnoreBitSaversPath()
+    public function testIgnoreSitePath()
     {
         $this->createInstance();
         $this->configureBitSaversSiteLookup();
         $query = "UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?";
         $this->_db->executeFakeResult = null;
 
-        $this->_manxDb->ignoreBitSaversPath('foo/frob.jpg');
+        $this->_manxDb->ignoreSitePath('bitsavers', 'foo/frob.jpg');
 
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals($query, $this->_db->executeLastStatements[1]);

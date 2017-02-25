@@ -53,7 +53,7 @@ interface IManxDatabase
     function getProperty($name);
     function setProperty($name, $value);
     function addSiteUnknownPath($siteName, $path);
-    function ignoreBitSaversPath($path);
+    function ignoreSitePath($siteName, $path);
     function getSiteUnknownPathCount($siteName);
     function getBitSaversUnknownPathsOrderedById($start, $ascending);
     function getBitSaversUnknownPathsOrderedByPath($start, $ascending);
@@ -62,7 +62,6 @@ interface IManxDatabase
     function removeBitSaversUnknownPathById($id);
     function getPossiblyMovedUnknownPaths();
     function bitSaversFileMoved($copyId, $pathId, $url);
-    function ignoreChiClassicCompPath($path);
     function getChiClassicCompUnknownPathsOrderedById($start, $ascending);
     function getChiClassicCompUnknownPathsOrderedByPath($start, $ascending);
     function chiClassicCompIgnoredPath($path);
