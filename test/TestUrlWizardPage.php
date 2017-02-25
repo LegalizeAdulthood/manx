@@ -257,9 +257,10 @@ class TestUrlWizardPage extends PHPUnit_Framework_TestCase
         $page->postPage();
         $output = ob_get_contents();
 
-        $this->assertTrue($db->addChiClassicCompDirectoryCalled);
-        $this->assertEquals('DEC', $db->addChiClassicCompDirectoryLastDirectory);
-        $this->assertEquals('5', $db->addChiClassicCompDirectoryLastCompanyId);
+        $this->assertTrue($db->addSiteDirectoryCalled);
+        $this->assertEquals('ChiClassicComp', $db->addSiteDirectoryLastSiteName);
+        $this->assertEquals('DEC', $db->addSiteDirectoryLastDirectory);
+        $this->assertEquals('5', $db->addSiteDirectoryLastCompanyId);
     }
 
     public function testRenderPage()

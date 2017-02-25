@@ -46,31 +46,10 @@ class URLWizardPage extends AdminPageBase
 
     private function addSiteCompanyDirectory($companyId)
     {
-        if ($this->param('site_name') == 'bitsavers')
-        {
-            $this->addBitSaversDirectory($companyId);
-        }
-        else if ($this->param('site_name') == 'ChiClassicComp')
-        {
-            $this->addChiClassicCompDirectory($companyId);
-        }
-    }
-
-    private function addChiClassicCompDirectory($companyId)
-    {
         $directory = $this->param('site_company_directory');
         if (strlen($directory) > 0)
         {
-            $this->_db->addChiClassicCompDirectory($companyId, $directory);
-        }
-    }
-
-    private function addBitSaversDirectory($companyId)
-    {
-        $directory = $this->param('site_company_directory');
-        if (strlen($directory) > 0)
-        {
-            $this->_db->addBitSaversDirectory($companyId, $directory);
+            $this->_db->addSiteDirectory($this->param('site_name'), $companyId, $directory);
         }
     }
 

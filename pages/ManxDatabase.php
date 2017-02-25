@@ -589,7 +589,7 @@ class ManxDatabase implements IManxDatabase
         return is_string($md5) ? $md5 : null;
     }
 
-    private function addSiteDirectory($siteName, $companyId, $directory)
+    public function addSiteDirectory($siteName, $companyId, $directory)
     {
         $siteId = $this->siteIdForName($siteName);
         $row = $this->execute("SELECT * FROM `site_company_dir` WHERE `site_id`=? AND `company_id`=?", array($siteId, $companyId));
@@ -598,11 +598,6 @@ class ManxDatabase implements IManxDatabase
             $this->_db->execute('INSERT INTO `site_company_dir`(`site_id`,`company_id`,`directory`) VALUES (?,?,?)',
                 array($siteId, $companyId, $directory));
         }
-    }
-
-    function addBitSaversDirectory($companyId, $directory)
-    {
-        return $this->addSiteDirectory("bitsavers", $companyId, $directory);
     }
 
     function getMostRecentDocuments($count)
@@ -798,11 +793,6 @@ class ManxDatabase implements IManxDatabase
     function bitSaversFileMoved($copyId, $pathId, $url)
     {
         return $this->siteFileMoved("bitsavers", $copyId, $pathId, $url);
-    }
-
-    function addChiClassicCompDirectory($companyId, $directory)
-    {
-        $this->addSiteDirectory("ChiClassicComp", $companyId, $directory);
     }
 
     function ignoreChiClassicCompPath($path)

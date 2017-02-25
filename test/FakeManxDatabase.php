@@ -398,10 +398,15 @@ class FakeManxDatabase implements IManxDatabase
             $addCopyLastAmendSerial,
         $addCopyFakeResult;
 
-    function addBitSaversDirectory($companyId, $directory)
+    function addSiteDirectory($siteName, $companyId, $directory)
     {
-        $this->notImplemented("addBitSaversDirectory");
+        $this->addSiteDirectoryCalled = true;
+        $this->addSiteDirectoryLastSiteName = $siteName;
+        $this->addSiteDirectoryLastCompanyId = $companyId;
+        $this->addSiteDirectoryLastDirectory = $directory;
     }
+    public $addSiteDirectoryCalled, $addSiteDirectoryLastSiteName, $addSiteDirectoryLastCompanyId, $addSiteDirectoryLastDirectory;
+
 
     function getMostRecentDocuments($count)
     {
@@ -578,14 +583,6 @@ class FakeManxDatabase implements IManxDatabase
         $this->bitSaversFileMovedLastUrl = $url;
     }
     public $bitSaversFileMovedCalled, $bitSaversFileMovedLastCopyId, $bitSaversFileMovedLastPathId, $bitSaversFileMovedLastUrl;
-
-    function addChiClassicCompDirectory($companyId, $directory)
-    {
-        $this->addChiClassicCompDirectoryCalled = true;
-        $this->addChiClassicCompDirectoryLastCompanyId = $companyId;
-        $this->addChiClassicCompDirectoryLastDirectory = $directory;
-    }
-    public $addChiClassicCompDirectoryCalled, $addChiClassicCompDirectoryLastCompanyId, $addChiClassicCompDirectoryLastDirectory;
 
     function ignoreChiClassicCompPath($path)
     {

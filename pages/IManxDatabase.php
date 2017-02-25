@@ -41,7 +41,7 @@ interface IManxDatabase
     function addSite($name, $url, $description, $copy_base, $low, $live);
     function addcopy($pubId, $format, $siteId, $url,
         $notes, $size, $md5, $credits, $amendSerial);
-    function addBitSaversDirectory($companyId, $directory);
+    function addSiteDirectory($siteName, $companyId, $directory);
     function getMostRecentDocuments($count);
     function getManxVersion();
     function copyExistsForUrl($url);
@@ -61,7 +61,6 @@ interface IManxDatabase
     function getAllBitSaversUnknownPaths();
     function removeBitSaversUnknownPathById($id);
     function getPossiblyMovedUnknownPaths();
-    function addChiClassicCompDirectory($companyId, $directory);
     function bitSaversFileMoved($copyId, $pathId, $url);
     function ignoreChiClassicCompPath($path);
     function getChiClassicCompUnknownPathsOrderedById($start, $ascending);
