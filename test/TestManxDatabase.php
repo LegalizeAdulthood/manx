@@ -13,10 +13,15 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     /** @var object */
     private $_statement;
 
+    protected function setUp()
+    {
+        $this->_db = new FakeDatabase();
+        $this->_manxDb = ManxDatabase::getInstanceForDatabase($this->_db);
+        $this->_statement = new FakeStatement();
+    }
+
     public function testConstruct()
     {
-        $this->createInstance();
-
         $this->assertTrue(!is_null($this->_manxDb) && is_object($this->_manxDb));
     }
 
@@ -52,7 +57,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetSiteList()
     {
-        $this->createInstance();
         $query = "SELECT `url`,`description`,`low` FROM `site` WHERE `live`='Y' ORDER BY `site_id`";
         $this->configureStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
@@ -69,7 +73,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetCompanyList()
     {
-        $this->createInstance();
         $query = "SELECT `id`,`name` FROM `company` WHERE `display` = 'Y' ORDER BY `sort_name`";
         $expected = array(
                 array('id' => 1, 'name' => "DEC"),
@@ -84,7 +87,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetDisplayLanguage()
     {
-        $this->createInstance();
         $query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `language` WHERE `lang_alpha_2`='fr'";
         $this->configureStatementFetchResult($query, 'French');
 
@@ -96,7 +98,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetOSTagsForPub()
     {
-        $this->createInstance();
         $query = "SELECT `tag_text` FROM `tag`,`pub_tag` WHERE `tag`.`id`=`pub_tag`.`tag` AND `tag`.`class`='os' AND `pub`=5";
         $this->configureStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(array('tag_text'),
@@ -110,7 +111,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetAmendmentsForPub()
     {
-        $this->createInstance();
         $query = "SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pub_date` "
             . "FROM `pub` JOIN `pub_history` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
         $pubId = 3;
@@ -129,7 +129,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetLongDescriptionForPubDoesNothing()
     {
-        $this->createInstance();
         $pubId = 3;
         $query = "SELECT 'html_text' FROM `long_desc` WHERE `pub`=3 ORDER BY `line`";
         $this->configureStatementFetchAllResults($query,
@@ -143,7 +142,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetCitationsForPub()
     {
-        $this->createInstance();
         $pubId = 72;
         $query = 'SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` '
             . 'FROM `cite_pub` `C`'
@@ -163,7 +161,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetTableOfContentsForPubFullContents()
     {
-        $this->createInstance();
         $pubId = 123;
         $query = "SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=123 ORDER BY `line`";
         $this->configureStatementFetchAllResults($query,
@@ -186,7 +183,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetTableOfContentsForPubAbbreviatedContents()
     {
-        $this->createInstance();
         $pubId = 123;
         $query = "SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=123 AND `level` < 2 ORDER BY `line`";
         $this->configureStatementFetchAllResults($query,
@@ -212,7 +208,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetMirrorsForCopy()
     {
-        $this->createInstance();
         $copyId = 7165;
         $query = "SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
                 . " FROM `copy` JOIN `mirror` ON `copy`.`site`=`mirror`.`site`"
@@ -234,7 +229,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetAmendedPub()
     {
-        $this->createInstance();
         $pubId = 17970;
         $amendSerial = 7;
         $query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pub_date`"
@@ -252,7 +246,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetCopiesForPub()
     {
-        $this->createInstance();
         $pubId = 123;
         $query = "SELECT `format`,`copy`.`url`,`notes`,`size`,"
             . "`site`.`name`,`site`.`url` AS `site_url`,`site`.`description`,"
@@ -277,7 +270,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetDetailsForPub()
     {
-        $this->createInstance();
         $pubId = 3;
         $query = 'SELECT `pub_id`, `company`.`name`, '
             . 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pub_date`, '
@@ -299,75 +291,8 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals($rows[0], $details);
     }
 
-    public function testNormalizePartNumberNotString()
-    {
-        $this->assertEquals('', ManxDatabase::normalizePartNumber(array()));
-    }
-
-    public function testNormalizePartNumberLowerCase()
-    {
-        $this->assertEquals('UC', ManxDatabase::normalizePartNumber('uc'));
-    }
-
-    public function testNormalizePartNumberNonAlphaNumeric()
-    {
-        $this->assertEquals('UC122', ManxDatabase::normalizePartNumber(' !u,c,1,2,2 ,./<>?;' . "'" . ':"[]{}\\|`~!@#$%^&*()'));
-    }
-
-    public function testNormalizePartNumberLetterOhIsZero()
-    {
-        $this->assertEquals('UC1220', ManxDatabase::normalizePartNumber(' !u,c,1,2,2,o ,./<>?;' . "'" . ':"[]{}\\|`~!@#$%^&*()'));
-    }
-
-    public function testCleanSqlWordNotString()
-    {
-        $this->assertEquals('', ManxDatabase::cleanSqlWord(array()));
-    }
-
-    public function testCleanSqlWordNoSpecials()
-    {
-        $this->assertEquals('cleanWord', ManxDatabase::cleanSqlWord('cleanWord'));
-    }
-
-    public function testCleanSqlWordPercent()
-    {
-        $this->assertEquals('percent\\%Word', ManxDatabase::cleanSqlWord('percent%Word'));
-    }
-
-    public function testCleanSqlWordQuote()
-    {
-        $this->assertEquals("quote\\'Word", ManxDatabase::cleanSqlWord("quote'Word"));
-    }
-
-    public function testCleanSqlWordUnderline()
-    {
-        $this->assertEquals('underline\\_Word', ManxDatabase::cleanSqlWord('underline_Word'));
-    }
-
-    public function testCleanSqlWordBackslash()
-    {
-        $this->assertEquals('backslash\\\\Word', ManxDatabase::cleanSqlWord('backslash\\Word'));
-    }
-
-    public function testMatchClauseForSearchWordsSingleKeyword()
-    {
-        $clause = ManxDatabase::matchClauseForSearchWords(array('terminal'));
-        $this->assertEquals(" AND ((`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
-            . "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
-    }
-
-    public function testMatchClauseForMultipleKeywords()
-    {
-        $clause = ManxDatabase::matchClauseForSearchWords(array('graphics', 'terminal'));
-        $this->assertEquals(" AND ((`ph_title` LIKE '%graphics%' OR `ph_keywords` LIKE '%graphics%' "
-            . "OR `ph_match_part` LIKE '%GRAPHICS%' OR `ph_match_alt_part` LIKE '%GRAPHICS%') "
-            . "AND (`ph_title` LIKE '%terminal%' OR `ph_keywords` LIKE '%terminal%' "
-            . "OR `ph_match_part` LIKE '%TERMINAL%' OR `ph_match_alt_part` LIKE '%TERMINAL%'))", $clause);
-    }
-
     public function testSearchForPublications()
     {
-        $this->createInstance();
         $rows = array(
             array('pub_id' => 1, 'ph_part' => '', 'ph_title' => '', 'pub_has_online_copies' => '',
                 'ph_abstract' => '', 'pub_has_toc' => '', 'pub_superseded' => '',
@@ -395,7 +320,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetPublicationsSupersededByPub()
     {
-        $this->createInstance();
         $pubId = 6105;
         $query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `supersession`' .
             ' JOIN `pub` ON (`old_pub`=`pub_id` AND `new_pub`=%d)' .
@@ -411,7 +335,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetPublicationsSupersedingPub()
     {
-        $this->createInstance();
         $pubId = 23;
         $query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `supersession`'
             . ' JOIN `pub` ON (`new_pub`=`pub_id` AND `old_pub`=%d)'
@@ -427,7 +350,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testAddCopy()
     {
-        $this->createInstance();
         $query = 'INSERT INTO `copy`'
             . '(`pub`,`format`,`site`,`url`,`notes`,`size`,`md5`,`credits`,`amend_serial`) '
             . 'VALUES (?,?,?,?,?,?,?,?,?)';
@@ -452,7 +374,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetMostRecentDocuments()
     {
-        $this->createInstance();
         $count = 200;
         $query = sprintf('SELECT `ph_pub`, `ph_company`, `ph_created`, `ph_title`, '
             . '`company`.`name` AS `company_name`, `company`.`short_name` AS `company_short_name`, '
@@ -470,7 +391,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetManxVersion()
     {
-        $this->createInstance();
         $query = "SELECT `value` FROM `properties` WHERE `name`='version'";
         $this->configureStatementFetchResult($query, '2');
 
@@ -480,114 +400,8 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals('2', $version);
     }
 
-    public function testSortPartNumberGRINoMatch()
-    {
-        $this->assertEquals('XX', ManxDatabase::sortPartNumberGRI('XX'));
-    }
-
-    public function testSortPartNumberGRIMatch()
-    {
-        $this->assertEquals('12034XYZ', ManxDatabase::sortPartNumberGRI('12-34-XYZ'));
-    }
-
-    public function testSortPartNumberTeletypeNoMatch()
-    {
-        $this->assertEquals('XYZ1234', ManxDatabase::sortPartNumberTeletype('XYZ-1234'));
-    }
-
-    public function testSortPartNumberTeletypeMatch()
-    {
-        $this->assertEquals('0123XYZ', ManxDatabase::sortPartNumberTeletype('123-XYZ'));
-    }
-
-    public function testSortPartNumberInterdataNoMatch()
-    {
-        $this->assertEquals('123XYZ', ManxDatabase::sortPartNumberInterdata('123-XYZ'));
-    }
-
-    public function testSortPartNumberInterdataMatch()
-    {
-        $this->assertEquals('123XYZ', ManxDatabase::sortPartNumberInterdata('ABC-123-XYZ'));
-    }
-
-    public function testSortPartNumberMotorolaNoMatch()
-    {
-        $this->assertEquals('123-XYZ', ManxDatabase::sortPartNumberMotorola('123-XYZ'));
-    }
-
-    public function testSortPartNumberMotorolaMatch()
-    {
-        $this->assertEquals('AN01234-XYZ', ManxDatabase::sortPartNumberMotorola('AN1234-XYZ'));
-    }
-
-    public function testSortPartNumberIBMNoMatch()
-    {
-        $this->assertEquals('WXYZ123', ManxDatabase::sortPartNumberIBM('WXYZ-123'));
-    }
-
-    public function testSortPartNumberIBMMatch()
-    {
-        $this->assertEquals('A12345600', ManxDatabase::sortPartNumberIBM('12-3456'));
-    }
-
-    public function testSortPartNumberWyseNoMatch()
-    {
-        $this->assertEquals('WY123', ManxDatabase::sortPartNumberWyse('WY-123'));
-    }
-
-    public function testSortPartNumberWyseMatch()
-    {
-        $this->assertEquals('12034567', ManxDatabase::sortPartNumberWyse('12-345-67'));
-    }
-
-    public function testSortPartNumberVisualNoMatch()
-    {
-        $this->assertEquals('1121', ManxDatabase::sortPartNumberVisual('1121'));
-    }
-
-    public function testSortPartNumberVisualMatch()
-    {
-        $this->assertEquals('123', ManxDatabase::sortPartNumberVisual('AB-123-XY'));
-    }
-
-    public function testSortPartNumberTeleVideoNoMatch()
-    {
-        $this->assertEquals('12345678', ManxDatabase::sortPartNumberTeleVideo('1234-5678'));
-    }
-
-    public function testSortPartNumberTeleVideoMatch()
-    {
-        $this->assertEquals('0300013001', ManxDatabase::sortPartNumberTeleVideo('B300013-001'));
-    }
-
-    public function testSortPartNumberTIMatch()
-    {
-        $this->assertEquals('01234561234', ManxDatabase::sortPartNumberTI('123456-1234'));
-    }
-
-    public function testSortPartNumberTINoMatch()
-    {
-        $this->assertEquals('XYZ123', ManxDatabase::sortPartNumberTI('XYZ-123'));
-    }
-
-    public function testSortPartNumberDECMatch()
-    {
-        $this->assertEquals('FOO000', ManxDatabase::sortPartNumberDEC('FOO-PRE9969'));
-    }
-
-    public function testSortPartNumberDECMatchRT11()
-    {
-        $this->assertEquals('ADC740009', ManxDatabase::sortPartNumberDEC('ADC7400B9'));
-    }
-
-    public function testSortPartNumberDECNoMatch()
-    {
-        $this->assertEquals('XYZ123', ManxDatabase::sortPartNumberDEC('XYZ-123'));
-    }
-
     public function testCopyExistsForUrlReturnsTrueWhenDatabaseContainsUrl()
     {
-        $this->createInstance();
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('ph_company', 'ph_pub', 'ph_title'),
             array(array('1', '2', 'IM1 Schematic')));
@@ -603,7 +417,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testCopyExistsForUrlReturnsFalseWhenDatabaseOmitsUrl()
     {
-        $this->createInstance();
         $this->_db->executeFakeResult = array();
 
         $this->assertFalse($this->_manxDb->copyExistsForUrl('http://bitsavers.org/pdf/sgi/iris/IM1_Schematic.pdf'));
@@ -611,7 +424,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetZeroSizeDocuments()
     {
-        $this->createInstance();
         $query = "SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title` "
             . "FROM `copy`,`pub_history` "
             . "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
@@ -636,7 +448,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetUrlForCopy()
     {
-        $this->createInstance();
         $query = "SELECT `url` FROM `copy` WHERE `copy_id` = ?";
         $url = 'http://www.example.com/foo.pdf';
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
@@ -653,7 +464,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testUpdateSizeForCopy()
     {
-        $this->createInstance();
         $query = "UPDATE `copy` SET `size` = ? WHERE `copy_id` = ?";
         $copyId = 5;
         $size = 4096;
@@ -669,7 +479,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testUpdateMD5ForCopy()
     {
-        $this->createInstance();
         $query = "UPDATE `copy` SET `md5` = ? WHERE `copy_id` = ?";
         $copyId = 5;
         $md5 = 'e7e98fb955892f73507d7b3a1874f9ee';
@@ -685,7 +494,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetMissingMD5Documents()
     {
-        $this->createInstance();
         $query = "SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title` "
             . "FROM `copy`,`pub_history` "
             . "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
@@ -710,7 +518,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetProperty()
     {
-        $this->createInstance();
         $query = "SELECT `value` FROM `properties` WHERE `name` = ?";
         $this->_db->executeFakeResult = array(array('value' => 'bar'));
 
@@ -724,7 +531,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testSetProperty()
     {
-        $this->createInstance();
         $query = "INSERT INTO `properties`(`name`, `value`) VALUES (?, ?) "
             . "ON DUPLICATE KEY UPDATE `value` = ?";
         $this->_db->executeFakeResult = null;
@@ -741,7 +547,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testAddBitSaversUnknownPath()
     {
-        $this->createInstance();
         $query = "INSERT INTO `site_unknown`(`site`,`path`) VALUES (?,?)";
         $this->_db->executeFakeResult = null;
         $this->configureBitSaversSiteLookup();
@@ -756,7 +561,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testIgnoreSitePath()
     {
-        $this->createInstance();
         $this->configureBitSaversSiteLookup();
         $query = "UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?";
         $this->_db->executeFakeResult = null;
@@ -772,7 +576,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetSiteUnknownPathsOrderedById()
     {
-        $this->createInstance();
         $this->configureBitSaversSiteLookup();
         $path1 = 'foo/bar.jpg';
         $path2 = 'foo/foo.jpg';
@@ -794,7 +597,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testGetSiteUnknownPathsOrderedByPath()
     {
-        $this->createInstance();
         $this->configureBitSaversSiteLookup();
         $path1 = 'foo/foo.jpg';
         $path2 = 'foo/bar.jpg';
@@ -817,7 +619,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testSiteIgnoredPathTrue()
     {
-        $this->createInstance();
         $this->configureBitSaversSiteLookup();
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('count'), array(array(1)));
@@ -835,7 +636,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testSiteIgnoredPathFalse()
     {
-        $this->createInstance();
         $this->configureBitSaversSiteLookup();
         $this->_db->executeFakeResult = FakeDatabase::createResultRowsForColumns(
             array('count'), array(array(0)));
@@ -847,7 +647,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testAddPubHistory()
     {
-        $this->createInstance();
         $user = 2;
         $publicationType = '';
         $company = 10;
@@ -897,7 +696,6 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
 
     public function testAddSupersession()
     {
-        $this->createInstance();
         $oldPub = 213;
         $newPub = 563;
         $this->_db->getLastInsertIdFakeResult = 969;
@@ -941,16 +739,8 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals($length, count($value));
     }
 
-    private function createInstance()
-    {
-        $this->_db = new FakeDatabase();
-        $this->_manxDb = ManxDatabase::getInstanceForDatabase($this->_db);
-        $this->_statement = new FakeStatement();
-    }
-
     private function configureCountForQuery($expectedCount, $query)
     {
-        $this->createInstance();
         $this->configureStatementFetchResult($query, array($expectedCount));
     }
 

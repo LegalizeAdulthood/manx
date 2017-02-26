@@ -8,6 +8,7 @@ require_once 'test/TestChiClassicCompPage.php';
 require_once 'test/TestDetailsPage.php';
 require_once 'test/TestHtmlFormatter.php';
 require_once 'test/TestManxDatabase.php';
+require_once 'test/TestManxDatabaseUtils.php';
 require_once 'test/TestPageBase.php';
 require_once 'test/TestRssPage.php';
 require_once 'test/TestSearcher.php';
@@ -22,12 +23,24 @@ class AllTests
     public static function suite()
     {
         $suite = new PHPUnit_Framework_TestSuite('ManxTests');
-        foreach (array('TestAboutPage', 'TestDetailsPage', 'TestHtmlFormatter',
-             'TestManxDatabase', 'TestPageBase', 'TestRssPage', 'TestSearcher',
-             'TestUrlWizardPage', 'TestUrlWizardService', 'TestAdminPageBase',
-             'TestUrlInfo', 'TestUrlTransfer', 'TestBitSaversPage',
-             'TestBitSaversCleaner', 'TestChiClassicCompPage',
-             'TestUrlWizardServiceProcessRequest') as $name)
+        foreach (array(
+            'TestAboutPage',
+            'TestAdminPageBase',
+            'TestBitSaversCleaner',
+            'TestBitSaversPage',
+            'TestChiClassicCompPage',
+            'TestDetailsPage',
+            'TestHtmlFormatter',
+            'TestManxDatabase',
+            'TestManxDatabaseUtils',
+            'TestPageBase',
+            'TestRssPage',
+            'TestSearcher',
+            'TestUrlInfo',
+            'TestUrlTransfer',
+            'TestUrlWizardPage',
+            'TestUrlWizardService',
+            'TestUrlWizardServiceProcessRequest') as $name)
         {
             $suite->addTestSuite($name);
         }
