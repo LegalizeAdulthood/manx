@@ -565,6 +565,11 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals('frob.jpg', $args[2]);
     }
 
+    private function assertExecuteCalledForStatement($query)
+    {
+        $this->assertTrue(array_key_exists($query, $this->_db->executeCalledForStatement));
+    }
+
     public function testAddBitSaversUnknownPathDirectoryInserted()
     {
         $this->configureBitSaversSiteLookup();
@@ -599,16 +604,21 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testIgnoreSitePath()
     {
         $this->configureBitSaversSiteLookup();
-        $query = "UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?";
-        $this->_db->executeFakeResult = null;
+        $selectDirQuery = "SELECT `id` FROM `site_unknown_dir` WHERE `site_id`=? AND `directory`=?";
+        $this->_db->executeFakeResultsForStatement[$selectDirQuery] =
+            FakeDatabase::createResultRowsForColumns(array('id'), array(array(666)));
+        $query = "UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `site_unknown_dir_id`=? AND `file_name`=?";
+        $this->_db->executeFakeResultsForStatement[$query] = null;
 
         $this->_manxDb->ignoreSitePath('bitsavers', 'foo/frob.jpg');
 
-        $this->assertTrue($this->_db->executeCalled);
-        $this->assertEquals($query, $this->_db->executeLastStatements[1]);
-        $this->assertEquals(2, count($this->_db->executeLastArgs[1]));
-        $this->assertEquals(3, $this->_db->executeLastArgs[1][0]);
-        $this->assertEquals('foo/frob.jpg', $this->_db->executeLastArgs[1][1]);
+        $this->assertExecuteCalledForStatement($selectDirQuery);
+        $this->assertExecuteCalledForStatement($query);
+        $args = $this->_db->executeArgsForStatement[$query];
+        $this->assertEquals(3, count($args));
+        $this->assertEquals(3, $args[0]);
+        $this->assertEquals(666, $args[1]);
+        $this->assertEquals('frob.jpg', $args[2]);
     }
 
     public function testGetSiteUnknownPathsOrderedById()

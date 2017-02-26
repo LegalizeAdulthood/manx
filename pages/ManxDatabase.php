@@ -700,8 +700,19 @@ class ManxDatabase implements IManxDatabase
 
     public function ignoreSitePath($siteName, $path)
     {
-        $this->execute("UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?",
-            array($this->siteIdForName($siteName), $path));
+        $siteId = $this->siteIdForName($siteName);
+        $slash = strrpos($path, "/");
+        $directory = substr($path, 0, $slash);
+        $fileName = substr($path, $slash+1);
+        $rows = $this->execute("SELECT `id` FROM `site_unknown_dir` WHERE `site_id`=? AND `directory`=?", array($siteId, $directory));
+        if (count($rows) == 0)
+        {
+            $rows = $this->execute("INSERT INTO `site_unknown_dir`(`site_id`,`directory`) VALUES (?,?)", array($siteId, $directory));
+            $rows = $this->execute("SELECT LAST_INSERT_ID() AS `id`;", array());
+        }
+        $directoryId = $rows[0]['id'];
+        $this->execute("UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `site_unknown_dir_id`=? AND `file_name`=?",
+            array($siteId, $directoryId, $fileName));
     }
 
     public function getSiteUnknownPathCount($siteName)
