@@ -313,14 +313,14 @@ class UrlWizardService extends ServicePageBase
             'oct' => '10', 'nov' => '11', 'dec' => '12');
     }
 
-    private function determineBitSaversData(&$data)
+    private function determineSiteData($siteName, $companyComponent, &$data)
     {
         $url = $data['url'];
         $urlComponents = parse_url($url);
         $dirs = explode('/', $urlComponents['path']);
-        $companyDir = $dirs[2];
+        $companyDir = $dirs[$companyComponent];
 
-        $company = $this->_db->getCompanyForSiteDirectory('bitsavers', $companyDir);
+        $company = $this->_db->getCompanyForSiteDirectory($siteName, $companyDir);
         $data['company'] = $company;
         $data['site_company_directory'] = $companyDir;
 
@@ -356,47 +356,14 @@ class UrlWizardService extends ServicePageBase
         $data['format'] = $this->_db->getFormatForExtension($extension);
     }
 
+    private function determineBitSaversData(&$data)
+    {
+        $this->determineSiteData('bitsavers', 2, $data);
+    }
+
     private function determineChiClassicCompData(&$data)
     {
-        $url = $data['url'];
-        $urlComponents = parse_url($url);
-        $dirs = explode('/', $urlComponents['path']);
-        $companyDir = $dirs[4];
-
-        $company = $this->_db->getCompanyForSiteDirectory('ChiClassicComp', $companyDir);
-        $data['company'] = $company;
-        $data['site_company_directory'] = $companyDir;
-
-        $fileName = array_pop($dirs);
-        $dotPos = strrpos($fileName, '.');
-        if ($dotPos === false)
-        {
-            $fileBase = $fileName;
-            $extension = '';
-        }
-        else
-        {
-            $fileParts = explode('.', $fileName);
-            $extension = array_pop($fileParts);
-            $fileBase = implode('.', $fileParts);
-        }
-        list($data['pub_date'], $fileBase) = UrlWizardService::extractPubDate($fileBase);
-        $parts = explode('_', $fileBase);
-        if (count($parts) > 1)
-        {
-            if (1 == preg_match('/[0-9][0-9]+/', $parts[0]))
-            {
-                $data['part'] = array_shift($parts);
-            }
-            $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
-            $data['title'] = self::titleForFileBase(implode(' ', $parts));
-        }
-        else
-        {
-            $data['pubs'] = $this->findPublicationsForKeywords($company, array($fileBase));
-            $data['title'] = self::titleForFileBase($fileBase);
-        }
-        $data['format'] = $this->_db->getFormatForExtension($extension);
+        $this->determineSiteData('ChiClassicComp', 4, $data);
     }
 
     private static function emptyStringIfNull($str)
