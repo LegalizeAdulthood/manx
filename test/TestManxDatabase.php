@@ -545,18 +545,55 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->_db->executeLastArgs[0][2]);
     }
 
-    public function testAddBitSaversUnknownPath()
+    public function testAddBitSaversUnknownPathDirectoryExists()
     {
-        $query = "INSERT INTO `site_unknown`(`site`,`path`) VALUES (?,?)";
-        $this->_db->executeFakeResult = null;
         $this->configureBitSaversSiteLookup();
+        $selectDirQuery = "SELECT `id` FROM `site_unknown_dir` WHERE `site_id`=? AND `directory`=?";
+        $this->_db->executeFakeResultsForStatement[$selectDirQuery] =
+            FakeDatabase::createResultRowsForColumns(array('id'), array(array(666)));
+        $query = "INSERT INTO `site_unknown`(`site_id`,`site_unknown_dir_id`,`file_name`) VALUES (?,?,?)";
+        $this->_db->executeFakeResultsForStatement[$query] = null;
+
         $this->_manxDb->addSiteUnknownPath('bitsavers', 'foo/frob.jpg');
 
-        $this->assertTrue($this->_db->executeCalled);
-        $this->assertEquals($query, $this->_db->executeLastStatements[1]);
-        $this->assertEquals(2, count($this->_db->executeLastArgs[1]));
-        $this->assertEquals(3, $this->_db->executeLastArgs[1][0]);
-        $this->assertEquals('foo/frob.jpg', $this->_db->executeLastArgs[1][1]);
+        $this->assertTrue($this->_db->executeCalledForStatement[$selectDirQuery]);
+        $this->assertTrue($this->_db->executeCalledForStatement[$query]);
+        $args = $this->_db->executeArgsForStatement[$query];
+        $this->assertEquals(3, count($args));
+        $this->assertEquals(3, $args[0]);
+        $this->assertEquals(666, $args[1]);
+        $this->assertEquals('frob.jpg', $args[2]);
+    }
+
+    public function testAddBitSaversUnknownPathDirectoryInserted()
+    {
+        $this->configureBitSaversSiteLookup();
+        $selectDirQuery = "SELECT `id` FROM `site_unknown_dir` WHERE `site_id`=? AND `directory`=?";
+        $this->_db->executeFakeResultsForStatement[$selectDirQuery] =
+            FakeDatabase::createResultRowsForColumns(array('id'), array());
+        $insertDirQuery = "INSERT INTO `site_unknown_dir`(`site_id`,`directory`) VALUES (?,?)";
+        $this->_db->executeFakeResultsForStatement[$insertDirQuery] = null;
+        $selectIdQuery = "SELECT LAST_INSERT_ID() AS `id`;";
+        $this->_db->executeFakeResultsForStatement[$selectIdQuery] =
+            FakeDatabase::createResultRowsForColumns(array('id'), array(array(666)));
+        $query = "INSERT INTO `site_unknown`(`site_id`,`site_unknown_dir_id`,`file_name`) VALUES (?,?,?)";
+        $this->_db->executeFakeResultsForStatement[$query] = null;
+
+        $this->_manxDb->addSiteUnknownPath('bitsavers', 'foo/frob.jpg');
+
+        $this->assertTrue($this->_db->executeCalledForStatement[$selectDirQuery]);
+        $this->assertTrue($this->_db->executeCalledForStatement[$insertDirQuery]);
+        $this->assertTrue($this->_db->executeCalledForStatement[$selectIdQuery]);
+        $insertArgs = $this->_db->executeArgsForStatement[$insertDirQuery];
+        $this->assertEquals(2, count($insertArgs));
+        $this->assertEquals(3, $insertArgs[0]);
+        $this->assertEquals('foo', $insertArgs[1]);
+        $this->assertTrue($this->_db->executeCalledForStatement[$query]);
+        $args = $this->_db->executeArgsForStatement[$query];
+        $this->assertEquals(3, count($args));
+        $this->assertEquals(3, $args[0]);
+        $this->assertEquals(666, $args[1]);
+        $this->assertEquals('frob.jpg', $args[2]);
     }
 
     public function testIgnoreSitePath()

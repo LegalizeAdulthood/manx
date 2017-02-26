@@ -59,6 +59,7 @@ class FakeDatabase implements IDatabase
         if (array_key_exists($statement, $this->executeFakeResultsForStatement))
         {
             $this->executeCalledForStatement[$statement] = true;
+            $this->executeArgsForStatement[$statement] = $args;
             return $this->executeFakeResultsForStatement[$statement];
         }
         return $this->executeFakeResult;
@@ -66,7 +67,7 @@ class FakeDatabase implements IDatabase
     public $executeCalled,
         $executeLastStatements, $executeLastArgs,
         $executeFakeResult,
-        $executeCalledForStatement, $executeFakeResultsForStatement;
+        $executeArgsForStatement, $executeCalledForStatement, $executeFakeResultsForStatement;
 
     public function getLastInsertId()
     {
