@@ -658,7 +658,10 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals(2, count($this->_db->executeLastStatements));
         $this->assertEquals(2, count($this->_db->executeLastArgs));
-        $this->assertStringStartsWith("SELECT `path`,`id` FROM `site_unknown` WHERE `site_id`=?", $this->_db->executeLastStatements[1]);
+        $this->assertStringStartsWith("SELECT CONCAT(`directory`, '/', `file_name`) AS `path`,`su`.`id` "
+                . "FROM `site_unknown` `su`, `site_unknown_dir` `sud` "
+                . "WHERE `site_id`=? AND `site_unknown_directory_id`=`sud`.`id`",
+            $this->_db->executeLastStatements[1]);
         $this->assertContains("ORDER BY `path` ASC", $this->_db->executeLastStatements[1]);
         $this->assertEquals(1, count($this->_db->executeLastArgs[1]));
         $this->assertEquals($path2, $paths[0]['path']);
