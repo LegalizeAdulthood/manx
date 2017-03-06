@@ -753,7 +753,11 @@ class ManxDatabase implements IManxDatabase
 
     public function siteIgnoredPath($siteName, $path)
     {
-        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `path`=? AND `ignored`=1",
+        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `site_unknown` `su`, `site_unknown_dir` `sud` "
+                . "WHERE `site_id`=? "
+                . "AND `site_unknown_directory_id`=`sud`.`id` "
+                . "AND CONCAT(`directory`, '/', `file_name`)=? "
+                . "AND `ignored`=1",
             array($this->siteIdForName($siteName), $path));
         return ($rows[0]['count'] > 0);
     }

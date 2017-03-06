@@ -681,7 +681,11 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->_db->executeCalled);
         $this->assertEquals(2, count($this->_db->executeLastStatements));
         $this->assertEquals(2, count($this->_db->executeLastArgs));
-        $this->assertEquals("SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `path`=? AND `ignored`=1",
+        $this->assertEquals("SELECT COUNT(*) AS `count` FROM `site_unknown` `su`, `site_unknown_dir` `sud` "
+                . "WHERE `site_id`=? "
+                . "AND `site_unknown_directory_id`=`sud`.`id` "
+                . "AND CONCAT(`directory`, '/', `file_name`)=? "
+                . "AND `ignored`=1",
             $this->_db->executeLastStatements[1]);
         $this->assertEquals('foo/bar.jpg', $this->_db->executeLastArgs[1][1]);
         $this->assertTrue($ignored);
