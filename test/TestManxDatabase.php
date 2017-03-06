@@ -702,6 +702,25 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
         $this->assertFalse($ignored);
     }
 
+    public function testGetAllSiteUnknownPaths()
+    {
+        $this->configureBitSaversSiteLookup();
+        $query = "SELECT `id`,CONCAT(`directory`, '/', `file_name`) AS `path` "
+            . "FROM `site_unknown` `su`, `site_unknown_dir` `sud` "
+            . "WHERE `site_id`=? "
+            . "AND `site_unknown_directory_id`=`sud`.`id` "
+            . "ORDER BY `id`";
+        $this->_db->executeFakeResultsForStatement[$query] = FakeDatabase::createResultRowsForColumns(
+            array('id', 'path'), array(array(1, 'foo/foo.pdf'), array(2, 'bar/bar.pdf')));
+
+        $paths = $this->_manxDb->getAllSiteUnknownPaths('bitsavers');
+
+        $this->assertEquals($this->_db->executeLastStatements[1], $query);
+        $this->assertEquals(array(
+            array('id' => 1, 'path' => 'foo/foo.pdf'),
+            array('id' => 2, 'path' => 'bar/bar.pdf')), $paths);
+    }
+
     public function testAddPubHistory()
     {
         $user = 2;
