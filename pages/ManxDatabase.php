@@ -781,10 +781,12 @@ class ManxDatabase implements IManxDatabase
     public function getPossiblyMovedSiteUnknownPaths($siteName)
     {
         $siteId = $this->siteIdForName($siteName);
-        return $this->execute("SELECT site_unknown.path, site_unknown.id as `path_id`, copy.url, copy.copy_id, copy.md5 FROM copy, site_unknown".
-                " WHERE copy.site=?" .
-                " AND site_unknown.site_id=copy.site" .
-                " AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1)) = REVERSE(SUBSTRING_INDEX(REVERSE(site_unknown.path), '/', 1));",
+        return $this->execute("SELECT CONCAT(`sud`.`directory`, '/', `file_name`) AS `path`, su.id AS `path_id`, copy.url, copy.copy_id, copy.md5 "
+                . "FROM `site_unknown` `su`, `site_unknown_dir` `sud`, copy "
+                . "WHERE copy.site=? "
+                . "AND su.site_id=copy.site "
+                . "AND su.site_unknown_directory_id=sud.id "
+                . "AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1))=su.`file_name`",
             array($siteId));
     }
 

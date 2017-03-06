@@ -721,6 +721,31 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
             array('id' => 2, 'path' => 'bar/bar.pdf')), $paths);
     }
 
+    public function testGetPossiblyMovedSiteUnknownPaths()
+    {
+        $this->configureBitSaversSiteLookup();
+        $query = "SELECT CONCAT(`sud`.`directory`, '/', `file_name`) AS `path`, su.id AS `path_id`, copy.url, copy.copy_id, copy.md5 "
+            . "FROM `site_unknown` `su`, `site_unknown_dir` `sud`, copy "
+                . "WHERE copy.site=? "
+                . "AND su.site_id=copy.site "
+                . "AND su.site_unknown_directory_id=sud.id "
+                . "AND REVERSE(SUBSTRING_INDEX(REVERSE(copy.url), '/', 1))=su.`file_name`";
+        $this->_db->executeFakeResultsForStatement[$query] = FakeDatabase::createResultRowsForColumns(
+            array('path', 'path_id', 'url', 'copy_id', 'md5'),
+            array(
+                array('foo/foo.pdf', 1, 'http://bitsavers.org/pdf/foo/foo.pdf', 666, 'md51'),
+                array('bar/bar.pdf', 2, 'http://bitsavers.org/pdf/bar/bar.pdf', 667, 'md52')
+            ));
+
+        $paths = $this->_manxDb->getPossiblyMovedSiteUnknownPaths('bitsavers');
+
+        $this->assertEquals($this->_db->executeLastStatements[1], $query);
+        $this->assertEquals(array(
+            array('path' => 'foo/foo.pdf', 'path_id' => 1, 'url' => 'http://bitsavers.org/pdf/foo/foo.pdf', 'copy_id' => 666, 'md5' => 'md51'),
+            array('path' => 'bar/bar.pdf', 'path_id' => 2, 'url' => 'http://bitsavers.org/pdf/bar/bar.pdf', 'copy_id' => 667, 'md5' => 'md52')),
+            $paths);
+    }
+
     public function testAddPubHistory()
     {
         $user = 2;
