@@ -102,7 +102,6 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $page->postPage();
         $output = ob_get_contents();
 
-        $this->assertFalse(true);
         $this->assertFalse($db->addCompanyCalled);
         $this->assertTrue($this->_manx->addPublicationCalled);
         $this->assertEquals($vars['pub_history_ph_title'], $this->_manx->addPublicationLastTitle);
