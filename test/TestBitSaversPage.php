@@ -31,7 +31,7 @@ class BitSaversPageTester extends BitSaversPage
     }
 }
 
-class TestBitSaversPage extends PHPUnit_Framework_TestCase
+class TestBitSaversPage extends PHPUnit\Framework\TestCase
 {
     private $_vars;
     /** @var FakeManxDatabase */

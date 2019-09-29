@@ -33,7 +33,7 @@ class UrlWizardPageTester extends UrlWizardPage
     public $md5ForFileCalled, $md5ForFileLastUrl, $md5ForFileFakeResult;
 }
 
-class TestUrlWizardPage extends PHPUnit_Framework_TestCase
+class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 {
     private $_manx;
 

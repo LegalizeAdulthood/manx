@@ -22,7 +22,8 @@ class AllTests
 {
     public static function suite()
     {
-        $suite = new PHPUnit_Framework_TestSuite('ManxTests');
+<<<<<<< HEAD
+        $suite = new PHPUnit\Framework\TestSuite('ManxTests');
         foreach (array(
             'TestAboutPage',
             'TestAdminPageBase',

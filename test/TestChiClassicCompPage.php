@@ -31,7 +31,7 @@ class ChiClassicCompPageTester extends ChiClassicCompPage
     }
 }
 
-class TestChiClassicCompPage extends PHPUnit_Framework_TestCase
+class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
 {
     private $_vars;
     /** @var FakeManxDatabase */

@@ -21,7 +21,7 @@ class FakeDateTimeProvider implements IDateTimeProvider
     public $nowFakeResult;
 }
 
-class TestRssPage extends PHPUnit_Framework_TestCase
+class TestRssPage extends PHPUnit\Framework\TestCase
 {
     public function testRenderBody()
     {

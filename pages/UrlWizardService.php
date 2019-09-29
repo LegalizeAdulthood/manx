@@ -418,7 +418,7 @@ class UrlWizardService extends ServicePageBase
         {
             $result = strcmp($left['ph_title'], $right['ph_title']);
         }
-        return $result;
+        return ($result < 0) ? -1 : ($result > 0 ? 1 : 0);
     }
 
     private function findPublications()

@@ -1,1 +1,4 @@
 pages/Config.php
+.vs
+vendor
+composer.lock

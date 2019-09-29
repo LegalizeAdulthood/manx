@@ -82,7 +82,7 @@ class RenderDetailsTester extends DetailsPage
     }
 }
 
-class TestDetailsPage extends PHPUnit_Framework_TestCase
+class TestDetailsPage extends PHPUnit\Framework\TestCase
 {
     private $_db;
     private $_manx;

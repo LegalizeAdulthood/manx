@@ -4,7 +4,7 @@ require_once 'pages/ManxDatabase.php';
 require_once 'test/FakeDatabase.php';
 require_once 'test/FakeStatement.php';
 
-class TestManxDatabase extends PHPUnit_Framework_TestCase
+class TestManxDatabase extends PHPUnit\Framework\TestCase
 {
     /** @var \FakeDatabase */
     private $_db;
@@ -392,7 +392,7 @@ class TestManxDatabase extends PHPUnit_Framework_TestCase
     public function testGetManxVersion()
     {
         $query = "SELECT `value` FROM `properties` WHERE `name`='version'";
-        $this->configureStatementFetchResult($query, '2');
+        $this->configureStatementFetchResult($query, array('value' => '2'));
 
         $version = $this->_manxDb->getManxVersion();
 

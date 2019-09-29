@@ -22,7 +22,7 @@ class AdminPageBaseTester extends AdminPageBase
     }
 }
 
-class TestAdminPageBase extends PHPUnit_Framework_TestCase
+class TestAdminPageBase extends PHPUnit\Framework\TestCase
 {
     public function testParamUrlWithoutPlusGivesUrl()
     {

@@ -7,7 +7,7 @@ require_once 'test/FakeUrlInfoFactory.php';
 require_once 'test/FakeUser.php';
 require_once 'test/UrlWizardServiceTester.php';
 
-class TestUrlWizardServiceProcessRequest extends PHPUnit_Framework_TestCase
+class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
 {
     private $_db;
     private $_manx;

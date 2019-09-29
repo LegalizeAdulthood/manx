@@ -1,10 +1,9 @@
 <?php
 
-require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'test/FakeCurlApi.php';
 require_once 'pages/UrlInfo.php';
 
-class TestUrlInfo extends PHPUnit_Framework_TestCase
+class TestUrlInfo extends PHPUnit\Framework\TestCase
 {
     public function testConstruct()
     {
