@@ -22,7 +22,7 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     {
         $url = 'http://bitsavers.org/Whatsnew.txt';
 
-        $transfer = createInstance($url);
+        $transfer = $this->createInstance($url);
 
         $this->assertNotNull($transfer);
     }
@@ -35,7 +35,7 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
         $contents = "This is the contents";
         $this->curlApi->execFakeResult = $contents;
-        $transfer = createInstance($url);
+        $transfer = $this->createInstance($url);
 
         $transfer->get($destination);
 
