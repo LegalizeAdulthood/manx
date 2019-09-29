@@ -20,9 +20,11 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
 
     public function testConstruct()
     {
+        $curlApi = $this->createMock(ICurlApi::class);
+        $fileSystem = $this->createMock(IFileSystem::class);
         $url = 'http://bitsavers.org/Whatsnew.txt';
 
-        $transfer = $this->createInstance($url);
+        $transfer = new UrlTransfer($url, $curlApi, $fileSystem);
 
         $this->assertNotNull($transfer);
     }
