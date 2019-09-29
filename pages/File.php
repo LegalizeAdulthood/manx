@@ -24,5 +24,23 @@ class File implements IFile
         return fgets($this->_file);
     }
 
+    public function getHandle()
+    {
+        return $this->_file;
+    }
+
+    public function close()
+    {
+        fclose($this->_file);
+    }
+
     private $_file;
+}
+
+class FileFactory implements IFileFactory
+{
+    public function openFile($path, $mode)
+    {
+        return new File($path, $mode);
+    }
 }

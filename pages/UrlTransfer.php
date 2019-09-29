@@ -12,22 +12,22 @@ class UrlTransfer implements IUrlTransfer
     private $_url;
     private $_api;
 
-    public function __construct($url, $curlApi = null)
+    public function __construct($url, $curlApi = null, $fileApi = null)
     {
         $this->_url = $url;
         $this->_api = is_null($curlApi) ? CurlApi::getInstance() : $curlApi;
+        $this->_fileApi = is_null($fileApi) ? new FileFactory() : $fileApi;
     }
 
     public function get($destination)
     {
         $session = $this->_api->init($this->_url);
         $tempDestination = $destination . ".tmp";
-        $stream = fopen($tempDestination, 'w');
-        $this->_api->setopt($session, CURLOPT_FILE, $stream);
+        $stream = $this->_fileApi->openFile($tempDestination, 'w');
         $result = $this->_api->exec($session);
         $httpStatus = $this->_api->getinfo($session, CURLINFO_HTTP_CODE);
         $this->_api->close($session);
-        fclose($stream);
+        $stream->close();
         if ($httpStatus == 200)
         {
             if (file_exists($destination))
