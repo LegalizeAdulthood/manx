@@ -9,37 +9,37 @@ interface IUrlTransfer
 
 class UrlTransfer implements IUrlTransfer
 {
-    public function __construct($url, $curlApi = null, $fileFactory = null)
+    public function __construct($url, $curlApi = null, $fileSystem = null)
     {
         $this->_url = $url;
         $this->_curl = is_null($curlApi) ? CurlApi::getInstance() : $curlApi;
-        $this->_fileFactory = is_null($fileFactory) ? new FileFactory() : $fileFactory;
+        $this->_fileSystem = is_null($fileSystem) ? new FileSystem() : $fileSystem;
     }
 
     public function get($destination)
     {
         $session = $this->_curl->init($this->_url);
-        $tempDestination = $destination . ".tmp";
-        $stream = $this->_fileFactory->openFile($tempDestination, 'w');
         $result = $this->_curl->exec($session);
         $httpStatus = $this->_curl->getinfo($session, CURLINFO_HTTP_CODE);
         $this->_curl->close($session);
-        if ($httpStatus == 200)
+        if ($httpStatus != 200)
         {
-            $stream->write($result);
-            $stream->close();
-            if (file_exists($destination))
-            {
-                unlink($destination);
-            }
-            rename($tempDestination, $destination);
-            return true;
+            return false;
         }
-        unlink($tempDestination);
-        return false;
+
+        $tempDestination = $destination . ".tmp";
+        $stream = $this->_fileSystem->openFile($tempDestination, 'w');
+        $stream->write($result);
+        $stream->close();
+        if ($this->_fileSystem->fileExists($destination))
+        {
+            $this->_fileSystem->unlink($destination);
+        }
+        $this->_fileSystem->rename($tempDestination, $destination);
+        return true;
     }
 
     private $_url;
     private $_curl;
-    private $_fileFactory;
+    private $_fileSystem;
 }

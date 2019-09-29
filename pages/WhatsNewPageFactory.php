@@ -8,14 +8,14 @@ require_once 'UrlTransfer.php';
 
 class WhatsNewPageFactory implements IWhatsNewPageFactory
 {
-    public function __construct($fileFactory = nullptr)
+    public function __construct($fileSystem = nullptr)
     {
-        $this->_fileFactory = is_null($fileFactory) ? new FileFactory() : $fileFactory;
+        $this->_fileSystem = is_null($fileSystem) ? new FileSystem() : $fileSystem;
     }
 
     function openFile($path, $mode)
     {
-        return $this->_fileFactory->openFile($path, $mode);
+        return $this->_fileSystem->openFile($path, $mode);
     }
 
     function createUrlInfo($url)
@@ -34,5 +34,5 @@ class WhatsNewPageFactory implements IWhatsNewPageFactory
         return time();
     }
 
-    private $_fileFactory;
+    private $_fileSystem;
 }

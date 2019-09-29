@@ -42,10 +42,25 @@ class File implements IFile
     private $_file;
 }
 
-class FileFactory implements IFileFactory
+class FileSystem implements IFileSystem
 {
     public function openFile($path, $mode)
     {
         return new File($path, $mode);
+    }
+
+    public function fileExists($path)
+    {
+        return file_exists($path);
+    }
+
+    public function unlink($path)
+    {
+        return unlink($path);
+    }
+
+    public function rename($oldPath, $newPath)
+    {
+        return rename($oldPath, $newPath);
     }
 }

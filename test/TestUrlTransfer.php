@@ -10,12 +10,12 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->_curlApi = new FakeCurlApi();
-        $this->_fileFactory = new FakeFileFactory();
+        $this->_fileSystem = new FakeFileSystem();
     }
 
     private function createInstance($url)
     {
-        return new UrlTransfer($url, $this->_curlApi, $this->_fileFactory);
+        return new UrlTransfer($url, $this->_curlApi, $this->_fileSystem);
     }
 
     public function testConstruct()
@@ -27,27 +27,58 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
         $this->assertNotNull($transfer);
     }
 
-    public function testGet()
+    public function testGetFailure()
     {
-        $stream = new FakeFile();
-        $this->_fileFactory->openFileFakeResult = $stream;
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
-        $contents = "This is the contents";
-        $this->_curlApi->execFakeResult = $contents;
+        $this->_curlApi->execFakeResult = "";
+        $this->_curlApi->getinfoFakeResult = 404;
         $transfer = $this->createInstance($url);
 
-        $transfer->get($destination);
+        $result = $transfer->get($destination);
 
+        $this->assertFalse($result);
         $this->assertTrue($this->_curlApi->initCalled);
-        $this->assertTrue($this->_curlApi->setoptCalled);
         $this->assertTrue($this->_curlApi->execCalled);
         $this->assertTrue($this->_curlApi->getinfoCalled);
-        $this->assertTrue($this->_fileFactory->openFileCalled);
+        $this->assertTrue($this->_curlApi->closeCalled);
+        $this->assertFalse($this->_fileSystem->openFileCalled);
+    }
+
+    public function testGetSuccessNoOverwrite()
+    {
+        $stream = new FakeFile();
+        $this->_fileSystem->openFileFakeResult = $stream;
+        $url = 'http://bitsavers.org/Whatsnew.txt';
+        $destination = PRIVATE_DIR . 'Whatsnew.txt';
+        $tempDestination = $destionation . '.tmp';
+        $contents = "This is the contents";
+        $this->_curlApi->execFakeResult = $contents;
+        $this->_curlApi->getinfoFakeResult = 200;
+        $transfer = $this->createInstance($url);
+        $this->_fileSystem->fileExistsFakeResult = false;
+
+        $result = $transfer->get($destination);
+
+        $this->assertTrue($result);
+        $this->assertTrue($this->_curlApi->initCalled);
+        $this->assertTrue($this->_curlApi->execCalled);
+        $this->assertTrue($this->_curlApi->getinfoCalled);
+        $this->assertTrue($this->_curlApi->closeCalled);
+        $this->assertTrue($this->_fileSystem->openFileCalled);
+        $this->assertEquals($tempDestination, $this->_fileSystem->openFileLastPath);
+        $this->assertEquals('w', $this->_fileSystem->openFileLastMode);
         $this->assertTrue($stream->writeCalled);
-        $this->assertEqual($contents, $stream->writeLastData);
+        $this->assertEquals($contents, $stream->writeLastData);
+        $this->assertTrue($stream->closeCalled);
+        $this->assertTrue($this->_fileSystem->fileExistsCalled);
+        $this->assertEquals($destination, $this->_fileSystem->fileExistsLastPath);
+        $this->assertFalse($this->_fileSystem->unlinkCalled);
+        $this->assertTrue($this->_fileSystem->renameCalled);
+        $this->assertEquals($tempDestination, $this->_fileSystem->renameLastOldPath);
+        $this->assertEquals($destination, $this->_fileSystem->renameLastNewPath);
     }
 
     private $_curlApi;
-    private $_fileFactory;
+    private $_fileSystem;
 }
