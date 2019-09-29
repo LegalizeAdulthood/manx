@@ -11,6 +11,9 @@ class FakeFile implements IFile
         $this->_line = 0;
         $this->getStringCalled = false;
         $this->getStringFakeResults = array();
+        $this->getHandleCalled = false;
+        $this->getHandleFakeResult = null;
+        $this->closeCalled = false;
     }
 
     function eof()
@@ -29,16 +32,32 @@ class FakeFile implements IFile
         }
     }
 
+    public $getHandleCalled, $getHandleFakeResult
     function getHandle()
     {
         $this->getHandleCalled = true;
-        return null;
+        return $this->getHandleFakeResult;
     }
 
+    public $closeCalled;
     function close()
     {
         $this->closeCalled = true;
     }
 
     public $getStringCalled, $getStringFakeResults;
+}
+
+class FakeFileFactory implements IFileFactory
+{
+    public function __construct()
+    {
+        $this->openFileCalled = false;
+    }
+
+    public $openFileCalled, $openFileFakeResult;
+    function openFile($path, $mode)
+    {
+        return $this->$openFileFakeResult;
+    }
 }
