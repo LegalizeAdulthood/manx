@@ -30,11 +30,11 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     public function testGet()
     {
         $stream = new FakeFile();
-        $this->_FileFactory->openFileFakeResult = $stream;
+        $this->_fileFactory->openFileFakeResult = $stream;
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
         $contents = "This is the contents";
-        $this->curlApi->execFakeResult = $contents;
+        $this->_curlApi->execFakeResult = $contents;
         $transfer = $this->createInstance($url);
 
         $transfer->get($destination);

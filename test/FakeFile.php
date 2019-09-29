@@ -66,7 +66,7 @@ class FakeFileFactory implements IFileFactory
     function openFile($path, $mode)
     {
         $this->openFileCalled = true;
-        return $this->$openFileFakeResult;
+        return $this->openFileFakeResult;
     }
     public $openFileCalled, $openFileFakeResult;
 }
