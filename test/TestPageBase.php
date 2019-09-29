@@ -11,7 +11,7 @@ class PageBaseTester extends PageBase
     }
 }
 
-class TestPageBase extends PHPUnit_Framework_TestCase
+class TestPageBase extends PHPUnit\Framework\TestCase
 {
     private $_db;
     private $_manx;

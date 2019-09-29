@@ -1,10 +1,10 @@
 <?php
 
-require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'test/FakeCurlApi.php';
 require_once 'pages/UrlTransfer.php';
+require_once 'pages/Config.php';
 
-class TestUrlTransfer extends PHPUnit_Framework_TestCase
+class TestUrlTransfer extends PHPUnit\Framework\TestCase
 {
     public function testConstruct()
     {
@@ -18,7 +18,7 @@ class TestUrlTransfer extends PHPUnit_Framework_TestCase
     {
         $curlApi = new FakeCurlApi();
         $url = 'http://bitsavers.org/Whatsnew.txt';
-        $destination = '../private/Whatsnew.txt';
+        $destination = PRIVATE_DIR . 'Whatsnew.txt';
         $transfer = new UrlTransfer($url, $curlApi);
         $transfer->get($destination);
         $this->assertTrue($curlApi->initCalled);

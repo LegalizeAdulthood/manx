@@ -13,7 +13,7 @@ class FakeLogger implements ILogger
     }
 }
 
-class TestBitSaversCleaner extends PHPUnit_Framework_TestCase
+class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
 {
     /** @var FakeManxDatabase */
     private $_db;

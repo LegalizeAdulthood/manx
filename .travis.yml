@@ -1,0 +1,12 @@
+language: php
+
+php:
+    - '7.0'
+
+install:
+    - composer install
+
+script:
+  - mkdir private
+  - echo "<?php define('PRIVATE_DIR', 'private/');" > pages/Config.php
+  - vendor/bin/phpunit test/AllTests.php

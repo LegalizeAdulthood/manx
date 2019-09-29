@@ -1,12 +1,11 @@
 <?php
 
-require_once 'PHPUnit/Framework/TestCase.php';
 require_once 'pages/Searcher.php';
 require_once 'test/FakeStatement.php';
 require_once 'test/FakeFormatter.php';
 require_once 'test/FakeManxDatabase.php';
 
-class TestSearcher extends PHPUnit_Framework_TestCase
+class TestSearcher extends PHPUnit\Framework\TestCase
 {
     public function testRenderCompanies()
     {

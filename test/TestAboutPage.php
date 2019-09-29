@@ -4,7 +4,7 @@ require_once 'pages/AboutPage.php';
 require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeManx.php';
 
-class TestAboutPage extends PHPUnit_Framework_TestCase
+class TestAboutPage extends PHPUnit\Framework\TestCase
 {
     private $_db;
     private $_manx;

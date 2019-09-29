@@ -2,7 +2,7 @@
 require_once 'test/FakeDatabase.php';
 require_once 'pages/HtmlFormatter.php';
 
-class TestHtmlFormatter extends PHPUnit_Framework_TestCase
+class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 {
     public function testConstruct()
     {
