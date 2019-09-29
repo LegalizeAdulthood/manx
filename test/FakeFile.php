@@ -32,7 +32,7 @@ class FakeFile implements IFile
         }
     }
 
-    public $getHandleCalled, $getHandleFakeResult
+    public $getHandleCalled, $getHandleFakeResult;
     function getHandle()
     {
         $this->getHandleCalled = true;

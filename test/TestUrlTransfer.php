@@ -1,6 +1,7 @@
 <?php
 
 require_once 'test/FakeCurlApi.php';
+require_once 'test/FakeFile.php';
 require_once 'pages/UrlTransfer.php';
 require_once 'pages/Config.php';
 
