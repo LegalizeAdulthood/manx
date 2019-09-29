@@ -13,24 +13,14 @@ class PageBaseTester extends PageBase
 
 class TestPageBase extends PHPUnit\Framework\TestCase
 {
-    private $_db;
     private $_manx;
     /** @var PageBaseTester */
     private $_page;
 
-    private function fakeStatementFetchResults($results)
-    {
-        $stmt = new FakeStatement();
-        $stmt->fetchFakeResult = $results;
-        return $stmt;
-    }
-
     private function createInstance()
     {
         $_SERVER['PATH_INFO'] = '';
-        $this->_db = new FakeManxDatabase();
-        $this->_manx = new FakeManx();
-        $this->_manx->getDatabaseFakeResult = $this->_db;
+        $this->_manx = $this->createMock(IManx::class);
         $this->_page = new PageBaseTester($this->_manx);
     }
 
