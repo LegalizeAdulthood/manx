@@ -8,7 +8,7 @@ define('INDEX_BY_DATE_URL', 'http://bitsavers.trailing-edge.com/pdf/IndexByDate.
 
 class BitSaversPage extends WhatsNewPageBase
 {
-    public function __construct($manx, $vars, IWhatsNewPageFactory $factory = null)
+    public function __construct($manx, $vars, IFileSystem $fileSystem = null, IWhatsNewPageFactory $factory = null)
     {
         $opts = array(
             'indexByDateFile' => INDEX_BY_DATE_FILE,
@@ -20,6 +20,6 @@ class BitSaversPage extends WhatsNewPageBase
             'page' => 'bitsavers.php',
             'title' => 'BitSavers'
         );
-        parent::__construct($manx, $vars, $opts, $factory);
+        parent::__construct($manx, $vars, $opts, $fileSystem, $factory);
     }
 }

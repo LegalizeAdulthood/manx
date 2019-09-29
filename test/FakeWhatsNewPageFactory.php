@@ -11,15 +11,6 @@ class FakeWhatsNewPageFactory implements IWhatsNewPageFactory
         $this->getCurrentTimeCalled = false;
     }
 
-    function openFile($path, $mode)
-    {
-        $this->openFileCalled = true;
-        $this->openFileLastPath = $path;
-        $this->openFileLastMode = $mode;
-        return $this->openFileFakeResult;
-    }
-    public $openFileCalled, $openFileLastPath, $openFileLastMode, $openFileFakeResult;
-
     function createUrlInfo($url)
     {
         $this->createUrlInfoCalled = true;

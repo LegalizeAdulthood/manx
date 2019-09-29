@@ -38,6 +38,8 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     private $_db;
     /** @var FakeManx */
     private $_manx;
+    /** @var FakeFileSystem */
+    private $_fileSystem;
     /** @var FakeWhatsNewPageFactory */
     private $_factory;
     /** @var FakeUrlInfo */
@@ -54,13 +56,14 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_db = new FakeManxDatabase();
         $this->_manx = new FakeManx();
         $this->_manx->getDatabaseFakeResult = $this->_db;
+        $this->_fileSystem = new FakeFileSystem();
         $this->_factory = new FakeWhatsNewPageFactory();
         $this->_info = new FakeUrlInfo();
         $this->_factory->createUrlInfoFakeResult = $this->_info;
         $this->_transfer = new FakeUrlTransfer();
         $this->_factory->createUrlTransferFakeResult = $this->_transfer;
         $this->_file = new FakeFile();
-        $this->_factory->openFileFakeResult = $this->_file;
+        $this->_fileSystem->openFileFakeResult = $this->_file;
         $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
     }
 
@@ -591,7 +594,7 @@ EOH;
     {
         $_SERVER['PATH_INFO'] = '';
         $this->_vars = $vars;
-        $this->_page = new BitSaversPageTester($this->_manx, $this->_vars, $this->_factory);
+        $this->_page = new BitSaversPageTester($this->_manx, $this->_vars, $this->_fileSystem, $this->_factory);
     }
 
     private function assertPropertyRead($name)

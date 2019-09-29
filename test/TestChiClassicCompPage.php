@@ -38,6 +38,8 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     private $_db;
     /** @var FakeManx */
     private $_manx;
+    /** @var FakeFileSystem */
+    private $_fileSystem;
     /** @var FakeWhatsNewPageFactory */
     private $_factory;
     /** @var FakeUrlInfo */
@@ -54,13 +56,14 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_db = new FakeManxDatabase();
         $this->_manx = new FakeManx();
         $this->_manx->getDatabaseFakeResult = $this->_db;
+        $this->_fileSystem = new FakeFileSystem();
         $this->_factory = new FakeWhatsNewPageFactory();
         $this->_info = new FakeUrlInfo();
         $this->_factory->createUrlInfoFakeResult = $this->_info;
         $this->_transfer = new FakeUrlTransfer();
         $this->_factory->createUrlTransferFakeResult = $this->_transfer;
         $this->_file = new FakeFile();
-        $this->_factory->openFileFakeResult = $this->_file;
+        $this->_fileSystem->openFileFakeResult = $this->_file;
         $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
     }
 
@@ -488,9 +491,9 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
 
     private function assertFileParsedPaths($paths)
     {
-        $this->assertTrue($this->_factory->openFileCalled);
-        $this->assertEquals(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE, $this->_factory->openFileLastPath);
-        $this->assertEquals('r', $this->_factory->openFileLastMode);
+        $this->assertTrue($this->_fileSystem->openFileCalled);
+        $this->assertEquals(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE, $this->_fileSystem->openFileLastPath);
+        $this->assertEquals('r', $this->_fileSystem->openFileLastMode);
         $this->assertTrue($this->_file->eofCalled);
         $this->assertTrue($this->_file->getStringCalled);
         $this->assertTrue($this->_db->copyExistsForUrlCalled);
@@ -597,7 +600,7 @@ EOH;
     {
         $_SERVER['PATH_INFO'] = '';
         $this->_vars = $vars;
-        $this->_page = new ChiClassicCompPageTester($this->_manx, $this->_vars, $this->_factory);
+        $this->_page = new ChiClassicCompPageTester($this->_manx, $this->_vars, $this->_fileSystem, $this->_factory);
     }
 
     private function assertPropertyRead($name)

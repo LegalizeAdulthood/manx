@@ -8,7 +8,7 @@ define('CCC_INDEX_BY_DATE_URL', 'http://chiclassiccomp.org/docs/content/IndexByD
 
 class ChiClassicCompPage extends WhatsNewPageBase
 {
-    public function __construct($manx, $vars, IWhatsNewPageFactory $factory = null)
+    public function __construct($manx, $vars, IFileSystem $fileSystem = null, IWhatsNewPageFactory $factory = null)
     {
         $opts = array(
             'indexByDateFile' => CCC_INDEX_BY_DATE_FILE,
@@ -20,6 +20,6 @@ class ChiClassicCompPage extends WhatsNewPageBase
             'page' => 'chiclassiccomp.php',
             'title' => 'ChiClassicComp'
         );
-        parent::__construct($manx, $vars, $opts, $factory);
+        parent::__construct($manx, $vars, $opts, $fileSystem, $factory);
     }
 }

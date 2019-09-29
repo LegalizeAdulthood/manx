@@ -61,10 +61,6 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
         $result = $transfer->get($destination);
 
         $this->assertTrue($result);
-        $this->assertTrue($this->_curlApi->initCalled);
-        $this->assertTrue($this->_curlApi->execCalled);
-        $this->assertTrue($this->_curlApi->getinfoCalled);
-        $this->assertTrue($this->_curlApi->closeCalled);
         $this->assertTrue($this->_fileSystem->openFileCalled);
         $this->assertEquals($tempDestination, $this->_fileSystem->openFileLastPath);
         $this->assertEquals('w', $this->_fileSystem->openFileLastMode);
@@ -74,6 +70,34 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
         $this->assertTrue($this->_fileSystem->fileExistsCalled);
         $this->assertEquals($destination, $this->_fileSystem->fileExistsLastPath);
         $this->assertFalse($this->_fileSystem->unlinkCalled);
+        $this->assertTrue($this->_fileSystem->renameCalled);
+        $this->assertEquals($tempDestination, $this->_fileSystem->renameLastOldPath);
+        $this->assertEquals($destination, $this->_fileSystem->renameLastNewPath);
+    }
+
+    public function testGetSuccessWithOverwrite()
+    {
+        $stream = new FakeFile();
+        $this->_fileSystem->openFileFakeResult = $stream;
+        $url = 'http://bitsavers.org/Whatsnew.txt';
+        $destination = PRIVATE_DIR . 'Whatsnew.txt';
+        $tempDestination = $destination . '.tmp';
+        $contents = "This is the contents";
+        $this->_curlApi->execFakeResult = $contents;
+        $this->_curlApi->getinfoFakeResult = 200;
+        $transfer = $this->createInstance($url);
+        $this->_fileSystem->fileExistsFakeResult = true;
+
+        $result = $transfer->get($destination);
+
+        $this->assertTrue($result);
+        $this->assertTrue($this->_fileSystem->openFileCalled);
+        $this->assertEquals($tempDestination, $this->_fileSystem->openFileLastPath);
+        $this->assertEquals('w', $this->_fileSystem->openFileLastMode);
+        $this->assertTrue($this->_fileSystem->fileExistsCalled);
+        $this->assertEquals($destination, $this->_fileSystem->fileExistsLastPath);
+        $this->assertTrue($this->_fileSystem->unlinkCalled);
+        $this->assertEquals($destination, $this->_fileSystem->unlinkLastPath);
         $this->assertTrue($this->_fileSystem->renameCalled);
         $this->assertEquals($tempDestination, $this->_fileSystem->renameLastOldPath);
         $this->assertEquals($destination, $this->_fileSystem->renameLastNewPath);

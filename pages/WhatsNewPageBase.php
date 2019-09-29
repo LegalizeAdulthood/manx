@@ -2,6 +2,7 @@
 
 require_once 'AdminPageBase.php';
 require_once 'Config.php';
+require_once 'File.php';
 require_once 'UnknownPathDefs.php';
 require_once 'WhatsNewPageFactory.php';
 
@@ -20,7 +21,7 @@ class WhatsNewPageBase extends AdminPageBase
     private $_page;
     private $_title;
 
-    public function __construct($manx, $vars, $opts, IWhatsNewPageFactory $factory = null)
+    public function __construct($manx, $vars, $opts, IFileSystem $fileSystem = null, IWhatsNewPageFactory $factory = null)
     {
         parent::__construct($manx, $vars);
         $this->_timeStampProperty = $opts['timeStampProperty'];
@@ -31,11 +32,8 @@ class WhatsNewPageBase extends AdminPageBase
         $this->_menuType = $opts['menuType'];
         $this->_page = $opts['page'];
         $this->_title = $opts['title'];
-        if ($factory === null)
-        {
-            $factory = new WhatsNewPageFactory();
-        }
-        $this->_factory = $factory;
+        $this->_fileSystem = is_null($fileSystem) ? new FileSystem() : $fileSystem;
+        $this->_factory = is_null($factory) ? new WhatsNewPageFactory() : $factory;
         if ($this->needIndexByDateFile())
         {
             $this->getIndexByDateFile();
@@ -69,7 +67,7 @@ class WhatsNewPageBase extends AdminPageBase
 
     private function parseIndexByDateFile()
     {
-        $indexByDate = $this->_factory->openFile(PRIVATE_DIR . $this->_indexByDateFile, 'r');
+        $indexByDate = $this->_fileSystem->openFile(PRIVATE_DIR . $this->_indexByDateFile, 'r');
         while (!$indexByDate->eof())
         {
             $line = substr(trim($indexByDate->getString()), 20);

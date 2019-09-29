@@ -101,6 +101,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         ob_start();
         $page->postPage();
         $output = ob_get_contents();
+        ob_end_clean();
 
         $this->assertFalse($db->addCompanyCalled);
         $this->assertTrue($this->_manx->addPublicationCalled);
@@ -178,6 +179,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         ob_start();
         $page->postPage();
         $output = ob_get_contents();
+        ob_end_clean();
 
         $this->assertFalse($db->addCompanyCalled);
         $this->assertTrue($this->_manx->addPublicationCalled);
@@ -256,6 +258,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         ob_start();
         $page->postPage();
         $output = ob_get_contents();
+        ob_end_clean();
 
         $this->assertTrue($db->addSiteDirectoryCalled);
         $this->assertEquals('ChiClassicComp', $db->addSiteDirectoryLastSiteName);
