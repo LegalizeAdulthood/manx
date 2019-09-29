@@ -10,13 +10,6 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
     private $_manx;
     private $_page;
 
-    private function fakeStatementFetchResults($results)
-    {
-        $stmt = new FakeStatement();
-        $stmt->fetchFakeResult = $results;
-        return $stmt;
-    }
-
     private function createInstance()
     {
         $_SERVER['PATH_INFO'] = '';

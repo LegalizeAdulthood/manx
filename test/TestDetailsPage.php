@@ -88,13 +88,6 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     private $_manx;
     private $_page;
 
-    private function fakeStatementFetchResults($results)
-    {
-        $stmt = new FakeStatement();
-        $stmt->fetchFakeResult = $results;
-        return $stmt;
-    }
-
     private function createInstance()
     {
         $_SERVER['PATH_INFO'] = '/1,3';
@@ -149,15 +142,6 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $output = $this->finishOutputCapture();
         $this->assertFalse($this->_db->getDisplayLanguageCalled);
         $this->assertEquals('', $output);
-    }
-
-    private function createLanguageLookup(FakeManxDatabase $db, $code, $display)
-    {
-        $query = sprintf("SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `LANGUAGE` WHERE `lang_alpha_2`='%s'",
-            $code);
-        $statement = new FakeStatement();
-        $statement->fetchFakeResult = $display;
-        $db->queryFakeResultsForQuery[$query] = $statement;
     }
 
     public function testRenderLanguageFrench()
