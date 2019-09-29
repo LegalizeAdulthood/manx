@@ -9,4 +9,4 @@ install:
 script:
   - mkdir private
   - echo "<?php define('PRIVATE_DIR', 'private/');" > pages/Config.php
-  - vendor/bin/phpunit -vv test/AllTests.php
+  - vendor/bin/phpunit -v test/AllTests.php
