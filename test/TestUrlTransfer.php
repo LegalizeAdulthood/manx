@@ -51,7 +51,7 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
         $this->_fileSystem->openFileFakeResult = $stream;
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
-        $tempDestination = $destionation . '.tmp';
+        $tempDestination = $destination . '.tmp';
         $contents = "This is the contents";
         $this->_curlApi->execFakeResult = $contents;
         $this->_curlApi->getinfoFakeResult = 200;
