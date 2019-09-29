@@ -8,14 +8,14 @@ require_once 'UrlTransfer.php';
 
 class WhatsNewPageFactory implements IWhatsNewPageFactory
 {
-    public function __construct($fileApi = nullptr)
+    public function __construct($fileFactory = nullptr)
     {
-        $this->_fileAPi = is_null($fileApi) ? new FileFactory() : $fileApi;
+        $this->_fileFactory = is_null($fileFactory) ? new FileFactory() : $fileFactory;
     }
 
     function openFile($path, $mode)
     {
-        return $this->_fileApi->openFile($path, $mode);
+        return $this->_fileFactory->openFile($path, $mode);
     }
 
     function createUrlInfo($url)
@@ -33,4 +33,6 @@ class WhatsNewPageFactory implements IWhatsNewPageFactory
         date_default_timezone_set(TIME_ZONE);
         return time();
     }
+
+    private $_fileFactory;
 }

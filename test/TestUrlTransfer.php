@@ -10,10 +10,10 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $curlApi = new FakeCurlApi();
-        $fileApi = new FakeFileFactoryApi();
+        $fileFactory = new FakeFileFactory();
         $url = 'http://bitsavers.org/Whatsnew.txt';
 
-        $transfer = new UrlTransfer($url, $curlApi);
+        $transfer = new UrlTransfer($url, $curlApi, $fileFactory);
 
         $this->assertNotNull($transfer);
     }
@@ -21,9 +21,10 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     public function testGet()
     {
         $curlApi = new FakeCurlApi();
+        $fileFactory = new FakeFileFactory();
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
-        $transfer = new UrlTransfer($url, $curlApi);
+        $transfer = new UrlTransfer($url, $curlApi, $fileFactory);
 
         $transfer->get($destination);
 
