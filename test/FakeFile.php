@@ -28,5 +28,17 @@ class FakeFile implements IFile
             return $this->getStringFakeResults[$this->_line++];
         }
     }
+
+    function getHandle()
+    {
+        $this->getHandleCalled = true;
+        return null;
+    }
+
+    function close()
+    {
+        $this->closeCalled = true;
+    }
+
     public $getStringCalled, $getStringFakeResults;
 }
