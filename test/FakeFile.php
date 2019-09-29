@@ -53,11 +53,13 @@ class FakeFileFactory implements IFileFactory
     public function __construct()
     {
         $this->openFileCalled = false;
+        $this->openFileFakeResult = null;
     }
 
     public $openFileCalled, $openFileFakeResult;
     function openFile($path, $mode)
     {
+        $this->openFileCalled = true;
         return $this->$openFileFakeResult;
     }
 }
