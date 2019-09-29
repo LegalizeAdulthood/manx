@@ -7,30 +7,47 @@ require_once 'pages/Config.php';
 
 class TestUrlTransfer extends PHPUnit\Framework\TestCase
 {
+    protected function setUp()
+    {
+        $this->_curlApi = new FakeCurlApi();
+        $this->_fileFactory = new FakeFileFactory();
+    }
+
+    private function createInstance($url)
+    {
+        return new UrlTransfer($url, $this->_curlApi, $this->_fileFactory);
+    }
+
     public function testConstruct()
     {
-        $curlApi = new FakeCurlApi();
-        $fileFactory = new FakeFileFactory();
         $url = 'http://bitsavers.org/Whatsnew.txt';
 
-        $transfer = new UrlTransfer($url, $curlApi, $fileFactory);
+        $transfer = createInstance($url);
 
         $this->assertNotNull($transfer);
     }
 
     public function testGet()
     {
-        $curlApi = new FakeCurlApi();
-        $fileFactory = new FakeFileFactory();
+        $stream = new FakeFile();
+        $this->_FileFactory->openFileFakeResult = $stream;
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
-        $transfer = new UrlTransfer($url, $curlApi, $fileFactory);
+        $contents = "This is the contents";
+        $this->curlApi->execFakeResult = $contents;
+        $transfer = createInstance($url);
 
         $transfer->get($destination);
 
-        $this->assertTrue($curlApi->initCalled);
-        $this->assertTrue($curlApi->setoptCalled);
-        $this->assertTrue($curlApi->execCalled);
-        $this->assertTrue($curlApi->getinfoCalled);
+        $this->assertTrue($this->_curlApi->initCalled);
+        $this->assertTrue($this->_curlApi->setoptCalled);
+        $this->assertTrue($this->_curlApi->execCalled);
+        $this->assertTrue($this->_curlApi->getinfoCalled);
+        $this->assertTrue($this->_fileFactory->openFileCalled);
+        $this->assertTrue($stream->writeCalled);
+        $this->assertEqual($contents, $stream->writeLastData);
     }
+
+    private $_curlApi;
+    private $_fileFactory;
 }

@@ -14,6 +14,7 @@ class FakeFile implements IFile
         $this->getHandleCalled = false;
         $this->getHandleFakeResult = null;
         $this->closeCalled = false;
+        $this->writeCalled = false;
     }
 
     function eof()
@@ -31,21 +32,27 @@ class FakeFile implements IFile
             return $this->getStringFakeResults[$this->_line++];
         }
     }
+    public $getStringCalled, $getStringFakeResults;
 
-    public $getHandleCalled, $getHandleFakeResult;
     function getHandle()
     {
         $this->getHandleCalled = true;
         return $this->getHandleFakeResult;
     }
+    public $getHandleCalled, $getHandleFakeResult;
 
-    public $closeCalled;
     function close()
     {
         $this->closeCalled = true;
     }
+    public $closeCalled;
 
-    public $getStringCalled, $getStringFakeResults;
+    function write($data)
+    {
+        $this->writeCalled = true;
+        $this->writeLastData = $data;
+    }
+    public $writeCalled, $writeLastData;
 }
 
 class FakeFileFactory implements IFileFactory
@@ -56,10 +63,10 @@ class FakeFileFactory implements IFileFactory
         $this->openFileFakeResult = null;
     }
 
-    public $openFileCalled, $openFileFakeResult;
     function openFile($path, $mode)
     {
         $this->openFileCalled = true;
         return $this->$openFileFakeResult;
     }
+    public $openFileCalled, $openFileFakeResult;
 }

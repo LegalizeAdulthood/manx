@@ -34,6 +34,11 @@ class File implements IFile
         fclose($this->_file);
     }
 
+    public function write($data)
+    {
+        fwrite($this->_file, $data);
+    }
+
     private $_file;
 }
 

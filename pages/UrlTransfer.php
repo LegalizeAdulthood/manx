@@ -12,21 +12,22 @@ class UrlTransfer implements IUrlTransfer
     public function __construct($url, $curlApi = null, $fileFactory = null)
     {
         $this->_url = $url;
-        $this->_api = is_null($curlApi) ? CurlApi::getInstance() : $curlApi;
+        $this->_curl = is_null($curlApi) ? CurlApi::getInstance() : $curlApi;
         $this->_fileFactory = is_null($fileFactory) ? new FileFactory() : $fileFactory;
     }
 
     public function get($destination)
     {
-        $session = $this->_api->init($this->_url);
+        $session = $this->_curl->init($this->_url);
         $tempDestination = $destination . ".tmp";
         $stream = $this->_fileFactory->openFile($tempDestination, 'w');
-        $result = $this->_api->exec($session);
-        $httpStatus = $this->_api->getinfo($session, CURLINFO_HTTP_CODE);
-        $this->_api->close($session);
-        $stream->close();
+        $result = $this->_curl->exec($session);
+        $httpStatus = $this->_curl->getinfo($session, CURLINFO_HTTP_CODE);
+        $this->_curl->close($session);
         if ($httpStatus == 200)
         {
+            $stream->write($result);
+            $stream->close();
             if (file_exists($destination))
             {
                 unlink($destination);
@@ -39,6 +40,6 @@ class UrlTransfer implements IUrlTransfer
     }
 
     private $_url;
-    private $_api;
+    private $_curl;
     private $_fileFactory;
 }
