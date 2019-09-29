@@ -2,7 +2,7 @@
 
 require_once 'pages/ManxDatabase.php';
 
-class TestManxDatabaseUtils extends PHPUnit_Framework_TestCase
+class TestManxDatabaseUtils extends PHPUnit\Framework\TestCase
 {
     public function testNormalizePartNumberNotString()
     {
