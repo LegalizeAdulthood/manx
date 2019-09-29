@@ -485,9 +485,9 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
     private function assertFileParsedPaths($paths)
     {
-        $this->assertTrue($this->_factory->openFileCalled);
-        $this->assertEquals(PRIVATE_DIR . INDEX_BY_DATE_FILE, $this->_factory->openFileLastPath);
-        $this->assertEquals('r', $this->_factory->openFileLastMode);
+        $this->assertTrue($this->_fileSystem->openFileCalled);
+        $this->assertEquals(PRIVATE_DIR . INDEX_BY_DATE_FILE, $this->_fileSystem->openFileLastPath);
+        $this->assertEquals('r', $this->_fileSystem->openFileLastMode);
         $this->assertTrue($this->_file->eofCalled);
         $this->assertTrue($this->_file->getStringCalled);
         $this->assertTrue($this->_db->copyExistsForUrlCalled);
