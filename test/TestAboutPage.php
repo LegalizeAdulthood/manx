@@ -2,7 +2,6 @@
 
 require_once 'pages/AboutPage.php';
 require_once 'test/FakeManxDatabase.php';
-require_once 'test/FakeManx.php';
 
 class TestAboutPage extends PHPUnit\Framework\TestCase
 {
@@ -14,8 +13,8 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
     {
         $_SERVER['PATH_INFO'] = '';
         $this->_db = new FakeManxDatabase();
-        $this->_manx = new FakeManx();
-        $this->_manx->getDatabaseFakeResult = $this->_db;
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
         $this->_page = new AboutPage($this->_manx);
     }
 
