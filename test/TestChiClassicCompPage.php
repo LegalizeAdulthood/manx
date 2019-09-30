@@ -41,7 +41,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     private $_factory;
     /** @var IUrlInfo */
     private $_info;
-    /** @var FakeUrlTransfer */
+    /** @var IUrlTransfer */
     private $_transfer;
     /** @var ChiClassicCompPageTester */
     private $_page;
@@ -101,7 +101,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_info->expects($this->once())->method('lastModified')->willReturn(false);
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
-        $this->_factory->expects($this->once())->method('getCurrentTime')->willReturn('12');
+        $this->_factory->method('getCurrentTime')->willReturn('12');
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
@@ -115,7 +115,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->toEqual(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
 
         $this->createPage();
     }
@@ -125,7 +125,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn('20');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->toEqual(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
@@ -493,6 +493,8 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
 
     private function expectIndexFileTransferred()
     {
+        $this->_transfer->expects($this->once())->method('get')
+            ->with($this->equalTo(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE));
         $this->_factory->expects($this->once())->method('createUrlTransfer')
             ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->wilLReturn($this->_transfer);
     }
@@ -625,8 +627,6 @@ EOH;
 
     private function assertIndexByDateFileTransferred()
     {
-        $this->assertTrue($this->_transfer->getCalled);
-        $this->assertEquals(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE, $this->_transfer->getLastDestination);
         $this->assertTrue($this->_db->setPropertyCalled);
     }
 }
