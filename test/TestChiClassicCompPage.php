@@ -5,7 +5,6 @@ require_once 'test/FakeWhatsNewPageFactory.php';
 require_once 'test/FakeFile.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeManxDatabase.php';
-require_once 'test/FakeUrlInfo.php';
 require_once 'test/FakeUrlTransfer.php';
 
 class ChiClassicCompPageTester extends ChiClassicCompPage
@@ -42,7 +41,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     private $_fileSystem;
     /** @var FakeWhatsNewPageFactory */
     private $_factory;
-    /** @var FakeUrlInfo */
+    /** @var IUrlInfo */
     private $_info;
     /** @var FakeUrlTransfer */
     private $_transfer;
@@ -58,7 +57,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_manx->getDatabaseFakeResult = $this->_db;
         $this->_fileSystem = $this->createMock(IFileSystem::class);
         $this->_factory = new FakeWhatsNewPageFactory();
-        $this->_info = new FakeUrlInfo();
+        $this->_info = $this->createMock(IUrlInfo::class);
         $this->_factory->createUrlInfoFakeResult = $this->_info;
         $this->_transfer = new FakeUrlTransfer();
         $this->_factory->createUrlTransferFakeResult = $this->_transfer;
@@ -101,7 +100,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     public function testConstructWithNoLastModifiedGetsIndexByDateFile()
     {
         $this->_db->getPropertyFakeResult = '10';
-        $this->_info->lastModifiedFakeResult = false;
+        $this->_info->expects($this->once())->method('lastModified')->willReturn(false);
         $this->_factory->getCurrentTimeFakeResult = '12';
         $this->expectIndexFileOpened();
 
@@ -109,14 +108,13 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
 
         $this->assertTrue($this->_factory->createUrlInfoCalled);
         $this->assertEquals(CCC_INDEX_BY_DATE_URL, $this->_factory->createUrlInfoLastUrl);
-        $this->assertTrue($this->_info->lastModifiedCalled);
         $this->assertIndexByDateFileTransferred();
     }
 
     public function testConstructWithLastModifiedEqualsTimeStampDoesNotGetIndexByDateFile()
     {
         $this->_db->getPropertyFakeResult = '10';
-        $this->_info->lastModifiedFakeResult = '10';
+        $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
 
         $this->createPage();
 
@@ -126,7 +124,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     public function testConstructWithLastModifiedNewerThanTimeStampGetsIndexByDateFile()
     {
         $this->_db->getPropertyFakeResult = '10';
-        $this->_info->lastModifiedFakeResult = '20';
+        $this->_info->expects($this->once())->method('lastModified')->willReturn('20');
         $this->expectIndexFileOpened();
 
         $this->createPage();
@@ -598,7 +596,7 @@ EOH;
     private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
     {
         $this->_db->getPropertyFakeResult = '10';
-        $this->_info->lastModifiedFakeResult = '10';
+        $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
         $this->createPage($vars);
     }
 
