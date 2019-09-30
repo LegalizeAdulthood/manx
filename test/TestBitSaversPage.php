@@ -1,7 +1,6 @@
 <?php
 
 require_once 'pages/BitSaversPage.php';
-require_once 'test/FakeWhatsNewPageFactory.php';
 require_once 'test/FakeFile.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeManxDatabase.php';
@@ -38,7 +37,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     private $_manx;
     /** @var IFileSystem */
     private $_fileSystem;
-    /** @var FakeWhatsNewPageFactory */
+    /** @var IWhatsNewPageFactory */
     private $_factory;
     /** @var IUrlInfo */
     private $_info;
@@ -55,11 +54,9 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_manx = new FakeManx();
         $this->_manx->getDatabaseFakeResult = $this->_db;
         $this->_fileSystem = $this->createMock(IFileSystem::class);
-        $this->_factory = new FakeWhatsNewPageFactory();
+        $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(IUrlInfo::class);
-        $this->_factory->createUrlInfoFakeResult = $this->_info;
         $this->_transfer = $this->createMock(IUrlTransfer::class);
-        $this->_factory->createUrlTransferFakeResult = $this->_transfer;
         $this->_file = new FakeFile();
         $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
     }
@@ -91,14 +88,14 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn(false);
-        $this->_factory->getCurrentTimeFakeResult = '12';
+        $this->_factory->expects($this->once())->method('getCurrentTime')->willReturn('12');
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_info);
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
         $this->createPage();
 
-        $this->assertTrue($this->_factory->createUrlInfoCalled);
-        $this->assertEquals(INDEX_BY_DATE_URL, $this->_factory->createUrlInfoLastUrl);
         $this->assertIndexByDateFileTransferred();
     }
 
@@ -106,16 +103,19 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_info);
+        $this->_factory->expects($this->never())->method('createUrlTransfer');
 
         $this->createPage();
-
-        $this->assertFalse($this->_factory->createUrlTransferCalled);
     }
 
     public function testConstructWithLastModifiedNewerThanTimeStampGetsIndexByDateFile()
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn('20');
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_info);
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
@@ -487,6 +487,8 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
     private function expectIndexFileTransferred()
     {
+        $this->_factory->expects($this->once())->method('createUrlTransfer')
+            ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_transfer);
         $this->_transfer->expects($this->once())->method('get')->with(PRIVATE_DIR . INDEX_BY_DATE_FILE);
     }
 
@@ -598,6 +600,8 @@ EOH;
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_info);
         $this->createPage($vars);
     }
 
@@ -616,8 +620,6 @@ EOH;
 
     private function assertIndexByDateFileTransferred()
     {
-        $this->assertTrue($this->_factory->createUrlTransferCalled);
-        $this->assertEquals(INDEX_BY_DATE_URL, $this->_factory->createUrlTransferLastUrl);
         $this->assertTrue($this->_db->setPropertyCalled);
     }
 }
