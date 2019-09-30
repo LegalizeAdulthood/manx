@@ -83,7 +83,8 @@ class TestSearcher extends PHPUnit\Framework\TestCase
                 'ph_pub_type' => '')
             );
         $db->searchForPublicationsFakeResult = $rows;
-        $db->getOSTagsForPubFakeResult = array('OpenVMS VAX Version 6.0');
+        $tags = array('OpenVMS VAX Version 6.0');
+        $db->getOSTagsForPubFakeResult = $tags;
         $formatter = $this->createMock(IFormatter::class);
         $formatter->expects($this->once())->method('renderResultsBar')
             ->with($this->equalTo(array()), $this->equalTo(array('graphics', 'terminal')), $this->equalTo(0), $this->equalTo(0), $this->equalTo(1));
