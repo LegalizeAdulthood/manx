@@ -6,7 +6,6 @@ require_once 'test/FakeFile.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeUrlInfo.php';
-require_once 'test/FakeUrlTransfer.php';
 
 class BitSaversPageTester extends BitSaversPage
 {
@@ -44,7 +43,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     private $_factory;
     /** @var FakeUrlInfo */
     private $_info;
-    /** @var FakeUrlTransfer */
+    /** @var IUrlTransfer */
     private $_transfer;
     /** @var BitSaversPageTester */
     private $_page;
@@ -60,7 +59,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_factory = new FakeWhatsNewPageFactory();
         $this->_info = new FakeUrlInfo();
         $this->_factory->createUrlInfoFakeResult = $this->_info;
-        $this->_transfer = new FakeUrlTransfer();
+        $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_factory->createUrlTransferFakeResult = $this->_transfer;
         $this->_file = new FakeFile();
         $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
@@ -77,6 +76,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
             array_push($lines, '2013-10-07 21:02:00 ' . $path);
         }
         $this->_file->getStringFakeResults = array_merge($lines);
+        $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
         $this->createPage();
@@ -93,6 +93,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->lastModifiedFakeResult = false;
         $this->_factory->getCurrentTimeFakeResult = '12';
+        $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
         $this->createPage();
@@ -117,6 +118,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->lastModifiedFakeResult = '20';
+        $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
         $this->createPage();
@@ -485,6 +487,11 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->assertEquals("<h1>No New BitSavers Publications Found</h1>\n", $output);
     }
 
+    private function expectIndexFileTransferred()
+    {
+        $this->_transfer->expects($this->once())->method('get')->with(PRIVATE_DIR . INDEX_BY_DATE_FILE);
+    }
+
     private function expectIndexFileOpened()
     {
         $this->_fileSystem->expects($this->once())->method('openFile')
@@ -613,8 +620,6 @@ EOH;
     {
         $this->assertTrue($this->_factory->createUrlTransferCalled);
         $this->assertEquals(INDEX_BY_DATE_URL, $this->_factory->createUrlTransferLastUrl);
-        $this->assertTrue($this->_transfer->getCalled);
-        $this->assertEquals(PRIVATE_DIR . INDEX_BY_DATE_FILE, $this->_transfer->getLastDestination);
         $this->assertTrue($this->_db->setPropertyCalled);
     }
 }
