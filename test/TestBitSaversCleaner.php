@@ -1,17 +1,8 @@
 <?php
 
 require_once 'cron/BitSaversCleaner.php';
-require_once 'test/FakeWhatsNewPageFactory.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeManxDatabase.php';
-require_once 'test/FakeUrlInfo.php';
-
-class FakeLogger implements ILogger
-{
-    function log($line)
-    {
-    }
-}
 
 class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
 {
@@ -19,9 +10,11 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     private $_db;
     /** @var FakeManx */
     private $_manx;
-    /** @var FakeWhatsNewPageFactory */
+    /** @var IUrlInfo */
+    private $_urlInfo;
+    /** @var IWhatsNewPageFactory */
     private $_factory;
-    /** @var Logger */
+    /** @var ILogger */
     private $_logger;
     /** @var BitSaversCleaner */
     private $_cleaner;
@@ -31,8 +24,9 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db = new FakeManxDatabase();
         $this->_manx = new FakeManx();
         $this->_manx->getDatabaseFakeResult = $this->_db;
-        $this->_factory = new FakeWhatsNewPageFactory();
-        $this->_logger = new FakeLogger();
+        $this->_urlInfo = $this->createMock(IUrlInfo::class);
+        $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
+        $this->_logger = $this->createMock(ILogger::class);
         $this->_cleaner = new BitSaversCleaner($this->_manx, $this->_factory, $this->_logger);
     }
 
@@ -41,16 +35,15 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db->getAllSiteUnknownPathsResult = array(
             array('id' => 1, 'path' => 'foo/path.pdf')
         );
-        $urlInfo = new FakeUrlInfo();
-        $urlInfo->existsFakeResult = false;
-        $this->_factory->createUrlInfoFakeResult = $urlInfo;
+        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(false);
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo('http://bitsavers.trailing-edge.com/pdf/foo/path.pdf'))
+            ->willReturn($this->_urlInfo);
 
         $this->_cleaner->removeNonExistentUnknownPaths();
 
         $this->assertTrue($this->_db->getAllSiteUnknownPathsCalled);
         $this->assertEquals('bitsavers', $this->_db->getAllSiteUnknownPathsLastSiteName);
-        $this->assertEquals('http://bitsavers.trailing-edge.com/pdf/foo/path.pdf', $this->_factory->createUrlInfoLastUrl);
-        $this->assertTrue($urlInfo->existsCalled);
         $this->assertTrue($this->_db->removeSiteUnknownPathByIdCalled);
         $this->assertEquals('bitsavers', $this->_db->removeSiteUnknownPathByIdLastSiteName);
         $this->assertEquals(1, $this->_db->removeSiteUnknownPathByIdLastId);
@@ -61,9 +54,8 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db->getAllSiteUnknownPathsResult = array(
             array('id' => 1, 'path' => 'foo/path.pdf')
         );
-        $urlInfo = new FakeUrlInfo();
-        $urlInfo->existsFakeResult = true;
-        $this->_factory->createUrlInfoFakeResult = $urlInfo;
+        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
+        $this->_factory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
 
         $this->_cleaner->removeNonExistentUnknownPaths();
 
@@ -75,13 +67,12 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db->getAllSiteUnknownPathsResult = array(
             array('id' => 1, 'path' => 'foo/path#1.pdf')
         );
-        $urlInfo = new FakeUrlInfo();
-        $urlInfo->existsFakeResult = true;
-        $this->_factory->createUrlInfoFakeResult = $urlInfo;
+        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo('http://bitsavers.trailing-edge.com/pdf/foo/path%231.pdf'))
+            ->willReturn($this->_urlInfo);
 
         $this->_cleaner->removeNonExistentUnknownPaths();
-
-        $this->assertEquals('http://bitsavers.trailing-edge.com/pdf/foo/path%231.pdf', $this->_factory->createUrlInfoLastUrl);
     }
 
     public function testMovedFilesAreUpdated()
@@ -91,18 +82,16 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
             array('path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
                 'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'md5' => $md5)
         );
-        $urlInfo = new FakeUrlInfo();
-        $urlInfo->md5FakeResult = $md5;
-        $this->_factory->createUrlInfoFakeResult = $urlInfo;
+        $this->_urlInfo->expects($this->once())->method('md5')->willReturn($md5);
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo('http://bitsavers.trailing-edge.com/pdf/hp/newDir/foo.pdf'))
+            ->willReturn($this->_urlInfo);
 
         $this->_cleaner->updateMovedFiles();
 
         $this->assertTrue($this->_db->getPossiblyMovedSiteUnknownPathsCalled);
         $this->assertEquals('bitsavers', $this->_db->getPossiblyMovedSiteUnknownPathsLastSiteName);
-        $this->assertTrue($this->_factory->createUrlInfoCalled);
-        $this->assertEquals('http://bitsavers.trailing-edge.com/pdf/hp/newDir/foo.pdf', $this->_factory->createUrlInfoLastUrl);
-        $this->assertTrue($urlInfo->md5Called);
-        $this->assertTrue($this->_db->siteFileMovedCalled);
+                $this->assertTrue($this->_db->siteFileMovedCalled);
         $this->assertEquals('bitsavers', $this->_db->siteFileMovedLastSiteName);
         $this->assertEquals(10, $this->_db->siteFileMovedLastCopyId);
         $this->assertEquals(16, $this->_db->siteFileMovedLastPathId);
