@@ -10,14 +10,14 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     private $_db;
     /** @var \ManxDatabase */
     private $_manxDb;
-    /** @var object */
+    /** @var PDOStatement */
     private $_statement;
 
     protected function setUp()
     {
         $this->_db = new FakeDatabase();
         $this->_manxDb = ManxDatabase::getInstanceForDatabase($this->_db);
-        $this->_statement = new FakeStatement();
+        $this->_statement = $this->createMock(PDOStatement::class);
     }
 
     public function testConstruct()
@@ -28,41 +28,43 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     public function testGetDocumentCount()
     {
         $query = "SELECT COUNT(*) FROM `pub`";
-        $this->configureCountForQuery(2, $query);
+        $this->expectCountForQuery(2, $query);
 
         $count = $this->_manxDb->getDocumentCount();
 
-        $this->assertCountForQuery(2, $count, $query);
+        $this->assertQueryCalledForSql($query);
+        $this->assertEquals(2, $count);
     }
 
     public function testGetOnlineDocumentCount()
     {
         $query = "SELECT COUNT(DISTINCT `pub`) FROM `copy`";
-        $this->configureCountForQuery(12, $query);
+        $this->expectCountForQuery(12, $query);
 
         $count = $this->_manxDb->getOnlineDocumentCount();
 
-        $this->assertCountForQuery(12, $count, $query);
+        $this->assertQueryCalledForSql($query);
+        $this->assertEquals(12, $count);
     }
 
     public function testGetSiteCount()
     {
         $query = "SELECT COUNT(*) FROM `site`";
-        $this->configureCountForQuery(43, $query);
+        $this->expectCountForQuery(43, $query);
 
         $count = $this->_manxDb->getSiteCount();
 
-        $this->assertCountForQuery(43, $count, $query);
+        $this->assertQueryCalledForSql($query);
+        $this->assertEquals(43, $count);
     }
 
     public function testGetSiteList()
     {
         $query = "SELECT `url`,`description`,`low` FROM `site` WHERE `live`='Y' ORDER BY `site_id`";
-        $this->configureStatementFetchAllResults($query,
+        $this->expectStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
                 array('url', 'description', 'low'),
                 array(array('http://www.dec.com', 'DEC', false), array('http://www.hp.com', 'HP', true))));
-        $this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
 
         $sites = $this->_manxDb->getSiteList();
 
@@ -77,7 +79,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $expected = array(
                 array('id' => 1, 'name' => "DEC"),
                 array('id' => 2, 'name' => "HP"));
-        $this->configureStatementFetchAllResults($query, $expected);
+        $this->expectStatementFetchAllResults($query, $expected);
 
         $companies = $this->_manxDb->getCompanyList();
 
@@ -88,7 +90,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     public function testGetDisplayLanguage()
     {
         $query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `language` WHERE `lang_alpha_2`='fr'";
-        $this->configureStatementFetchResult($query, 'French');
+        $this->expectStatementFetchResult($query, 'French');
 
         $display = $this->_manxDb->getDisplayLanguage('fr');
 
@@ -99,7 +101,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     public function testGetOSTagsForPub()
     {
         $query = "SELECT `tag_text` FROM `tag`,`pub_tag` WHERE `tag`.`id`=`pub_tag`.`tag` AND `tag`.`class`='os' AND `pub`=5";
-        $this->configureStatementFetchAllResults($query,
+        $this->expectStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(array('tag_text'),
                 array(array('RSX-11M Version 4.0'), array('RSX-11M-PLUS Version 2.0'))));
 
@@ -114,7 +116,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $query = "SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pub_date` "
             . "FROM `pub` JOIN `pub_history` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
         $pubId = 3;
-        $this->configureStatementFetchAllResults($query,
+        $this->expectStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pub_date'),
                 array(array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
@@ -130,14 +132,16 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     public function testGetLongDescriptionForPubDoesNothing()
     {
         $pubId = 3;
-        $query = "SELECT 'html_text' FROM `long_desc` WHERE `pub`=3 ORDER BY `line`";
-        $this->configureStatementFetchAllResults($query,
-            FakeDatabase::createResultRowsForColumns(array('html_text'),
-                array(array('<p>This is paragraph one.</p>'), array('<p>This is paragraph two.</p>'))));
+        // Uncomment this code when the method really does a search.
+        // $query = "SELECT 'html_text' FROM `long_desc` WHERE `pub`=3 ORDER BY `line`";
+        // $this->expectStatementFetchAllResults($query, array()
+        //     FakeDatabase::createResultRowsForColumns(array('html_text'),
+        //         array(array('<p>This is paragraph one.</p>'), array('<p>This is paragraph two.</p>'))));
 
         $longDescription = $this->_manxDb->getLongDescriptionForPub($pubId);
 
         $this->assertFalse($this->_db->queryCalled);
+        $this->assertEquals(array(), $longDescription);
     }
 
     public function testGetCitationsForPub()
@@ -147,7 +151,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . 'FROM `cite_pub` `C`'
             . ' JOIN `pub` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=72)'
             . ' JOIN `pub_history` ON `pub`.`pub_history`=`ph_id`';
-        $this->configureStatementFetchAllResults($query,
+        $this->expectStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
                 array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance'))));
@@ -163,7 +167,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $pubId = 123;
         $query = "SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=123 ORDER BY `line`";
-        $this->configureStatementFetchAllResults($query,
+        $this->expectStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
                 array('level', 'label', 'name'),
                 array(
@@ -185,7 +189,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $pubId = 123;
         $query = "SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=123 AND `level` < 2 ORDER BY `line`";
-        $this->configureStatementFetchAllResults($query,
+        $this->expectStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
                 array('level', 'label', 'name'),
                 array(
@@ -217,7 +221,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             'http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
             'http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
             'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf');
-        $this->configureStatementFetchAllResults($query,
+        $this->expectStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(array('mirror_url'),
                 array(array($expected[0]), array($expected[1]), array($expected[2]), array($expected[3]), array($expected[4]))));
 
@@ -236,7 +240,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                     . " WHERE `ph_amend_pub`=%d AND `ph_amend_serial`=%d", $pubId, $amendSerial);
         $expected = array('ph_company' => 7, 'pub_id' => 57, 'ph_part' => 'AB81-14G',
                 'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pub_date' => '1984-02');
-        $this->configureStatementFetchResult($query, $expected);
+        $this->expectStatementFetchResult($query, $expected);
 
         $amended = $this->_manxDb->getAmendedPub($pubId, $amendSerial);
 
@@ -254,7 +258,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . " FROM `copy`,`site`"
             . " WHERE `copy`.`site`=`site`.`site_id` AND `pub`=123"
             . " ORDER BY `site`.`display_order`,`site`.`site_id`";
-        $this->configureStatementFetchAllResults($query,
+        $this->expectStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
             array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
             array(
@@ -283,7 +287,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $rows = FakeDatabase::createResultRowsForColumns(
             array('pub_id', 'name', 'ph_part', 'ph_pub_date', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
             array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
-        $this->configureStatementFetchResult($query, $rows[0]);
+        $this->expectStatementFetchResult($query, $rows[0]);
 
         $details = $this->_manxDb->getDetailsForPub($pubId);
 
@@ -310,7 +314,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . " WHERE `pub_has_online_copies` $matchClause"
             . " AND `ph_company`=$company"
             . " ORDER BY `ph_sort_part`, `ph_pub_date`, `pub_id`";
-        $this->configureStatementFetchAllResults($query, $rows);
+        $this->expectStatementFetchAllResults($query, $rows);
 
         $pubs = $this->_manxDb->searchForPublications($company, $keywords, true);
 
@@ -325,7 +329,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             ' JOIN `pub` ON (`old_pub`=`pub_id` AND `new_pub`=%d)' .
             ' JOIN `pub_history` ON `pub_history`=`ph_id`', $pubId);
         $rows = array(array('ph_company' => 1, 'ph_pub' => 23, 'ph_part' => 'EK-11024-TM-PRE', 'ph_title' => 'PDP-11/24 System Technical Manual'));
-        $this->configureStatementFetchAllResults($query, $rows);
+        $this->expectStatementFetchAllResults($query, $rows);
 
         $pubs = $this->_manxDb->getPublicationsSupersededByPub($pubId);
 
@@ -340,7 +344,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . ' JOIN `pub` ON (`new_pub`=`pub_id` AND `old_pub`=%d)'
             . ' JOIN `pub_history` ON `pub_history`=`ph_id`', $pubId);
         $rows = array(array('ph_company' => 1, 'ph_pub' => 6105, 'ph_part' => 'EK-11024-TM-001', 'ph_title' => 'PDP-11/24 System Technical Manual'));
-        $this->configureStatementFetchAllResults($query, $rows);
+        $this->expectStatementFetchAllResults($query, $rows);
 
         $pubs = $this->_manxDb->getPublicationsSupersedingPub($pubId);
 
@@ -392,11 +396,10 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     public function testGetManxVersion()
     {
         $query = "SELECT `value` FROM `properties` WHERE `name`='version'";
-        $this->configureStatementFetchResult($query, array('value' => '2'));
+        $this->expectStatementFetchResult($query, array('value' => '2'));
 
         $version = $this->_manxDb->getManxVersion();
 
-        $this->assertTrue($this->_statement->fetchCalled);
         $this->assertEquals('2', $version);
     }
 
@@ -430,7 +433,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "AND (`copy`.`size` IS NULL OR `copy`.`size` = 0) "
             . "AND `copy`.`format` <> 'HTML' "
             . " LIMIT 0,10";
-        $this->configureStatementFetchAllResults($query,
+        $this->expectStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
                 array('copy_id', 'ph_company', 'ph_pub', 'ph_title'),
                 array(array('66', '1', '2', 'IM1 Schematic'))));
@@ -500,7 +503,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "AND (`copy`.`md5` IS NULL) "
             . "AND `copy`.`format` <> 'HTML' "
             . " LIMIT 0,10";
-        $this->configureStatementFetchAllResults($query,
+        $this->expectStatementFetchAllResults($query,
             FakeDatabase::createResultRowsForColumns(
                 array('copy_id', 'ph_company', 'ph_pub', 'ph_title'),
                 array(array('66', '1', '2', 'IM1 Schematic'))));
@@ -739,33 +742,26 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals($length, count($value));
     }
 
-    private function configureCountForQuery($expectedCount, $query)
-    {
-        $this->configureStatementFetchResult($query, array($expectedCount));
-    }
-
-    private function assertCountForQuery($expectedCount, $count, $query)
-    {
-        $this->assertQueryCalledForSql($query);
-        $this->assertTrue($this->_statement->fetchCalled);
-        $this->assertEquals($expectedCount, $count);
-    }
-
     private function assertQueryCalledForSql($sql)
     {
         $this->assertTrue($this->_db->queryCalled);
         $this->assertEquals($sql, $this->_db->queryLastStatement);
     }
 
-    private function configureStatementFetchResult($query, $result)
+    private function expectStatementFetchResult($query, $result)
     {
-        $this->_statement->fetchFakeResult = $result;
+        $this->_statement->expects($this->once())->method('fetch')->willReturn($result);
         $this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
     }
 
-    private function configureStatementFetchAllResults($query, $results)
+    private function expectStatementFetchAllResults($query, $results)
     {
-        $this->_statement->fetchAllFakeResult = $results;
+        $this->_statement->expects($this->once())->method('fetchAll')->willReturn($results);
         $this->_db->queryFakeResultsForQuery[$query] = $this->_statement;
+    }
+
+    private function expectCountForQuery($expectedCount, $query)
+    {
+        $this->expectStatementFetchResult($query, array($expectedCount));
     }
 }
