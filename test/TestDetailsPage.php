@@ -2,7 +2,6 @@
 
 require_once 'pages/DetailsPage.php';
 require_once 'test/FakeManxDatabase.php';
-require_once 'test/FakeManx.php';
 
 class RenderDetailsTester extends DetailsPage
 {
@@ -92,8 +91,8 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     {
         $_SERVER['PATH_INFO'] = '/1,3';
         $this->_db = new FakeManxDatabase();
-        $this->_manx = new FakeManx();
-        $this->_manx->getDatabaseFakeResult = $this->_db;
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
         $this->_page = new DetailsPage($this->_manx);
     }
 
@@ -770,8 +769,8 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
             array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL,
                 '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
         $this->_db->getDetailsForPubFakeResult = $rows[0];
-        $this->_manx = new FakeManx();
-        $this->_manx->getDatabaseFakeResult = $this->_db;
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
         $this->_page = new RenderDetailsTester($this->_manx);
         $this->startOutputCapture();
 
