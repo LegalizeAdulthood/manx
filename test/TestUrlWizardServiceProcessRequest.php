@@ -4,7 +4,6 @@ require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeUrlInfo.php';
 require_once 'test/FakeUrlInfoFactory.php';
-require_once 'test/FakeUser.php';
 require_once 'test/UrlWizardServiceTester.php';
 
 class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
@@ -19,7 +18,9 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_manx = new FakeManx();
         $this->_db = new FakeManxDatabase();
         $this->_manx->getDatabaseFakeResult = $this->_db;
-        $this->_manx->getUserFromSessionFakeResult = new FakeUser();
+        $user = $this->createMock(IUser::class);
+        $user->expects($this->once())->method('isLoggedIn')->willReturn(true);
+        $this->_manx->getUserFromSessionFakeResult = $user;
         $this->_db->getSitesFakeResult = self::sitesResultsForBitSavers();
         $this->_db->getFormatForExtensionFakeResult = 'PDF';
         $_SERVER['PATH_INFO'] = '';
