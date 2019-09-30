@@ -41,8 +41,8 @@ class TestRssPage extends PHPUnit\Framework\TestCase
                 'ph_pub_date' => '1979-03',
                 'ph_keywords' => 'foo,bar')
         );
-        $manx = new FakeManx();
-        $manx->getDatabaseFakeResult = $db;
+        $manx = $this->createMock(IManx::class);
+        $manx->expects($this->once())->method('getDatabase')->willReturn($db);
         $dtp = new FakeDateTimeProvider();
         $dtp->nowFakeResult = new DateTime("03 Dec 1964 15:00:00 -0400");
         ob_start();
