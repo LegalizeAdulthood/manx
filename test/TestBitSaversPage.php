@@ -38,7 +38,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     private $_db;
     /** @var FakeManx */
     private $_manx;
-    /** @var FakeFileSystem */
+    /** @var IFileSystem */
     private $_fileSystem;
     /** @var FakeWhatsNewPageFactory */
     private $_factory;
@@ -56,14 +56,13 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_db = new FakeManxDatabase();
         $this->_manx = new FakeManx();
         $this->_manx->getDatabaseFakeResult = $this->_db;
-        $this->_fileSystem = new FakeFileSystem();
+        $this->_fileSystem = $this->createMock(IFileSystem::class);
         $this->_factory = new FakeWhatsNewPageFactory();
         $this->_info = new FakeUrlInfo();
         $this->_factory->createUrlInfoFakeResult = $this->_info;
         $this->_transfer = new FakeUrlTransfer();
         $this->_factory->createUrlTransferFakeResult = $this->_transfer;
         $this->_file = new FakeFile();
-        $this->_fileSystem->openFileFakeResult = $this->_file;
         $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
     }
 
@@ -78,6 +77,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
             array_push($lines, '2013-10-07 21:02:00 ' . $path);
         }
         $this->_file->getStringFakeResults = array_merge($lines);
+        $this->expectIndexFileOpened();
 
         $this->createPage();
 
@@ -93,6 +93,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->lastModifiedFakeResult = false;
         $this->_factory->getCurrentTimeFakeResult = '12';
+        $this->expectIndexFileOpened();
 
         $this->createPage();
 
@@ -116,6 +117,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->lastModifiedFakeResult = '20';
+        $this->expectIndexFileOpened();
 
         $this->createPage();
 
@@ -483,11 +485,15 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->assertEquals("<h1>No New BitSavers Publications Found</h1>\n", $output);
     }
 
+    private function expectIndexFileOpened()
+    {
+        $this->_fileSystem->expects($this->once())->method('openFile')
+            ->with($this->equalTo(PRIVATE_DIR . INDEX_BY_DATE_FILE), $this->equalTo('r'))
+            ->willReturn($this->_file);
+    }
+
     private function assertFileParsedPaths($paths)
     {
-        $this->assertTrue($this->_fileSystem->openFileCalled);
-        $this->assertEquals(PRIVATE_DIR . INDEX_BY_DATE_FILE, $this->_fileSystem->openFileLastPath);
-        $this->assertEquals('r', $this->_fileSystem->openFileLastMode);
         $this->assertTrue($this->_file->eofCalled);
         $this->assertTrue($this->_file->getStringCalled);
         $this->assertTrue($this->_db->copyExistsForUrlCalled);
