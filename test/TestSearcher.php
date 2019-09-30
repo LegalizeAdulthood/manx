@@ -1,7 +1,6 @@
 <?php
 
 require_once 'pages/Searcher.php';
-require_once 'test/FakeFormatter.php';
 require_once 'test/FakeManxDatabase.php';
 
 class TestSearcher extends PHPUnit\Framework\TestCase
@@ -85,33 +84,26 @@ class TestSearcher extends PHPUnit\Framework\TestCase
             );
         $db->searchForPublicationsFakeResult = $rows;
         $db->getOSTagsForPubFakeResult = array('OpenVMS VAX Version 6.0');
-        $formatter = new FakeFormatter();
+        $formatter = $this->createMock(IFormatter::class);
+        $formatter->expects($this->once())->method('renderResultsBar')
+            ->with($this->equalTo(array()), $this->equalTo(array('graphics', 'terminal')), $this->equalTo(0), $this->equalTo(0), $this->equalTo(1));
+        $formatter->expects($this->exactly(2))->method('renderPageSelectionBar')
+            ->with($this->equalTo(0), $this->equalTo(1), $this->equalTo(10));
+        $rowArgs = $rows;
+        $rowArgs[0]['tags'] = $tags;
+        $formatter->expects($this->once())->method('renderResultsPage')
+            ->with($this->equalTo($rowArgs), $this->equalTo(0), $this->equalTo(0));
         $searcher = Searcher::getInstance($db);
         $keywords = "graphics terminal";
         $company = 1;
 
         $searcher->renderSearchResults($formatter, $company, $keywords, true);
+
         $this->assertTrue($db->searchForPublicationsCalled);
         $this->assertEquals(1, $db->searchForPublicationsLastCompany);
         $this->assertEquals(explode(' ', $keywords), $db->searchForPublicationsLastKeywords);
         $this->assertTrue($db->searchForPublicationsLastOnline);
         $this->assertTrue($db->getOSTagsForPubCalled);
         $this->assertEquals(1, $db->getOSTagsForPubLastPubId);
-        $this->assertTrue($formatter->renderResultsBarCalled);
-        $this->assertEquals(array(), $formatter->renderResultsBarLastIgnoredWords);
-        $this->assertEquals(array('graphics', 'terminal'), $formatter->renderResultsBarLastSearchWords);
-        $this->assertEquals(0, $formatter->renderResultsBarLastStart);
-        $this->assertEquals(0, $formatter->renderResultsBarLastEnd);
-        $this->assertEquals(1, $formatter->renderResultsBarLastTotal);
-        $this->assertTrue($formatter->renderPageSelectionBarCalled);
-        $this->assertEquals(0, $formatter->renderPageSelectionBarLastStart);
-        $this->assertEquals(1, $formatter->renderPageSelectionBarLastTotal);
-        $this->assertEquals(10, $formatter->renderPageSelectionBarLastRowsPerPage);
-        $this->assertTrue($formatter->renderResultsPageCalled);
-        $rows[0]['tags'] = array('OpenVMS VAX Version 6.0');
-        $this->assertEquals($rows, $formatter->renderResultsPageLastRows);
-        $this->assertEquals(0, $formatter->renderResultsPageLastStart);
-        $this->assertEquals(0, $formatter->renderResultsPageLastEnd);
-        $this->assertEquals(2, $formatter->renderPageSelectionBarCallCount);
     }
 }
