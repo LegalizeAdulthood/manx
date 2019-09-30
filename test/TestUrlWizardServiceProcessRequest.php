@@ -133,10 +133,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
     {
         $this->_db->getMirrorsFakeResult = array();
         $this->_db->getCompanyForSiteDirectoryFakeResult = '-1';
-        $this->_curlInfo->expects($this->once())->method('size')->willReturn(1266);
-        $this->_curlInfoFactory->expects($this->once())->method('createUrlInfo')
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo('http://www.bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf'))
-            ->willReturn($this->_curlInfo);
+            ->willReturn($this->_urlInfo);
         $urlBase = '/pdf/univac/1100/UE-637_1108execUG_1970.pdf';
         $vars = self::varsForUrlLookup('http://www.bitsavers.org' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
@@ -169,10 +169,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_db->getSitesFakeResult = self::sitesResultsForChiClassicComp();
         $this->_db->getMirrorsFakeResult = array();
         $this->_db->getCompanyForSiteDirectoryFakeResult = '66';
-        $this->_curlInfo->expects($this->once())->method('size')->willReturn(1266);
-        $this->_curlInfoFactory->expects($this->once())->method('createUrlInfo')
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo('http://chiclassiccomp.org/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf'))
-            ->wilLReturn($this->_curlInfo);
+            ->wilLReturn($this->_urlInfo);
         $urlBase = '/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf';
         $vars = self::varsForUrlLookup('http://chiclassiccomp.org' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
