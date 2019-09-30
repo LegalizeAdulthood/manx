@@ -1,14 +1,13 @@
 <?php
 
 require_once 'cron/BitSaversCleaner.php';
-require_once 'test/FakeManx.php';
 require_once 'test/FakeManxDatabase.php';
 
 class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
 {
     /** @var FakeManxDatabase */
     private $_db;
-    /** @var FakeManx */
+    /** @var IManx */
     private $_manx;
     /** @var IUrlInfo */
     private $_urlInfo;
@@ -22,8 +21,8 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->_db = new FakeManxDatabase();
-        $this->_manx = new FakeManx();
-        $this->_manx->getDatabaseFakeResult = $this->_db;
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
         $this->_urlInfo = $this->createMock(IUrlInfo::class);
         $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_logger = $this->createMock(ILogger::class);
