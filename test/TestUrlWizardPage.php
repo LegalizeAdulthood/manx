@@ -1,7 +1,6 @@
 <?php
 
 require_once 'test/FakeManxDatabase.php';
-require_once 'test/FakeManx.php';
 require_once 'pages/UrlWizardPage.php';
 
 class UrlWizardPageTester extends UrlWizardPage
@@ -38,22 +37,27 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testConstruct()
     {
-        $this->_manx = new FakeManx();
+        $this->_manx = $this->createMock(IManx::class);
         $_SERVER['PATH_INFO'] = '';
         $vars = array();
+
         $page = new URLWizardPage($this->_manx, $vars);
+
         $this->assertTrue(is_object($page));
         $this->assertFalse(is_null($page));
     }
 
     public function testDocumentAdded()
     {
-        $this->_manx = new FakeManx();
-        $this->_manx->addPublicationFakeResult = 19690;
         $db = new FakeManxDatabase();
-        $this->_manx->getDatabaseFakeResult = $db;
+        $this->_manx = $this->createMock(IManx::class);
+	$this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
+	$part = '070-1183-01';
+	$title = '4010 and 4010-1 Maintenance Manual';
+	$keywords = 'terminal graphics';
+	$abstract = 'This is the maintenance manual for Tektronix 4010 terminals.';
         $vars = array(
             'site_directory' => '',
             'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
@@ -75,17 +79,17 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'company_notes' => '',
             'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
             'pub_pub_id' => '-1',
-            'pub_history_ph_title' => '4010 and 4010-1 Maintenance Manual',
+            'pub_history_ph_title' => $title,
             'pub_history_ph_revision' => 'B',
             'pub_history_ph_pub_type' => 'D',
             'pub_history_ph_pub_date' => '1976-04',
-            'pub_history_ph_abstract' => 'This is the maintenance manual for Tektronix 4010 terminals.',
-            'pub_history_ph_part' => '070-1183-01',
+            'pub_history_ph_abstract' => $abstract,
+            'pub_history_ph_part' => $part,
             'pub_history_ph_match_part' => '',
             'pub_history_ph_sort_part' => '',
             'pub_history_ph_alt_part' => '',
             'pub_history_ph_match_alt_part' => '',
-            'pub_history_ph_keywords' => 'terminal graphics',
+            'pub_history_ph_keywords' => $keywords,
             'pub_history_ph_notes' => '',
             'pub_history_ph_class' => '',
             'pub_history_ph_amend_pub' => '',
@@ -93,6 +97,11 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'supersession_search_keywords' => '4010 Maintenance Manual',
             'supersession_old_pub' => '5634',
             'next' => 'Next+%3E');
+	$this->_manx->expects($this->once())->method('addPublication')
+	    ->with($this->anything(), $this->anything(), $this->equalTo($part), $this->anything(), $this->equalTo($title),
+		$this->anything(), $this->anything(), $this->anything(), $this->equalTo($keywords), $this->anything(),
+		$this->equalTo($abstract), $this->anything())
+	    ->willReturn(19690);
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
@@ -103,10 +112,6 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         ob_end_clean();
 
         $this->assertFalse($db->addCompanyCalled);
-        $this->assertTrue($this->_manx->addPublicationCalled);
-        $this->assertEquals($vars['pub_history_ph_title'], $this->_manx->addPublicationLastTitle);
-        $this->assertEquals($vars['pub_history_ph_keywords'], $this->_manx->addPublicationLastKeywords);
-        $this->assertEquals($vars['pub_history_ph_abstract'], $this->_manx->addPublicationLastAbstract);
         $this->assertTrue($db->addSupersessionCalled);
         $this->assertEquals(5634, $db->addSupersessionLastOldPub);
         $this->assertEquals(19690, $db->addSupersessionLastNewPub);
@@ -126,12 +131,15 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testNewBitSaversDirectoryAdded()
     {
-        $this->_manx = new FakeManx();
-        $this->_manx->addPublicationFakeResult = 19690;
+        $this->_manx = $this->createMock(IManx::class);
         $db = new FakeManxDatabase();
-        $this->_manx->getDatabaseFakeResult = $db;
+	$this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
+	$part = '070-1183-01';
+	$title = '4010 and 4010-1 Maintenance Manual';
+	$keywords = 'terminal graphics';
+	$abstract = 'This is the maintenance manual for Tektronix 4010 terminals.';
         $vars = array(
             'site_directory' => '',
             'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
@@ -153,17 +161,17 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'company_notes' => '',
             'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
             'pub_pub_id' => '-1',
-            'pub_history_ph_title' => '4010 and 4010-1 Maintenance Manual',
+            'pub_history_ph_title' => $title,
             'pub_history_ph_revision' => 'B',
             'pub_history_ph_pub_type' => 'D',
             'pub_history_ph_pub_date' => '1976-04',
-            'pub_history_ph_abstract' => 'This is the maintenance manual for Tektronix 4010 terminals.',
-            'pub_history_ph_part' => '070-1183-01',
+            'pub_history_ph_abstract' => $abstract,
+            'pub_history_ph_part' => $part,
             'pub_history_ph_match_part' => '',
             'pub_history_ph_sort_part' => '',
             'pub_history_ph_alt_part' => '',
             'pub_history_ph_match_alt_part' => '',
-            'pub_history_ph_keywords' => 'terminal graphics',
+            'pub_history_ph_keywords' => $keywords,
             'pub_history_ph_notes' => '',
             'pub_history_ph_class' => '',
             'pub_history_ph_amend_pub' => '',
@@ -171,6 +179,11 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'supersession_search_keywords' => '4010 Maintenance Manual',
             'supersession_old_pub' => '5634',
             'next' => 'Next+%3E');
+	$this->_manx->expects($this->once())->method('addPublication')
+	    ->with($this->anything(), $this->anything(), $this->equalTo($part), $this->anything(), $this->equalTo($title),
+		$this->anything(), $this->anything(), $this->anything(), $this->equalTo($keywords), $this->anything(),
+		$this->equalTo($abstract), $this->anything())
+	    ->willReturn(19690);
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
@@ -181,10 +194,6 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         ob_end_clean();
 
         $this->assertFalse($db->addCompanyCalled);
-        $this->assertTrue($this->_manx->addPublicationCalled);
-        $this->assertEquals($vars['pub_history_ph_title'], $this->_manx->addPublicationLastTitle);
-        $this->assertEquals($vars['pub_history_ph_keywords'], $this->_manx->addPublicationLastKeywords);
-        $this->assertEquals($vars['pub_history_ph_abstract'], $this->_manx->addPublicationLastAbstract);
         $this->assertTrue($db->addSupersessionCalled);
         $this->assertEquals(5634, $db->addSupersessionLastOldPub);
         $this->assertEquals(19690, $db->addSupersessionLastNewPub);
@@ -204,12 +213,12 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testNewChiClassicCompDirectoryAdded()
     {
-        $this->_manx = new FakeManx();
-        $this->_manx->addPublicationFakeResult = 19690;
+        $this->_manx = $this->createMock(IManx::class);
         $db = new FakeManxDatabase();
-        $this->_manx->getDatabaseFakeResult = $db;
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
+        $this->_manx->addPublicationFakeResult = 19690;
         $vars = array(
             'site_company_directory' => 'DEC',
             'copy_url' => 'http%3A%2F%2Fchiclassiccomp.org%2Fdocs%2Fcontent%2Fcomputing%2FDEC%2FChicagoDECStore1.jpg',
@@ -267,11 +276,11 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testRenderPage()
     {
-        $this->_manx = new FakeManx();
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $db = new FakeManxDatabase();
-        $this->_manx->getDatabaseFakeResult = $db;
+        $this->_manx = $this->createMock(IManx::class);
+	$this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $vars = array();
         $page = new URLWizardPageTester($this->_manx, $vars);
 
