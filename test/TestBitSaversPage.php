@@ -2,7 +2,6 @@
 
 require_once 'pages/BitSaversPage.php';
 require_once 'test/FakeFile.php';
-require_once 'test/FakeManx.php';
 require_once 'test/FakeManxDatabase.php';
 
 class BitSaversPageTester extends BitSaversPage
@@ -33,7 +32,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     private $_vars;
     /** @var FakeManxDatabase */
     private $_db;
-    /** @var FakeManx */
+    /** @var IManx */
     private $_manx;
     /** @var IFileSystem */
     private $_fileSystem;
@@ -51,8 +50,8 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->_db = new FakeManxDatabase();
-        $this->_manx = new FakeManx();
-        $this->_manx->getDatabaseFakeResult = $this->_db;
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx->method('getDatabase')->willReturn($this->_db);
         $this->_fileSystem = $this->createMock(IFileSystem::class);
         $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(IUrlInfo::class);
