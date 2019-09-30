@@ -3,7 +3,6 @@
 require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeUrlInfo.php';
-require_once 'test/FakeUrlInfoFactory.php';
 require_once 'test/UrlWizardServiceTester.php';
 
 class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
@@ -25,10 +24,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_db->getFormatForExtensionFakeResult = 'PDF';
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $this->_urlInfoFactory = new FakeUrlInfoFactory();
         $this->_urlInfo = new FakeUrlInfo();
         $this->_urlInfo->sizeFakeResult = 1266;
-        $this->_urlInfoFactory->createUrlInfoFakeResult = $this->_urlInfo;
+        $this->_urlInfoFactory = $this->createMock(IUrlInfoFactory::class);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
     }
 
     public function testProcessRequestNonExistentUrl()
