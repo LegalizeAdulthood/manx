@@ -51,13 +51,13 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
     {
         $db = new FakeManxDatabase();
         $this->_manx = $this->createMock(IManx::class);
-	$this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
-	$part = '070-1183-01';
-	$title = '4010 and 4010-1 Maintenance Manual';
-	$keywords = 'terminal graphics';
-	$abstract = 'This is the maintenance manual for Tektronix 4010 terminals.';
+        $part = '070-1183-01';
+        $title = '4010 and 4010-1 Maintenance Manual';
+        $keywords = 'terminal graphics';
+        $abstract = 'This is the maintenance manual for Tektronix 4010 terminals.';
         $vars = array(
             'site_directory' => '',
             'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
@@ -97,11 +97,11 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'supersession_search_keywords' => '4010 Maintenance Manual',
             'supersession_old_pub' => '5634',
             'next' => 'Next+%3E');
-	$this->_manx->expects($this->once())->method('addPublication')
-	    ->with($this->anything(), $this->anything(), $this->equalTo($part), $this->anything(), $this->equalTo($title),
-		$this->anything(), $this->anything(), $this->anything(), $this->equalTo($keywords), $this->anything(),
-		$this->equalTo($abstract), $this->anything())
-	    ->willReturn(19690);
+        $this->_manx->expects($this->once())->method('addPublication')
+            ->with($this->anything(), $this->anything(), $this->equalTo($part), $this->anything(), $this->equalTo($title),
+                $this->anything(), $this->anything(), $this->anything(), $this->equalTo($keywords), $this->anything(),
+                $this->equalTo($abstract), $this->anything())
+            ->willReturn(19690);
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
@@ -133,13 +133,13 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
     {
         $this->_manx = $this->createMock(IManx::class);
         $db = new FakeManxDatabase();
-	$this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
-	$part = '070-1183-01';
-	$title = '4010 and 4010-1 Maintenance Manual';
-	$keywords = 'terminal graphics';
-	$abstract = 'This is the maintenance manual for Tektronix 4010 terminals.';
+        $part = '070-1183-01';
+        $title = '4010 and 4010-1 Maintenance Manual';
+        $keywords = 'terminal graphics';
+        $abstract = 'This is the maintenance manual for Tektronix 4010 terminals.';
         $vars = array(
             'site_directory' => '',
             'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
@@ -179,11 +179,11 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'supersession_search_keywords' => '4010 Maintenance Manual',
             'supersession_old_pub' => '5634',
             'next' => 'Next+%3E');
-	$this->_manx->expects($this->once())->method('addPublication')
-	    ->with($this->anything(), $this->anything(), $this->equalTo($part), $this->anything(), $this->equalTo($title),
-		$this->anything(), $this->anything(), $this->anything(), $this->equalTo($keywords), $this->anything(),
-		$this->equalTo($abstract), $this->anything())
-	    ->willReturn(19690);
+        $this->_manx->expects($this->once())->method('addPublication')
+            ->with($this->anything(), $this->anything(), $this->equalTo($part), $this->anything(), $this->equalTo($title),
+                $this->anything(), $this->anything(), $this->anything(), $this->equalTo($keywords), $this->anything(),
+                $this->equalTo($abstract), $this->anything())
+            ->willReturn(19690);
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
@@ -280,7 +280,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $db = new FakeManxDatabase();
         $this->_manx = $this->createMock(IManx::class);
-	$this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $vars = array();
         $page = new URLWizardPageTester($this->_manx, $vars);
 
