@@ -1,7 +1,5 @@
 <?php
 
-require_once 'test/FakeCurlApi.php';
-require_once 'test/FakeFile.php';
 require_once 'pages/UrlTransfer.php';
 require_once 'pages/Config.php';
 
@@ -9,8 +7,8 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {
-        $this->_curlApi = new FakeCurlApi();
-        $this->_fileSystem = new FakeFileSystem();
+        $this->_curlApi = $this->createMock(ICurlApi::class);
+        $this->_fileSystem = $this->createMock(IFileSystem::class);
     }
 
     private function createInstance($url)
@@ -21,10 +19,8 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $url = 'http://bitsavers.org/Whatsnew.txt';
-        $curlApi = $this->createMock(ICurlApi::class);
-        $fileSystem = $this->createMock(IFileSystem::class);
 
-        $transfer = new UrlTransfer($url, $curlApi, $fileSystem);
+        $transfer = $this->createInstance($url);
 
         $this->assertNotNull($transfer);
     }
@@ -32,14 +28,12 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     public function testGetFailure()
     {
         $url = 'http://bitsavers.org/Whatsnew.txt';
-        $curlApi = $this->createMock(ICurlApi::class);
-        $curlApi->expects($this->once())->method('init');
-        $curlApi->expects($this->once())->method('exec');
-        $curlApi->expects($this->once())->method('getinfo')->willReturn(404);
-        $curlApi->expects($this->once())->method('close');
-        $fileSystem = $this->createMock(IFileSystem::class);
-        $fileSystem->expects($this->never())->method('openFile');
-        $transfer = new UrlTransfer($url, $curlApi, $fileSystem);
+        $this->_curlApi->expects($this->once())->method('init');
+        $this->_curlApi->expects($this->once())->method('exec');
+        $this->_curlApi->expects($this->once())->method('getinfo')->willReturn(404);
+        $this->_curlApi->expects($this->once())->method('close');
+        $this->_fileSystem->expects($this->never())->method('openFile');
+        $transfer = $this->createInstance($url);
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
 
         $result = $transfer->get($destination);
@@ -49,60 +43,44 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
 
     public function testGetSuccessNoOverwrite()
     {
-        $stream = new FakeFile();
-        $this->_fileSystem->openFileFakeResult = $stream;
         $url = 'http://bitsavers.org/Whatsnew.txt';
+        $this->_curlApi->method('getinfo')->willReturn(200);
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
         $tempDestination = $destination . '.tmp';
+        $stream = $this->createMock(IFile::class);
+        $this->_fileSystem->expects($this->once())->method('openFile')->with($this->equalTo($tempDestination), $this->equalTo('w'))->willReturn($stream);
         $contents = "This is the contents";
-        $this->_curlApi->execFakeResult = $contents;
-        $this->_curlApi->getinfoFakeResult = 200;
+        $this->_curlApi->expects($this->once())->method('exec')->willReturn($contents);
         $transfer = $this->createInstance($url);
-        $this->_fileSystem->fileExistsFakeResult = false;
+        $stream->expects($this->once())->method('write')->with($this->equalTo($contents));
+        $stream->expects($this->once())->method('close');
+        $this->_fileSystem->expects($this->once())->method('fileExists')->with($this->equalTo($destination))->willReturn(false);
+        $this->_fileSystem->expects($this->never())->method('unlink');
+        $this->_fileSystem->expects($this->once())->method('rename')->with($this->equalTo($tempDestination), $this->equalTo($destination));
 
         $result = $transfer->get($destination);
 
         $this->assertTrue($result);
-        $this->assertTrue($this->_fileSystem->openFileCalled);
-        $this->assertEquals($tempDestination, $this->_fileSystem->openFileLastPath);
-        $this->assertEquals('w', $this->_fileSystem->openFileLastMode);
-        $this->assertTrue($stream->writeCalled);
-        $this->assertEquals($contents, $stream->writeLastData);
-        $this->assertTrue($stream->closeCalled);
-        $this->assertTrue($this->_fileSystem->fileExistsCalled);
-        $this->assertEquals($destination, $this->_fileSystem->fileExistsLastPath);
-        $this->assertFalse($this->_fileSystem->unlinkCalled);
-        $this->assertTrue($this->_fileSystem->renameCalled);
-        $this->assertEquals($tempDestination, $this->_fileSystem->renameLastOldPath);
-        $this->assertEquals($destination, $this->_fileSystem->renameLastNewPath);
     }
 
     public function testGetSuccessWithOverwrite()
     {
-        $stream = new FakeFile();
-        $this->_fileSystem->openFileFakeResult = $stream;
         $url = 'http://bitsavers.org/Whatsnew.txt';
+        $this->_curlApi->method('getinfo')->willReturn(200);
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
         $tempDestination = $destination . '.tmp';
+        $stream = $this->createMock(IFile::class);
+        $this->_fileSystem->method('openFile')->willReturn($stream);
         $contents = "This is the contents";
-        $this->_curlApi->execFakeResult = $contents;
-        $this->_curlApi->getinfoFakeResult = 200;
+        $this->_curlApi->expects($this->once())->method('exec')->willReturn($contents);
         $transfer = $this->createInstance($url);
-        $this->_fileSystem->fileExistsFakeResult = true;
+        $this->_fileSystem->expects($this->once())->method('fileExists')->with($this->equalTo($destination))->willReturn(true);
+        $this->_fileSystem->expects($this->once())->method('unlink')->with($this->equalTo($destination));
+        $this->_fileSystem->expects($this->once())->method('rename')->with($this->equalTo($tempDestination), $this->equalTo($destination));
 
         $result = $transfer->get($destination);
 
         $this->assertTrue($result);
-        $this->assertTrue($this->_fileSystem->openFileCalled);
-        $this->assertEquals($tempDestination, $this->_fileSystem->openFileLastPath);
-        $this->assertEquals('w', $this->_fileSystem->openFileLastMode);
-        $this->assertTrue($this->_fileSystem->fileExistsCalled);
-        $this->assertEquals($destination, $this->_fileSystem->fileExistsLastPath);
-        $this->assertTrue($this->_fileSystem->unlinkCalled);
-        $this->assertEquals($destination, $this->_fileSystem->unlinkLastPath);
-        $this->assertTrue($this->_fileSystem->renameCalled);
-        $this->assertEquals($tempDestination, $this->_fileSystem->renameLastOldPath);
-        $this->assertEquals($destination, $this->_fileSystem->renameLastNewPath);
     }
 
     private $_curlApi;
