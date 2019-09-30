@@ -268,7 +268,6 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
     public function testRenderPage()
     {
         $this->_manx = new FakeManx();
-        $this->_manx->getUserFromSessionFakeResult = $this->createMock(IUser::class);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $db = new FakeManxDatabase();
