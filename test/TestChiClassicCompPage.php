@@ -54,7 +54,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_manx = new FakeManx();
         $this->_manx->getDatabaseFakeResult = $this->_db;
         $this->_fileSystem = $this->createMock(IFileSystem::class);
-        $this->_factory = $this->createMOck(IWhatsNewPageFactory::classs);
+        $this->_factory = $this->createMOck(IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_factory->createUrlInfoFakeResult = $this->_info;
         $this->_transfer = $this->createMock(IUrlTransfer::class);
