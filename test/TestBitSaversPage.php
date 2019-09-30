@@ -88,7 +88,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn(false);
-        $this->_factory->expects($this->once())->method('getCurrentTime')->willReturn('12');
+        $this->_factory->method('getCurrentTime')->willReturn('12');
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_info);
         $this->expectIndexFileTransferred();
