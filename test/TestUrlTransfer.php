@@ -20,9 +20,9 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
 
     public function testConstruct()
     {
+        $url = 'http://bitsavers.org/Whatsnew.txt';
         $curlApi = $this->createMock(ICurlApi::class);
         $fileSystem = $this->createMock(IFileSystem::class);
-        $url = 'http://bitsavers.org/Whatsnew.txt';
 
         $transfer = new UrlTransfer($url, $curlApi, $fileSystem);
 
@@ -32,19 +32,19 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     public function testGetFailure()
     {
         $url = 'http://bitsavers.org/Whatsnew.txt';
+        $curlApi = $this->createMock(ICurlApi::class);
+        $curlApi->expects($this->once())->method('init');
+        $curlApi->expects($this->once())->method('exec');
+        $curlApi->expects($this->once())->method('getinfo')->willReturn(404);
+        $curlApi->expects($this->once())->method('close');
+        $fileSystem = $this->createMock(IFileSystem::class);
+        $fileSystem->expects($this->never())->method('openFile');
+        $transfer = new UrlTransfer($url, $curlApi, $fileSystem);
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
-        $this->_curlApi->execFakeResult = "";
-        $this->_curlApi->getinfoFakeResult = 404;
-        $transfer = $this->createInstance($url);
 
         $result = $transfer->get($destination);
 
         $this->assertFalse($result);
-        $this->assertTrue($this->_curlApi->initCalled);
-        $this->assertTrue($this->_curlApi->execCalled);
-        $this->assertTrue($this->_curlApi->getinfoCalled);
-        $this->assertTrue($this->_curlApi->closeCalled);
-        $this->assertFalse($this->_fileSystem->openFileCalled);
     }
 
     public function testGetSuccessNoOverwrite()
