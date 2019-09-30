@@ -2,7 +2,6 @@
 
 require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeManx.php';
-require_once 'test/FakeUrlInfo.php';
 require_once 'test/UrlWizardServiceTester.php';
 
 class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
@@ -24,8 +23,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_db->getFormatForExtensionFakeResult = 'PDF';
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $this->_urlInfo = new FakeUrlInfo();
-        $this->_urlInfo->sizeFakeResult = 1266;
+        $this->_urlInfo = $this->createMock(IUrlInfo::class);
         $this->_urlInfoFactory = $this->createMock(IUrlInfoFactory::class);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
     }
@@ -35,9 +33,11 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_db->getMirrorsFakeResult = array();
         $this->_db->getCompanyForSiteDirectoryFakeResult = '-1';
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(false);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo($url))->willReturn($this->_urlInfo);
         $vars = self::varsForUrlLookup($url);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
-        $this->_urlInfo->sizeFakeResult = false;
 
         ob_start();
         $page->processRequest();
@@ -53,6 +53,9 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_db->getMirrorsFakeResult = array();
         $this->_db->getCompanyForSiteDirectoryFakeResult = '-1';
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo($url))->willReturn($this->_urlInfo);
         $vars = self::varsForUrlLookup($url);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
 
@@ -93,6 +96,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
                 )
             ));
         $this->_db->getCompanyForSiteDirectoryFakeResult = '5';
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo('http://bitsavers.trailing-edge.com/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf'))
+            ->willReturn($this->_urlInfo);
         $urlBase = '/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf';
         $vars = self::varsForUrlLookup('http://bitsavers.trailing-edge.com' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
@@ -126,6 +133,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
     {
         $this->_db->getMirrorsFakeResult = array();
         $this->_db->getCompanyForSiteDirectoryFakeResult = '-1';
+        $this->_curlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_curlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo('http://www.bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf'))
+            ->willReturn($this->_curlInfo);
         $urlBase = '/pdf/univac/1100/UE-637_1108execUG_1970.pdf';
         $vars = self::varsForUrlLookup('http://www.bitsavers.org' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
@@ -158,6 +169,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_db->getSitesFakeResult = self::sitesResultsForChiClassicComp();
         $this->_db->getMirrorsFakeResult = array();
         $this->_db->getCompanyForSiteDirectoryFakeResult = '66';
+        $this->_curlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_curlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo('http://chiclassiccomp.org/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf'))
+            ->wilLReturn($this->_curlInfo);
         $urlBase = '/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf';
         $vars = self::varsForUrlLookup('http://chiclassiccomp.org' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
