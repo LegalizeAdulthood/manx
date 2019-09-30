@@ -1,11 +1,9 @@
 <?php
 
 require_once 'pages/ChiClassicCompPage.php';
-require_once 'test/FakeWhatsNewPageFactory.php';
 require_once 'test/FakeFile.php';
 require_once 'test/FakeManx.php';
 require_once 'test/FakeManxDatabase.php';
-require_once 'test/FakeUrlTransfer.php';
 
 class ChiClassicCompPageTester extends ChiClassicCompPage
 {
@@ -39,7 +37,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     private $_manx;
     /** @var IFileSystem */
     private $_fileSystem;
-    /** @var FakeWhatsNewPageFactory */
+    /** @var IWhatsNewPageFactory */
     private $_factory;
     /** @var IUrlInfo */
     private $_info;
@@ -56,11 +54,10 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_manx = new FakeManx();
         $this->_manx->getDatabaseFakeResult = $this->_db;
         $this->_fileSystem = $this->createMock(IFileSystem::class);
-        $this->_factory = new FakeWhatsNewPageFactory();
+        $this->_factory = $this->createMOck(IWhatsNewPageFactory::classs);
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_factory->createUrlInfoFakeResult = $this->_info;
-        $this->_transfer = new FakeUrlTransfer();
-        $this->_factory->createUrlTransferFakeResult = $this->_transfer;
+        $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_file = new FakeFile();
         $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
     }
@@ -86,6 +83,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
             array_push($lines, '2013-10-07 21:02:00 ' . $path);
         }
         $this->_file->getStringFakeResults = array_merge($lines);
+        $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
         $this->createPage();
@@ -101,13 +99,14 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn(false);
-        $this->_factory->getCurrentTimeFakeResult = '12';
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
+        $this->_factory->expects($this->once())->method('getCurrentTime')->willReturn('12');
+        $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
         $this->createPage();
 
-        $this->assertTrue($this->_factory->createUrlInfoCalled);
-        $this->assertEquals(CCC_INDEX_BY_DATE_URL, $this->_factory->createUrlInfoLastUrl);
         $this->assertIndexByDateFileTransferred();
     }
 
@@ -115,16 +114,19 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->toEqual(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
 
         $this->createPage();
-
-        $this->assertFalse($this->_factory->createUrlTransferCalled);
     }
 
     public function testConstructWithLastModifiedNewerThanTimeStampGetsIndexByDateFile()
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn('20');
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->toEqual(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
+        $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
         $this->createPage();
@@ -489,6 +491,12 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->assertEquals("<h1>No New ChiClassicComp Publications Found</h1>\n", $output);
     }
 
+    private function expectIndexFileTransferred()
+    {
+        $this->_factory->expects($this->once())->method('createUrlTransfer')
+            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->wilLReturn($this->_transfer);
+    }
+
     private function expectIndexFileOpened()
     {
         $this->_fileSystem->expects($this->once())->method('openFile')
@@ -597,6 +605,8 @@ EOH;
     {
         $this->_db->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
         $this->createPage($vars);
     }
 
@@ -615,8 +625,6 @@ EOH;
 
     private function assertIndexByDateFileTransferred()
     {
-        $this->assertTrue($this->_factory->createUrlTransferCalled);
-        $this->assertEquals(CCC_INDEX_BY_DATE_URL, $this->_factory->createUrlTransferLastUrl);
         $this->assertTrue($this->_transfer->getCalled);
         $this->assertEquals(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE, $this->_transfer->getLastDestination);
         $this->assertTrue($this->_db->setPropertyCalled);
