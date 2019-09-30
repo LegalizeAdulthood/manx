@@ -1,7 +1,6 @@
 <?php
 
 require_once 'test/FakeManxDatabase.php';
-require_once 'test/FakeManx.php';
 require_once 'test/UrlWizardServiceTester.php';
 
 class TestUrlWizardService extends PHPUnit\Framework\TestCase
@@ -71,7 +70,7 @@ class TestUrlWizardService extends PHPUnit\Framework\TestCase
 
     public function testConstruct()
     {
-        $this->_manx = new FakeManx();
+        $this->_manx = $this->createMock(IManx::class);
         $_SERVER['PATH_INFO'] = '';
         $vars = array();
         $page = new UrlWizardServiceTester($this->_manx, $vars);
