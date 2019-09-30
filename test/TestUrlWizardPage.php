@@ -2,7 +2,6 @@
 
 require_once 'test/FakeManxDatabase.php';
 require_once 'test/FakeManx.php';
-require_once 'test/FakeUser.php';
 require_once 'pages/UrlWizardPage.php';
 
 class UrlWizardPageTester extends UrlWizardPage
@@ -269,7 +268,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
     public function testRenderPage()
     {
         $this->_manx = new FakeManx();
-        $this->_manx->getUserFromSessionFakeResult = new FakeUser();
+        $this->_manx->getUserFromSessionFakeResult = $this->createMock(IUser::class);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $db = new FakeManxDatabase();
