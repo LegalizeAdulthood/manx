@@ -20,11 +20,9 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getOnlineDocumentCount')->willReturn(24);
         $this->_db->expects($this->once())->method('getSiteCount')->willReturn(43);
 
-        $this->startOutputCapture();
         $this->_page->renderDocumentSummary();
-        $output = $this->finishOutputCapture();
 
-        $this->assertEquals("12 manuals, 24 of which are online, at 43 websites", $output);
+        $this->expectOutputString("12 manuals, 24 of which are online, at 43 websites");
     }
 
     public function testRenderCompanyList()
@@ -35,11 +33,9 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
                 array('id' => 2, 'name' => "HP")
             ));
 
-        $this->startOutputCapture();
         $this->_page->renderCompanyList();
-        $output = $this->finishOutputCapture();
 
-        $this->assertEquals('<a href="search.php?cp=1">DEC</a>, <a href="search.php?cp=2">HP</a>', $output);
+        $this->expectOutputString('<a href="search.php?cp=1">DEC</a>, <a href="search.php?cp=2">HP</a>');
     }
 
     public function testRenderSiteList()
@@ -54,24 +50,10 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
             )
         );
 
-        $this->startOutputCapture();
         $this->_page->renderSiteList();
-        $output = $this->finishOutputCapture();
 
-        $this->assertEquals('<ul><li><a href="http://www.dec.com">DEC</a></li>'
-            . '<li><a href="http://www.hp.com">HP</a> <span class="warning">(Low Bandwidth)</span></li></ul>', $output);
-    }
-
-    private function startOutputCapture()
-    {
-        ob_start();
-    }
-
-    private function finishOutputCapture()
-    {
-        $output = ob_get_contents();
-        ob_end_clean();
-        return $output;
+        $this->expectOutputString('<ul><li><a href="http://www.dec.com">DEC</a></li>'
+            . '<li><a href="http://www.hp.com">HP</a> <span class="warning">(Low Bandwidth)</span></li></ul>');
     }
 
     private $_db;

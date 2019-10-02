@@ -161,12 +161,9 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
             ->with('bitsavers')
             ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
 
-        ob_start();
         $this->_page->renderBodyContent();
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(self::expectedOutputForPaths($paths, $idStart), $output);
+        $this->expectOutputString(self::expectedOutputForPaths($paths, $idStart));
     }
 
     public function testRenderBodyContentWithIgnoredPaths()
@@ -186,12 +183,9 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $checks = array('checked', 'checked', 'checked', 'checked', 'checked',
             'checked', 'checked', 'checked', 'checked', 'checked');
 
-        ob_start();
         $this->_page->renderBodyContent();
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(self::expectedOutputForCheckedPaths($paths, $checks, $idStart), $output);
+        $this->expectOutputString(self::expectedOutputForCheckedPaths($paths, $checks, $idStart));
     }
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
@@ -206,12 +200,9 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
             ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
         $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
 
-        ob_start();
         $this->_page->renderBodyContent();
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false), $output);
+        $this->expectOutputString(self::expectedOutputForPaths($paths, $idStart, false));
     }
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPathDescending()
@@ -226,12 +217,9 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
             ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
         $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
 
-        ob_start();
         $this->_page->renderBodyContent();
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false, false), $output);
+        $this->expectOutputString(self::expectedOutputForPaths($paths, $idStart, false, false));
     }
 
     public function testRenderBodyContentGetsNewPaths()
@@ -246,12 +234,9 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
             ->willReturn(self::createResultRowsForUnknownPaths($paths));
         $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
 
-        ob_start();
         $this->_page->renderBodyContent();
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(self::expectedOutputForPaths($paths), $output);
+        $this->expectOutputString(self::expectedOutputForPaths($paths));
     }
 
     public function testIgnorePaths()
@@ -267,26 +252,19 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
 
-        ob_start();
         $this->_page->renderPageSelectionBar(0, 10);
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(
-            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>' . "\n",
-            $output);
+        $this->expectOutputString(
+            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>' . "\n");
     }
 
     public function testRenderPageSelectionBarManyPages()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
 
-        ob_start();
         $this->_page->renderPageSelectionBar(0, 1234);
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(
+        $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=10">2</a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=20">3</a>&nbsp;&nbsp;'
@@ -299,20 +277,16 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
                 . '<a class="navpage" href="bitsavers.php?start=90">10</a>&nbsp;&nbsp;'
                 . '<a href="bitsavers.php?start=10"><b>Next</b></a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=1000"><b>&gt;</b></a>'
-                . '</div>' . "\n",
-            $output);
+                . '</div>' . "\n");
     }
 
     public function testRenderPageSelectionBarManyManyPages()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
 
-        ob_start();
         $this->_page->renderPageSelectionBar(0, 12340, true);
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(
+        $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=10">2</a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=20">3</a>&nbsp;&nbsp;'
@@ -326,20 +300,16 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
                 . '<a href="bitsavers.php?start=10"><b>Next</b></a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=1000"><b>&gt;</b></a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=10000"><b>&gt;&gt;</b></a>'
-                . '</div>' . "\n",
-            $output);
+                . '</div>' . "\n");
     }
 
     public function testRenderPageSelectionBarManyPreviousPages()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 1100, 'sort' => SORT_ORDER_BY_ID));
 
-        ob_start();
         $this->_page->renderPageSelectionBar(1100, 1234, true);
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(
+        $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=100"><b>&lt;</b></a>&nbsp;&nbsp;'
                 . '<a href="bitsavers.php?start=1090"><b>Previous</b></a>&nbsp;&nbsp;'
@@ -354,20 +324,16 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
                 . '<a class="navpage" href="bitsavers.php?start=1180">119</a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=1190">120</a>&nbsp;&nbsp;'
                 . '<a href="bitsavers.php?start=1110"><b>Next</b></a>'
-                . '</div>' . "\n",
-            $output);
+                . '</div>' . "\n");
     }
 
     public function testRenderPageSelectionBar10KPreviousPages()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 10000, 'sort' => SORT_ORDER_BY_ID));
 
-        ob_start();
         $this->_page->renderPageSelectionBar(10000, 12340, true);
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(
+        $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=0"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=9000"><b>&lt;</b></a>&nbsp;&nbsp;'
@@ -384,20 +350,16 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
                 . '<a class="navpage" href="bitsavers.php?start=10090">1010</a>&nbsp;&nbsp;'
                 . '<a href="bitsavers.php?start=10010"><b>Next</b></a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=11000"><b>&gt;</b></a>'
-                . '</div>' . "\n",
-            $output);
+                . '</div>' . "\n");
     }
 
     public function testRenderPageSelectionBarManyManyPreviousPages()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 11000, 'sort' => SORT_ORDER_BY_ID));
 
-        ob_start();
         $this->_page->renderPageSelectionBar(11000, 12340);
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(
+        $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=1000"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=10000"><b>&lt;</b></a>&nbsp;&nbsp;'
@@ -414,8 +376,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
                 . '<a class="navpage" href="bitsavers.php?start=11090">1110</a>&nbsp;&nbsp;'
                 . '<a href="bitsavers.php?start=11010"><b>Next</b></a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=12000"><b>&gt;</b></a>'
-                . '</div>' . "\n",
-            $output);
+                . '</div>' . "\n");
     }
 
     public function testPoundSignEscaped()
@@ -434,12 +395,9 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH));
 
-        ob_start();
         $this->_page->renderPageSelectionBar(0, 1234);
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(
+        $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=10&sort=bypath">2</a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=20&sort=bypath">3</a>&nbsp;&nbsp;'
@@ -452,20 +410,16 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
                 . '<a class="navpage" href="bitsavers.php?start=90&sort=bypath">10</a>&nbsp;&nbsp;'
                 . '<a href="bitsavers.php?start=10&sort=bypath"><b>Next</b></a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=1000&sort=bypath"><b>&gt;</b></a>'
-                . '</div>' . "\n",
-            $output);
+                . '</div>' . "\n");
     }
 
     public function testRenderPageSelectionBarManyPagesByPathDescending()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH_DESCENDING));
 
-        ob_start();
         $this->_page->renderPageSelectionBar(0, 1234);
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals(
+        $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=10&sort=bypathdesc">2</a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=20&sort=bypathdesc">3</a>&nbsp;&nbsp;'
@@ -478,8 +432,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
                 . '<a class="navpage" href="bitsavers.php?start=90&sort=bypathdesc">10</a>&nbsp;&nbsp;'
                 . '<a href="bitsavers.php?start=10&sort=bypathdesc"><b>Next</b></a>&nbsp;&nbsp;'
                 . '<a class="navpage" href="bitsavers.php?start=1000&sort=bypathdesc"><b>&gt;</b></a>'
-                . '</div>' . "\n",
-            $output);
+                . '</div>' . "\n");
     }
 
     public function testRenderBodyContentNoDocuments()
@@ -487,12 +440,9 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->createPageWithoutFetchingIndexByDateFile();
         $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->with('bitsavers')->willReturn(0);
 
-        ob_start();
         $this->_page->renderBodyContent();
-        $output = ob_get_contents();
-        ob_end_clean();
 
-        $this->assertEquals("<h1>No New BitSavers Publications Found</h1>\n", $output);
+        $this->expectOutputString("<h1>No New BitSavers Publications Found</h1>\n");
     }
 
     private function expectIndexFileTransferred()

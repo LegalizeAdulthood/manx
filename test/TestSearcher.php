@@ -13,16 +13,15 @@ class TestSearcher extends PHPUnit\Framework\TestCase
             array('id' => 2, 'name' => '3Com'),
             array('id' => 3, 'name' => 'AT&T'));
         $searcher = Searcher::getInstance($db);
-        ob_start();
+
         $searcher->renderCompanies(1);
-        $output = ob_get_contents();
-        ob_end_clean();
+
         $this->assertTrue($db->getCompanyListCalled);
-        $this->assertEquals('<select id="CP" name="cp">'
+        $this->expectOutputString('<select id="CP" name="cp">'
             . '<option value="1" selected="selected">DEC</option>'
             . '<option value="2">3Com</option>'
             . '<option value="3">AT&amp;T</option>'
-            . '</select>', $output);
+            . '</select>');
     }
 
     public function testParameterSourceHttpGet()

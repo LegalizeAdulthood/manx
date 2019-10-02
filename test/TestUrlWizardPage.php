@@ -106,10 +106,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
 
-        ob_start();
         $page->postPage();
-        $output = ob_get_contents();
-        ob_end_clean();
 
         $this->assertFalse($db->addCompanyCalled);
         $this->assertTrue($db->addSupersessionCalled);
@@ -188,10 +185,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
 
-        ob_start();
         $page->postPage();
-        $output = ob_get_contents();
-        ob_end_clean();
 
         $this->assertFalse($db->addCompanyCalled);
         $this->assertTrue($db->addSupersessionCalled);
@@ -263,10 +257,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
 
-        ob_start();
         $page->postPage();
-        $output = ob_get_contents();
-        ob_end_clean();
 
         $this->assertTrue($db->addSiteDirectoryCalled);
         $this->assertEquals('ChiClassicComp', $db->addSiteDirectoryLastSiteName);
@@ -284,10 +275,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $vars = array();
         $page = new URLWizardPageTester($this->_manx, $vars);
 
-        ob_start();
         $page->renderBodyContent();
-        $output = ob_get_contents();
-        ob_end_clean();
 
         $expected = <<<EOH
 <h1>URL Wizard</h1>
@@ -606,6 +594,6 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 </div>
 
 EOH;
-        $this->assertEquals($expected, $output);
+        $this->expectOutputString($expected);
     }
 }

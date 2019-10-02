@@ -38,13 +38,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $vars = self::varsForUrlLookup($url);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
 
-        ob_start();
         $page->processRequest();
-        $output = ob_get_contents();
-        ob_end_clean();
 
         $expected = json_encode(array('valid' => false));
-        $this->assertEquals($expected, $output);
+        $this->expectOutputString($expected);
     }
 
     public function testProcessRequestNewBitSaversCompany()
@@ -58,10 +55,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $vars = self::varsForUrlLookup($url);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
 
-        ob_start();
         $page->processRequest();
-        $output = ob_get_contents();
-        ob_end_clean();
 
         $expected = json_encode(array(
             'url' => $url,
@@ -77,7 +71,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
             'site_company_directory' => 'sandersAssociates',
             'pubs' => array()
             ));
-        $this->assertEquals($expected, $output);
+        $this->expectOutputString($expected);
         $this->assertTrue($this->_db->getSitesCalled);
         $this->assertTrue($this->_db->getCompanyForSiteDirectoryCalled);
         $this->assertTrue($this->_db->getFormatForExtensionCalled);
@@ -103,10 +97,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $vars = self::varsForUrlLookup('http://bitsavers.trailing-edge.com' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
 
-        ob_start();
         $page->processRequest();
-        $output = ob_get_contents();
-        ob_end_clean();
 
         $expected = json_encode(array(
             'url' => 'http://bitsavers.org' . $urlBase,
@@ -122,7 +113,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
             'site_company_directory' => 'tektronix',
             'pubs' => array()
         ));
-        $this->assertEquals($expected, $output);
+        $this->expectOutputString($expected);
         $this->assertTrue($this->_db->getMirrorsCalled);
         $this->assertTrue($this->_db->getCompanyForSiteDirectoryCalled);
         $this->assertEquals('tektronix', $this->_db->getCompanyForSiteDirectoryLastDir);
@@ -140,10 +131,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $vars = self::varsForUrlLookup('http://www.bitsavers.org' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
 
-        ob_start();
         $page->processRequest();
-        $output = ob_get_contents();
-        ob_end_clean();
 
         $expected = json_encode(array(
             'url' => 'http://bitsavers.org' . $urlBase,
@@ -159,7 +147,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
             'site_company_directory' => 'univac',
             'pubs' => array()
         ));
-        $this->assertEquals($expected, $output);
+        $this->expectOutputString($expected);
         $this->assertEquals('univac', $this->_db->getCompanyForSiteDirectoryLastDir);
     }
 
@@ -176,10 +164,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $vars = self::varsForUrlLookup('http://chiclassiccomp.org' . $urlBase);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
 
-        ob_start();
         $page->processRequest();
-        $output = ob_get_contents();
-        ob_end_clean();
 
         $expected = json_encode(array(
             'url' => 'http://chiclassiccomp.org' . $urlBase,
@@ -195,7 +180,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
             'site_company_directory' => 'Motorola',
             'pubs' => array()
         ));
-        $this->assertEquals($expected, $output);
+        $this->expectOutputString($expected);
         $this->assertTrue($this->_db->getSitesCalled);
         $this->assertTrue($this->_db->getFormatForExtensionCalled);
         $this->assertTrue($this->_db->getCompanyForSiteDirectoryCalled);

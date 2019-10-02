@@ -45,13 +45,10 @@ class TestRssPage extends PHPUnit\Framework\TestCase
         $manx->expects($this->once())->method('getDatabase')->willReturn($db);
         $dtp = new FakeDateTimeProvider();
         $dtp->nowFakeResult = new DateTime("03 Dec 1964 15:00:00 -0400");
-        ob_start();
         $page = new RssPageTester($manx, $dtp);
 
         $page->renderBody();
 
-        $output = ob_get_contents();
-        ob_end_clean();
         $desc = htmlspecialchars(implode("\n", array(
             '<div style="margin: 10px"><p><strong style="color: #089698; background-color: transparent;">The Foo Manual</strong></p>',
             '<table><tbody><tr><td>Company:</td><td><a href="http://manx-docs.org/search.php?cp=5&q=">Digital Equipment Corporation</a></td></tr>',
@@ -83,6 +80,6 @@ class TestRssPage extends PHPUnit\Framework\TestCase
         );
         $this->assertTrue($db->getMostRecentDocumentsCalled);
         $this->assertEquals(200, $db->getMostRecentDocumentsLastCount);
-        $this->assertEquals(implode("\n", $expected) . "\n", $output);
+        $this->expectOutputString(implode("\n", $expected) . "\n");
     }
 }

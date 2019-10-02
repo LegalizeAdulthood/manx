@@ -97,18 +97,6 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_page = new DetailsPage($this->_manx);
     }
 
-    private function startOutputCapture()
-    {
-        ob_start();
-    }
-
-    private function finishOutputCapture()
-    {
-        $output = ob_get_contents();
-        ob_end_clean();
-        return $output;
-    }
-
     public function testDetailParamsForPathInfoCompanyAndId()
     {
         $params = DetailsPage::detailParamsForPathInfo('/1,2');
@@ -137,22 +125,22 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     public function testRenderLanguageEnglishGivesNoOutput()
     {
         $this->createInstance();
-        $this->startOutputCapture();
+
         $this->_page->renderLanguage('+en');
-        $output = $this->finishOutputCapture();
+
         $this->assertFalse($this->_db->getDisplayLanguageCalled);
-        $this->assertEquals('', $output);
+        $this->expectOutputString('');
     }
 
     public function testRenderLanguageFrench()
     {
         $this->createInstance();
         $this->_db->getDisplayLanguageFakeResult['fr'] = 'French';
-        $this->startOutputCapture();
+
         $this->_page->renderLanguage('+fr');
-        $output = $this->finishOutputCapture();
+
         $this->assertTrue($this->_db->getDisplayLanguageCalled);
-        $this->assertEquals("<tr><td>Language:</td><td>French</td></tr>\n", $output);
+        $this->expectOutputString("<tr><td>Language:</td><td>French</td></tr>\n");
     }
 
     public function testRenderLanguageEnglishFrenchGerman()
@@ -161,11 +149,11 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_db->getDisplayLanguageFakeResult['en'] = 'English';
         $this->_db->getDisplayLanguageFakeResult['fr'] = 'French';
         $this->_db->getDisplayLanguageFakeResult['de'] = 'German';
-        $this->startOutputCapture();
+
         $this->_page->renderLanguage('+en+fr+de');
-        $output = $this->finishOutputCapture();
+
         $this->assertTrue($this->_db->getDisplayLanguageCalled);
-        $this->assertEquals("<tr><td>Languages:</td><td>English, French and German</td></tr>\n", $output);
+        $this->expectOutputString("<tr><td>Languages:</td><td>English, French and German</td></tr>\n");
     }
 
     private function assertGetOSTagsForPubCalledForPubId(FakeManxDatabase $db, $pubId)
@@ -184,38 +172,37 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
                 array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09')));
         $this->_db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
 
-        $this->startOutputCapture();
         $this->_page->renderAmendments($pubId);
-        $output = $this->finishOutputCapture();
+
         $this->assertGetOSTagsForPubCalledForPubId($this->_db, $pubId);
         $this->assertTrue($this->_db->getAmendmentsForPubCalled);
         $this->assertEquals($pubId, $this->_db->getAmendmentsForPubLastPubId);
-        $this->assertEquals('<tr valign="top"><td>Amended&nbsp;by:</td>'
+        $this->expectOutputString('<tr valign="top"><td>Amended&nbsp;by:</td>'
             . '<td><ul class="citelist"><li>DEC-15-YWZA-DN1, <a href="../details.php/1,4496"><cite>DDT (Dynamic Debugging Technique) Utility Program</cite></a> (1970-04) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'
             . '<li>DEC-15-YWZA-DN3, <a href="../details.php/1,3301"><cite>SGEN System Generator Utility Program</cite></a> (1970-09) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'
-            . "</ul></td></tr>\n", $output);
+            . "</ul></td></tr>\n");
     }
 
     public function testRenderOSTagsEmpty()
     {
         $this->createInstance();
         $this->_db->getOSTagsForPubFakeResult = array();
-        $this->startOutputCapture();
+
         $this->_page->renderOSTags(3);
-        $output = $this->finishOutputCapture();
+
         $this->assertGetOSTagsForPubCalledForPubId($this->_db, 3);
-        $this->assertEquals('', $output);
+        $this->expectOutputString('');
     }
 
     public function testRenderOSTagsTwoTags()
     {
         $this->createInstance();
         $this->_db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
-        $this->startOutputCapture();
+
         $this->_page->renderOSTags(3);
-        $output = $this->finishOutputCapture();
+
         $this->assertGetOSTagsForPubCalledForPubId($this->_db, 3);
-        $this->assertEquals("<tr><td>Operating System:</td><td>RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</td></tr>\n", $output);
+        $this->expectOutputString("<tr><td>Operating System:</td><td>RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</td></tr>\n");
     }
 
     public function testRenderLongDescriptionEmpty()
@@ -223,12 +210,12 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->createInstance();
         $this->_db->getLongDescriptionForPubFakeResult = array();
         $pubId = 3;
-        $this->startOutputCapture();
+
         $this->_page->renderLongDescription($pubId);
-        $output = $this->finishOutputCapture();
+
         $this->assertTrue($this->_db->getLongDescriptionForPubCalled);
         $this->assertEquals($pubId, $this->_db->getLongDescriptionForPubLastPubId);
-        $this->assertEquals('', $output);
+        $this->expectOutputString('');
     }
 
     public function testRenderLongDescription()
@@ -236,13 +223,13 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->createInstance();
         $this->_db->getLongDescriptionForPubFakeResult = array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>');
         $pubId = 3;
-        $this->startOutputCapture();
+
         $this->_page->renderLongDescription($pubId);
-        $output = $this->finishOutputCapture();
+
         $this->assertTrue($this->_db->getLongDescriptionForPubCalled);
         $this->assertEquals($pubId, $this->_db->getLongDescriptionForPubLastPubId);
-        $this->assertEquals('<tr valign="top"><td>Description:</td>'
-            . "<td><p>This is paragraph one.</p><p>This is paragraph two.</p></td></tr>", $output);
+        $this->expectOutputString('<tr valign="top"><td>Description:</td>'
+            . "<td><p>This is paragraph one.</p><p>This is paragraph two.</p></td></tr>");
     }
 
     public function testFormatDocRefNoPart()
@@ -266,15 +253,15 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
             array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
             array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance')));
         $pubId = 72;
-        $this->startOutputCapture();
+
         $this->_page->renderCitations($pubId);
-        $output = $this->finishOutputCapture();
+
         $this->assertTrue($this->_db->getCitationsForPubCalled);
         $this->assertEquals($pubId, $this->_db->getCitationsForPubLastPubId);
-        $this->assertEquals('<tr valign="top"><td>Cited by:</td>'
+        $this->expectOutputString('<tr valign="top"><td>Cited by:</td>'
             . '<td><ul class="citelist">'
                 . '<li>EK-306AA-MG-001, <a href="../details.php/1,123"><cite>KA655 CPU System Maintenance</cite></a></li>'
-            . "</ul></td></tr>\n", $output);
+            . "</ul></td></tr>\n");
     }
 
     public function testRenderTableOfContents()
@@ -407,13 +394,13 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
                 array(3, 'B.3.2', 'KA655 Unique IPRs'),
                 array(2, 'B.4', 'Global Q22-Bus Address Space Map'),
                 array(1, 'Appendix C', 'Related Documentation')));
-        $this->startOutputCapture();
+
         $this->_page->renderTableOfContents(123, true);
-        $output = $this->finishOutputCapture();
+
         $this->assertTrue($this->_db->getTableOfContentsForPubCalled);
         $this->assertEquals(123, $this->_db->getTableOfContentsForPubLastPubId);
         $this->assertEquals(true, $this->_db->getTableOfContentsForPubLastFullContents);
-        $this->assertEquals("<h2>Table of Contents</h2>\n"
+        $this->expectOutputString("<h2>Table of Contents</h2>\n"
             . "<div class=\"toc\">\n"
             . "<ul>\n"
             . "<li class=\"level1\"><span class=\"level1\">Chapter 1</span> KA655 CPU and Memory Subsystem\n"
@@ -586,7 +573,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
             . "<li class=\"level2\"><span>B.4</span> Global Q22-Bus Address Space Map</li>\n"
             . "</ul></li>\n"
             . "<li class=\"level1\"><span class=\"level1\">Appendix C</span> Related Documentation</li>\n"
-            . "</ul></div>", $output);
+            . "</ul></div>");
     }
 
     public function testRenderCopiesNoAmendment()
@@ -605,10 +592,9 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
                 'http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
                 'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf');
 
-        $this->startOutputCapture();
         $this->_page->renderCopies(123);
-        $output = $this->finishOutputCapture();
-        $this->assertEquals(
+
+        $this->expectOutputString(
             "<h2>Copies</h2>\n"
             . "<table>\n"
             . "<tbody><tr>\n"
@@ -662,7 +648,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
             . "<li style=\"margin: 0; padding: 0\"><a href=\"http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf\">http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf</a></li>"
             . "<li style=\"margin: 0; padding: 0\"><a href=\"http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf\">http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf</a></li></ul></td></tr>"
             . "</tbody>\n"
-            . "</table>\n", $output);
+            . "</table>\n");
     }
 
     public function testRenderSupersessionPubSupersedesOlder()
@@ -671,17 +657,17 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_db->getPublicationsSupersededByPubFakeResult =
             array(array('ph_company' => 1, 'ph_pub' => 23, 'ph_part' => 'EK-11024-TM-PRE', 'ph_title' => 'PDP-11/24 System Technical Manual'));
         $pubId = 6105;
-        $this->startOutputCapture();
+
         $this->_page->renderSupersessions($pubId);
-        $output = $this->finishOutputCapture();
+
         $this->assertTrue($this->_db->getPublicationsSupersededByPubCalled);
         $this->assertEquals($pubId, $this->_db->getPublicationsSupersededByPubLastPubId);
         $this->assertTrue($this->_db->getPublicationsSupersedingPubCalled);
         $this->assertEquals($pubId, $this->_db->getPublicationsSupersedingPubLastPubId);
-        $this->assertEquals('<tr valign="top"><td>Supersedes:</td>'
+        $this->expectOutputString('<tr valign="top"><td>Supersedes:</td>'
             . '<td><ul class="citelist">'
             . '<li>EK-11024-TM-PRE, <a href="../details.php/1,23"><cite>PDP-11/24 System Technical Manual</cite></a></li>'
-            . "</ul></td></tr>\n", $output);
+            . "</ul></td></tr>\n");
     }
 
     public function testRenderSupersessionPubSupersededByNewer()
@@ -690,17 +676,17 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_db->getPublicationsSupersedingPubFakeResult =
             array(array('ph_company' => 1, 'ph_pub' => 6105, 'ph_part' => 'EK-11024-TM-001', 'ph_title' => 'PDP-11/24 System Technical Manual'));
         $pubId = 23;
-        $this->startOutputCapture();
+
         $this->_page->renderSupersessions($pubId);
-        $output = $this->finishOutputCapture();
+
         $this->assertTrue($this->_db->getPublicationsSupersededByPubCalled);
         $this->assertEquals($pubId, $this->_db->getPublicationsSupersededByPubLastPubId);
         $this->assertTrue($this->_db->getPublicationsSupersedingPubCalled);
         $this->assertEquals($pubId, $this->_db->getPublicationsSupersedingPubLastPubId);
-        $this->assertEquals('<tr valign="top"><td>Superseded by:</td>'
+        $this->expectOutputString('<tr valign="top"><td>Superseded by:</td>'
             . '<td><ul class="citelist">'
             . '<li>EK-11024-TM-001, <a href="../details.php/1,6105"><cite>PDP-11/24 System Technical Manual</cite></a></li>'
-            . "</ul></td></tr>\n", $output);
+            . "</ul></td></tr>\n");
     }
 
     public function testRenderCopiesAmended()
@@ -719,10 +705,9 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_db->getAmendedPubFakeResult = array('ph_company' => 57, 'pub_id' => 17971, 'ph_part' => 'AB81-14G',
             'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pub_date' => '1984-02');
 
-        $this->startOutputCapture();
         $this->_page->renderCopies(123);
-        $output = $this->finishOutputCapture();
-        $this->assertEquals(
+
+        $this->expectOutputString(
             "<h2>Copies</h2>\n"
             . "<table>\n"
             . "<tbody><tr>\n"
@@ -757,7 +742,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
             . "<li style=\"margin: 0; padding: 0\"><a href=\"http://computer-refuge.org/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf\">http://computer-refuge.org/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf</a></li>"
             . "<li style=\"margin: 0; padding: 0\"><a href=\"http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf\">http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf</a></li>"
             . "</ul></td></tr></tbody>\n"
-            . "</table>\n", $output);
+            . "</table>\n");
     }
 
     public function testRenderDetails()
@@ -773,11 +758,9 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
         $this->_page = new RenderDetailsTester($this->_manx);
-        $this->startOutputCapture();
 
         $this->_page->renderBodyContent();
 
-        $output = $this->finishOutputCapture();
         $this->assertTrue($this->_page->renderLanguageCalled);
         $this->assertEquals('+en', $this->_page->renderLanguageLastLanguage);
         $this->assertTrue($this->_page->renderAmendmentsCalled);
@@ -804,7 +787,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
             '</tbody>',
             '</table>',
             '</div>')) . "\n";
-        $this->assertEquals($expected, $output);
+        $this->expectOutputString($expected);
     }
 
     public function testReplaceNullWithEmptyStringOrTrimForNull()
