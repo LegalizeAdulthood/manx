@@ -3,7 +3,6 @@
 require_once 'pages/BitSaversPage.php';
 require_once 'test/DatabaseTester.php';
 require_once 'test/FakeFile.php';
-require_once 'test/FakeManxDatabase.php';
 
 class BitSaversPageTester extends BitSaversPage
 {
@@ -31,7 +30,7 @@ class BitSaversPageTester extends BitSaversPage
 class TestBitSaversPage extends PHPUnit\Framework\TestCase
 {
     private $_vars;
-    /** @var FakeManxDatabase */
+    /** @var IManxDatabase */
     private $_db;
     /** @var IManx */
     private $_manx;
@@ -44,26 +43,34 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     /** @var IUrlTransfer */
     private $_transfer;
     /** @var BitSaversPageTester */
-    private $_page;
+    private $_page2;
     /** @var FakeFile */
     private $_file;
 
     protected function setUp()
     {
-        $this->_db = new FakeManxDatabase();
-        $this->_manx = $this->createMock(IManx::class);
-        $this->_manx->method('getDatabase')->willReturn($this->_db);
+	$this->_db = $this->createMock(IManxDatabase::class);
+	$this->_manx = $this->createMock(IManx::class);
+	$this->_manx->method('getDatabase')->willReturn($this->_db);
+
+
+        $this->_db2 = new FakeManxDatabase();
+        $this->_manx2 = $this->createMock(IManx::class);
+        $this->_manx2->method('getDatabase')->willReturn($this->_db2);
+
         $this->_fileSystem = $this->createMock(IFileSystem::class);
         $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_file = new FakeFile();
-        $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
+        $this->_db2->getFormatForExtensionFakeResults['pdf'] = 'PDF';
     }
 
     public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
     {
-        $this->_db->getPropertyFakeResult = false;
+	$this->_db->expects($this->once())->method('getProperty')
+	    ->with(TIMESTAMP_PROPERTY)
+	    ->willReturn(false);
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
         $lines = array();
@@ -74,37 +81,48 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_file->getStringFakeResults = array_merge($lines);
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
+	$this->_db->expects($this->any())->method('copyExistsForUrl')
+	    ->withConsecutive(
+		[ 'http://bitsavers.trailing-edge.com/pdfdec/1.pdf' ],
+		[ 'http://bitsavers.trailing-edge.com/pdfdec/2.pdf' ],
+		[ 'http://bitsavers.trailing-edge.com/pdfdec/3.pdf' ],
+		[ 'http://bitsavers.trailing-edge.com/pdfdec/4.pdf' ],
+		[ 'http://bitsavers.trailing-edge.com/pdfdec/5.pdf' ],
+		[ 'http://bitsavers.trailing-edge.com/pdfdec/6.pdf' ],
+		[ 'http://bitsavers.trailing-edge.com/pdfdec/7.pdf' ],
+		[ 'http://bitsavers.trailing-edge.com/pdfdec/8.pdf' ],
+		[ 'http://bitsavers.trailing-edge.com/pdfdec/9.pdf' ],
+		[ 'http://bitsavers.trailing-edge.com/pdfdec/A.pdf' ]
+	    )
+	    ->willReturn(false);
+	$this->_db->expects($this->never())->method('addSiteUnknownPath');
 
         $this->createPage();
 
         $this->assertTrue(is_object($this->_page));
         $this->assertFalse(is_null($this->_page));
-        $this->assertPropertyRead(TIMESTAMP_PROPERTY);
-        $this->assertIndexByDateFileTransferred();
         $this->assertFileParsedPaths($paths);
     }
 
     public function testConstructWithNoLastModifiedGetsIndexByDateFile()
     {
-        $this->_db->getPropertyFakeResult = '10';
+	$this->_db->expects($this->once())->method('getProperty')->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn(false);
         $this->_factory->method('getCurrentTime')->willReturn('12');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with(INDEX_BY_DATE_URL)->willReturn($this->_info);
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
         $this->createPage();
-
-        $this->assertIndexByDateFileTransferred();
     }
 
     public function testConstructWithLastModifiedEqualsTimeStampDoesNotGetIndexByDateFile()
     {
-        $this->_db->getPropertyFakeResult = '10';
+	$this->_db->expects($this->once())->method('getProperty')->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with(INDEX_BY_DATE_URL)->willReturn($this->_info);
         $this->_factory->expects($this->never())->method('createUrlTransfer');
 
         $this->createPage();
@@ -112,16 +130,14 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
     public function testConstructWithLastModifiedNewerThanTimeStampGetsIndexByDateFile()
     {
-        $this->_db->getPropertyFakeResult = '10';
+	$this->_db->expects($this->once())->method('getProperty')->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn('20');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with(INDEX_BY_DATE_URL)->willReturn($this->_info);
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
         $this->createPage();
-
-        $this->assertIndexByDateFileTransferred();
     }
 
     public function testMenuTypeIsBitSaversPage()
@@ -134,36 +150,39 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     public function testRenderBodyContentWithPlentyOfPaths()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
-        $this->_db->getSiteUnknownPathCountFakeResult = 10;
+        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')
+	    ->with('bitsavers')
+	    ->willReturn(10);
+	$this->_db->expects($this->exactly(10))->method('getFormatForExtension')->willReturn('PDF');
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
         $idStart = 110;
-        $this->_db->getSiteUnknownPathsOrderedByIdFakeResult =
-            self::createResultRowsForUnknownPaths($paths, $idStart);
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
+	    ->with('bitsavers')
+	    ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
 
         ob_start();
         $this->_page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertEquals('bitsavers', $this->_db->getSiteUnknownPathCountLastSiteName);
-        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByIdCalled);
-        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart), $output);
     }
 
     public function testRenderBodyContentWithIgnoredPaths()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
-        $this->_db->getSiteUnknownPathCountFakeResult = 10;
+	$this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
         $paths = array('dec/1.bin', 'dec/2.zip', 'dec/3.dat', 'dec/4.u6', 'dec/5.tar',
             'dec/6.gz', 'dec/7.jpg', 'dec/8.gif', 'dec/9.tif', 'dec/A#A.png');
         $idStart = 110;
-        $this->_db->getSiteUnknownPathsOrderedByIdFakeResult =
-            self::createResultRowsForUnknownPaths($paths, $idStart);
-        $this->_db->getFormatForExtensionFakeResults =
-            array('pdf' => 'PDF', 'jpg' => 'JPEG', 'gif' => 'GIF', 'png' => 'PNG', 'tif' => 'TIFF');
+	$this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
+	    ->with('bitsavers', 0, true)
+	    ->wilLReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
+	$this->_db->expects($this->exactly(10))->method('getFormatForExtension')
+	    ->withConsecutive([ 'bin' ], [ 'zip' ], [ 'dat' ], [ 'u6' ], ['tar' ],
+		[ 'gz' ], [ 'jpg' ], [ 'gif' ], [ 'tif' ], [ 'png' ])
+	    ->willReturn('', '', '', '', '', '', 'JPEG', 'GIF', 'TIFF', 'PNG');
         $checks = array('checked', 'checked', 'checked', 'checked', 'checked',
             'checked', 'checked', 'checked', 'checked', 'checked');
 
@@ -172,54 +191,46 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByIdCalled);
-        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForCheckedPaths($paths, $checks, $idStart), $output);
     }
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH));
-        $this->_db->getSiteUnknownPathCountFakeResult = 10;
+        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
         $paths = array('dec/Q.pdf', 'dec/R.pdf', 'dec/S.pdf', 'dec/T.pdf', 'dec/U.pdf',
             'dec/V.pdf', 'dec/W.pdf', 'dec/X.pdf', 'dec/Y.pdf', 'dec/Z.pdf');
         $idStart = 110;
-        $this->_db->getSiteUnknownPathsOrderedByPathFakeResult =
-            self::createResultRowsForUnknownPaths($paths, $idStart);
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedByPath')
+	    ->with('bitsavers', 0, true)
+	    ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
+	$this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
 
         ob_start();
         $this->_page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByPathCalled);
-        $this->assertEquals('bitsavers', $this->_db->getSiteUnknownPathsOrderedByPathLastSiteName);
-        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByPathLastAscending);
-        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false), $output);
     }
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPathDescending()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH_DESCENDING));
-        $this->_db->getSiteUnknownPathCountFakeResult = 10;
+        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
         $paths = array('dec/Z.pdf', 'dec/Y.pdf', 'dec/X.pdf', 'dec/W.pdf', 'dec/V.pdf',
             'dec/U.pdf', 'dec/T.pdf', 'dec/S.pdf', 'dec/R.pdf', 'dec/Q.pdf');
         $idStart = 110;
-        $this->_db->getSiteUnknownPathsOrderedByPathFakeResult =
-            self::createResultRowsForUnknownPaths($paths, $idStart);
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedByPath')
+	    ->with('bitsavers', 0, false)
+	    ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
+	$this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
 
         ob_start();
         $this->_page->renderBodyContent();
         $output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByPathCalled);
-        $this->assertFalse($this->_db->getSiteUnknownPathsOrderedByPathLastAscending);
-        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->assertEquals(self::expectedOutputForPaths($paths, $idStart, false, false), $output);
     }
 
@@ -228,10 +239,12 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->createPageWithoutFetchingIndexByDateFile();
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
-        $this->_db->getSiteUnknownPathCountFakeResult = count($paths);
+        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(count($paths));
         $this->configureCopiesExistForPaths($paths);
-        $this->_db->getSiteUnknownPathsOrderedByIdFakeResult =
-            self::createResultRowsForUnknownPaths($paths);
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
+	    ->with('bitsavers', 0, true)
+	    ->willReturn(self::createResultRowsForUnknownPaths($paths));
+	$this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
 
         ob_start();
         $this->_page->renderBodyContent();
@@ -245,12 +258,9 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $ignoredPath = 'dec/1.pdf';
         $this->createPageWithoutFetchingIndexByDateFile(array('ignore0' => $ignoredPath));
+	$this->_db->expects($this->once())->method('ignoreSitePath')->with('bitsavers', $ignoredPath);
 
         $this->_page->ignorePaths();
-
-        $this->assertTrue($this->_db->ignoreSitePathCalled);
-        $this->assertEquals('bitsavers', $this->_db->ignoreSitePathLastSiteName);
-        $this->assertEquals($ignoredPath, $this->_db->ignoreSitePathLastPath);
     }
 
     public function testRenderPageSelectionBarOnePage()
@@ -475,7 +485,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     public function testRenderBodyContentNoDocuments()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
-        $this->_db->getSiteUnknownPathCountFakeResult = 0;
+	$this->_db->expects($this->once())->method('getSiteUnknownPathCount')->with('bitsavers')->willReturn(0);
 
         ob_start();
         $this->_page->renderBodyContent();
@@ -488,14 +498,14 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     private function expectIndexFileTransferred()
     {
         $this->_factory->expects($this->once())->method('createUrlTransfer')
-            ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_transfer);
+            ->with(INDEX_BY_DATE_URL)->willReturn($this->_transfer);
         $this->_transfer->expects($this->once())->method('get')->with(PRIVATE_DIR . INDEX_BY_DATE_FILE);
     }
 
     private function expectIndexFileOpened()
     {
         $this->_fileSystem->expects($this->once())->method('openFile')
-            ->with($this->equalTo(PRIVATE_DIR . INDEX_BY_DATE_FILE), $this->equalTo('r'))
+            ->with(PRIVATE_DIR . INDEX_BY_DATE_FILE, 'r')
             ->willReturn($this->_file);
     }
 
@@ -503,13 +513,6 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $this->assertTrue($this->_file->eofCalled);
         $this->assertTrue($this->_file->getStringCalled);
-        $this->assertTrue($this->_db->copyExistsForUrlCalled);
-        $this->assertTrue($this->_db->addSiteUnknownPathCalled);
-        $this->assertContains('bitsavers', $this->_db->addSiteUnknownPathLastSiteNames);
-        foreach ($paths as $path)
-        {
-            $this->assertContains($path, $this->_db->addSiteUnknownPathLastPaths);
-        }
     }
 
     private static function createResultRowsForUnknownPaths($items, $idStart = 1)
@@ -529,7 +532,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         {
             $existing['http://bitsavers.trailing-edge.com/pdf/' . $path] = true;
         }
-        $this->_db->copyExistsForUrlFakeResults = $existing;
+        $this->_db2->copyExistsForUrlFakeResults = $existing;
     }
 
     private static function expectedOutputForPaths($paths, $idStart = 1, $sortById = true, $ascending = true)
@@ -598,10 +601,10 @@ EOH;
 
     private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
     {
-        $this->_db->getPropertyFakeResult = '10';
+        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo(INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with(INDEX_BY_DATE_URL)->willReturn($this->_info);
         $this->createPage($vars);
     }
 
@@ -610,16 +613,5 @@ EOH;
         $_SERVER['PATH_INFO'] = '';
         $this->_vars = $vars;
         $this->_page = new BitSaversPageTester($this->_manx, $this->_vars, $this->_fileSystem, $this->_factory);
-    }
-
-    private function assertPropertyRead($name)
-    {
-        $this->assertTrue($this->_db->getPropertyCalled);
-        $this->assertEquals($name, $this->_db->getPropertyLastName);
-    }
-
-    private function assertIndexByDateFileTransferred()
-    {
-        $this->assertTrue($this->_db->setPropertyCalled);
     }
 }
