@@ -14,6 +14,11 @@ class NewsPage extends PageBase
         print <<<EOH
 <h1>News</h1>
 
+<h2>Version 2.0.7</h2>
+
+<p>Eliminate duplication between bitsavers and ChiClassicComp front ends.
+Use composer for dependency on PHPUnit, update to PHPUnit 6.</p>
+
 <h2>Version 2.0.5</h2>
 
 <p>Minor bug fixes and support for a ChiClassicComp front-end to the
