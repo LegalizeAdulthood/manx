@@ -1,7 +1,7 @@
 <?php
 
 require_once 'pages/ManxDatabase.php';
-require_once 'test/FakeDatabase.php';
+require_once 'test/DatabaseTester.php';
 
 class TestManxDatabase extends PHPUnit\Framework\TestCase
 {
@@ -63,7 +63,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $query = "SELECT `url`,`description`,`low` FROM `site` WHERE `live`='Y' ORDER BY `site_id`";
         $this->_statement->expects($this->once())->method('fetchAll')
-            ->willReturn(FakeDatabase::createResultRowsForColumns(
+            ->willReturn(DatabaseTester::createResultRowsForColumns(
                 array('url', 'description', 'low'),
                 array(array('http://www.dec.com', 'DEC', false), array('http://www.hp.com', 'HP', true))));
         $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
@@ -102,7 +102,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     public function testGetOSTagsForPub()
     {
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            FakeDatabase::createResultRowsForColumns(array('tag_text'),
+            DatabaseTester::createResultRowsForColumns(array('tag_text'),
                 array(array('RSX-11M Version 4.0'), array('RSX-11M-PLUS Version 2.0')))
         );
         $query = "SELECT `tag_text` FROM `tag`,`pub_tag` WHERE `tag`.`id`=`pub_tag`.`tag` AND `tag`.`class`='os' AND `pub`=5";
@@ -120,7 +120,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $query = "SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pub_date` "
             . "FROM `pub` JOIN `pub_history` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            FakeDatabase::createResultRowsForColumns(
+            DatabaseTester::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pub_date'),
                 array(array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
                     array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09'))));
@@ -139,7 +139,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         // Uncomment this code when the method really does a search.
         // $query = "SELECT 'html_text' FROM `long_desc` WHERE `pub`=3 ORDER BY `line`";
         // $this->expectStatementFetchAllResults($query, array()
-        //     FakeDatabase::createResultRowsForColumns(array('html_text'),
+        //     DatabaseTester::createResultRowsForColumns(array('html_text'),
         //         array(array('<p>This is paragraph one.</p>'), array('<p>This is paragraph two.</p>'))));
         $this->_db->expects($this->never())->method('query');
 
@@ -156,7 +156,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . ' JOIN `pub` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=72)'
             . ' JOIN `pub_history` ON `pub`.`pub_history`=`ph_id`';
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            FakeDatabase::createResultRowsForColumns(
+            DatabaseTester::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
                 array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance'))));
         $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
@@ -172,7 +172,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $pubId = 123;
         $query = "SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=123 ORDER BY `line`";
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            FakeDatabase::createResultRowsForColumns(
+            DatabaseTester::createResultRowsForColumns(
                 array('level', 'label', 'name'),
                 array(
                     array(1, 'Chapter 2', 'Configuration'),
@@ -194,7 +194,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $pubId = 123;
         $query = "SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=123 AND `level` < 2 ORDER BY `line`";
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            FakeDatabase::createResultRowsForColumns(
+            DatabaseTester::createResultRowsForColumns(
                 array('level', 'label', 'name'),
                 array(
                     array(1, 'Chapter 1', 'KA655 CPU and Memory Subsystem'),
@@ -225,7 +225,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             'http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
             'http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
             'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf');
-        $rows = FakeDatabase::createResultRowsForColumns(array('mirror_url'),
+        $rows = DatabaseTester::createResultRowsForColumns(array('mirror_url'),
                 array(array($expected[0]), array($expected[1]), array($expected[2]), array($expected[3]), array($expected[4])));
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn($rows);
         $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
@@ -263,7 +263,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . " WHERE `copy`.`site`=`site`.`site_id` AND `pub`=123"
             . " ORDER BY `site`.`display_order`,`site`.`site_id`";
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            FakeDatabase::createResultRowsForColumns(
+            DatabaseTester::createResultRowsForColumns(
             array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
             array(
                 array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, 10277)
@@ -288,7 +288,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . 'JOIN `pub_history` ON `pub`.`pub_history`=`ph_id` '
             . 'JOIN `company` ON `ph_company`=`company`.`id` '
             . 'WHERE 1=1 AND `pub_id`=3';
-        $rows = FakeDatabase::createResultRowsForColumns(
+        $rows = DatabaseTester::createResultRowsForColumns(
             array('pub_id', 'name', 'ph_part', 'ph_pub_date', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
             array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
         $this->_statement->expects($this->once())->method('fetch')->willReturn($rows[0]);
@@ -418,7 +418,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('execute')
             ->with($this->equalTo('SELECT `ph_company`,`ph_pub`,`ph_title` FROM `copy`,`pub_history` WHERE `copy`.`pub`=`pub_history`.`ph_pub` AND `copy`.`url`=?'),
                 $this->equalTo(array($url)))
-            ->willReturn(FakeDatabase::createResultRowsForColumns(
+            ->willReturn(DatabaseTester::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_title'),
                 array(array('1', '2', 'IM1 Schematic'))));
 
@@ -447,7 +447,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . " LIMIT 0,10";
         $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
         $this->_statement->expects($this->once())->method('fetchAll')
-            ->willReturn(FakeDatabase::createResultRowsForColumns(
+            ->willReturn(DatabaseTester::createResultRowsForColumns(
                 array('copy_id', 'ph_company', 'ph_pub', 'ph_title'),
                 array(array('66', '1', '2', 'IM1 Schematic'))
             ));
@@ -465,7 +465,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $query = "SELECT `url` FROM `copy` WHERE `copy_id` = ?";
         $url = 'http://www.example.com/foo.pdf';
-        $rows = FakeDatabase::createResultRowsForColumns(
+        $rows = DatabaseTester::createResultRowsForColumns(
             array('url'),
             array(array($url)));
         $copyId = 5;
@@ -514,7 +514,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('query')
             ->with($this->equalTo($query))->willReturn($this->_statement);
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            FakeDatabase::createResultRowsForColumns(
+            DatabaseTester::createResultRowsForColumns(
                 array('copy_id', 'ph_company', 'ph_pub', 'ph_title'),
                 array(array('66', '1', '2', 'IM1 Schematic'))
             ));
@@ -559,7 +559,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 [ $this->equalTo($insert), $this->equalTo(array(3, 'foo/frob.jpg')) ]
             )
             ->willReturn(
-                FakeDatabase::createResultRowsForColumns(array('site_id'), array(array(3))),
+                DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
                 null
             );
 
@@ -576,7 +576,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 [ $this->equalTo($update), $this->equalTo(array(3, 'foo/frob.jpg')) ]
             )
             ->willReturn(
-                FakeDatabase::createResultRowsForColumns(array('site_id'), array(array(3))),
+                DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
                 null
             );
 
@@ -595,11 +595,11 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 [ $this->equalTo($query), $this->equalTo(array(3)) ]
             )
             ->willReturn(
-                FakeDatabase::createResultRowsForColumns(
+                DatabaseTester::createResultRowsForColumns(
                     array('site_id'),
                     array(array(3))
                 ),
-                FakeDatabase::createResultRowsForColumns(
+                DatabaseTester::createResultRowsForColumns(
                     array('path', 'id', 'site_id'),
                     array(
                         array($path1, '1', '3'), array($path2, '2', '3')
@@ -627,9 +627,9 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 [ $this->equalTo($query), $this->equalTo(array(3)) ]
             )
             ->willReturn(
-                FakeDatabase::createResultRowsForColumns(
+                DatabaseTester::createResultRowsForColumns(
                     array('site_id'), array(array(3))),
-                FakeDatabase::createResultRowsForColumns(
+                DatabaseTester::createResultRowsForColumns(
                     array('path', 'id', 'site_id'), array(array($path2, '2', '3'), array($path1, '1', '3')))
             );
 
@@ -651,9 +651,9 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 [ $this->equalTo($query), $this->equalTo(array(3, 'foo/bar.jpg')) ]
             )
             ->willReturn(
-                FakeDatabase::createResultRowsForColumns(
+                DatabaseTester::createResultRowsForColumns(
                     array('site_id'), array(array(3))),
-                FakeDatabase::createResultRowsForColumns(
+                DatabaseTester::createResultRowsForColumns(
                     array('count'), array(array(1)))
             );
 
@@ -672,9 +672,9 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 [ $this->equalTo($query), $this->equalTo(array(3, 'foo/bar.jpg')) ]
             )
             ->willReturn(
-                FakeDatabase::createResultRowsForColumns(
+                DatabaseTester::createResultRowsForColumns(
                     array('site_id'), array(array(3))),
-                FakeDatabase::createResultRowsForColumns(
+                DatabaseTester::createResultRowsForColumns(
                     array('count'), array(array(0)))
             );
 

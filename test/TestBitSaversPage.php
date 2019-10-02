@@ -1,6 +1,7 @@
 <?php
 
 require_once 'pages/BitSaversPage.php';
+require_once 'test/DatabaseTester.php';
 require_once 'test/FakeFile.php';
 require_once 'test/FakeManxDatabase.php';
 
@@ -518,7 +519,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         {
             $items[$i] = array($id++, $items[$i]);
         }
-        return FakeDatabase::createResultRowsForColumns(array('id', 'path'), $items);
+        return DatabaseTester::createResultRowsForColumns(array('id', 'path'), $items);
     }
 
     private function configureCopiesExistForPaths($paths)

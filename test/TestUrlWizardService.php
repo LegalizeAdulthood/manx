@@ -1,5 +1,6 @@
 <?php
 
+require_once 'test/DatabaseTester.php';
 require_once 'test/FakeManxDatabase.php';
 require_once 'test/UrlWizardServiceTester.php';
 
@@ -139,10 +140,10 @@ class TestUrlWizardService extends PHPUnit\Framework\TestCase
     private function createPublicationsForCompare($leftPart, $leftRev, $leftTitle, $rightPart, $rightRev, $rightTitle)
     {
         $columns = array('ph_pub', 'ph_part', 'ph_revision', 'ph_title');
-        $left = FakeDatabase::createResultRowsForColumns($columns,
+        $left = DatabaseTester::createResultRowsForColumns($columns,
             array(array('1', $leftPart, $leftRev, $leftTitle)));
         $left = $left[0];
-        $right = FakeDatabase::createResultRowsForColumns($columns,
+        $right = DatabaseTester::createResultRowsForColumns($columns,
             array(array('2', $rightPart, $rightRev, $rightTitle)));
         $right = $right[0];
         return array($left, $right);

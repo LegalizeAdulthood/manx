@@ -1,6 +1,7 @@
 <?php
 
 require_once 'pages/AboutPage.php';
+require_once 'test/DatabaseTester.php';
 require_once 'test/FakeManxDatabase.php';
 
 class TestAboutPage extends PHPUnit\Framework\TestCase
@@ -61,7 +62,7 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
     public function testRenderSiteList()
     {
         $this->createInstance();
-        $this->_db->getSiteListFakeResult = FakeDatabase::createResultRowsForColumns(
+        $this->_db->getSiteListFakeResult = DatabaseTester::createResultRowsForColumns(
             array('url', 'description', 'low'),
             array(
                 array('http://www.dec.com', 'DEC', false),

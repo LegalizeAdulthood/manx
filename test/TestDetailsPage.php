@@ -1,6 +1,7 @@
 <?php
 
 require_once 'pages/DetailsPage.php';
+require_once 'test/DatabaseTester.php';
 require_once 'test/FakeManxDatabase.php';
 
 class RenderDetailsTester extends DetailsPage
@@ -177,7 +178,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     {
         $this->createInstance();
         $pubId = 3;
-        $this->_db->getAmendmentsForPubFakeResult = FakeDatabase::createResultRowsForColumns(
+        $this->_db->getAmendmentsForPubFakeResult = DatabaseTester::createResultRowsForColumns(
             array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pub_date'),
             array(array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
                 array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09')));
@@ -261,7 +262,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     public function testRenderCitations()
     {
         $this->createInstance();
-        $this->_db->getCitationsForPubFakeResult =FakeDatabase::createResultRowsForColumns(
+        $this->_db->getCitationsForPubFakeResult =DatabaseTester::createResultRowsForColumns(
             array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
             array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance')));
         $pubId = 72;
@@ -279,7 +280,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     public function testRenderTableOfContents()
     {
         $this->createInstance();
-        $this->_db->getTableOfContentsForPubFakeResult = FakeDatabase::createResultRowsForColumns(
+        $this->_db->getTableOfContentsForPubFakeResult = DatabaseTester::createResultRowsForColumns(
             array('level', 'label', 'name'),
             array(
                 array(1, 'Chapter 1', 'KA655 CPU and Memory Subsystem'),
@@ -591,7 +592,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     public function testRenderCopiesNoAmendment()
     {
         $this->createInstance();
-        $this->_db->getCopiesForPubFakeResult = FakeDatabase::createResultRowsForColumns(
+        $this->_db->getCopiesForPubFakeResult = DatabaseTester::createResultRowsForColumns(
             array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
             array(
                 array('PDF', 'http://vt100.net/mirror/hcps/306aamg1.pdf', NULL, 49351262, 'VT100.net', 'http://vt100.net/', "Paul Williams' VT100.net", 'http://vt100.net/', 'N', NULL, NULL, NULL, 7165),
@@ -705,7 +706,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     public function testRenderCopiesAmended()
     {
         $this->createInstance();
-        $this->_db->getCopiesForPubFakeResult = FakeDatabase::createResultRowsForColumns(
+        $this->_db->getCopiesForPubFakeResult = DatabaseTester::createResultRowsForColumns(
             array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
             array(
                 array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, 10277)
@@ -763,7 +764,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     {
         $_SERVER['PATH_INFO'] = '/1,3';
         $this->_db = new FakeManxDatabase();
-        $rows = FakeDatabase::createResultRowsForColumns(
+        $rows = DatabaseTester::createResultRowsForColumns(
             array('pub_id', 'name', 'ph_part', 'ph_pub_date', 'ph_title', 'ph_abstract',
                 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
             array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL,

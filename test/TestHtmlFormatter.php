@@ -1,5 +1,5 @@
 <?php
-require_once 'test/FakeDatabase.php';
+require_once 'test/DatabaseTester.php';
 require_once 'pages/HtmlFormatter.php';
 
 class TestHtmlFormatter extends PHPUnit\Framework\TestCase
@@ -148,7 +148,7 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
     public function testRenderResultsPage()
     {
         $formatter = HtmlFormatter::getInstance();
-        $rows = FakeDatabase::createResultRowsForColumns(
+        $rows = DatabaseTester::createResultRowsForColumns(
             array('pub_id', 'ph_part', 'ph_title', 'pub_has_online_copies',
                 'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pub_date',
                 'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pub_type', 'tags'),
