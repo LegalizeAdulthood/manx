@@ -8,17 +8,17 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $_SERVER['PATH_INFO'] = '';
-	$this->_db = $this->createMock(IManxDatabase::class);
-	$this->_manx = $this->createMock(IManx::class);
-	$this->_manx->expects($this->any())->method('getDatabase')->willReturn($this->_db);
-	$this->_page = new AboutPage($this->_manx);
+        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx->expects($this->any())->method('getDatabase')->willReturn($this->_db);
+        $this->_page = new AboutPage($this->_manx);
     }
 
     public function testRenderDocumentSummary()
     {
-	$this->_db->expects($this->once())->method('getDocumentCount')->willReturn(12);
-	$this->_db->expects($this->once())->method('getOnlineDocumentCount')->willReturn(24);
-	$this->_db->expects($this->once())->method('getSiteCount')->willReturn(43);
+        $this->_db->expects($this->once())->method('getDocumentCount')->willReturn(12);
+        $this->_db->expects($this->once())->method('getOnlineDocumentCount')->willReturn(24);
+        $this->_db->expects($this->once())->method('getSiteCount')->willReturn(43);
 
         $this->startOutputCapture();
         $this->_page->renderDocumentSummary();
@@ -29,11 +29,11 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
 
     public function testRenderCompanyList()
     {
-	$this->_db->expects($this->once())->method('getCompanyList')->willReturn(
-	    array(
-		array('id' => 1, 'name' => "DEC"),
-		array('id' => 2, 'name' => "HP")
-	    ));
+        $this->_db->expects($this->once())->method('getCompanyList')->willReturn(
+            array(
+                array('id' => 1, 'name' => "DEC"),
+                array('id' => 2, 'name' => "HP")
+            ));
 
         $this->startOutputCapture();
         $this->_page->renderCompanyList();
@@ -44,15 +44,15 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
 
     public function testRenderSiteList()
     {
-	$this->_db->expects($this->once())->method('getSiteList')->willReturn(
-	    DatabaseTester::createResultRowsForColumns(
-		array('url', 'description', 'low'),
-		array(
-		    array('http://www.dec.com', 'DEC', false),
-		    array('http://www.hp.com', 'HP', true)
-		)
-	    )
-	);
+        $this->_db->expects($this->once())->method('getSiteList')->willReturn(
+            DatabaseTester::createResultRowsForColumns(
+                array('url', 'description', 'low'),
+                array(
+                    array('http://www.dec.com', 'DEC', false),
+                    array('http://www.hp.com', 'HP', true)
+                )
+            )
+        );
 
         $this->startOutputCapture();
         $this->_page->renderSiteList();

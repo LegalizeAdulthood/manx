@@ -23,19 +23,19 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_logger = $this->createMock(ILogger::class);
 
-	$this->_db = $this->createMock(IManxDatabase::class);
-	$this->_manx = $this->createMock(IManx::class);
-	$this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
-	$this->_cleaner = new BitSaversCleaner($this->_manx, $this->_factory, $this->_logger);
+        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
+        $this->_cleaner = new BitSaversCleaner($this->_manx, $this->_factory, $this->_logger);
     }
 
     public function testNonExistentPathsAreRemoved()
     {
-	$this->_db->expects($this->once())->method('getAllSiteUnknownPaths')
-	    ->with('bitsavers')
-	    ->willReturn( array( array('id' => 1, 'path' => 'foo/path.pdf') ) );
-	$this->_db->expects($this->once())->method('removeSiteUnknownPathById')
-	    ->with('bitsavers', 1);
+        $this->_db->expects($this->once())->method('getAllSiteUnknownPaths')
+            ->with('bitsavers')
+            ->willReturn( array( array('id' => 1, 'path' => 'foo/path.pdf') ) );
+        $this->_db->expects($this->once())->method('removeSiteUnknownPathById')
+            ->with('bitsavers', 1);
         $this->_urlInfo->expects($this->once())->method('exists')->willReturn(false);
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo('http://bitsavers.trailing-edge.com/pdf/foo/path.pdf'))
@@ -46,10 +46,10 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
 
     public function testExistingPathsAreKept()
     {
-	$this->_db->expects($this->once())->method('getAllSiteUnknownPaths')
-	    ->willReturn(array(
-		array('id' => 1, 'path' => 'foo/path.pdf')
-	    ));
+        $this->_db->expects($this->once())->method('getAllSiteUnknownPaths')
+            ->willReturn(array(
+                array('id' => 1, 'path' => 'foo/path.pdf')
+            ));
         $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
         $this->_factory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
 
@@ -58,10 +58,10 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
 
     public function testPathsEscapeSpecialChars()
     {
-	$this->_db->expects($this->once())->method('getAllSiteUnknownPaths')
-	    ->willReturn(array(
-		array('id' => 1, 'path' => 'foo/path#1.pdf')
-	    ));
+        $this->_db->expects($this->once())->method('getAllSiteUnknownPaths')
+            ->willReturn(array(
+                array('id' => 1, 'path' => 'foo/path#1.pdf')
+            ));
         $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo('http://bitsavers.trailing-edge.com/pdf/foo/path%231.pdf'))
@@ -73,19 +73,19 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     public function testMovedFilesAreUpdated()
     {
         $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
-	$this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
-	    ->with($this->equalTo('bitsavers'))
-	    ->willReturn( array(
-		array('path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
-		    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'md5' => $md5)
-	    ));
-	$this->_db->expects($this->once())->method('siteFileMoved')
-	    ->with(
-		$this->equalTo('bitsavers'),
-		$this->equalTo(10),
-		$this->equalTo(16),
-		$this->equalTo('http://bitsavers.org/pdf/hp/newDir/foo.pdf')
-	    );
+        $this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
+            ->with($this->equalTo('bitsavers'))
+            ->willReturn( array(
+                array('path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
+                    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'md5' => $md5)
+            ));
+        $this->_db->expects($this->once())->method('siteFileMoved')
+            ->with(
+                $this->equalTo('bitsavers'),
+                $this->equalTo(10),
+                $this->equalTo(16),
+                $this->equalTo('http://bitsavers.org/pdf/hp/newDir/foo.pdf')
+            );
         $this->_urlInfo->expects($this->once())->method('md5')->willReturn($md5);
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo('http://bitsavers.trailing-edge.com/pdf/hp/newDir/foo.pdf'))
