@@ -221,7 +221,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
         $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(count($paths));
-	$this->_db->expects($this->never())->method('copyExistsForUrl');
+        $this->_db->expects($this->never())->method('copyExistsForUrl');
         $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
             ->with('bitsavers', 0, true)
             ->willReturn(self::createResultRowsForUnknownPaths($paths));
