@@ -80,7 +80,7 @@ class WhatsNewPageBase extends AdminPageBase
 
     private function pathUnknown($line)
     {
-        $url = $this->_urlBase . self::escapeSpecialChars($line);
+        $url = $this->_urlBase . '/' . self::escapeSpecialChars($line);
         return $this->_manxDb->copyExistsForUrl($url) === false
             && $this->_manxDb->siteIgnoredPath($this->_siteName, $line) === false;
     }

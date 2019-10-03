@@ -83,16 +83,16 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->expectIndexFileOpened();
         $this->_db->expects($this->any())->method('copyExistsForUrl')
             ->withConsecutive(
-                [ 'http://bitsavers.trailing-edge.com/pdfdec/1.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdfdec/2.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdfdec/3.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdfdec/4.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdfdec/5.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdfdec/6.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdfdec/7.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdfdec/8.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdfdec/9.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdfdec/A.pdf' ]
+                [ 'http://bitsavers.trailing-edge.com/pdf/dec/1.pdf' ],
+                [ 'http://bitsavers.trailing-edge.com/pdf/dec/2.pdf' ],
+                [ 'http://bitsavers.trailing-edge.com/pdf/dec/3.pdf' ],
+                [ 'http://bitsavers.trailing-edge.com/pdf/dec/4.pdf' ],
+                [ 'http://bitsavers.trailing-edge.com/pdf/dec/5.pdf' ],
+                [ 'http://bitsavers.trailing-edge.com/pdf/dec/6.pdf' ],
+                [ 'http://bitsavers.trailing-edge.com/pdf/dec/7.pdf' ],
+                [ 'http://bitsavers.trailing-edge.com/pdf/dec/8.pdf' ],
+                [ 'http://bitsavers.trailing-edge.com/pdf/dec/9.pdf' ],
+                [ 'http://bitsavers.trailing-edge.com/pdf/dec/A.pdf' ]
             )
             ->willReturn(false);
         $this->_db->expects($this->never())->method('addSiteUnknownPath');
