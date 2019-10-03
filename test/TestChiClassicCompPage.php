@@ -3,7 +3,6 @@
 require_once 'pages/ChiClassicCompPage.php';
 require_once 'test/DatabaseTester.php';
 require_once 'test/FakeFile.php';
-require_once 'test/FakeManxDatabase.php';
 
 class ChiClassicCompPageTester extends ChiClassicCompPage
 {
@@ -31,7 +30,7 @@ class ChiClassicCompPageTester extends ChiClassicCompPage
 class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
 {
     private $_vars;
-    /** @var FakeManxDatabase */
+    /** @var IManxDatabase */
     private $_db;
     /** @var IManx */
     private $_manx;
@@ -50,21 +49,21 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $this->_db = new FakeManxDatabase();
+        $this->_db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->method('getDatabase')->willReturn($this->_db);
         $this->_fileSystem = $this->createMock(IFileSystem::class);
-        $this->_factory = $this->createMOck(IWhatsNewPageFactory::class);
+        $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(IUrlInfo::class);
-        $this->_factory->createUrlInfoFakeResult = $this->_info;
         $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_file = new FakeFile();
-        $this->_db->getFormatForExtensionFakeResults['pdf'] = 'PDF';
     }
 
     public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
     {
-        $this->_db->getPropertyFakeResult = false;
+        $this->_db->expects($this->once())->method('getProperty')
+            ->with(CCC_TIMESTAMP_PROPERTY)
+            ->willReturn(false);
         $paths = array(
             'computing/_Punchedcards/Sears.jpg',
             'computing/_Punchedcards/harrisbankhollerithcard2.png',
@@ -85,34 +84,45 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_file->getStringFakeResults = array_merge($lines);
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
+        $this->_db->expects($this->any())->method('copyExistsForUrl')
+            ->withConsecutive(
+                [ 'http://chiclassiccomp.org/docs/content/computing/_Punchedcards/Sears.jpg' ],
+                [ 'http://chiclassiccomp.org/docs/content/computing/_Punchedcards/harrisbankhollerithcard2.png' ],
+                [ 'http://chiclassiccomp.org/docs/content/computing/DEC/Pathworks/AA-MF87D-TH_PathworksDOSWindowsSupportGuide_Aug91.pdf' ],
+                [ 'http://chiclassiccomp.org/docs/content/computing/Morrow/Morrow_TRICEPBrochure.pdf' ],
+                [ 'http://chiclassiccomp.org/docs/content/telephony/BellSystem/512-740-405-I03_7028+7028M+27028+27028MSetsSpeakerphone4A_Apr79.pdf' ],
+                [ 'http://chiclassiccomp.org/docs/content/telephony/BellSystem/512-700-100-I2_4ASpeakerphoneSystem_Sept74.pdf' ],
+                [ 'http://chiclassiccomp.org/docs/content/telephony/BellSystem/512-700-100-I4_4ASpeakerphoneSystem_May78.pdf' ],
+                [ 'http://chiclassiccomp.org/docs/content/telephony/BellSystem/100-100-101_35-TypeTestSets.pdf' ],
+                [ 'http://chiclassiccomp.org/docs/content/computing/IBM/Mainframe/Hardware/System/GC20-2021-2_Guide4381Processor_Apr86.pdf' ],
+                [ 'http://chiclassiccomp.org/docs/content/telephony/SouthernBell/PTC320-L1_Relay&ApparatusAdjustment_BellSystemPracticesUnit1.pdf' ]
+            )
+            ->willReturn(false);
+        $this->_db->expects($this->never())->method('addSiteUnknownPath');
 
         $this->createPage();
 
         $this->assertTrue(is_object($this->_page));
         $this->assertFalse(is_null($this->_page));
-        $this->assertPropertyRead(CCC_TIMESTAMP_PROPERTY);
-        $this->assertIndexByDateFileTransferred();
         $this->assertFileParsedPaths($paths);
     }
 
     public function testConstructWithNoLastModifiedGetsIndexByDateFile()
     {
-        $this->_db->getPropertyFakeResult = '10';
+        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn(false);
+        $this->_factory->method('getCurrentTime')->willReturn('12');
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
-        $this->_factory->method('getCurrentTime')->willReturn('12');
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
         $this->createPage();
-
-        $this->assertIndexByDateFileTransferred();
     }
 
     public function testConstructWithLastModifiedEqualsTimeStampDoesNotGetIndexByDateFile()
     {
-        $this->_db->getPropertyFakeResult = '10';
+        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
@@ -122,7 +132,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
 
     public function testConstructWithLastModifiedNewerThanTimeStampGetsIndexByDateFile()
     {
-        $this->_db->getPropertyFakeResult = '10';
+        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn('20');
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
@@ -130,8 +140,6 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->expectIndexFileOpened();
 
         $this->createPage();
-
-        $this->assertIndexByDateFileTransferred();
     }
 
     public function testMenuTypeIsChiClassicCompPage()
@@ -144,78 +152,75 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     public function testRenderBodyContentWithPlentyOfPaths()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
-        $this->_db->getSiteUnknownPathCountFakeResult = 10;
+        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')
+            ->with('ChiClassicComp')
+            ->willReturn(10);
+        $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->willReturn('PDF');
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
         $idStart = 110;
-        $this->_db->getSiteUnknownPathsOrderedByIdFakeResult =
-            self::createResultRowsForUnknownPaths($paths, $idStart);
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
+            ->with('ChiClassicComp')
+            ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
 
         $this->_page->renderBodyContent();
 
-        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByIdCalled);
-        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->expectOutputString(self::expectedOutputForPaths($paths, $idStart));
     }
 
     public function testRenderBodyContentWithIgnoredPaths()
     {
         $this->createPageWithoutFetchingIndexByDateFile();
-        $this->_db->getSiteUnknownPathCountFakeResult = 10;
+        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
         $paths = array('dec/1.bin', 'dec/2.zip', 'dec/3.dat', 'dec/4.u6', 'dec/5.tar',
             'dec/6.gz', 'dec/7.jpg', 'dec/8.gif', 'dec/9.tif', 'dec/A#A.png');
         $idStart = 110;
-        $this->_db->getSiteUnknownPathsOrderedByIdFakeResult =
-            self::createResultRowsForUnknownPaths($paths, $idStart);
-        $this->_db->getFormatForExtensionFakeResults =
-            array('pdf' => 'PDF', 'jpg' => 'JPEG', 'gif' => 'GIF', 'png' => 'PNG', 'tif' => 'TIFF');
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
+            ->with('ChiClassicComp', 0, true)
+            ->wilLReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
+        $this->_db->expects($this->exactly(10))->method('getFormatForExtension')
+            ->withConsecutive([ 'bin' ], [ 'zip' ], [ 'dat' ], [ 'u6' ], ['tar' ],
+                [ 'gz' ], [ 'jpg' ], [ 'gif' ], [ 'tif' ], [ 'png' ])
+            ->willReturn('', '', '', '', '', '', 'JPEG', 'GIF', 'TIFF', 'PNG');
         $checks = array('checked', 'checked', 'checked', 'checked', 'checked',
             'checked', 'checked', 'checked', 'checked', 'checked');
 
         $this->_page->renderBodyContent();
 
-        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByIdCalled);
-        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->expectOutputString(self::expectedOutputForCheckedPaths($paths, $checks, $idStart));
     }
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH));
-        $this->_db->getSiteUnknownPathCountFakeResult = 10;
+        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
         $paths = array('dec/Q.pdf', 'dec/R.pdf', 'dec/S.pdf', 'dec/T.pdf', 'dec/U.pdf',
             'dec/V.pdf', 'dec/W.pdf', 'dec/X.pdf', 'dec/Y.pdf', 'dec/Z.pdf');
         $idStart = 110;
-        $this->_db->getSiteUnknownPathsOrderedByPathFakeResult =
-            self::createResultRowsForUnknownPaths($paths, $idStart);
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedByPath')
+            ->with('ChiClassicComp', 0, true)
+            ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
+        $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
 
         $this->_page->renderBodyContent();
 
-        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByPathCalled);
-        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByPathLastAscending);
-        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->expectOutputString(self::expectedOutputForPaths($paths, $idStart, false));
     }
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPathDescending()
     {
         $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH_DESCENDING));
-        $this->_db->getSiteUnknownPathCountFakeResult = 10;
+        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
         $paths = array('dec/Z.pdf', 'dec/Y.pdf', 'dec/X.pdf', 'dec/W.pdf', 'dec/V.pdf',
             'dec/U.pdf', 'dec/T.pdf', 'dec/S.pdf', 'dec/R.pdf', 'dec/Q.pdf');
         $idStart = 110;
-        $this->_db->getSiteUnknownPathsOrderedByPathFakeResult =
-            self::createResultRowsForUnknownPaths($paths, $idStart);
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedByPath')
+            ->with('ChiClassicComp', 0, false)
+            ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
+        $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
 
         $this->_page->renderBodyContent();
 
-        $this->assertTrue($this->_db->getSiteUnknownPathCountCalled);
-        $this->assertTrue($this->_db->getSiteUnknownPathsOrderedByPathCalled);
-        $this->assertFalse($this->_db->getSiteUnknownPathsOrderedByPathLastAscending);
-        $this->assertEquals(0, $this->_db->getSiteUnknownPathsOrderedByIdLastStart);
         $this->expectOutputString(self::expectedOutputForPaths($paths, $idStart, false, false));
     }
 
@@ -224,10 +229,12 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->createPageWithoutFetchingIndexByDateFile();
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
-        $this->_db->getSiteUnknownPathCountFakeResult = count($paths);
-        $this->configureCopiesExistForPaths($paths);
-        $this->_db->getSiteUnknownPathsOrderedByIdFakeResult =
-            self::createResultRowsForUnknownPaths($paths);
+        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(count($paths));
+        $this->_db->expects($this->never())->method('copyExistsForUrl');
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
+            ->with('ChiClassicComp', 0, true)
+            ->willReturn(self::createResultRowsForUnknownPaths($paths));
+        $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
 
         $this->_page->renderBodyContent();
 
@@ -238,10 +245,8 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     {
         $ignoredPath = 'dec/1.pdf';
         $this->createPageWithoutFetchingIndexByDateFile(array('ignore0' => $ignoredPath));
+
         $this->_page->ignorePaths();
-        $this->assertTrue($this->_db->ignoreSitePathCalled);
-        $this->assertEquals('ChiClassicComp', $this->_db->ignoreSitePathLastSiteName);
-        $this->assertEquals($ignoredPath, $this->_db->ignoreSitePathLastPath);
     }
 
     public function testRenderPageSelectionBarOnePage()
@@ -251,7 +256,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_page->renderPageSelectionBar(0, 10);
 
         $this->expectOutputString(
-	    '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>' . "\n");
+            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>' . "\n");
     }
 
     public function testRenderPageSelectionBarManyPages()
@@ -446,7 +451,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_transfer->expects($this->once())->method('get')
             ->with($this->equalTo(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE));
         $this->_factory->expects($this->once())->method('createUrlTransfer')
-            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->wilLReturn($this->_transfer);
+            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_transfer);
     }
 
     private function expectIndexFileOpened()
@@ -460,13 +465,6 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     {
         $this->assertTrue($this->_file->eofCalled);
         $this->assertTrue($this->_file->getStringCalled);
-        $this->assertTrue($this->_db->copyExistsForUrlCalled);
-        $this->assertTrue($this->_db->addSiteUnknownPathCalled);
-        $this->assertContains('ChiClassicComp', $this->_db->addSiteUnknownPathLastSiteNames);
-        foreach ($paths as $path)
-        {
-            $this->assertContains($path, $this->_db->addSiteUnknownPathLastPaths);
-        }
     }
 
     private static function createResultRowsForUnknownPaths($items, $idStart = 1)
@@ -486,7 +484,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         {
             $existing['http://chiclassiccomp.org/docs/content/' . $path] = true;
         }
-        $this->_db->copyExistsForUrlFakeResults = $existing;
+        $this->_db2->copyExistsForUrlFakeResults = $existing;
     }
 
     private static function expectedOutputForPaths($paths, $idStart = 1, $sortById = true, $ascending = true)
@@ -555,11 +553,20 @@ EOH;
 
     private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
     {
-        $this->_db->getPropertyFakeResult = '10';
+        $this->_db->expects($this->once())->method('getProperty')->with(CCC_TIMESTAMP_PROPERTY)->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
         $this->createPage($vars);
+    }
+
+    private function createPageWithoutFetchingIndexByDateFile2($vars = array('sort' => SORT_ORDER_BY_ID))
+    {
+        $this->_db2->getPropertyFakeResult = '10';
+        $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
+        $this->createPage2($vars);
     }
 
     private function createPage($vars = array())
@@ -569,14 +576,21 @@ EOH;
         $this->_page = new ChiClassicCompPageTester($this->_manx, $this->_vars, $this->_fileSystem, $this->_factory);
     }
 
+    private function createPage2($vars = array())
+    {
+        $_SERVER['PATH_INFO'] = '';
+        $this->_vars = $vars;
+        $this->_page2 = new ChiClassicCompPageTester($this->_manx2, $this->_vars, $this->_fileSystem, $this->_factory);
+    }
+
     private function assertPropertyRead($name)
     {
-        $this->assertTrue($this->_db->getPropertyCalled);
-        $this->assertEquals($name, $this->_db->getPropertyLastName);
+        $this->assertTrue($this->_db2->getPropertyCalled);
+        $this->assertEquals($name, $this->_db2->getPropertyLastName);
     }
 
     private function assertIndexByDateFileTransferred()
     {
-        $this->assertTrue($this->_db->setPropertyCalled);
+        $this->assertTrue($this->_db2->setPropertyCalled);
     }
 }
