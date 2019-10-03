@@ -43,7 +43,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     /** @var IUrlTransfer */
     private $_transfer;
     /** @var BitSaversPageTester */
-    private $_page2;
+    private $_page;
     /** @var FakeFile */
     private $_file;
 
@@ -52,18 +52,11 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->method('getDatabase')->willReturn($this->_db);
-
-
-        $this->_db2 = new FakeManxDatabase();
-        $this->_manx2 = $this->createMock(IManx::class);
-        $this->_manx2->method('getDatabase')->willReturn($this->_db2);
-
         $this->_fileSystem = $this->createMock(IFileSystem::class);
         $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_file = new FakeFile();
-        $this->_db2->getFormatForExtensionFakeResults['pdf'] = 'PDF';
     }
 
     public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
@@ -228,7 +221,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
         $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(count($paths));
-        $this->configureCopiesExistForPaths($paths);
+	$this->_db->expects($this->never())->method('copyExistsForUrl');
         $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
             ->with('bitsavers', 0, true)
             ->willReturn(self::createResultRowsForUnknownPaths($paths));
@@ -473,16 +466,6 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
             $items[$i] = array($id++, $items[$i]);
         }
         return DatabaseTester::createResultRowsForColumns(array('id', 'path'), $items);
-    }
-
-    private function configureCopiesExistForPaths($paths)
-    {
-        $existing = array();
-        foreach ($paths as $path)
-        {
-            $existing['http://bitsavers.trailing-edge.com/pdf/' . $path] = true;
-        }
-        $this->_db2->copyExistsForUrlFakeResults = $existing;
     }
 
     private static function expectedOutputForPaths($paths, $idStart = 1, $sortById = true, $ascending = true)
