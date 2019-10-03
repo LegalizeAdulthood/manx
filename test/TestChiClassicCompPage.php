@@ -113,7 +113,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_info->expects($this->once())->method('lastModified')->willReturn(false);
         $this->_factory->method('getCurrentTime')->willReturn('12');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
@@ -125,7 +125,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
 
         $this->createPage();
     }
@@ -135,7 +135,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn('20');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
         $this->expectIndexFileTransferred();
         $this->expectIndexFileOpened();
 
@@ -449,15 +449,15 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     private function expectIndexFileTransferred()
     {
         $this->_transfer->expects($this->once())->method('get')
-            ->with($this->equalTo(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE));
+            ->with(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE);
         $this->_factory->expects($this->once())->method('createUrlTransfer')
-            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_transfer);
+            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_transfer);
     }
 
     private function expectIndexFileOpened()
     {
         $this->_fileSystem->expects($this->once())->method('openFile')
-            ->with($this->equalTo(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE), $this->equalTo('r'))
+            ->with(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE, 'r')
             ->willReturn($this->_file);
     }
 
@@ -556,7 +556,7 @@ EOH;
         $this->_db->expects($this->once())->method('getProperty')->with(CCC_TIMESTAMP_PROPERTY)->willReturn('10');
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
         $this->createPage($vars);
     }
 
@@ -565,7 +565,7 @@ EOH;
         $this->_db2->getPropertyFakeResult = '10';
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
         $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo(CCC_INDEX_BY_DATE_URL))->willReturn($this->_info);
+            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
         $this->createPage2($vars);
     }
 

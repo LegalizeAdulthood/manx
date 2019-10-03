@@ -98,9 +98,9 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'supersession_old_pub' => '5634',
             'next' => 'Next+%3E');
         $this->_manx->expects($this->once())->method('addPublication')
-            ->with($this->anything(), $this->anything(), $this->equalTo($part), $this->anything(), $this->equalTo($title),
-                $this->anything(), $this->anything(), $this->anything(), $this->equalTo($keywords), $this->anything(),
-                $this->equalTo($abstract), $this->anything())
+            ->with($this->anything(), $this->anything(), $part, $this->anything(), $title,
+                $this->anything(), $this->anything(), $this->anything(), $keywords, $this->anything(),
+                $abstract, $this->anything())
             ->willReturn(19690);
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
@@ -177,9 +177,9 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'supersession_old_pub' => '5634',
             'next' => 'Next+%3E');
         $this->_manx->expects($this->once())->method('addPublication')
-            ->with($this->anything(), $this->anything(), $this->equalTo($part), $this->anything(), $this->equalTo($title),
-                $this->anything(), $this->anything(), $this->anything(), $this->equalTo($keywords), $this->anything(),
-                $this->equalTo($abstract), $this->anything())
+            ->with($this->anything(), $this->anything(), $part, $this->anything(), $title,
+                $this->anything(), $this->anything(), $this->anything(), $keywords, $this->anything(),
+                $abstract, $this->anything())
             ->willReturn(19690);
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';

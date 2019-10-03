@@ -86,13 +86,13 @@ class TestSearcher extends PHPUnit\Framework\TestCase
         $db->getOSTagsForPubFakeResult = $tags;
         $formatter = $this->createMock(IFormatter::class);
         $formatter->expects($this->once())->method('renderResultsBar')
-            ->with($this->equalTo(array()), $this->equalTo(array('graphics', 'terminal')), $this->equalTo(0), $this->equalTo(0), $this->equalTo(1));
+            ->with(array(), array('graphics', 'terminal'), 0, 0, 1);
         $formatter->expects($this->exactly(2))->method('renderPageSelectionBar')
-            ->with($this->equalTo(0), $this->equalTo(1), $this->equalTo(10));
+            ->with(0, 1, 10);
         $rowArgs = $rows;
         $rowArgs[0]['tags'] = $tags;
         $formatter->expects($this->once())->method('renderResultsPage')
-            ->with($this->equalTo($rowArgs), $this->equalTo(0), $this->equalTo(0));
+            ->with($rowArgs, 0, 0);
         $searcher = Searcher::getInstance($db);
         $keywords = "graphics terminal";
         $company = 1;

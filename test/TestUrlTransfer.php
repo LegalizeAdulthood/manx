@@ -48,15 +48,15 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
         $tempDestination = $destination . '.tmp';
         $stream = $this->createMock(IFile::class);
-        $this->_fileSystem->expects($this->once())->method('openFile')->with($this->equalTo($tempDestination), $this->equalTo('w'))->willReturn($stream);
+        $this->_fileSystem->expects($this->once())->method('openFile')->with($tempDestination, 'w')->willReturn($stream);
         $contents = "This is the contents";
         $this->_curlApi->expects($this->once())->method('exec')->willReturn($contents);
         $transfer = $this->createInstance($url);
-        $stream->expects($this->once())->method('write')->with($this->equalTo($contents));
+        $stream->expects($this->once())->method('write')->with($contents);
         $stream->expects($this->once())->method('close');
-        $this->_fileSystem->expects($this->once())->method('fileExists')->with($this->equalTo($destination))->willReturn(false);
+        $this->_fileSystem->expects($this->once())->method('fileExists')->with($destination)->willReturn(false);
         $this->_fileSystem->expects($this->never())->method('unlink');
-        $this->_fileSystem->expects($this->once())->method('rename')->with($this->equalTo($tempDestination), $this->equalTo($destination));
+        $this->_fileSystem->expects($this->once())->method('rename')->with($tempDestination, $destination);
 
         $result = $transfer->get($destination);
 
@@ -74,9 +74,9 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
         $contents = "This is the contents";
         $this->_curlApi->expects($this->once())->method('exec')->willReturn($contents);
         $transfer = $this->createInstance($url);
-        $this->_fileSystem->expects($this->once())->method('fileExists')->with($this->equalTo($destination))->willReturn(true);
-        $this->_fileSystem->expects($this->once())->method('unlink')->with($this->equalTo($destination));
-        $this->_fileSystem->expects($this->once())->method('rename')->with($this->equalTo($tempDestination), $this->equalTo($destination));
+        $this->_fileSystem->expects($this->once())->method('fileExists')->with($destination)->willReturn(true);
+        $this->_fileSystem->expects($this->once())->method('unlink')->with($destination);
+        $this->_fileSystem->expects($this->once())->method('rename')->with($tempDestination, $destination);
 
         $result = $transfer->get($destination);
 

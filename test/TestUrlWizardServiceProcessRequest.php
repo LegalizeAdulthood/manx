@@ -34,7 +34,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(false);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo($url))->willReturn($this->_urlInfo);
+            ->with($url)->willReturn($this->_urlInfo);
         $vars = self::varsForUrlLookup($url);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
 
@@ -51,7 +51,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo($url))->willReturn($this->_urlInfo);
+            ->with($url)->willReturn($this->_urlInfo);
         $vars = self::varsForUrlLookup($url);
         $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
 
@@ -91,7 +91,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_db->getCompanyForSiteDirectoryFakeResult = '5';
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo('http://bitsavers.trailing-edge.com/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf'))
+            ->with('http://bitsavers.trailing-edge.com/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf')
             ->willReturn($this->_urlInfo);
         $urlBase = '/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf';
         $vars = self::varsForUrlLookup('http://bitsavers.trailing-edge.com' . $urlBase);
@@ -125,7 +125,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_db->getCompanyForSiteDirectoryFakeResult = '-1';
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo('http://www.bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf'))
+            ->with('http://www.bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf')
             ->willReturn($this->_urlInfo);
         $urlBase = '/pdf/univac/1100/UE-637_1108execUG_1970.pdf';
         $vars = self::varsForUrlLookup('http://www.bitsavers.org' . $urlBase);
@@ -158,7 +158,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_db->getCompanyForSiteDirectoryFakeResult = '66';
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
-            ->with($this->equalTo('http://chiclassiccomp.org/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf'))
+            ->with('http://chiclassiccomp.org/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf')
             ->wilLReturn($this->_urlInfo);
         $urlBase = '/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf';
         $vars = self::varsForUrlLookup('http://chiclassiccomp.org' . $urlBase);

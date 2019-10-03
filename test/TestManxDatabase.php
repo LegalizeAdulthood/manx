@@ -29,7 +29,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $query = "SELECT COUNT(*) FROM `pub`";
         $this->_statement->expects($this->once())->method('fetch')->willReturn(array(2));
         $this->_db->expects($this->once())->method('query')
-            ->with($this->equalTo($query))
+            ->with($query)
             ->willReturn($this->_statement);
 
         $count = $this->_manxDb->getDocumentCount();
@@ -41,7 +41,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $query = "SELECT COUNT(DISTINCT `pub`) FROM `copy`";
         $this->_statement->expects($this->once())->method('fetch')->willReturn(array(12));
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $count = $this->_manxDb->getOnlineDocumentCount();
 
@@ -52,7 +52,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $query = "SELECT COUNT(*) FROM `site`";
         $this->_statement->expects($this->once())->method('fetch')->willReturn(array(43));
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $count = $this->_manxDb->getSiteCount();
 
@@ -66,7 +66,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             ->willReturn(DatabaseTester::createResultRowsForColumns(
                 array('url', 'description', 'low'),
                 array(array('http://www.dec.com', 'DEC', false), array('http://www.hp.com', 'HP', true))));
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $sites = $this->_manxDb->getSiteList();
 
@@ -81,7 +81,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 array('id' => 1, 'name' => "DEC"),
                 array('id' => 2, 'name' => "HP"));
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn($expected);
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $companies = $this->_manxDb->getCompanyList();
 
@@ -92,7 +92,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $this->_statement->expects($this->once())->method('fetch')->willReturn('French');
         $query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `language` WHERE `lang_alpha_2`='fr'";
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $display = $this->_manxDb->getDisplayLanguage('fr');
 
@@ -107,7 +107,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         );
         $query = "SELECT `tag_text` FROM `tag`,`pub_tag` WHERE `tag`.`id`=`pub_tag`.`tag` AND `tag`.`class`='os' AND `pub`=5";
         $this->_db->expects($this->once())->method('query')
-            ->with($this->equalTo($query))
+            ->with($query)
             ->willReturn($this->_statement);
 
         $tags = $this->_manxDb->getOSTagsForPub(5);
@@ -159,7 +159,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             DatabaseTester::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
                 array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance'))));
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $citations = $this->_manxDb->getCitationsForPub($pubId);
 
@@ -180,7 +180,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                     array(3, '2.4.4', 'DSSI Cabling'),
                     array(4, '2.4.4.1', 'DSSI Bus Termination and Length'),
                     array(1, 'Appendix C', 'Related Documentation'))));
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $toc = $this->_manxDb->getTableOfContentsForPub($pubId, true);
 
@@ -205,7 +205,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                     array(1, 'Appendix B', 'KA655 CPU Address Assignments'),
                     array(1, 'Appendix C', 'Related Documentation'))
             ));
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $toc = $this->_manxDb->getTableOfContentsForPub($pubId, false);
 
@@ -228,7 +228,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $rows = DatabaseTester::createResultRowsForColumns(array('mirror_url'),
                 array(array($expected[0]), array($expected[1]), array($expected[2]), array($expected[3]), array($expected[4])));
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn($rows);
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $mirrors = $this->_manxDb->getMirrorsForCopy($copyId);
 
@@ -245,7 +245,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $expected = array('ph_company' => 7, 'pub_id' => 57, 'ph_part' => 'AB81-14G',
                 'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pub_date' => '1984-02');
         $this->_statement->expects($this->once())->method('fetch')->willReturn($expected);
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $amended = $this->_manxDb->getAmendedPub($pubId, $amendSerial);
 
@@ -268,7 +268,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             array(
                 array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, 10277)
                 )));
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $copies = $this->_manxDb->getCopiesForPub($pubId);
 
@@ -292,7 +292,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             array('pub_id', 'name', 'ph_part', 'ph_pub_date', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
             array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
         $this->_statement->expects($this->once())->method('fetch')->willReturn($rows[0]);
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $details = $this->_manxDb->getDetailsForPub($pubId);
 
@@ -319,7 +319,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . " AND `ph_company`=$company"
             . " ORDER BY `ph_sort_part`, `ph_pub_date`, `pub_id`";
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn($rows);
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $pubs = $this->_manxDb->searchForPublications($company, $keywords, true);
 
@@ -334,7 +334,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             ' JOIN `pub_history` ON `pub_history`=`ph_id`', $pubId);
         $rows = array(array('ph_company' => 1, 'ph_pub' => 23, 'ph_part' => 'EK-11024-TM-PRE', 'ph_title' => 'PDP-11/24 System Technical Manual'));
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn($rows);
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $pubs = $this->_manxDb->getPublicationsSupersededByPub($pubId);
 
@@ -349,7 +349,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . ' JOIN `pub_history` ON `pub_history`=`ph_id`', $pubId);
         $rows = array(array('ph_company' => 1, 'ph_pub' => 6105, 'ph_part' => 'EK-11024-TM-001', 'ph_title' => 'PDP-11/24 System Technical Manual'));
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn($rows);
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $pubs = $this->_manxDb->getPublicationsSupersedingPub($pubId);
 
@@ -372,8 +372,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $amendSerial = '';
         $update = 'UPDATE `pub` SET `pub_has_online_copies`=1 WHERE `pub_id`=?';
         $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
-            [ $this->equalTo($query), $this->equalTo(array($pubId, $format, $siteId, $url, $notes, $size, $md5, $credits, $amendSerial)) ],
-            [ $this->equalTo($update), $this->equalTo(array($pubId)) ]
+            [ $query, array($pubId, $format, $siteId, $url, $notes, $size, $md5, $credits, $amendSerial) ],
+            [ $update, array($pubId) ]
         );
         $newCopyId = 55;
         $this->_db->expects($this->once())->method('getLastInsertId')->willReturn($newCopyId);
@@ -394,7 +394,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . 'FROM `pub_history`, `company` '
             . 'WHERE `pub_history`.`ph_company` = `company`.`id` '
             . 'ORDER BY `ph_created` DESC LIMIT 0,%d', $count);
-        $this->_db->expects($this->once())->method('execute')->with($this->equalTo($query))->willReturn(array());
+        $this->_db->expects($this->once())->method('execute')->with($query)->willReturn(array());
 
         $rows = $this->_manxDb->getMostRecentDocuments(200);
 
@@ -405,7 +405,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $query = "SELECT `value` FROM `properties` WHERE `name`='version'";
         $this->_statement->expects($this->once())->method('fetch')->willReturn(array('value' => '2'));
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
 
         $version = $this->_manxDb->getManxVersion();
 
@@ -416,8 +416,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $url = 'http://bitsavers.org/pdf/sgi/iris/IM1_Schematic.pdf';
         $this->_db->expects($this->once())->method('execute')
-            ->with($this->equalTo('SELECT `ph_company`,`ph_pub`,`ph_title` FROM `copy`,`pub_history` WHERE `copy`.`pub`=`pub_history`.`ph_pub` AND `copy`.`url`=?'),
-                $this->equalTo(array($url)))
+            ->with('SELECT `ph_company`,`ph_pub`,`ph_title` FROM `copy`,`pub_history` WHERE `copy`.`pub`=`pub_history`.`ph_pub` AND `copy`.`url`=?',
+                array($url))
             ->willReturn(DatabaseTester::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_title'),
                 array(array('1', '2', 'IM1 Schematic'))));
@@ -445,7 +445,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "AND (`copy`.`size` IS NULL OR `copy`.`size` = 0) "
             . "AND `copy`.`format` <> 'HTML' "
             . " LIMIT 0,10";
-        $this->_db->expects($this->once())->method('query')->with($this->equalTo($query))->willReturn($this->_statement);
+        $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
         $this->_statement->expects($this->once())->method('fetchAll')
             ->willReturn(DatabaseTester::createResultRowsForColumns(
                 array('copy_id', 'ph_company', 'ph_pub', 'ph_title'),
@@ -470,7 +470,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             array(array($url)));
         $copyId = 5;
         $this->_db->expects($this->once())->method('execute')
-            ->with($this->equalTo($query), $this->equalTo(array($copyId)))
+            ->with($query, array($copyId))
             ->willReturn($rows);
 
         $actualUrl = $this->_manxDb->getUrlForCopy($copyId);
@@ -484,7 +484,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $copyId = 5;
         $size = 4096;
         $this->_db->expects($this->once())->method('execute')
-            ->with($this->equalTo($query), $this->equalTo(array($size, $copyId)));
+            ->with($query, array($size, $copyId));
 
         $this->_manxDb->updateSizeForCopy($copyId, $size);
     }
@@ -496,8 +496,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $md5 = 'e7e98fb955892f73507d7b3a1874f9ee';
         $this->_db->expects($this->once())->method('execute')
             ->with(
-                $this->equalTo($query),
-                $this->equalTo(array($md5, $copyId))
+                $query,
+                array($md5, $copyId)
             );
 
         $this->_manxDb->updateMD5ForCopy($copyId, $md5);
@@ -512,7 +512,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "AND `copy`.`format` <> 'HTML' "
             . " LIMIT 0,10";
         $this->_db->expects($this->once())->method('query')
-            ->with($this->equalTo($query))->willReturn($this->_statement);
+            ->with($query)->willReturn($this->_statement);
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
             DatabaseTester::createResultRowsForColumns(
                 array('copy_id', 'ph_company', 'ph_pub', 'ph_title'),
@@ -532,7 +532,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $query = "SELECT `value` FROM `properties` WHERE `name` = ?";
         $this->_db->expects($this->once())->method('execute')
-            ->with($this->equalTo($query))->willReturn(array(array('value' => 'bar')));
+            ->with($query)->willReturn(array(array('value' => 'bar')));
 
         $value = $this->_manxDb->getProperty('foo');
 
@@ -544,7 +544,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $query = "INSERT INTO `properties`(`name`, `value`) VALUES (?, ?) "
             . "ON DUPLICATE KEY UPDATE `value` = ?";
         $this->_db->expects($this->once())->method('execute')
-            ->with($this->equalTo($query), $this->equalTo(array('foo', 'bar', 'bar')));
+            ->with($query, array('foo', 'bar', 'bar'));
 
         $this->_manxDb->setProperty('foo', 'bar');
     }
@@ -555,8 +555,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $insert = "INSERT INTO `site_unknown`(`site`,`path`) VALUES (?,?)";
         $this->_db->expects($this->exactly(2))->method('execute')
             ->withConsecutive(
-                [ $this->equalTo($select), $this->equalTo(array('bitsavers')) ],
-                [ $this->equalTo($insert), $this->equalTo(array(3, 'foo/frob.jpg')) ]
+                [ $select, array('bitsavers') ],
+                [ $insert, array(3, 'foo/frob.jpg') ]
             )
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
@@ -572,8 +572,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $update = "UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?";
         $this->_db->expects($this->exactly(2))->method('execute')
             ->withConsecutive(
-                [ $this->equalTo($select), $this->equalTo(array('bitsavers')) ],
-                [ $this->equalTo($update), $this->equalTo(array(3, 'foo/frob.jpg')) ]
+                [ $select, array('bitsavers') ],
+                [ $update, array(3, 'foo/frob.jpg') ]
             )
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
@@ -591,8 +591,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $path2 = 'foo/foo.jpg';
         $this->_db->expects($this->exactly(2))->method('execute')
             ->withConsecutive(
-                [ $this->equalTo($select), $this->equalTo(array('bitsavers')) ],
-                [ $this->equalTo($query), $this->equalTo(array(3)) ]
+                [ $select, array('bitsavers') ],
+                [ $query, array(3) ]
             )
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(
@@ -623,8 +623,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $path2 = 'foo/bar.jpg';
         $this->_db->expects($this->exactly(2))->method('execute')
             ->withConsecutive(
-                [ $this->equalTo($select), $this->equalTo(array('bitsavers')) ],
-                [ $this->equalTo($query), $this->equalTo(array(3)) ]
+                [ $select, array('bitsavers') ],
+                [ $query, array(3) ]
             )
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(
@@ -647,8 +647,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $query = "SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `path`=? AND `ignored`=1";
         $this->_db->expects($this->exactly(2))->method('execute')
             ->withConsecutive(
-                [ $this->equalTo($select), $this->equalTo(array('bitsavers')) ],
-                [ $this->equalTo($query), $this->equalTo(array(3, 'foo/bar.jpg')) ]
+                [ $select, array('bitsavers') ],
+                [ $query, array(3, 'foo/bar.jpg') ]
             )
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(
@@ -668,8 +668,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $query = 'SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `path`=? AND `ignored`=1';
         $this->_db->expects($this->exactly(2))->method('execute')
             ->withConsecutive(
-                [ $this->equalTo($select), $this->equalTo(array('bitsavers')) ],
-                [ $this->equalTo($query), $this->equalTo(array(3, 'foo/bar.jpg')) ]
+                [ $select, array('bitsavers') ],
+                [ $query, array(3, 'foo/bar.jpg') ]
             )
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(
@@ -698,7 +698,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $abstract = 'This manual contains maintenance procedures for the frobnicator.';
         $languages = '+en';
         $this->_db->expects($this->once())->method('execute')
-            ->with($this->equalTo('INSERT INTO `pub_history`(`ph_created`, `ph_edited_by`, `ph_pub`, '
+            ->with('INSERT INTO `pub_history`(`ph_created`, `ph_edited_by`, `ph_pub`, '
                 . '`ph_pub_type`, `ph_company`, `ph_part`, `ph_alt_part`, '
                 . '`ph_revision`, `ph_pub_date`, `ph_title`, `ph_keywords`, '
                 . '`ph_notes`, `ph_abstract`, `ph_lang`, '
@@ -707,8 +707,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 . '?, ?, ?, ?, '
                 . '?, ?, ?, ?, '
                 . '?, ?, ?, '
-                . '?, ?, ?)'),
-                $this->equalTo( array(
+                . '?, ?, ?)',
+                array(
                     $user,
                     $publicationType, $company, $part, $altPart,
                     $revision, $pubDate, $title, $keywords,
@@ -716,7 +716,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                     ManxDatabase::normalizePartNumber($part),
                         ManxDatabase::normalizePartNumber($altPart),
                         ManxDatabase::sortPartNumber($company, $part)
-                ))
+                )
             );
 
         $this->_manxDb->addPubHistory($user, $publicationType, $company,
@@ -733,8 +733,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getLastInsertId')->willReturn(969);
         $this->_db->expects($this->exactly(2))->method('execute')
             ->withConsecutive(
-                [ $this->equalTo($insert), $this->equalTo(array($oldPub, $newPub)) ],
-                [ $this->equalTo($query), $this->equalTo(array($oldPub)) ]
+                [ $insert, array($oldPub, $newPub) ],
+                [ $query, array($oldPub) ]
             )
             ->willReturn(959, null);
 
