@@ -1,22 +1,20 @@
 <?php
 
 require_once 'pages/Searcher.php';
-require_once 'test/FakeManxDatabase.php';
 
 class TestSearcher extends PHPUnit\Framework\TestCase
 {
     public function testRenderCompanies()
     {
-        $db = new FakeManxDatabase();
-        $db->getCompanyListFakeResult = array(
+        $db = $this->createMock(IManxDatabase::class);
+        $db->expects($this->once())->method('getCompanyList')->willReturn(array(
             array('id' => 1, 'name' => 'DEC'),
             array('id' => 2, 'name' => '3Com'),
-            array('id' => 3, 'name' => 'AT&T'));
+            array('id' => 3, 'name' => 'AT&T')));
         $searcher = Searcher::getInstance($db);
 
         $searcher->renderCompanies(1);
 
-        $this->assertTrue($db->getCompanyListCalled);
         $this->expectOutputString('<select id="CP" name="cp">'
             . '<option value="1" selected="selected">DEC</option>'
             . '<option value="2">3Com</option>'
@@ -66,9 +64,10 @@ class TestSearcher extends PHPUnit\Framework\TestCase
 
     public function testSearchResultsSingleRow()
     {
-        $db = new FakeManxDatabase();
+        $db = $this->createMock(IManxDatabase::class);
+        $pubId = 4344;
         $rows = array(
-            array('pub_id' => 1,
+            array('pub_id' => $pubId,
                 'ph_part' => '',
                 'ph_title' => '',
                 'pub_has_online_copies' => '',
@@ -81,9 +80,15 @@ class TestSearcher extends PHPUnit\Framework\TestCase
                 'ph_alt_part' => '',
                 'ph_pub_type' => '')
             );
-        $db->searchForPublicationsFakeResult = $rows;
+        $keywords = "graphics terminal";
+        $company = 1;
+        $db->expects($this->once())->method('searchForPublications')
+            ->with($company, explode(' ', $keywords), true)
+            ->willReturn($rows);
         $tags = array('OpenVMS VAX Version 6.0');
-        $db->getOSTagsForPubFakeResult = $tags;
+        $db->expects($this->once())->method('getOSTagsForPub')
+            ->with($pubId)
+            ->willReturn($tags);
         $formatter = $this->createMock(IFormatter::class);
         $formatter->expects($this->once())->method('renderResultsBar')
             ->with(array(), array('graphics', 'terminal'), 0, 0, 1);
@@ -94,16 +99,7 @@ class TestSearcher extends PHPUnit\Framework\TestCase
         $formatter->expects($this->once())->method('renderResultsPage')
             ->with($rowArgs, 0, 0);
         $searcher = Searcher::getInstance($db);
-        $keywords = "graphics terminal";
-        $company = 1;
 
         $searcher->renderSearchResults($formatter, $company, $keywords, true);
-
-        $this->assertTrue($db->searchForPublicationsCalled);
-        $this->assertEquals(1, $db->searchForPublicationsLastCompany);
-        $this->assertEquals(explode(' ', $keywords), $db->searchForPublicationsLastKeywords);
-        $this->assertTrue($db->searchForPublicationsLastOnline);
-        $this->assertTrue($db->getOSTagsForPubCalled);
-        $this->assertEquals(1, $db->getOSTagsForPubLastPubId);
     }
 }

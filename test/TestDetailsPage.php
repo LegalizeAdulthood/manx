@@ -2,7 +2,6 @@
 
 require_once 'pages/DetailsPage.php';
 require_once 'test/DatabaseTester.php';
-require_once 'test/FakeManxDatabase.php';
 
 class RenderDetailsTester extends DetailsPage
 {
@@ -82,31 +81,8 @@ class RenderDetailsTester extends DetailsPage
     }
 }
 
-class TestDetailsPage extends PHPUnit\Framework\TestCase
+class TestDetailsPageStatic extends PHPUnit\Framework\TestCase
 {
-    private $_db;
-    private $_manx;
-    private $_page;
-
-    private function createInstance()
-    {
-        $_SERVER['PATH_INFO'] = '/1,3';
-        $this->_db = new FakeManxDatabase();
-        $this->_manx = $this->createMock(IManx::class);
-        $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
-        $this->_page = new DetailsPage($this->_manx);
-    }
-
-    public function testDetailParamsForPathInfoCompanyAndId()
-    {
-        $params = DetailsPage::detailParamsForPathInfo('/1,2');
-        $this->assertEquals(4, count(array_keys($params)));
-        $this->assertEquals(1, $params['cp']);
-        $this->assertEquals(2, $params['id']);
-        $this->assertEquals(1, $params['cn']);
-        $this->assertEquals(0, $params['pn']);
-    }
-
     public function testNeatListPlainOneItem()
     {
         $this->assertEquals('English', DetailsPage::neatListPlain(array('English')));
@@ -122,61 +98,114 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->assertEquals('English, French and German', DetailsPage::neatListPlain(array('English', 'French', 'German')));
     }
 
+    public function testDetailParamsForPathInfoCompanyAndId()
+    {
+        $params = DetailsPage::detailParamsForPathInfo('/1,2');
+
+        $this->assertEquals(4, count(array_keys($params)));
+        $this->assertEquals(1, $params['cp']);
+        $this->assertEquals(2, $params['id']);
+        $this->assertEquals(1, $params['cn']);
+        $this->assertEquals(0, $params['pn']);
+    }
+
+    public function testFormatDocRefNoPart()
+    {
+        $row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => NULL);
+
+        $result = DetailsPage::formatDocRef($row);
+
+        $this->assertEquals('<a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>', $result);
+    }
+
+    public function testFormatDocRefWithPart()
+    {
+        $row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => 'FECGAPR');
+
+        $result = DetailsPage::formatDocRef($row);
+
+        $this->assertEquals('FECGAPR, <a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>', $result);
+    }
+
+    public function testReplaceNullWithEmptyStringOrTrimForNull()
+    {
+        $this->assertEquals('', DetailsPage::replaceNullWithEmptyStringOrTrim(null));
+    }
+
+    public function testReplaceNullWithEmptyStringOrTrimForString()
+    {
+        $this->assertEquals('foo', DetailsPage::replaceNullWithEmptyStringOrTrim('foo'));
+    }
+
+    public function testReplaceNullWithEmptyStringOrTrimForWhitespace()
+    {
+        $this->assertEquals('foo', DetailsPage::replaceNullWithEmptyStringOrTrim(" foo\t\r\n"));
+    }
+}
+
+class TestDetailsPage extends PHPUnit\Framework\TestCase
+{
+    /** @var IManxDatabase */
+    private $_db;
+    /** @var IManx */
+    private $_manx;
+    /** @var DetailsPage */
+    private $_page;
+
+    protected function setUp()
+    {
+        $_SERVER['PATH_INFO'] = '/1,3';
+        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
+        $this->_page = new DetailsPage($this->_manx);
+    }
+
     public function testRenderLanguageEnglishGivesNoOutput()
     {
-        $this->createInstance();
+        $this->_db->expects($this->never())->method('getDisplayLanguage');
 
         $this->_page->renderLanguage('+en');
 
-        $this->assertFalse($this->_db->getDisplayLanguageCalled);
         $this->expectOutputString('');
     }
 
     public function testRenderLanguageFrench()
     {
-        $this->createInstance();
-        $this->_db->getDisplayLanguageFakeResult['fr'] = 'French';
+        $this->_db->expects($this->once())->method('getDisplayLanguage')->with('fr')->willReturn('French');
 
         $this->_page->renderLanguage('+fr');
 
-        $this->assertTrue($this->_db->getDisplayLanguageCalled);
         $this->expectOutputString("<tr><td>Language:</td><td>French</td></tr>\n");
     }
 
     public function testRenderLanguageEnglishFrenchGerman()
     {
-        $this->createInstance();
-        $this->_db->getDisplayLanguageFakeResult['en'] = 'English';
-        $this->_db->getDisplayLanguageFakeResult['fr'] = 'French';
-        $this->_db->getDisplayLanguageFakeResult['de'] = 'German';
+        $this->_db->expects($this->exactly(3))->method('getDisplayLanguage')->withConsecutive(['en'], ['fr'], ['de'])->willReturn('English', 'French', 'German');
 
         $this->_page->renderLanguage('+en+fr+de');
 
-        $this->assertTrue($this->_db->getDisplayLanguageCalled);
         $this->expectOutputString("<tr><td>Languages:</td><td>English, French and German</td></tr>\n");
-    }
-
-    private function assertGetOSTagsForPubCalledForPubId(FakeManxDatabase $db, $pubId)
-    {
-        $this->assertTrue($db->getOSTagsForPubCalled);
-        $this->assertEquals($pubId, $db->getOSTagsForPubLastPubId);
     }
 
     public function testRenderAmendments()
     {
-        $this->createInstance();
         $pubId = 3;
-        $this->_db->getAmendmentsForPubFakeResult = DatabaseTester::createResultRowsForColumns(
-            array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pub_date'),
-            array(array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
-                array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09')));
-        $this->_db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
+        $this->_db->expects($this->once())->method('getAmendmentsForPub')
+            ->with($pubId)
+            ->willReturn(
+                DatabaseTester::createResultRowsForColumns(
+                    array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pub_date'),
+                    array(
+                        array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
+                        array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09')
+                    )));
+        $this->_db->expects($this->atLeast(1))->method('getOSTagsForPub')
+            ->with($pubId)
+            ->willReturn(array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0'));
 
         $this->_page->renderAmendments($pubId);
 
-        $this->assertGetOSTagsForPubCalledForPubId($this->_db, $pubId);
-        $this->assertTrue($this->_db->getAmendmentsForPubCalled);
-        $this->assertEquals($pubId, $this->_db->getAmendmentsForPubLastPubId);
         $this->expectOutputString('<tr valign="top"><td>Amended&nbsp;by:</td>'
             . '<td><ul class="citelist"><li>DEC-15-YWZA-DN1, <a href="../details.php/1,4496"><cite>DDT (Dynamic Debugging Technique) Utility Program</cite></a> (1970-04) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'
             . '<li>DEC-15-YWZA-DN3, <a href="../details.php/1,3301"><cite>SGEN System Generator Utility Program</cite></a> (1970-09) <b>OS:</b> RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</li>'
@@ -185,79 +214,63 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
 
     public function testRenderOSTagsEmpty()
     {
-        $this->createInstance();
-        $this->_db->getOSTagsForPubFakeResult = array();
+        $pubId = 3;
+        $this->_db->expects($this->atLeast(1))->method('getOSTagsForPub')
+            ->with($pubId)
+            ->willReturn(array());
 
-        $this->_page->renderOSTags(3);
+        $this->_page->renderOSTags($pubId);
 
-        $this->assertGetOSTagsForPubCalledForPubId($this->_db, 3);
         $this->expectOutputString('');
     }
 
     public function testRenderOSTagsTwoTags()
     {
-        $this->createInstance();
-        $this->_db->getOSTagsForPubFakeResult = array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0');
+        $pubId = 3;
+        $this->_db->expects($this->atLeast(1))->method('getOSTagsForPub')
+            ->with($pubId)
+            ->willReturn(array('RSX-11M Version 4.0', 'RSX-11M-PLUS Version 2.0'));
 
-        $this->_page->renderOSTags(3);
+        $this->_page->renderOSTags($pubId);
 
-        $this->assertGetOSTagsForPubCalledForPubId($this->_db, 3);
         $this->expectOutputString("<tr><td>Operating System:</td><td>RSX-11M Version 4.0, RSX-11M-PLUS Version 2.0</td></tr>\n");
     }
 
     public function testRenderLongDescriptionEmpty()
     {
-        $this->createInstance();
-        $this->_db->getLongDescriptionForPubFakeResult = array();
         $pubId = 3;
+        $this->_db->expects($this->once())->method('getLongDescriptionForPub')->with($pubId)->willReturn(array());
 
         $this->_page->renderLongDescription($pubId);
 
-        $this->assertTrue($this->_db->getLongDescriptionForPubCalled);
-        $this->assertEquals($pubId, $this->_db->getLongDescriptionForPubLastPubId);
         $this->expectOutputString('');
     }
 
     public function testRenderLongDescription()
     {
-        $this->createInstance();
-        $this->_db->getLongDescriptionForPubFakeResult = array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>');
         $pubId = 3;
+        $this->_db->expects($this->once())->method('getLongDescriptionForPub')
+            ->with($pubId)
+            ->willReturn(array('<p>This is paragraph one.</p>', '<p>This is paragraph two.</p>'));
 
         $this->_page->renderLongDescription($pubId);
 
-        $this->assertTrue($this->_db->getLongDescriptionForPubCalled);
-        $this->assertEquals($pubId, $this->_db->getLongDescriptionForPubLastPubId);
         $this->expectOutputString('<tr valign="top"><td>Description:</td>'
             . "<td><p>This is paragraph one.</p><p>This is paragraph two.</p></td></tr>");
     }
 
-    public function testFormatDocRefNoPart()
-    {
-        $row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => NULL);
-        $this->assertEquals('<a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>',
-            DetailsPage::formatDocRef($row));
-    }
-
-    public function testFormatDocRefWithPart()
-    {
-        $row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => 'FECGAPR');
-        $this->assertEquals('FECGAPR, <a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>',
-            DetailsPage::formatDocRef($row));
-    }
-
     public function testRenderCitations()
     {
-        $this->createInstance();
-        $this->_db->getCitationsForPubFakeResult =DatabaseTester::createResultRowsForColumns(
-            array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
-            array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance')));
         $pubId = 72;
+        $this->_db->expects($this->once())->method('getCitationsForPub')
+            ->with($pubId)
+            ->willReturn(DatabaseTester::createResultRowsForColumns(
+                array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
+                array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance'))
+            ));
 
         $this->_page->renderCitations($pubId);
 
-        $this->assertTrue($this->_db->getCitationsForPubCalled);
-        $this->assertEquals($pubId, $this->_db->getCitationsForPubLastPubId);
         $this->expectOutputString('<tr valign="top"><td>Cited by:</td>'
             . '<td><ul class="citelist">'
                 . '<li>EK-306AA-MG-001, <a href="../details.php/1,123"><cite>KA655 CPU System Maintenance</cite></a></li>'
@@ -266,140 +279,143 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
 
     public function testRenderTableOfContents()
     {
-        $this->createInstance();
-        $this->_db->getTableOfContentsForPubFakeResult = DatabaseTester::createResultRowsForColumns(
-            array('level', 'label', 'name'),
-            array(
-                array(1, 'Chapter 1', 'KA655 CPU and Memory Subsystem'),
-                array(2, '1.1', 'Introduction'),
-                array(2, '1.2', 'KA655 CPU Features'),
-                array(3, '1.2.1', 'Central Processing Unit (CPU)'),
-                array(3, '1.2.2', 'Clock Functions'),
-                array(3, '1.2.3', 'Floating Point Accelerator'),
-                array(3, '1.2.4', 'Cache Memory'),
-                array(3, '1.2.5', 'Memory Controller'),
-                array(3, '1.2.6', 'MicroVAX System Support Functions'),
-                array(3, '1.2.7', 'Resident Firmware'),
-                array(3, '1.2.8', 'Q22-Bus Interface'),
-                array(2, '1.3', 'KA655 Connectors'),
-                array(2, '1.4', 'H3600-SA CPU I/O Panel'),
-                array(2, '1.5', 'MS650-BA Memory'),
-                array(1, 'Chapter 2', 'Configuration'),
-                array(2, '2.1', 'Introduction'),
-                array(2, '2.2', 'General Module Order'),
-                array(3, '2.2.1', 'Module Order Rules for KA655 Systems'),
-                array(3, '2.2.2', 'Recommended Module Order for KA655 Systems'),
-                array(2, '2.3', 'Module Configuration'),
-                array(2, '2.4', 'DSSI Configuration'),
-                array(3, '2.4.1', 'Changing RF-Series ISE Parameters'),
-                array(3, '2.4.2', 'Changing the Unit Number'),
-                array(3, '2.4.3', 'Changing the Allocation Class'),
-                array(3, '2.4.4', 'DSSI Cabling'),
-                array(4, '2.4.4.1', 'DSSI Bus Termination and Length'),
-                array(3, '2.4.5', 'Dual-Host Capability'),
-                array(3, '2.4.6', 'Limitations to Dual-Host Configurations'),
-                array(2, '2.5', 'Configuration Worksheet'),
-                array(1, 'Chapter 3', 'KA655 Firmware'),
-                array(2, '3.1', 'Introduction'),
-                array(2, '3.2', 'KA655 Firmware Features'),
-                array(2, '3.3', 'Halt Entry, Exit, and Dispatch Code'),
-                array(2, '3.4', 'External Halts'),
-                array(2, '3.5', 'Power-Up Sequence'),
-                array(3, '3.5.1', 'Mode Switch Set to Test'),
-                array(3, '3.5.2', 'Mode Switch Set to Language Inquiry'),
-                array(3, '3.5.3', 'Mode Switch Set to Normal'),
-                array(2, '3.6', 'Bootstrap'),
-                array(3, '3.6.1', 'Bootstrap Initialization Sequence'),
-                array(3, '3.6.2', 'VMB Boot Flags'),
-                array(3, '3.6.3', 'Supported Boot Devices'),
-                array(3, '3.6.4', 'Autoboot'),
-                array(2, '3.7', 'Operating System Restart'),
-                array(3, '3.7.1', 'Restart Sequence'),
-                array(3, '3.7.2', 'Locating the RPB'),
-                array(2, '3.8', 'Console I/O Mode'),
-                array(3, '3.8.1', 'Command Syntax'),
-                array(3, '3.8.2', 'Address Specifiers'),
-                array(3, '3.8.3', 'Symbolic Addresses'),
-                array(3, '3.8.4', 'Console Command Qualifiers'),
-                array(3, '3.8.5', 'Console Command Keywords'),
-                array(2, '3.9', 'Console Commands'),
-                array(3, '3.9.1', 'BOOT'),
-                array(3, '3.9.2', 'CONFIGURE'),
-                array(3, '3.9.3', 'CONTINUE'),
-                array(3, '3.9.4', 'DEPOSIT'),
-                array(3, '3.9.5', 'EXAMINE'),
-                array(3, '3.9.6', 'FIND'),
-                array(3, '3.9.7', 'HALT'),
-                array(3, '3.9.8', 'HELP'),
-                array(3, '3.9.9', 'INITIALIZE'),
-                array(3, '3.9.10', 'MOVE'),
-                array(3, '3.9.11', 'NEXT'),
-                array(3, '3.9.12', 'REPEAT'),
-                array(3, '3.9.13', 'SEARCH'),
-                array(3, '3.9.14', 'SET'),
-                array(3, '3.9.15', 'SHOW'),
-                array(3, '3.9.16', 'START'),
-                array(3, '3.9.17', 'TEST'),
-                array(3, '3.9.18', 'UNJAM'),
-                array(3, '3.9.19', 'X---Binary Load and Unload'),
-                array(3, '3.9.20', '! (Comment)'),
-                array(1, 'Chapter 4', 'Troubleshooting and Diagnostics'),
-                array(2, '4.1', 'Introduction'),
-                array(2, '4.2', 'General Procedures'),
-                array(2, '4.3', 'KA655 ROM-Based Diagnostics'),
-                array(3, '4.3.1', 'Diagnostic Tests'),
-                array(3, '4.3.2', 'Scripts'),
-                array(3, '4.3.3', 'Script Calling Sequence'),
-                array(3, '4.3.4', 'Creating Scripts'),
-                array(3, '4.3.5', 'Console Displays'),
-                array(3, '4.3.6', 'System Halt Messages'),
-                array(3, '4.3.7', 'Console Error Messages'),
-                array(3, '4.3.8', 'VMB Error Messages'),
-                array(2, '4.4', 'Acceptance Testing'),
-                array(2, '4.5', 'Troubleshooting'),
-                array(3, '4.5.1', 'FE Utility'),
-                array(3, '4.5.2', 'Isolating Memory Failures'),
-                array(3, '4.5.3', 'Additional Troubleshooting Suggestions'),
-                array(2, '4.6', 'Loopback Tests'),
-                array(3, '4.6.1', 'Testing the Console Port'),
-                array(2, '4.7', 'Module Self-Tests'),
-                array(2, '4.8', 'RF-Series ISE Troubleshooting and Diagnostics'),
-                array(3, '4.8.1', 'DRVTST'),
-                array(3, '4.8.2', 'DRVEXR'),
-                array(3, '4.8.3', 'HISTRY'),
-                array(3, '4.8.4', 'ERASE'),
-                array(3, '4.8.5', 'PARAMS'),
-                array(4, '4.8.5.1', 'EXIT'),
-                array(4, '4.8.5.2', 'HELP'),
-                array(4, '4.8.5.3', 'SET'),
-                array(4, '4.8.5.4', 'SHOW'),
-                array(4, '4.8.5.5', 'STATUS'),
-                array(4, '4.8.5.6', 'WRITE'),
-                array(2, '4.9', 'Diagnostic Error Codes'),
-                array(1, 'Appendix A', 'Configuring the KFQSA'),
-                array(2, 'A.1', 'KFQSA Overview'),
-                array(3, 'A.1.1', 'Dual-Host Configuration'),
-                array(2, 'A.2', 'Configuring the KFQSA at Installation'),
-                array(3, 'A.2.1', 'Entering Console I/O Mode'),
-                array(3, 'A.2.2', 'Displaying Current Addresses'),
-                array(3, 'A.2.3', 'Running the Configure Utility'),
-                array(2, 'A.3', 'Programming the KFQSA'),
-                array(2, 'A.4', 'Reprogramming the KFQSA'),
-                array(2, 'A.5', 'Changing the ISE Allocation Class and Unit Number'),
-                array(1, 'Appendix B', 'KA655 CPU Address Assignments'),
-                array(2, 'B.1', 'General Local Address Space Map'),
-                array(2, 'B.2', 'Detailed Local Address Space Map'),
-                array(2, 'B.3', 'Internal Processor Registers'),
-                array(3, 'B.3.1', 'KA655 VAX Standard IPRs'),
-                array(3, 'B.3.2', 'KA655 Unique IPRs'),
-                array(2, 'B.4', 'Global Q22-Bus Address Space Map'),
-                array(1, 'Appendix C', 'Related Documentation')));
+        $pubId = 123;
+        $this->_db->expects($this->once())->method('getTableOfContentsForPub')
+            ->with($pubId, true)
+            ->willReturn(
+                DatabaseTester::createResultRowsForColumns(
+                    array('level', 'label', 'name'),
+                    array(
+                        array(1, 'Chapter 1', 'KA655 CPU and Memory Subsystem'),
+                        array(2, '1.1', 'Introduction'),
+                        array(2, '1.2', 'KA655 CPU Features'),
+                        array(3, '1.2.1', 'Central Processing Unit (CPU)'),
+                        array(3, '1.2.2', 'Clock Functions'),
+                        array(3, '1.2.3', 'Floating Point Accelerator'),
+                        array(3, '1.2.4', 'Cache Memory'),
+                        array(3, '1.2.5', 'Memory Controller'),
+                        array(3, '1.2.6', 'MicroVAX System Support Functions'),
+                        array(3, '1.2.7', 'Resident Firmware'),
+                        array(3, '1.2.8', 'Q22-Bus Interface'),
+                        array(2, '1.3', 'KA655 Connectors'),
+                        array(2, '1.4', 'H3600-SA CPU I/O Panel'),
+                        array(2, '1.5', 'MS650-BA Memory'),
+                        array(1, 'Chapter 2', 'Configuration'),
+                        array(2, '2.1', 'Introduction'),
+                        array(2, '2.2', 'General Module Order'),
+                        array(3, '2.2.1', 'Module Order Rules for KA655 Systems'),
+                        array(3, '2.2.2', 'Recommended Module Order for KA655 Systems'),
+                        array(2, '2.3', 'Module Configuration'),
+                        array(2, '2.4', 'DSSI Configuration'),
+                        array(3, '2.4.1', 'Changing RF-Series ISE Parameters'),
+                        array(3, '2.4.2', 'Changing the Unit Number'),
+                        array(3, '2.4.3', 'Changing the Allocation Class'),
+                        array(3, '2.4.4', 'DSSI Cabling'),
+                        array(4, '2.4.4.1', 'DSSI Bus Termination and Length'),
+                        array(3, '2.4.5', 'Dual-Host Capability'),
+                        array(3, '2.4.6', 'Limitations to Dual-Host Configurations'),
+                        array(2, '2.5', 'Configuration Worksheet'),
+                        array(1, 'Chapter 3', 'KA655 Firmware'),
+                        array(2, '3.1', 'Introduction'),
+                        array(2, '3.2', 'KA655 Firmware Features'),
+                        array(2, '3.3', 'Halt Entry, Exit, and Dispatch Code'),
+                        array(2, '3.4', 'External Halts'),
+                        array(2, '3.5', 'Power-Up Sequence'),
+                        array(3, '3.5.1', 'Mode Switch Set to Test'),
+                        array(3, '3.5.2', 'Mode Switch Set to Language Inquiry'),
+                        array(3, '3.5.3', 'Mode Switch Set to Normal'),
+                        array(2, '3.6', 'Bootstrap'),
+                        array(3, '3.6.1', 'Bootstrap Initialization Sequence'),
+                        array(3, '3.6.2', 'VMB Boot Flags'),
+                        array(3, '3.6.3', 'Supported Boot Devices'),
+                        array(3, '3.6.4', 'Autoboot'),
+                        array(2, '3.7', 'Operating System Restart'),
+                        array(3, '3.7.1', 'Restart Sequence'),
+                        array(3, '3.7.2', 'Locating the RPB'),
+                        array(2, '3.8', 'Console I/O Mode'),
+                        array(3, '3.8.1', 'Command Syntax'),
+                        array(3, '3.8.2', 'Address Specifiers'),
+                        array(3, '3.8.3', 'Symbolic Addresses'),
+                        array(3, '3.8.4', 'Console Command Qualifiers'),
+                        array(3, '3.8.5', 'Console Command Keywords'),
+                        array(2, '3.9', 'Console Commands'),
+                        array(3, '3.9.1', 'BOOT'),
+                        array(3, '3.9.2', 'CONFIGURE'),
+                        array(3, '3.9.3', 'CONTINUE'),
+                        array(3, '3.9.4', 'DEPOSIT'),
+                        array(3, '3.9.5', 'EXAMINE'),
+                        array(3, '3.9.6', 'FIND'),
+                        array(3, '3.9.7', 'HALT'),
+                        array(3, '3.9.8', 'HELP'),
+                        array(3, '3.9.9', 'INITIALIZE'),
+                        array(3, '3.9.10', 'MOVE'),
+                        array(3, '3.9.11', 'NEXT'),
+                        array(3, '3.9.12', 'REPEAT'),
+                        array(3, '3.9.13', 'SEARCH'),
+                        array(3, '3.9.14', 'SET'),
+                        array(3, '3.9.15', 'SHOW'),
+                        array(3, '3.9.16', 'START'),
+                        array(3, '3.9.17', 'TEST'),
+                        array(3, '3.9.18', 'UNJAM'),
+                        array(3, '3.9.19', 'X---Binary Load and Unload'),
+                        array(3, '3.9.20', '! (Comment)'),
+                        array(1, 'Chapter 4', 'Troubleshooting and Diagnostics'),
+                        array(2, '4.1', 'Introduction'),
+                        array(2, '4.2', 'General Procedures'),
+                        array(2, '4.3', 'KA655 ROM-Based Diagnostics'),
+                        array(3, '4.3.1', 'Diagnostic Tests'),
+                        array(3, '4.3.2', 'Scripts'),
+                        array(3, '4.3.3', 'Script Calling Sequence'),
+                        array(3, '4.3.4', 'Creating Scripts'),
+                        array(3, '4.3.5', 'Console Displays'),
+                        array(3, '4.3.6', 'System Halt Messages'),
+                        array(3, '4.3.7', 'Console Error Messages'),
+                        array(3, '4.3.8', 'VMB Error Messages'),
+                        array(2, '4.4', 'Acceptance Testing'),
+                        array(2, '4.5', 'Troubleshooting'),
+                        array(3, '4.5.1', 'FE Utility'),
+                        array(3, '4.5.2', 'Isolating Memory Failures'),
+                        array(3, '4.5.3', 'Additional Troubleshooting Suggestions'),
+                        array(2, '4.6', 'Loopback Tests'),
+                        array(3, '4.6.1', 'Testing the Console Port'),
+                        array(2, '4.7', 'Module Self-Tests'),
+                        array(2, '4.8', 'RF-Series ISE Troubleshooting and Diagnostics'),
+                        array(3, '4.8.1', 'DRVTST'),
+                        array(3, '4.8.2', 'DRVEXR'),
+                        array(3, '4.8.3', 'HISTRY'),
+                        array(3, '4.8.4', 'ERASE'),
+                        array(3, '4.8.5', 'PARAMS'),
+                        array(4, '4.8.5.1', 'EXIT'),
+                        array(4, '4.8.5.2', 'HELP'),
+                        array(4, '4.8.5.3', 'SET'),
+                        array(4, '4.8.5.4', 'SHOW'),
+                        array(4, '4.8.5.5', 'STATUS'),
+                        array(4, '4.8.5.6', 'WRITE'),
+                        array(2, '4.9', 'Diagnostic Error Codes'),
+                        array(1, 'Appendix A', 'Configuring the KFQSA'),
+                        array(2, 'A.1', 'KFQSA Overview'),
+                        array(3, 'A.1.1', 'Dual-Host Configuration'),
+                        array(2, 'A.2', 'Configuring the KFQSA at Installation'),
+                        array(3, 'A.2.1', 'Entering Console I/O Mode'),
+                        array(3, 'A.2.2', 'Displaying Current Addresses'),
+                        array(3, 'A.2.3', 'Running the Configure Utility'),
+                        array(2, 'A.3', 'Programming the KFQSA'),
+                        array(2, 'A.4', 'Reprogramming the KFQSA'),
+                        array(2, 'A.5', 'Changing the ISE Allocation Class and Unit Number'),
+                        array(1, 'Appendix B', 'KA655 CPU Address Assignments'),
+                        array(2, 'B.1', 'General Local Address Space Map'),
+                        array(2, 'B.2', 'Detailed Local Address Space Map'),
+                        array(2, 'B.3', 'Internal Processor Registers'),
+                        array(3, 'B.3.1', 'KA655 VAX Standard IPRs'),
+                        array(3, 'B.3.2', 'KA655 Unique IPRs'),
+                        array(2, 'B.4', 'Global Q22-Bus Address Space Map'),
+                        array(1, 'Appendix C', 'Related Documentation')
+                    )
+                )
+            );
 
-        $this->_page->renderTableOfContents(123, true);
+        $this->_page->renderTableOfContents($pubId, true);
 
-        $this->assertTrue($this->_db->getTableOfContentsForPubCalled);
-        $this->assertEquals(123, $this->_db->getTableOfContentsForPubLastPubId);
-        $this->assertEquals(true, $this->_db->getTableOfContentsForPubLastFullContents);
         $this->expectOutputString("<h2>Table of Contents</h2>\n"
             . "<div class=\"toc\">\n"
             . "<ul>\n"
@@ -578,21 +594,28 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
 
     public function testRenderCopiesNoAmendment()
     {
-        $this->createInstance();
-        $this->_db->getCopiesForPubFakeResult = DatabaseTester::createResultRowsForColumns(
-            array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
-            array(
-                array('PDF', 'http://vt100.net/mirror/hcps/306aamg1.pdf', NULL, 49351262, 'VT100.net', 'http://vt100.net/', "Paul Williams' VT100.net", 'http://vt100.net/', 'N', NULL, NULL, NULL, 7165),
-                array('PDF', 'http://bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf', 'Missing page 4-49', 12023683, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '15a565c18a743c558203f776ee3d6d87', NULL, NULL, 9214)
-                ));
-        $this->_db->getMirrorsForCopyFakeResult[7165] = array();
-        $this->_db->getMirrorsForCopyFakeResult[9214] = array('http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
-                'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
-                'http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
-                'http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
-                'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf');
+        $pubId = 123;
+        $this->_db->expects($this->once())->method('getCopiesForPub')
+            ->with($pubId)
+            ->willReturn(DatabaseTester::createResultRowsForColumns(
+                array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
+                array(
+                    array('PDF', 'http://vt100.net/mirror/hcps/306aamg1.pdf', NULL, 49351262, 'VT100.net', 'http://vt100.net/', "Paul Williams' VT100.net", 'http://vt100.net/', 'N', NULL, NULL, NULL, 7165),
+                    array('PDF', 'http://bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf', 'Missing page 4-49', 12023683, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '15a565c18a743c558203f776ee3d6d87', NULL, NULL, 9214)
+                    ))
+            );
+        $this->_db->expects($this->exactly(2))->method('getMirrorsForCopy')
+            ->withConsecutive([ 7165 ], [ 9214 ])
+            ->willReturn(
+                array(),
+                array('http://bitsavers.trailing-edge.com/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+                    'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+                    'http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+                    'http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
+                    'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf')
+            );
 
-        $this->_page->renderCopies(123);
+        $this->_page->renderCopies($pubId);
 
         $this->expectOutputString(
             "<h2>Copies</h2>\n"
@@ -653,17 +676,16 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
 
     public function testRenderSupersessionPubSupersedesOlder()
     {
-        $this->createInstance();
-        $this->_db->getPublicationsSupersededByPubFakeResult =
-            array(array('ph_company' => 1, 'ph_pub' => 23, 'ph_part' => 'EK-11024-TM-PRE', 'ph_title' => 'PDP-11/24 System Technical Manual'));
         $pubId = 6105;
+        $this->_db->expects($this->once())->method('getPublicationsSupersededByPub')
+            ->with($pubId)
+            ->willReturn(array(array('ph_company' => 1, 'ph_pub' => 23, 'ph_part' => 'EK-11024-TM-PRE', 'ph_title' => 'PDP-11/24 System Technical Manual')));
+        $this->_db->expects($this->once())->method('getPublicationsSupersedingPub')
+            ->with($pubId)
+            ->willReturn(array());
 
         $this->_page->renderSupersessions($pubId);
 
-        $this->assertTrue($this->_db->getPublicationsSupersededByPubCalled);
-        $this->assertEquals($pubId, $this->_db->getPublicationsSupersededByPubLastPubId);
-        $this->assertTrue($this->_db->getPublicationsSupersedingPubCalled);
-        $this->assertEquals($pubId, $this->_db->getPublicationsSupersedingPubLastPubId);
         $this->expectOutputString('<tr valign="top"><td>Supersedes:</td>'
             . '<td><ul class="citelist">'
             . '<li>EK-11024-TM-PRE, <a href="../details.php/1,23"><cite>PDP-11/24 System Technical Manual</cite></a></li>'
@@ -672,17 +694,16 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
 
     public function testRenderSupersessionPubSupersededByNewer()
     {
-        $this->createInstance();
-        $this->_db->getPublicationsSupersedingPubFakeResult =
-            array(array('ph_company' => 1, 'ph_pub' => 6105, 'ph_part' => 'EK-11024-TM-001', 'ph_title' => 'PDP-11/24 System Technical Manual'));
         $pubId = 23;
+        $this->_db->expects($this->once())->method('getPublicationsSupersedingPub')
+            ->with($pubId)
+            ->willReturn(array(array('ph_company' => 1, 'ph_pub' => 6105, 'ph_part' => 'EK-11024-TM-001', 'ph_title' => 'PDP-11/24 System Technical Manual')));
+        $this->_db->expects($this->once())->method('getPublicationsSupersededByPub')
+            ->with($pubId)
+            ->willReturn(array());
 
         $this->_page->renderSupersessions($pubId);
 
-        $this->assertTrue($this->_db->getPublicationsSupersededByPubCalled);
-        $this->assertEquals($pubId, $this->_db->getPublicationsSupersededByPubLastPubId);
-        $this->assertTrue($this->_db->getPublicationsSupersedingPubCalled);
-        $this->assertEquals($pubId, $this->_db->getPublicationsSupersedingPubLastPubId);
         $this->expectOutputString('<tr valign="top"><td>Superseded by:</td>'
             . '<td><ul class="citelist">'
             . '<li>EK-11024-TM-001, <a href="../details.php/1,6105"><cite>PDP-11/24 System Technical Manual</cite></a></li>'
@@ -691,21 +712,29 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
 
     public function testRenderCopiesAmended()
     {
-        $this->createInstance();
-        $this->_db->getCopiesForPubFakeResult = DatabaseTester::createResultRowsForColumns(
-            array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
-            array(
-                array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, 10277)
-                ));
-        $this->_db->getMirrorsForCopyFakeResult[10277] = array('http://bitsavers.trailing-edge.com/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
-            'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
-            'http://www.textfiles.com/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
-            'http://computer-refuge.org/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
-            'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf');
-        $this->_db->getAmendedPubFakeResult = array('ph_company' => 57, 'pub_id' => 17971, 'ph_part' => 'AB81-14G',
-            'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pub_date' => '1984-02');
+        $pubId = 123;
+        $copyId = 10277;
+        $this->_db->expects($this->once())->method('getCopiesForPub')
+            ->with($pubId)
+            ->willReturn(
+                DatabaseTester::createResultRowsForColumns(
+                array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
+                array(
+                    array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, $copyId)
+            )));
+        $this->_db->expects($this->once())->method('getMirrorsForCopy')
+            ->with($copyId)
+            ->willReturn(array('http://bitsavers.trailing-edge.com/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
+                'http://www.bighole.nl/pub/mirror/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
+                'http://www.textfiles.com/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
+                'http://computer-refuge.org/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
+                'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf'));
+        $this->_db->expects($this->once())->method('getAmendedPub')
+            ->with($pubId)
+            ->willReturn(array('ph_company' => 57, 'pub_id' => 17971, 'ph_part' => 'AB81-14G',
+                'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pub_date' => '1984-02'));
 
-        $this->_page->renderCopies(123);
+        $this->_page->renderCopies($pubId);
 
         $this->expectOutputString(
             "<h2>Copies</h2>\n"
@@ -748,36 +777,36 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     public function testRenderDetails()
     {
         $_SERVER['PATH_INFO'] = '/1,3';
-        $this->_db = new FakeManxDatabase();
+        $pubId = 3;
         $rows = DatabaseTester::createResultRowsForColumns(
             array('pub_id', 'name', 'ph_part', 'ph_pub_date', 'ph_title', 'ph_abstract',
                 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
-            array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL,
+            array(array($pubId, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL,
                 '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
-        $this->_db->getDetailsForPubFakeResult = $rows[0];
-        $this->_manx = $this->createMock(IManx::class);
-        $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
-        $this->_page = new RenderDetailsTester($this->_manx);
+        $this->_db->expects($this->once())->method('getDetailsForPub')
+            ->with($pubId)
+            ->willReturn($rows[0]);
+        $page = new RenderDetailsTester($this->_manx);
 
-        $this->_page->renderBodyContent();
+        $page->renderBodyContent();
 
-        $this->assertTrue($this->_page->renderLanguageCalled);
-        $this->assertEquals('+en', $this->_page->renderLanguageLastLanguage);
-        $this->assertTrue($this->_page->renderAmendmentsCalled);
-        $this->assertEquals(3, $this->_page->renderAmendmentsLastPubId);
-        $this->assertTrue($this->_page->renderOSTagsCalled);
-        $this->assertEquals(3, $this->_page->renderOSTagsLastPubId);
-        $this->assertTrue($this->_page->renderLongDescriptionCalled);
-        $this->assertEquals(3, $this->_page->renderLongDescriptionLastPubId);
-        $this->assertTrue($this->_page->renderCitationsCalled);
-        $this->assertEquals(3, $this->_page->renderCitationsLastPubId);
-        $this->assertTrue($this->_page->renderSupersessionsCalled);
-        $this->assertEquals(3, $this->_page->renderSupersessionsLastPubId);
-        $this->assertTrue($this->_page->renderTableOfContentsCalled);
-        $this->assertEquals(3, $this->_page->renderTableOfContentsLastPubId);
-        $this->assertEquals(true, $this->_page->renderTableOfContentsLastFullContents);
-        $this->assertTrue($this->_page->renderCopiesCalled);
-        $this->assertEquals(3, $this->_page->renderCopiesLastPubId);
+        $this->assertTrue($page->renderLanguageCalled);
+        $this->assertEquals('+en', $page->renderLanguageLastLanguage);
+        $this->assertTrue($page->renderAmendmentsCalled);
+        $this->assertEquals(3, $page->renderAmendmentsLastPubId);
+        $this->assertTrue($page->renderOSTagsCalled);
+        $this->assertEquals(3, $page->renderOSTagsLastPubId);
+        $this->assertTrue($page->renderLongDescriptionCalled);
+        $this->assertEquals(3, $page->renderLongDescriptionLastPubId);
+        $this->assertTrue($page->renderCitationsCalled);
+        $this->assertEquals(3, $page->renderCitationsLastPubId);
+        $this->assertTrue($page->renderSupersessionsCalled);
+        $this->assertEquals(3, $page->renderSupersessionsLastPubId);
+        $this->assertTrue($page->renderTableOfContentsCalled);
+        $this->assertEquals(3, $page->renderTableOfContentsLastPubId);
+        $this->assertEquals(true, $page->renderTableOfContentsLastFullContents);
+        $this->assertTrue($page->renderCopiesCalled);
+        $this->assertEquals(3, $page->renderCopiesLastPubId);
         $expected = implode("\n", array(
             '<div style="float:right; margin: 10px"><img src="gigi_regis_handbook.png" alt="" /></div><div class="det"><h1>GIGI/ReGIS Handbook</h1>',
             '<table><tbody><tr><td>Company:</td><td><a href="../search.php?cp=1&q=">Digital Equipment Corporation</a></td></tr>',
@@ -788,20 +817,5 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
             '</table>',
             '</div>')) . "\n";
         $this->expectOutputString($expected);
-    }
-
-    public function testReplaceNullWithEmptyStringOrTrimForNull()
-    {
-        $this->assertEquals('', DetailsPage::replaceNullWithEmptyStringOrTrim(null));
-    }
-
-    public function testReplaceNullWithEmptyStringOrTrimForString()
-    {
-        $this->assertEquals('foo', DetailsPage::replaceNullWithEmptyStringOrTrim('foo'));
-    }
-
-    public function testReplaceNullWithEmptyStringOrTrimForWhitespace()
-    {
-        $this->assertEquals('foo', DetailsPage::replaceNullWithEmptyStringOrTrim(" foo\t\r\n"));
     }
 }

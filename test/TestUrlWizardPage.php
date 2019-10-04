@@ -49,7 +49,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testDocumentAdded()
     {
-        $db = new FakeManxDatabase();
+        $db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
@@ -105,31 +105,24 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
+        $db->expects($this->never())->method('addCompany');
+        $db->expects($this->once())->method('addSupersession')->with(5634, 19690);
+        $db->expects($this->never())->method('addSite');
+        $db->expects($this->once())->method('addCopy')
+            ->with(
+                19690, $vars['copy_format'], $vars['copy_site'], rawurldecode($vars['copy_url']),
+                $vars['copy_notes'], $vars['copy_size'], $md5, $vars['copy_credits'],
+                $vars['copy_amend_serial']);
 
         $page->postPage();
 
-        $this->assertFalse($db->addCompanyCalled);
-        $this->assertTrue($db->addSupersessionCalled);
-        $this->assertEquals(5634, $db->addSupersessionLastOldPub);
-        $this->assertEquals(19690, $db->addSupersessionLastNewPub);
-        $this->assertFalse($db->addSiteCalled);
-        $this->assertTrue($db->addCopyCalled);
-        $this->assertEquals(19690, $db->addCopyLastPubId);
-        $this->assertEquals($vars['copy_format'], $db->addCopyLastFormat);
-        $this->assertEquals($vars['copy_site'], $db->addCopyLastSiteId);
-        $this->assertEquals(rawurldecode($vars['copy_url']), $db->addCopyLastUrl);
-        $this->assertEquals($vars['copy_notes'], $db->addCopyLastNotes);
-        $this->assertEquals($vars['copy_size'], $db->addCopyLastSize);
-        $this->assertEquals($md5, $db->addCopyLastMd5);
-        $this->assertEquals($vars['copy_credits'], $db->addCopyLastCredits);
-        $this->assertEquals($vars['copy_amend_serial'], $db->addCopyLastAmendSerial);
         $this->assertTrue($page->redirectCalled);
     }
 
     public function testNewBitSaversDirectoryAdded()
     {
         $this->_manx = $this->createMock(IManx::class);
-        $db = new FakeManxDatabase();
+        $db = $this->createMock(IManxDatabase::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
@@ -184,24 +177,17 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
+        $db->expects($this->never())->method('addCompany');
+        $db->expects($this->once())->method('addSupersession')->with(5634, 19690);
+        $db->expects($this->once())->method('addCopy')
+            ->with(
+                19690, $vars['copy_format'], $vars['copy_site'], rawurldecode($vars['copy_url']),
+                $vars['copy_notes'], $vars['copy_size'], $md5, $vars['copy_credits'],
+                $vars['copy_amend_serial']
+            );
 
         $page->postPage();
 
-        $this->assertFalse($db->addCompanyCalled);
-        $this->assertTrue($db->addSupersessionCalled);
-        $this->assertEquals(5634, $db->addSupersessionLastOldPub);
-        $this->assertEquals(19690, $db->addSupersessionLastNewPub);
-        $this->assertFalse($db->addSiteCalled);
-        $this->assertTrue($db->addCopyCalled);
-        $this->assertEquals(19690, $db->addCopyLastPubId);
-        $this->assertEquals($vars['copy_format'], $db->addCopyLastFormat);
-        $this->assertEquals($vars['copy_site'], $db->addCopyLastSiteId);
-        $this->assertEquals(rawurldecode($vars['copy_url']), $db->addCopyLastUrl);
-        $this->assertEquals($vars['copy_notes'], $db->addCopyLastNotes);
-        $this->assertEquals($vars['copy_size'], $db->addCopyLastSize);
-        $this->assertEquals($md5, $db->addCopyLastMd5);
-        $this->assertEquals($vars['copy_credits'], $db->addCopyLastCredits);
-        $this->assertEquals($vars['copy_amend_serial'], $db->addCopyLastAmendSerial);
         $this->assertTrue($page->redirectCalled);
     }
 

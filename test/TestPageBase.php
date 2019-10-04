@@ -1,7 +1,6 @@
 <?php
 
 require_once 'pages/PageBase.php';
-require_once 'test/FakeManxDatabase.php';
 
 class PageBaseTester extends PageBase
 {

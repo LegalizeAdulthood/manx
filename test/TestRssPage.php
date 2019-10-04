@@ -1,7 +1,6 @@
 <?php
 
 require_once 'pages/RssPage.php';
-require_once 'test/FakeManxDatabase.php';
 require_once 'pages/IDateTimeProvider.php';
 
 class RssPageTester extends RssPage
@@ -12,22 +11,15 @@ class RssPageTester extends RssPage
     }
 }
 
-class FakeDateTimeProvider implements IDateTimeProvider
-{
-    public function now()
-    {
-        return $this->nowFakeResult;
-    }
-    public $nowFakeResult;
-}
-
 class TestRssPage extends PHPUnit\Framework\TestCase
 {
     public function testRenderBody()
     {
         $_SERVER['PATH_INFO'] = '';
-        $db = new FakeManxDatabase();
-        $db->getMostRecentDocumentsFakeResult = array(
+        $db = $this->createMock(IManxDatabase::class);
+        $db->expects($this->once())->method('getMostRecentDocuments')
+            ->with(200)
+            ->willReturn(array(
             array('ph_title' => 'The Foo Manual',
                 'ph_company' => 5,
                 'ph_pub' => 1211,
@@ -40,11 +32,11 @@ class TestRssPage extends PHPUnit\Framework\TestCase
                 'ph_revision' => '',
                 'ph_pub_date' => '1979-03',
                 'ph_keywords' => 'foo,bar')
-        );
+            ));
         $manx = $this->createMock(IManx::class);
         $manx->expects($this->once())->method('getDatabase')->willReturn($db);
-        $dtp = new FakeDateTimeProvider();
-        $dtp->nowFakeResult = new DateTime("03 Dec 1964 15:00:00 -0400");
+        $dtp = $this->createMock(DateTimeProvider::class);
+        $dtp->expects($this->once())->method('now')->willReturn(new DateTime("03 Dec 1964 15:00:00 -0400"));
         $page = new RssPageTester($manx, $dtp);
 
         $page->renderBody();
@@ -78,8 +70,6 @@ class TestRssPage extends PHPUnit\Framework\TestCase
             '  </channel>',
             '</rss>'
         );
-        $this->assertTrue($db->getMostRecentDocumentsCalled);
-        $this->assertEquals(200, $db->getMostRecentDocumentsLastCount);
         $this->expectOutputString(implode("\n", $expected) . "\n");
     }
 }
