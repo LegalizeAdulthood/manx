@@ -42,10 +42,9 @@ newsgroups or mailing lists whether anyone has a copy.</p>
 <h1>Bugs</h1>
 
 <p>Is something not working?  Is a URL out of date or offline?  Feel
-free to <a href="http://manx.codeplex.com/WorkItem/Create">create a bug
-report</a> on our <a href="http://manx.codeplex.com">CodePlex project</a>.
-You can vote on existing issues to help the developers identify
-priorities with your feedback.</p>
+free to <a href="https://github.com/LegalizeAdulthood/manx/issues/new">create a bug
+report</a> on our <a href="http://github.com/LegalizeAdulthood/manx">github project</a>.
+</p>
 EOH;
     }
 }
