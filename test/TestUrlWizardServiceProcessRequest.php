@@ -41,10 +41,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
 
     public function testProcessRequestNewBitSaversCompany()
     {
-	$this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers());
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers());
         $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->willReturn('-1');
-	$this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
-	$this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('', '-1')->willReturn(array());
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('', '-1')->willReturn(array());
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
@@ -71,9 +71,9 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
 
     public function testProcessRequestUrlLookup()
     {
-	$this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers());
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers());
         $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('bitsavers', 'tektronix')->willReturn('5');
-	$this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
         $this->_db->expects($this->once())->method('getMirrors')->willReturn(
             array(self::databaseRowFromDictionary(array(
                 'mirror_id' => '2',
@@ -83,7 +83,7 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
                 'rank' => '9'
                 )
             )));
-	$this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('070-1183-01', '5')->willReturn(array());
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('070-1183-01', '5')->willReturn(array());
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
             ->with('http://bitsavers.trailing-edge.com/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf')
@@ -113,10 +113,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
 
     public function testWwwBitSaversOrgProcessRequestUrlLookup()
     {
-	$this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers());
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers());
         $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('bitsavers', 'univac')->willReturn('-1');
-	$this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
-	$this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('UE-637', '-1')->willReturn(array());
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('UE-637', '-1')->willReturn(array());
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
             ->with('http://www.bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf')
@@ -146,10 +146,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
 
     public function testChiClassicCompUrlLookup()
     {
-	$this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForChiClassicComp());
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForChiClassicComp());
         $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('ChiClassicComp', 'Motorola')->willReturn('66');
-	$this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
-	$this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('6064A-5M-668', '66')->willReturn(array());
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('6064A-5M-668', '66')->willReturn(array());
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
             ->with('http://chiclassiccomp.org/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf')

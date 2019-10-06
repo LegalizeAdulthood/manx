@@ -241,8 +241,8 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
-	$db->expects($this->once())->method('addSiteDirectory')
-	    ->with('ChiClassicComp', '5', 'DEC');
+        $db->expects($this->once())->method('addSiteDirectory')
+            ->with('ChiClassicComp', '5', 'DEC');
 
         $page->postPage();
     }
@@ -252,8 +252,8 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $db = $this->createMock(IManxDatabase::class);
-	$db->expects($this->once())->method('getSites')->willReturn(array());
-	$db->expects($this->once())->method('getCompanyList')->willReturn(array());
+        $db->expects($this->once())->method('getSites')->willReturn(array());
+        $db->expects($this->once())->method('getCompanyList')->willReturn(array());
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $vars = array();
