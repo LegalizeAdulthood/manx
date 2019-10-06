@@ -1,7 +1,6 @@
 <?php
 
 require_once 'test/DatabaseTester.php';
-require_once 'test/FakeManxDatabase.php';
 require_once 'test/UrlWizardServiceTester.php';
 
 class TestUrlWizardService extends PHPUnit\Framework\TestCase

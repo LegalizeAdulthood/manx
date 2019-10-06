@@ -1,6 +1,5 @@
 <?php
 
-require_once 'test/FakeManxDatabase.php';
 require_once 'pages/UrlWizardPage.php';
 
 class UrlWizardPageTester extends UrlWizardPage
@@ -194,7 +193,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
     public function testNewChiClassicCompDirectoryAdded()
     {
         $this->_manx = $this->createMock(IManx::class);
-        $db = new FakeManxDatabase();
+        $db = $this->createMock(IManxDatabase::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
@@ -242,20 +241,19 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $page = new URLWizardPageTester($this->_manx, $vars);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
+	$db->expects($this->once())->method('addSiteDirectory')
+	    ->with('ChiClassicComp', '5', 'DEC');
 
         $page->postPage();
-
-        $this->assertTrue($db->addSiteDirectoryCalled);
-        $this->assertEquals('ChiClassicComp', $db->addSiteDirectoryLastSiteName);
-        $this->assertEquals('DEC', $db->addSiteDirectoryLastDirectory);
-        $this->assertEquals('5', $db->addSiteDirectoryLastCompanyId);
     }
 
     public function testRenderPage()
     {
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $db = new FakeManxDatabase();
+        $db = $this->createMock(IManxDatabase::class);
+	$db->expects($this->once())->method('getSites')->willReturn(array());
+	$db->expects($this->once())->method('getCompanyList')->willReturn(array());
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $vars = array();
