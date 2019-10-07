@@ -39,6 +39,11 @@ class File implements IFile
         fwrite($this->_file, $data);
     }
 
+    public function getStream()
+    {
+        return $this->_file;
+    }
+
     private $_file;
 }
 

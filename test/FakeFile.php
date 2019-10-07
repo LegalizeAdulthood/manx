@@ -15,6 +15,7 @@ class FakeFile implements IFile
         $this->getHandleFakeResult = null;
         $this->closeCalled = false;
         $this->writeCalled = false;
+        $this->getStreamCalled = false;
     }
 
     function eof()
@@ -53,4 +54,11 @@ class FakeFile implements IFile
         $this->writeLastData = $data;
     }
     public $writeCalled, $writeLastData;
+
+    function getStream()
+    {
+        $this->getStreamCalled = true;
+        return $this->getStreamFakeResult;
+    }
+    public $getStreamCalled, $getStreamFakeResult;
 }

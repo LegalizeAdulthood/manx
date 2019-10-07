@@ -19,18 +19,18 @@ class UrlTransfer implements IUrlTransfer
     public function get($destination)
     {
         $session = $this->_curl->init($this->_url);
+        $tempDestination = $destination . ".tmp";
+        $file = $this->_fileSystem->openFile($tempDestination, 'w');
+        $this->_curl->setopt($session, CURLOPT_FILE, $file->getStream());
         $result = $this->_curl->exec($session);
         $httpStatus = $this->_curl->getinfo($session, CURLINFO_HTTP_CODE);
         $this->_curl->close($session);
+        $file->close();
         if ($httpStatus != 200)
         {
             return false;
         }
 
-        $tempDestination = $destination . ".tmp";
-        $stream = $this->_fileSystem->openFile($tempDestination, 'w');
-        $stream->write($result);
-        $stream->close();
         if ($this->_fileSystem->fileExists($destination))
         {
             $this->_fileSystem->unlink($destination);

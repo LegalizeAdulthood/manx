@@ -7,6 +7,7 @@ interface IFile
     function getHandle();
     function write($data);
     function close();
+    function getStream();
 }
 
 interface IFileSystem
