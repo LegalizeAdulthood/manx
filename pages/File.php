@@ -11,7 +11,10 @@ class File implements IFile
 
     public function __destruct()
     {
-        fclose($this->_file);
+        if (!is_null($this->_file))
+        {
+            fclose($this->_file);
+        }
     }
 
     public function eof()
@@ -32,6 +35,7 @@ class File implements IFile
     public function close()
     {
         fclose($this->_file);
+        $this->_file = null;
     }
 
     public function write($data)
