@@ -18,6 +18,16 @@ class PDODatabaseAdapter implements IDatabase
     /** @var PDO */
     private $_pdo;
 
+    public function beginTransaction()
+    {
+        $this->_pdo->beginTransaction();
+    }
+
+    public function commit()
+    {
+        $this->_pdo->commit();
+    }
+
     public function query($statement)
     {
         return $this->_pdo->query($statement);

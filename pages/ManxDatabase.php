@@ -37,6 +37,16 @@ class ManxDatabase implements IManxDatabase
     }
     private $_db;
 
+    private function beginTransaction()
+    {
+        $this->_db->beginTransaction();
+    }
+
+    private function commit()
+    {
+        $this->_db->commit();
+    }
+
     private function execute($statement, $args)
     {
         return $this->_db->execute($statement, $args);
@@ -576,11 +586,13 @@ class ManxDatabase implements IManxDatabase
     function addCopy($pubId, $format, $siteId, $url,
         $notes, $size, $md5, $credits, $amendSerial)
     {
+        $this->beginTransaction();
         $this->_db->execute('INSERT INTO `copy`(`pub`,`format`,`site`,`url`,`notes`,`size`,`md5`,`credits`,`amend_serial`) '
             . 'VALUES (?,?,?,?,?,?,?,?,?)',
             array($pubId, $format, $siteId, $url, $notes, $size, $this->md5Value($md5), $credits, $amendSerial));
         $result = $this->_db->getLastInsertId();
         $this->_db->execute('UPDATE `pub` SET `pub_has_online_copies`=1 WHERE `pub_id`=?', array($pubId));
+        $this->commit();
         return $result;
     }
 
@@ -683,14 +695,18 @@ class ManxDatabase implements IManxDatabase
 
     public function addSiteUnknownPath($siteName, $path)
     {
+        $this->beginTransaction();
         $this->execute("INSERT INTO `site_unknown`(`site`,`path`) VALUES (?,?)",
             array($this->siteIdForName($siteName), $path));
+        $this->commit();
     }
 
     public function ignoreSitePath($siteName, $path)
     {
+        $this->beginTransaction();
         $this->execute("UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?",
             array($this->siteIdForName($siteName), $path));
+        $this->commit();
     }
 
     public function getSiteUnknownPathCount($siteName)

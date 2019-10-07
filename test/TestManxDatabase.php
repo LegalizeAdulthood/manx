@@ -370,6 +370,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $md5 = '';
         $credits = '';
         $amendSerial = '';
+        $this->_db->expects($this->once())->method('beginTransaction');
         $update = 'UPDATE `pub` SET `pub_has_online_copies`=1 WHERE `pub_id`=?';
         $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
             [ $query, array($pubId, $format, $siteId, $url, $notes, $size, $md5, $credits, $amendSerial) ],
@@ -377,6 +378,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         );
         $newCopyId = 55;
         $this->_db->expects($this->once())->method('getLastInsertId')->willReturn($newCopyId);
+        $this->_db->expects($this->once())->method('commit');
 
         $result = $this->_manxDb->addCopy($pubId, $format, $siteId, $url,
                 $notes, $size, $md5, $credits, $amendSerial);
@@ -549,8 +551,9 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_manxDb->setProperty('foo', 'bar');
     }
 
-    public function testAddBitSaversUnknownPath()
+    public function testAddSiteUnknownPath()
     {
+        $this->_db->expects($this->once())->method('beginTransaction');
         $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
         $insert = "INSERT INTO `site_unknown`(`site`,`path`) VALUES (?,?)";
         $this->_db->expects($this->exactly(2))->method('execute')
@@ -562,12 +565,14 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
                 null
             );
+        $this->_db->expects($this->once())->method('commit');
 
         $this->_manxDb->addSiteUnknownPath('bitsavers', 'foo/frob.jpg');
     }
 
     public function testIgnoreSitePath()
     {
+        $this->_db->expects($this->once())->method('beginTransaction');
         $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
         $update = "UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?";
         $this->_db->expects($this->exactly(2))->method('execute')
@@ -579,6 +584,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
                 null
             );
+        $this->_db->expects($this->once())->method('commit');
 
         $this->_manxDb->ignoreSitePath('bitsavers', 'foo/frob.jpg');
     }
