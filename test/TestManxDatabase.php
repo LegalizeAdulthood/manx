@@ -553,19 +553,13 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testAddSiteUnknownPath()
     {
-        $this->_db->expects($this->once())->method('beginTransaction');
-        $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
-        $insert = "INSERT INTO `site_unknown`(`site`,`path`) VALUES (?,?)";
-        $this->_db->expects($this->exactly(2))->method('execute')
-            ->withConsecutive(
-                [ $select, array('bitsavers') ],
-                [ $insert, array(3, 'foo/frob.jpg') ]
-            )
+        $insert = "INSERT INTO `site_unknown`(`site_id`,`path`) VALUES ((SELECT `site_id` FROM `site` WHERE `name`=?),?)";
+        $this->_db->expects($this->once())->method('execute')
+            ->with($insert, array('bitsavers', 'foo/frob.jpg'))
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
                 null
             );
-        $this->_db->expects($this->once())->method('commit');
 
         $this->_manxDb->addSiteUnknownPath('bitsavers', 'foo/frob.jpg');
     }
