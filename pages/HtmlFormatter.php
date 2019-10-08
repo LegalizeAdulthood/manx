@@ -12,7 +12,7 @@ class HtmlFormatter implements IFormatter
     {
     }
 
-    public static function neatQuotedList($words)
+    public static function neatQuotedList(array $words)
     {
         if (count($words) > 1)
         {
@@ -25,7 +25,7 @@ class HtmlFormatter implements IFormatter
         }
     }
 
-    public function renderResultsBar($ignoredWords, $searchWords, $start, $end, $total)
+    public function renderResultsBar(array $ignoredWords, array $searchWords, int $start, int $end, int $total)
     {
         if (count($ignoredWords) > 0)
         {
@@ -44,7 +44,7 @@ class HtmlFormatter implements IFormatter
         print ' Results <b>' . ($start + 1) . ' - ' . ($end + 1) . '</b> of <b>' . $total . '</b>.</div>';
     }
 
-    public function renderPageSelectionBar($start, $total, $rowsPerPage, $params)
+    public function renderPageSelectionBar(int $start, int $total, int $rowsPerPage, array $params)
     {
         $encodedQuery = urlencode(array_key_exists('q', $params) ? $params['q'] : '');
         print '<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;';
@@ -91,7 +91,7 @@ class HtmlFormatter implements IFormatter
         print '</div>';
     }
 
-    private function replaceNullWithEmptyString($row)
+    private function replaceNullWithEmptyString(array $row)
     {
         foreach (array_keys($row) as $key)
         {
@@ -103,7 +103,7 @@ class HtmlFormatter implements IFormatter
         return $row;
     }
 
-    public function renderResultsPage($rows, $start, $end)
+    public function renderResultsPage(array $rows, int $start, int $end)
     {
         print '<table class="restable"><thead><tr><th>Part</th><th>Date</th><th>Title</th><th class="last">Status</th></tr></thead><tbody>';
         for ($i = $start; $i <= $end; $i++)

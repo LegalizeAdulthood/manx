@@ -51,7 +51,7 @@ class Manx implements IManx
         Cookie::delete();
     }
 
-    function loginUser($user, $password)
+    function loginUser(string $user, string $password)
     {
         $userId = $this->_manxDb->getUserId($user, $password);
         if ($userId > 0)

@@ -4,7 +4,7 @@ require_once 'IFile.php';
 
 class File implements IFile
 {
-    public function __construct($path, $mode)
+    public function __construct(string $path, string $mode)
     {
         $this->_file = fopen($path, $mode);
     }
@@ -38,7 +38,7 @@ class File implements IFile
         $this->_file = null;
     }
 
-    public function write($data)
+    public function write(string $data)
     {
         fwrite($this->_file, $data);
     }
@@ -53,22 +53,22 @@ class File implements IFile
 
 class FileSystem implements IFileSystem
 {
-    public function openFile($path, $mode)
+    public function openFile(string $path, string $mode)
     {
         return new File($path, $mode);
     }
 
-    public function fileExists($path)
+    public function fileExists(string $path)
     {
         return file_exists($path);
     }
 
-    public function unlink($path)
+    public function unlink(string $path)
     {
         return unlink($path);
     }
 
-    public function rename($oldPath, $newPath)
+    public function rename(string $oldPath, string $newPath)
     {
         return rename($oldPath, $newPath);
     }

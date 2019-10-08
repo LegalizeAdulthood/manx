@@ -78,7 +78,7 @@ class WhatsNewPageBase extends AdminPageBase
         }
     }
 
-    private function pathUnknown($line)
+    private function pathUnknown(string $line)
     {
         $url = $this->_urlBase . '/' . self::escapeSpecialChars($line);
         return $this->_manxDb->copyExistsForUrl($url) === false
@@ -183,14 +183,14 @@ EOH;
 EOH;
     }
 
-    public static function ignoreExtension($manxDb, $extension)
+    public static function ignoreExtension(IManxDatabase $manxDb, string $extension)
     {
         $format = $manxDb->getFormatForExtension($extension);
         $imageFormats = array('TIFF' => 1, 'PNG' => 1, 'JPEG' => 1, 'GIF' => 1);
         return strlen($format) == 0 || array_key_exists($format, $imageFormats);
     }
 
-    protected function renderPageSelectionBar($start, $total)
+    protected function renderPageSelectionBar(int $start, int $total)
     {
         $sortOrder = array_key_exists('sort', $this->_vars) ?
             $this->_vars['sort'] : SORT_ORDER_BY_ID;

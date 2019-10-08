@@ -48,7 +48,7 @@ class FakeFile implements IFile
     }
     public $closeCalled;
 
-    function write($data)
+    function write(string $data)
     {
         $this->writeCalled = true;
         $this->writeLastData = $data;

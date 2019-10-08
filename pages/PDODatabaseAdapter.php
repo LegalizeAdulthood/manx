@@ -28,12 +28,12 @@ class PDODatabaseAdapter implements IDatabase
         $this->_pdo->commit();
     }
 
-    public function query($statement)
+    public function query(string $statement)
     {
         return $this->_pdo->query($statement);
     }
 
-    public function execute($statement, $args)
+    public function execute(string $statement, array $args)
     {
         $prepared = $this->_pdo->prepare($statement);
         return $prepared->execute($args) ? $prepared->fetchAll() : array();

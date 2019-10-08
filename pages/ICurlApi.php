@@ -2,7 +2,7 @@
 
 interface ICurlApi
 {
-    public function init($url);
+    public function init(string $url);
     public function setopt($session, $opt, $value);
     public function exec($session);
     public function getinfo($session, $opt);

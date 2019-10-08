@@ -21,7 +21,7 @@ class ChiClassicCompPageTester extends ChiClassicCompPage
         parent::ignorePaths();
     }
 
-    public function renderPageSelectionBar($start, $total)
+    public function renderPageSelectionBar(int $start, int $total)
     {
         parent::renderPageSelectionBar($start, $total);
     }

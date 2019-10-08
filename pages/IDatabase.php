@@ -4,7 +4,7 @@ interface IDatabase
 {
     function beginTransaction();
     function commit();
-    function query($statement);
-    function execute($statement, $args);
+    function query(string $statement);
+    function execute(string $statement, array $args);
     function getLastInsertId();
 }

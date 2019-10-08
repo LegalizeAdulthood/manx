@@ -13,7 +13,7 @@ class CurlApi implements ICurlApi
     {
     }
 
-    public function init($url)
+    public function init(string $url)
     {
         return curl_init($url);
     }
