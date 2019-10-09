@@ -137,7 +137,6 @@ EOH;
         $shortName = $this->_vars['coshort'];
         $sortName = $this->_vars['cosort'];
         $display = $this->_vars['display'] == 'Y';
-        $displayText = $display ? "true" : "false";
         $notes = $this->_vars['notes'];
         if ($id == -1)
         {
