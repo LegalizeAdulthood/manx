@@ -524,7 +524,7 @@ $(function()
             }
             catch (e)
             {
-                $('.form_container').after('<p>There was an exception!  FUCK!</p>'
+                $('.form_container').after('<p>There was an exception!</p>'
                     + '<dl><dt>' + e.name + '</dt><dd>' + e.message + '</dd></dl>');
                 cancel();
             }
