@@ -127,17 +127,22 @@ EOH;
     {
         if ($this->_user->isAdmin())
         {
+            // Administrative tasks menu
             print "<div class=\"menu\">\n";
-            //$this->renderMenuItem($menu == MenuType::Company, "company.php", "Company");
             $this->renderFirstMenuItem($menu == MenuType::UrlWizard, "url-wizard.php", "URL Wizard");
             $this->renderMenuItem($menu == MenuType::BitSavers, "bitsavers.php", "BitSavers");
             $this->renderMenuItem($menu == MenuType::ChiClassicComp, "chiclassiccomp.php", "ChiClassicComp");
-            //$this->renderMenuItem($menu == MenuType::Publication, "publication.php", "Publication");
-            //$this->renderMenuItem($menu == MenuType::Copy, "copy.php", "Copy");
-            $this->renderMenuItem($menu == MenuType::Site, "site.php", "Site");
-            $this->renderMenuItem($menu == MenuType::Mirror, "mirror.php", "Mirror");
             $this->renderMenuItem($menu == MenuType::SizeReport, "size-report.php", "Size Report");
             $this->renderMenuItem($menu == MenuType::MD5Report, "md5-report.php", "MD5 Report");
+            print "</div>\n";
+
+            // Entity menu
+            print "<div class=\"menu\">\n";
+            // $this->renderMenuItem($menu == MenuType::Company, "company.php", "Company");
+            // $this->renderMenuItem($menu == MenuType::Publication, "publication.php", "Publication");
+            // $this->renderMenuItem($menu == MenuType::Copy, "copy.php", "Copy");
+            $this->renderFirstMenuItem($menu == MenuType::Site, "site.php", "Site");
+            $this->renderMenuItem($menu == MenuType::Mirror, "mirror.php", "Mirror");
             print "</div>\n";
         }
     }
