@@ -90,14 +90,14 @@ class ManxDatabase implements IManxDatabase
         return $this->fetchAll("SELECT `id`,`name` FROM `company` WHERE `display` = 'Y' ORDER BY `sort_name`");
     }
 
-    public function getDisplayLanguage(string $languageCode)
+    public function getDisplayLanguage($languageCode)
     {
         // Avoid second name of language, if provided (after ';')
         $query = "SELECT IF(LOCATE(';',`eng_lang_name`),LEFT(`eng_lang_name`,LOCATE(';',`eng_lang_name`)-1),`eng_lang_name`) FROM `language` WHERE `lang_alpha_2`='%s'";
         return $this->fetch(sprintf($query, $languageCode));
     }
 
-    public function getOSTagsForPub(int $pubId)
+    public function getOSTagsForPub($pubId)
     {
         $query = sprintf("SELECT `tag_text` FROM `tag`,`pub_tag` WHERE `tag`.`id`=`pub_tag`.`tag` AND `tag`.`class`='os' AND `pub`=%d", $pubId);
         $tags = array();
@@ -108,14 +108,14 @@ class ManxDatabase implements IManxDatabase
         return $tags;
     }
 
-    public function getAmendmentsForPub(int $pubId)
+    public function getAmendmentsForPub($pubId)
     {
         return $this->fetchAll(sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pub_date` "
             . "FROM `pub` JOIN `pub_history` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=%d ORDER BY `ph_amend_serial`",
             $pubId));
     }
 
-    public function getLongDescriptionForPub(int $pubId)
+    public function getLongDescriptionForPub($pubId)
     {
         $description = array();
         /*
@@ -129,7 +129,7 @@ class ManxDatabase implements IManxDatabase
         return $description;
     }
 
-    public function getCitationsForPub(int $pubId)
+    public function getCitationsForPub($pubId)
     {
         $query = sprintf("SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`"
             . " FROM `cite_pub` `C`"
@@ -138,7 +138,7 @@ class ManxDatabase implements IManxDatabase
         return $this->fetchAll($query);
     }
 
-    public function getTableOfContentsForPub(int $pubId, bool $fullContents)
+    public function getTableOfContentsForPub($pubId, $fullContents)
     {
         $query = sprintf("SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=%d", $pubId);
         if (!$fullContents)
@@ -149,7 +149,7 @@ class ManxDatabase implements IManxDatabase
         return $this->fetchAll($query);
     }
 
-    public function getMirrorsForCopy(int $copyId)
+    public function getMirrorsForCopy($copyId)
     {
         $query = sprintf("SELECT REPLACE(`url`,`original_stem`,`copy_stem`) AS `mirror_url`"
                 . " FROM `copy` JOIN `mirror` ON `copy`.`site`=`mirror`.`site`"
@@ -162,7 +162,7 @@ class ManxDatabase implements IManxDatabase
         return $mirrors;
     }
 
-    public function getAmendedPub(int $pubId, int $amendSerial)
+    public function getAmendedPub($pubId, $amendSerial)
     {
         $query = sprintf("SELECT `ph_company`,`pub_id`,`ph_part`,`ph_title`,`ph_pub_date`"
                 . " FROM `pub` JOIN `pub_history` ON `pub`.`pub_history`=`ph_id`"
@@ -171,7 +171,7 @@ class ManxDatabase implements IManxDatabase
         return $this->fetch($query);
     }
 
-    public function getCopiesForPub(int $pubId)
+    public function getCopiesForPub($pubId)
     {
         $query = sprintf("SELECT `format`,`copy`.`url`,`notes`,`size`,"
             . "`site`.`name`,`site`.`url` AS `site_url`,`site`.`description`,"
@@ -183,7 +183,7 @@ class ManxDatabase implements IManxDatabase
         return $this->fetchAll($query);
     }
 
-    public function getDetailsForPub(int $pubId)
+    public function getDetailsForPub($pubId)
     {
         $query = sprintf('SELECT `pub_id`, `company`.`name`, '
                 . 'IFNULL(`ph_part`, "") AS `ph_part`, `ph_pub_date`, '
@@ -387,7 +387,7 @@ class ManxDatabase implements IManxDatabase
         return $matchClause;
     }
 
-    public function searchForPublications(int $company, array $keywords, bool $online)
+    public function searchForPublications($company, array $keywords, $online)
     {
         $matchClause = self::matchClauseForSearchWords($keywords);
         $onlineClause = $online ? "`pub_has_online_copies`" : '1=1';
@@ -403,7 +403,7 @@ class ManxDatabase implements IManxDatabase
         return $this->fetchAll($query);
     }
 
-    function getPublicationsSupersededByPub(int $pubId)
+    function getPublicationsSupersededByPub($pubId)
     {
         $query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `supersession`' .
             ' JOIN `pub` ON (`old_pub`=`pub_id` AND `new_pub`=%d)' .
@@ -411,7 +411,7 @@ class ManxDatabase implements IManxDatabase
         return $this->fetchAll($query);
     }
 
-    function getPublicationsSupersedingPub(int $pubId)
+    function getPublicationsSupersedingPub($pubId)
     {
         $query = sprintf('SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title` FROM `supersession`'
             . ' JOIN `pub` ON (`new_pub`=`pub_id` AND `old_pub`=%d)'
@@ -419,14 +419,14 @@ class ManxDatabase implements IManxDatabase
         return $this->fetchAll($query);
     }
 
-    function getUserId(string $email, string $pw_sha1)
+    function getUserId($email, $pw_sha1)
     {
         $rows = $this->execute("SELECT `id` FROM `user` WHERE `email`=? AND `pw_sha1`=?",
             array($email, $pw_sha1));
         return (count($rows) > 0) ? $rows[0]['id'] : -1;
     }
 
-    function createSessionForUser(int $userId, int $sessionId, string $remoteHost, string $userAgent)
+    function createSessionForUser($userId, $sessionId, $remoteHost, $userAgent)
     {
         $this->execute("DELETE FROM `user_session` WHERE `user_id`=?", array($userId));
         $this->execute("INSERT INTO `user_session`"
@@ -435,13 +435,13 @@ class ManxDatabase implements IManxDatabase
             array($userId, $sessionId, $userAgent));
     }
 
-    function deleteUserSession(string $session)
+    function deleteUserSession($session)
     {
         $this->execute("DELETE FROM `user_session` WHERE `ascii_session_id`=?",
             array($sessionId));
     }
 
-    function getUserFromSessionId(int $sessionId)
+    function getUserFromSessionId($sessionId)
     {
         $rows = $this->execute("SELECT `user_session`.`user_id`, "
                     . "`user_session`.`logged_in`, "
@@ -463,7 +463,7 @@ class ManxDatabase implements IManxDatabase
         return array();
     }
 
-    function getPublicationsForPartNumber(string $part, int $companyId)
+    function getPublicationsForPartNumber($part, $companyId)
     {
         $part = "%" . ManxDatabase::normalizePartNumber($part) . "%";
         return $this->_db->execute("SELECT pub_id,ph_part,ph_title "
@@ -474,9 +474,9 @@ class ManxDatabase implements IManxDatabase
     }
 
     // Add pub_history row, with ph_pub = 0
-    function addPubHistory(int $userId, string $publicationType, int $companyId, string $part,
-        string $altPart, string $revision, string $pubDate, string $title, string $keywords, string $notes, string $abstract,
-        string $languages)
+    function addPubHistory($userId, $publicationType, $companyId, $part,
+        $altPart, $revision, $pubDate, $title, $keywords, $notes, $abstract,
+        $languages)
     {
         $this->_db->execute(
             'INSERT INTO `pub_history`(`ph_created`, `ph_edited_by`, `ph_pub`, '
@@ -501,7 +501,7 @@ class ManxDatabase implements IManxDatabase
     }
 
     // Add pub row, with pub_history = ph_id
-    function addPublication(int $pubHistoryId)
+    function addPublication($pubHistoryId)
     {
         $this->_db->execute('INSERT INTO `pub` (`pub_history`) VALUES (?)',
             array($pubHistoryId));
@@ -509,26 +509,26 @@ class ManxDatabase implements IManxDatabase
     }
 
     // Update pub_history row, with ph_pub = pub_id
-    function updatePubHistoryPubId(int $pubHistoryId, int $pubId)
+    function updatePubHistoryPubId($pubHistoryId, $pubId)
     {
         $this->_db->execute('UPDATE `pub_history` SET `ph_pub` = ? WHERE `ph_id` = ?',
             array($pubId, $pubHistoryId));
     }
 
-    function getCompanyForId(int $companyId)
+    function getCompanyForId($companyId)
     {
         $rows = $this->_db->execute('SELECT * FROM `company` WHERE `id`=?', array($companyId));
         return (count($rows) > 0) ? $rows[0] : array();
     }
 
-    function addCompany(string $fullName, string $shortName, string $sortName, string $display, string $notes)
+    function addCompany($fullName, $shortName, $sortName, $display, $notes)
     {
         $this->_db->execute('INSERT INTO `company`(`name`,`short_name`,`sort_name`,`display`,`notes`) VALUES (?,?,?,?,?)',
             array($fullName, $shortName, $sortName, $display ? 'Y' : 'N', $notes));
         return $this->_db->getLastInsertId();
     }
 
-    function updateCompany(int $companyId, string $fullName, string $shortName, string $sortName, string $display, string $notes)
+    function updateCompany($companyId, $fullName, $shortName, $sortName, $display, $notes)
     {
         $this->_db->execute("UPDATE `company` "
                 . "SET `name`=?, `short_name`=?, `sort_name`=?, `display`=?, `notes`=? "
@@ -546,7 +546,7 @@ class ManxDatabase implements IManxDatabase
         return $this->fetchAll("SELECT * FROM `site` ORDER BY `display_order`");
     }
 
-    function getFormatForExtension(string $extension)
+    function getFormatForExtension($extension)
     {
         $rows = $this->execute("SELECT `format` FROM `format_extension` WHERE `extension`=?",
             array(strtolower($extension)));
@@ -559,14 +559,14 @@ class ManxDatabase implements IManxDatabase
         return $siteId[0]['site_id'];
     }
 
-    public function getCompanyForSiteDirectory(string $siteName, string $dir)
+    public function getCompanyForSiteDirectory($siteName, $dir)
     {
         $rows = $this->execute("SELECT `company_id` FROM `site_company_dir` WHERE `site_id`=? AND `directory`=?",
             array($this->siteIdForName($siteName), $dir));
         return (count($rows) > 0) ? $rows[0]['company_id'] : -1;
     }
 
-    function addSupersession(int $oldPub, int $newPub)
+    function addSupersession($oldPub, $newPub)
     {
         $this->_db->execute('INSERT INTO `supersession`(`old_pub`,`new_pub`) VALUES (?,?)',
             array($oldPub, $newPub));
@@ -576,15 +576,15 @@ class ManxDatabase implements IManxDatabase
         return $result;
     }
 
-    function addSite(string $name, string $url, string $description, string $copy_base, string $low, string $live)
+    function addSite($name, $url, $description, $copy_base, $low, $live)
     {
         $this->_db->execute('INSERT INTO `site`(`name`,`url`,`description`,`copy_base`,`low`,`live`) VALUES (?,?,?,?,?,?)',
             array($name, $url, $description, $copy_base, $low, $live));
         return $this->_db->getLastInsertId();
     }
 
-    function addCopy($pubId, string $format, int $siteId, string $url,
-        string $notes, $size, string $md5, string $credits, $amendSerial)
+    function addCopy($pubId, $format, $siteId, $url,
+        $notes, $size, $md5, $credits, $amendSerial)
     {
         $this->beginTransaction();
         $this->_db->execute('INSERT INTO `copy`(`pub`,`format`,`site`,`url`,`notes`,`size`,`md5`,`credits`,`amend_serial`) '
@@ -601,7 +601,7 @@ class ManxDatabase implements IManxDatabase
         return is_string($md5) ? $md5 : null;
     }
 
-    public function addSiteDirectory(string $siteName, int $companyId, string $directory)
+    public function addSiteDirectory($siteName, $companyId, $directory)
     {
         $siteId = $this->siteIdForName($siteName);
         $row = $this->execute("SELECT * FROM `site_company_dir` WHERE `site_id`=? AND `company_id`=?", array($siteId, $companyId));
@@ -612,7 +612,7 @@ class ManxDatabase implements IManxDatabase
         }
     }
 
-    function getMostRecentDocuments(int $count)
+    function getMostRecentDocuments($count)
     {
         return $this->execute(sprintf('SELECT `ph_pub`, `ph_company`, `ph_created`,'
             . ' `ph_title`, `company`.`name` AS `company_name`,'
@@ -631,7 +631,7 @@ class ManxDatabase implements IManxDatabase
         return (count($row) > 0) ? $row['value'] : '1';
     }
 
-    function copyExistsForUrl(string $url)
+    function copyExistsForUrl($url)
     {
         $rows = $this->execute("SELECT `ph_company`,`ph_pub`,`ph_title` "
                 . "FROM `copy`,`pub_history` "
@@ -650,20 +650,20 @@ class ManxDatabase implements IManxDatabase
             . " LIMIT 0,10");
     }
 
-    function getUrlForCopy(int $copyId)
+    function getUrlForCopy($copyId)
     {
         $rows = $this->execute("SELECT `url` FROM `copy` WHERE `copy_id` = ?",
             array($copyId));
         return $rows[0]['url'];
     }
 
-    function updateSizeForCopy(int $copyId, int $size)
+    function updateSizeForCopy($copyId, $size)
     {
         $this->execute("UPDATE `copy` SET `size` = ? WHERE `copy_id` = ?",
             array($size, $copyId));
     }
 
-    function updateMD5ForCopy(int $copyId, string $md5)
+    function updateMD5ForCopy($copyId, $md5)
     {
         $this->execute("UPDATE `copy` SET `md5` = ? WHERE `copy_id` = ?",
             array($this->md5Value($md5), $copyId));
@@ -679,28 +679,28 @@ class ManxDatabase implements IManxDatabase
             . " LIMIT 0,10");
     }
 
-    function getProperty(string $name)
+    function getProperty($name)
     {
         $rows = $this->execute("SELECT `value` FROM `properties` WHERE `name` = ?",
             array($name));
         return (count($rows) > 0) ? $rows[0]['value'] : false;
     }
 
-    function setProperty(string $name, $value)
+    function setProperty($name, $value)
     {
         $this->execute("INSERT INTO `properties`(`name`, `value`) VALUES (?, ?) "
             . "ON DUPLICATE KEY UPDATE `value` = ?",
             array($name, $value, $value));
     }
 
-    public function addSiteUnknownPath(string $siteName, string $path)
+    public function addSiteUnknownPath($siteName, $path)
     {
         $this->execute(
             "INSERT INTO `site_unknown`(`site_id`,`path`) VALUES ((SELECT `site_id` FROM `site` WHERE `name`=?),?)",
             array($siteName, $path));
     }
 
-    public function ignoreSitePath(string $siteName, string $path)
+    public function ignoreSitePath($siteName, $path)
     {
         $this->beginTransaction();
         $this->execute("UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?",
@@ -708,7 +708,7 @@ class ManxDatabase implements IManxDatabase
         $this->commit();
     }
 
-    public function getSiteUnknownPathCount(string $siteName)
+    public function getSiteUnknownPathCount($siteName)
     {
         $siteInfo = $this->execute("SELECT `site_id`,`copy_base` FROM `site` WHERE `name`=?", array($siteName));
         $siteId = $siteInfo[0]['site_id'];
@@ -720,40 +720,40 @@ class ManxDatabase implements IManxDatabase
         return $rows[0]['count'];
     }
 
-    public function getSiteUnknownPathsOrderedById(string $siteName, int $start, bool $ascending)
+    public function getSiteUnknownPathsOrderedById($siteName, $start, $ascending)
     {
         $order = $ascending ? 'ASC' : 'DESC';
         return $this->execute("SELECT `path`,`id` FROM `site_unknown` WHERE `site_id`=? AND `ignored`=0 ORDER BY `id` $order LIMIT $start, 10",
         array($this->siteIdforName($siteName)));
     }
 
-    public function getSiteUnknownPathsOrderedByPath(string $siteName, int $start, bool $ascending)
+    public function getSiteUnknownPathsOrderedByPath($siteName, $start, $ascending)
     {
         $order = $ascending ? 'ASC' : 'DESC';
         return $this->execute("SELECT `path`,`id` FROM `site_unknown` WHERE `site_id`=? AND `ignored`=0 ORDER BY `path` $order LIMIT $start, 10",
             array($this->siteIdForName($siteName)));
     }
 
-    public function siteIgnoredPath(string $siteName, string $path)
+    public function siteIgnoredPath($siteName, $path)
     {
         $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `path`=? AND `ignored`=1",
             array($this->siteIdForName($siteName), $path));
         return ($rows[0]['count'] > 0);
     }
 
-    public function getAllSiteUnknownPaths(string $siteName)
+    public function getAllSiteUnknownPaths($siteName)
     {
         return $this->execute("SELECT `id`,`path` FROM `site_unknown` WHERE `site_id`=? ORDER BY `id`",
             array($this->siteIdForName($siteName)));
     }
 
-    public function removeSiteUnknownPathById(string $siteName, int $siteUnknownId)
+    public function removeSiteUnknownPathById($siteName, $siteUnknownId)
     {
         return $this->execute("DELETE FROM `site_unknown` WHERE `site_id`=? AND `id`=?",
             array($this->siteIdForName($siteName), $id));
     }
 
-    public function getPossiblyMovedSiteUnknownPaths(string $siteName)
+    public function getPossiblyMovedSiteUnknownPaths($siteName)
     {
         $siteId = $this->siteIdForName($siteName);
         return $this->execute("SELECT site_unknown.path, site_unknown.id as `path_id`, copy.url, copy.copy_id, copy.md5 FROM copy, site_unknown".
@@ -763,7 +763,7 @@ class ManxDatabase implements IManxDatabase
             array($siteId));
     }
 
-    public function siteFileMoved(string $siteName, int $copyId, int $pathId, string $url)
+    public function siteFileMoved($siteName, $copyId, $pathId, $url)
     {
         $siteId = $this->siteIdForName($siteName);
         $this->execute("DELETE FROM site_unknown WHERE site_id=? AND id=?", array($siteId, $pathId));

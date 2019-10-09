@@ -25,7 +25,7 @@ class HtmlFormatter implements IFormatter
         }
     }
 
-    public function renderResultsBar(array $ignoredWords, array $searchWords, int $start, int $end, int $total)
+    public function renderResultsBar(array $ignoredWords, array $searchWords, $start, $end, $total)
     {
         if (count($ignoredWords) > 0)
         {
@@ -44,7 +44,7 @@ class HtmlFormatter implements IFormatter
         print ' Results <b>' . ($start + 1) . ' - ' . ($end + 1) . '</b> of <b>' . $total . '</b>.</div>';
     }
 
-    public function renderPageSelectionBar(int $start, int $total, int $rowsPerPage, array $params)
+    public function renderPageSelectionBar($start, $total, $rowsPerPage, array $params)
     {
         $encodedQuery = urlencode(array_key_exists('q', $params) ? $params['q'] : '');
         print '<div class="pagesel">Result page:&nbsp;&nbsp;&nbsp;&nbsp;';
@@ -103,7 +103,7 @@ class HtmlFormatter implements IFormatter
         return $row;
     }
 
-    public function renderResultsPage(array $rows, int $start, int $end)
+    public function renderResultsPage(array $rows, $start, $end)
     {
         print '<table class="restable"><thead><tr><th>Part</th><th>Date</th><th>Title</th><th class="last">Status</th></tr></thead><tbody>';
         for ($i = $start; $i <= $end; $i++)
