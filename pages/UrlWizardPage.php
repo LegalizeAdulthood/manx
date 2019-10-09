@@ -181,63 +181,6 @@ EOH;
         }
     }
 
-    private function getAttribute($name, $options)
-    {
-        return array_key_exists($name, $options) ?
-            sprintf(' %s="%s"', $name, $options[$name]) : '';
-    }
-
-    private function renderTextInput($label, $id, $options)
-    {
-        $className = $this->getAttribute('class', $options);
-        $width = $this->getAttribute('size', $options);
-        $maxLength = $this->getAttribute('maxlength', $options);
-        $readOnly = array_key_exists('readonly', $options) ?
-            ' readonly="readonly"' : '';
-        print <<<EOH
-<li id="${id}_field"$className>
-<label for="$id">$label</label>
-<input type="text" id="$id" name="$id"$width$maxLength$readOnly value="" />
-
-EOH;
-        $hasHelp = array_key_exists('help', $options);
-        if ($hasHelp)
-        {
-            print <<<EOH
-<img id="${id}_help_button" src="assets/help.png" width="16" height="16" />
-
-EOH;
-        }
-        if (array_key_exists('working', $options))
-        {
-            print "<span id=\"${id}_working\" class=\"hidden working\">Working...</span>\n";
-        }
-        if ($hasHelp)
-        {
-            $help = $options['help'];
-            print <<<EOH
-<div id="${id}_help" class="hidden">$help</div>
-
-EOH;
-        }
-        print <<<EOH
-<div id="${id}_error" class="error hidden"></div>
-
-EOH;
-        print <<<EOH
-</li>
-
-
-EOH;
-    }
-
-    private function renderTextInputMaxSize($label, $id, $size, $maxLength, $help)
-    {
-        $this->renderTextInput($label, $id,
-            array('size' => $size, 'maxlength' => $maxLength,
-            'help' => $help));
-    }
-
     protected function renderBodyContent()
     {
         print <<<EOH
