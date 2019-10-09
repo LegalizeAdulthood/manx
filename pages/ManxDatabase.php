@@ -568,11 +568,13 @@ class ManxDatabase implements IManxDatabase
 
     function addSupersession($oldPub, $newPub)
     {
+        $this->_db->beginTransaction();
         $this->_db->execute('INSERT INTO `supersession`(`old_pub`,`new_pub`) VALUES (?,?)',
             array($oldPub, $newPub));
         $result = $this->_db->getLastInsertId();
         $this->_db->execute('UPDATE `pub` SET `pub_superseded` = 1 WHERE `pub_id` = ?',
             array($oldPub));
+        $this->_db->commit();
         return $result;
     }
 

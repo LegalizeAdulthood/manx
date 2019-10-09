@@ -730,6 +730,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $query = 'UPDATE `pub` SET `pub_superseded` = 1 WHERE `pub_id` = ?';
         $oldPub = 213;
         $newPub = 563;
+        $this->_db->expects($this->once())->method('beginTransaction');
         $this->_db->expects($this->once())->method('getLastInsertId')->willReturn(969);
         $this->_db->expects($this->exactly(2))->method('execute')
             ->withConsecutive(
@@ -737,6 +738,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 [ $query, array($oldPub) ]
             )
             ->willReturn(959, null);
+        $this->_db->expects($this->once())->method('commit');
 
         $result = $this->_manxDb->addSupersession($oldPub, $newPub);
 
