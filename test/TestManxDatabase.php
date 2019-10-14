@@ -745,6 +745,24 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals(969, $result);
     }
 
+    public function testAddCompany()
+    {
+        $this->_db->expects($this->once())->method('execute')
+            ->with('INSERT INTO `company`(`name`,`short_name`,`sort_name`,`display`,`notes`) VALUES (?,?,?,?,?)',
+                array('Digital Equipment Corporation', 'DEC', 'dec', 'Y', 'notes'));
+
+        $this->_manxDb->addCompany('Digital Equipment Corporation', 'DEC', 'dec', true, 'notes');
+    }
+
+    public function testUpdateCompany()
+    {
+        $this->_db->expects($this->once())->method('execute')
+            ->with('UPDATE `company` SET `name`=?, `short_name`=?, `sort_name`=?, `display`=?, `notes`=? WHERE `id`=?',
+                array('Digital Equipment Corporation', 'DEC', 'dec', 'Y', 'notes', 66));
+
+        $this->_manxDb->updateCompany(66, 'Digital Equipment Corporation', 'DEC', 'dec', true, 'notes');
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");

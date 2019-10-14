@@ -5,6 +5,7 @@ require_once 'test/TestAdminPageBase.php';
 require_once 'test/TestBitSaversPage.php';
 require_once 'test/TestBitSaversCleaner.php';
 require_once 'test/TestChiClassicCompPage.php';
+require_once 'test/TestCompanyPage.php';
 require_once 'test/TestDetailsPage.php';
 require_once 'test/TestHtmlFormatter.php';
 require_once 'test/TestManxDatabase.php';
@@ -29,6 +30,7 @@ class AllTests
             'TestBitSaversCleaner',
             'TestBitSaversPage',
             'TestChiClassicCompPage',
+            'TestCompanyPage',
             'TestDetailsPage',
             'TestHtmlFormatter',
             'TestManxDatabase',

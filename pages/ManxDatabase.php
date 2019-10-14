@@ -533,7 +533,7 @@ class ManxDatabase implements IManxDatabase
         $this->_db->execute("UPDATE `company` "
                 . "SET `name`=?, `short_name`=?, `sort_name`=?, `display`=?, `notes`=? "
                 . "WHERE `id`=?",
-            array($fullName, $shortName, $sortName, $display ? 'Y' : 'N', $notes, $id));
+            array($fullName, $shortName, $sortName, $display ? 'Y' : 'N', $notes, $companyId));
     }
 
     function getMirrors()

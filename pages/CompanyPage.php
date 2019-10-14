@@ -57,10 +57,13 @@ EOH;
             'short_name' => '',
             'sort_name' => '',
             'display' => true,
-            'ntoes' => '');
+            'notes' => '');
         $this->renderFields($company);
         print <<<EOH
 <input type="submit" name="opsave" value="Save" />
+</form>
+</div>
+
 EOH;
     }
 
