@@ -11,6 +11,7 @@ require_once 'test/TestHtmlFormatter.php';
 require_once 'test/TestManxDatabase.php';
 require_once 'test/TestManxDatabaseUtils.php';
 require_once 'test/TestPageBase.php';
+require_once 'test/TestPublicationPage.php';
 require_once 'test/TestRssPage.php';
 require_once 'test/TestSearcher.php';
 require_once 'test/TestUrlInfo.php';
@@ -36,6 +37,7 @@ class AllTests
             'TestManxDatabase',
             'TestManxDatabaseUtils',
             'TestPageBase',
+            'TestPublicationPage',
             'TestRssPage',
             'TestSearcher',
             'TestUrlInfo',

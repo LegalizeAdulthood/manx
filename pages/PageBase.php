@@ -38,7 +38,7 @@ abstract class PageBase
         $this->_topDir = array_key_exists('PATH_INFO', $_SERVER) ?
             str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1)
             : '';
-        $this->_user = $this->_manx->getUserFromSession();
+        $this->_user = $manx->getUserFromSession();
     }
 
     public function __destruct()

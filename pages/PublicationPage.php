@@ -1,6 +1,7 @@
 <?php
 
 require_once 'AdminPageBase.php';
+require_once 'IManx.php';
 
 class PublicationPage extends AdminPageBase
 {
@@ -95,11 +96,12 @@ EOH;
         $revision = $this->param('revision');
         $keywords = $this->param('keywords');
         $notes = $this->param('notes');
+        $abstract = $this->param('abstract');
         $languages = $this->param('lang', '+en');
 
         $pubId = $this->_manx->addPublication($this->_user,
-            $company, $part, $pubDate, $title,
-            $publicationType, $altPart, $revision, $keywords, $notes,
+            $company, $part, $pubDate, $title, $publicationType,
+            $altPart, $revision, $keywords, $notes, $abstract,
             $languages);
 
         $this->redirect(sprintf("details.php/%s,%s", $company, $pubId));
