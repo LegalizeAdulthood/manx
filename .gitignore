@@ -3,3 +3,4 @@ pages/Config.php
 vendor
 composer.lock
 *.swp
+.htaccess
