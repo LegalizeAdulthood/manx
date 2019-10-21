@@ -29,7 +29,7 @@ and keywords of these manuals.</p>
 
 <p>This catalog mostly covers manufacturers of minicomputers and
 mainframes, or associated devices such as terminals and printers.
-Tiziano's <a href="http://1000bit.net/">1000 BiT</a> is the best
+Tiziano's <a href="http://www.1000bit.it/">1000 BiT</a> is the best
 catalogue for microcomputers.</p>
 
 EOH;
