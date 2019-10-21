@@ -5,14 +5,17 @@ require_once 'AdminPageBase.php';
 require_once 'BitSaversPage.php';
 require_once 'UrlInfo.php';
 
+use Pimple\Container;
+
 class URLWizardPage extends AdminPageBase
 {
     /** @var \IManxDatabase */
     private $_db;
 
-    public function __construct($manx, $vars)
+    public function __construct(Container $config)
     {
-        parent::__construct($manx, $vars);
+        parent::__construct($config);
+        $manx = $config['manx'];
         $this->_db = $manx->getDatabase();
     }
 

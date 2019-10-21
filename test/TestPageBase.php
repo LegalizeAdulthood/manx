@@ -1,6 +1,9 @@
 <?php
 
+require_once 'vendor/autoload.php';
 require_once 'pages/PageBase.php';
+
+use Pimple\Container;
 
 class PageBaseTester extends PageBase
 {
@@ -19,7 +22,9 @@ class TestPageBase extends PHPUnit\Framework\TestCase
     {
         $_SERVER['PATH_INFO'] = '';
         $this->_manx = $this->createMock(IManx::class);
-        $this->_page = new PageBaseTester($this->_manx);
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $this->_page = new PageBaseTester($config);
     }
 
     public function testRenderLoginLink()

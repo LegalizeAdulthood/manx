@@ -4,13 +4,17 @@ require_once 'PageBase.php';
 require_once 'RssWriter.php';
 require_once 'IDateTimeProvider.php';
 
+use Pimple\Container;
+
 class RssPage extends PageBase
 {
     private $_rss;
 
-    public function __construct(IManx $manx, IDateTimeProvider $dateTimeProvider)
+    public function __construct(Container $config)
     {
-        parent::__construct($manx);
+        parent::__construct($config);
+        $manx = $config['manx'];
+        $dateTimeProvider = $config['dateTimeProvider'];
         $this->_rss = new RssWriter($dateTimeProvider);
         $this->_rss->beginChannel('New Documents on Manx', 'http://manx-docs.org',
                 'A list of the most recently created documents in the Manx database.')

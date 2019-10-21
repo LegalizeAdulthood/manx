@@ -2,6 +2,8 @@
 
 require_once 'IManx.php';
 
+use Pimple\Container;
+
 class MenuType
 {
     const Undefined = 0;
@@ -31,8 +33,9 @@ abstract class PageBase
     /** @var IUser */
     protected $_user;
 
-    public function __construct(IManx $manx)
+    public function __construct(Container $config)
     {
+        $manx = $config['manx'];
         $this->_manx = $manx;
         $this->_manxDb = $manx->getDatabase();
         $this->_topDir = array_key_exists('PATH_INFO', $_SERVER) ?

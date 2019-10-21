@@ -1,5 +1,9 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
+use Pimple\Container;
+
 require_once 'pages/AdminPageBase.php';
 
 class AdminPageBaseTester extends AdminPageBase
@@ -22,24 +26,36 @@ class AdminPageBaseTester extends AdminPageBase
 
 class TestAdminPageBase extends PHPUnit\Framework\TestCase
 {
-    public function testParamUrlWithoutPlusGivesUrl()
+    /** @var Container */
+    private $_config;
+
+    protected function setUp()
     {
         $manx = $this->createMock(IManx::class);
-        $manx->expects($this->once())->method('getDatabase')->willReturn($this->createMock(IManxDatabase::class));
-        $url = 'http://foo';
+        $db = $this->createMock(IManxDatabase::class);
+        $manx->expects($this->once())->method('getDatabase')->willReturn($db);
 
-        $page = new AdminPageBaseTester($manx, array('url' => rawurlencode($url)));
+        $this->_config = new Container();
+        $this->_config['db'] = $db;
+        $this->_config['manx'] = $manx;
+    }
+
+    public function testParamUrlWithoutPlusGivesUrl()
+    {
+        $url = 'http://foo';
+        $this->_config['vars'] = array('url' => rawurlencode($url));
+
+        $page = new AdminPageBaseTester($this->_config);
 
         $this->assertEquals($url, $page->param('url'));
     }
 
     public function testParamUrlWithPlusGivesUrl()
     {
-        $manx = $this->createMock(IManx::class);
-        $manx->expects($this->once())->method('getDatabase')->willReturn($this->createMock(IManxDatabase::class));
         $url = 'http://foo/3+Open';
+        $this->_config['vars'] = array('url' => rawurlencode($url));
 
-        $page = new AdminPageBaseTester($manx, array('url' => rawurlencode($url)));
+        $page = new AdminPageBaseTester($this->_config);
 
         $this->assertEquals($url, $page->param('url'));
     }

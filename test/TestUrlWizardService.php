@@ -3,6 +3,8 @@
 require_once 'test/DatabaseTester.php';
 require_once 'test/UrlWizardServiceTester.php';
 
+use Pimple\Container;
+
 class TestUrlWizardService extends PHPUnit\Framework\TestCase
 {
     public function testUrlComponentsMatchBitSaversOrg()
@@ -73,7 +75,13 @@ class TestUrlWizardService extends PHPUnit\Framework\TestCase
         $this->_manx = $this->createMock(IManx::class);
         $_SERVER['PATH_INFO'] = '';
         $vars = array();
-        $page = new UrlWizardServiceTester($this->_manx, $vars);
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $config['vars'] = $vars;
+        $config['urlInfoFactory'] = $this->createMock(IUrlInfoFactory::class);
+
+        $page = new UrlWizardServiceTester($config);
+
         $this->assertTrue(is_object($page));
         $this->assertFalse(is_null($page));
     }

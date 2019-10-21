@@ -2,15 +2,17 @@
 
 require_once 'WhatsNewPageBase.php';
 
+use Pimple\Container;
+
 define('TIMESTAMP_PROPERTY', 'bitsavers_whats_new_timestamp');
 define('INDEX_BY_DATE_FILE', 'bitsavers-IndexByDate.txt');
 define('INDEX_BY_DATE_URL', 'http://bitsavers.trailing-edge.com/pdf/IndexByDate.txt');
 
 class BitSaversPage extends WhatsNewPageBase
 {
-    public function __construct($manx, $vars, IFileSystem $fileSystem = null, IWhatsNewPageFactory $factory = null)
+    public function __construct(Container $config)
     {
-        $opts = array(
+        $config['opts'] = array(
             'indexByDateFile' => INDEX_BY_DATE_FILE,
             'indexByDateUrl' => INDEX_BY_DATE_URL,
             'timeStampProperty' => TIMESTAMP_PROPERTY,
@@ -20,6 +22,6 @@ class BitSaversPage extends WhatsNewPageBase
             'page' => 'bitsavers.php',
             'title' => 'BitSavers'
         );
-        parent::__construct($manx, $vars, $opts, $fileSystem, $factory);
+        parent::__construct($config);
     }
 }

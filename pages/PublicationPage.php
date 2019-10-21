@@ -1,5 +1,7 @@
 <?php
 
+use Pimple\Container;
+
 require_once 'AdminPageBase.php';
 require_once 'IManx.php';
 

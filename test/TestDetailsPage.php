@@ -3,11 +3,13 @@
 require_once 'pages/DetailsPage.php';
 require_once 'test/DatabaseTester.php';
 
+use Pimple\Container;
+
 class RenderDetailsTester extends DetailsPage
 {
-    public function __construct($manx)
+    public function __construct(Container $config)
     {
-        DetailsPage::__construct($manx);
+        DetailsPage::__construct($config);
         $this->renderLanguageCalled = false;
         $this->renderAmendmentsCalled = false;
         $this->renderOSTagsCalled = false;
@@ -158,7 +160,9 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
-        $this->_page = new DetailsPage($this->_manx);
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $this->_page = new DetailsPage($config);
     }
 
     public function testRenderLanguageEnglishGivesNoOutput()
@@ -786,7 +790,10 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getDetailsForPub')
             ->with($pubId)
             ->willReturn($rows[0]);
-        $page = new RenderDetailsTester($this->_manx);
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $this->_config = $config;
+        $page = new RenderDetailsTester($this->_config);
 
         $page->renderBodyContent();
 

@@ -2,15 +2,17 @@
 
 require_once 'WhatsNewPageBase.php';
 
+use Pimple\Container;
+
 define('CCC_TIMESTAMP_PROPERTY', 'chiclassiccomp_whats_new_timestamp');
 define('CCC_INDEX_BY_DATE_FILE', 'chiClassicComp-IndexByDate.txt');
 define('CCC_INDEX_BY_DATE_URL', 'http://chiclassiccomp.org/docs/content/IndexByDate.txt');
 
 class ChiClassicCompPage extends WhatsNewPageBase
 {
-    public function __construct($manx, $vars, IFileSystem $fileSystem = null, IWhatsNewPageFactory $factory = null)
+    public function __construct(Container $config)
     {
-        $opts = array(
+        $config['opts'] = array(
             'indexByDateFile' => CCC_INDEX_BY_DATE_FILE,
             'indexByDateUrl' => CCC_INDEX_BY_DATE_URL,
             'timeStampProperty' => CCC_TIMESTAMP_PROPERTY,
@@ -20,6 +22,6 @@ class ChiClassicCompPage extends WhatsNewPageBase
             'page' => 'chiclassiccomp.php',
             'title' => 'ChiClassicComp'
         );
-        parent::__construct($manx, $vars, $opts, $fileSystem, $factory);
+        parent::__construct($config);
     }
 }

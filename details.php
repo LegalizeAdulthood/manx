@@ -1,8 +1,12 @@
 <?php
 
+require_once 'vendor/autoload.php';
 require_once 'pages/Manx.php';
 require_once 'pages/DetailsPage.php';
 
-$manx = Manx::getInstance();
-$page = new Detailspage($manx);
+use Pimple\Container;
+
+$config = new Container();
+$config['manx'] = Manx::getInstance();
+$page = new Detailspage($config);
 $page->renderPage();

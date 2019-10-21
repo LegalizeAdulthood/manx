@@ -2,13 +2,15 @@
 
 require_once 'PageBase.php';
 
+use Pimple\Container;
+
 class DetailsPage extends PageBase
 {
     private $_details;
 
-    public function __construct(IManx $manx)
+    public function __construct(Container $config)
     {
-        parent::__construct($manx);
+        parent::__construct($config);
         $this->_details = $this->getDetailsForPathInfo($_SERVER['PATH_INFO']);
     }
 

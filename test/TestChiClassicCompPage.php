@@ -4,6 +4,8 @@ require_once 'pages/ChiClassicCompPage.php';
 require_once 'test/DatabaseTester.php';
 require_once 'test/FakeFile.php';
 
+use Pimple\Container;
+
 class ChiClassicCompPageTester extends ChiClassicCompPage
 {
     public function getMenuType()
@@ -29,7 +31,8 @@ class ChiClassicCompPageTester extends ChiClassicCompPage
 
 class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
 {
-    private $_vars;
+    /** @var Container */
+    private $_config;
     /** @var IManxDatabase */
     private $_db;
     /** @var IManx */
@@ -57,6 +60,11 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_file = new FakeFile();
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $config['fileSystem'] = $this->_fileSystem;
+        $config['whatsNewPageFactory'] = $this->_factory;
+        $this->_config = $config;
     }
 
     public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
@@ -566,21 +574,14 @@ EOH;
         $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
-        $this->createPage2($vars);
+        $this->createPage($vars);
     }
 
     private function createPage($vars = array())
     {
         $_SERVER['PATH_INFO'] = '';
-        $this->_vars = $vars;
-        $this->_page = new ChiClassicCompPageTester($this->_manx, $this->_vars, $this->_fileSystem, $this->_factory);
-    }
-
-    private function createPage2($vars = array())
-    {
-        $_SERVER['PATH_INFO'] = '';
-        $this->_vars = $vars;
-        $this->_page2 = new ChiClassicCompPageTester($this->_manx2, $this->_vars, $this->_fileSystem, $this->_factory);
+        $this->_config['vars'] = $vars;
+        $this->_page = new ChiClassicCompPageTester($this->_config);
     }
 
     private function assertPropertyRead($name)

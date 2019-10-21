@@ -2,8 +2,12 @@
 
 require_once 'test/UrlWizardServiceTester.php';
 
+use Pimple\Container;
+
 class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
 {
+    /** @var Container */
+    private $_config;
     private $_db;
     private $_manx;
     private $_urlInfoFactory;
@@ -22,6 +26,10 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_urlInfo = $this->createMock(IUrlInfo::class);
         $this->_urlInfoFactory = $this->createMock(IUrlInfoFactory::class);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $config['urlInfoFactory'] = $this->_urlInfoFactory;
+        $this->_config = $config;
     }
 
     public function testProcessRequestNonExistentUrl()
@@ -31,7 +39,8 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
             ->with($url)->willReturn($this->_urlInfo);
         $vars = self::varsForUrlLookup($url);
-        $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
+        $this->_config['vars'] = $vars;
+        $page = new UrlWizardServiceTester($this->_config);
 
         $page->processRequest();
 
@@ -48,7 +57,8 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
-        $page = new UrlWizardServiceTester($this->_manx, self::varsForUrlLookup($url), $this->_urlInfoFactory);
+        $this->_config['vars'] = self::varsForUrlLookup($url);
+        $page = new UrlWizardServiceTester($this->_config);
 
         $page->processRequest();
 
@@ -89,8 +99,8 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
             ->with('http://bitsavers.trailing-edge.com/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf')
             ->willReturn($this->_urlInfo);
         $urlBase = '/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf';
-        $vars = self::varsForUrlLookup('http://bitsavers.trailing-edge.com' . $urlBase);
-        $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
+        $this->_config['vars'] = self::varsForUrlLookup('http://bitsavers.trailing-edge.com' . $urlBase);
+        $page = new UrlWizardServiceTester($this->_config);
 
         $page->processRequest();
 
@@ -122,8 +132,8 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
             ->with('http://www.bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf')
             ->willReturn($this->_urlInfo);
         $urlBase = '/pdf/univac/1100/UE-637_1108execUG_1970.pdf';
-        $vars = self::varsForUrlLookup('http://www.bitsavers.org' . $urlBase);
-        $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
+        $this->_config['vars'] = self::varsForUrlLookup('http://www.bitsavers.org' . $urlBase);
+        $page = new UrlWizardServiceTester($this->_config);
 
         $page->processRequest();
 
@@ -155,8 +165,8 @@ class TestUrlWizardServiceProcessRequest extends PHPUnit\Framework\TestCase
             ->with('http://chiclassiccomp.org/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf')
             ->wilLReturn($this->_urlInfo);
         $urlBase = '/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf';
-        $vars = self::varsForUrlLookup('http://chiclassiccomp.org' . $urlBase);
-        $page = new UrlWizardServiceTester($this->_manx, $vars, $this->_urlInfoFactory);
+        $this->_config['vars'] = self::varsForUrlLookup('http://chiclassiccomp.org' . $urlBase);
+        $page = new UrlWizardServiceTester($this->_config);
 
         $page->processRequest();
 

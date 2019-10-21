@@ -1,5 +1,7 @@
 <?php
 
+use Pimple\Container;
+
 require_once 'pages/BitSaversPage.php';
 require_once 'test/DatabaseTester.php';
 require_once 'test/FakeFile.php';
@@ -29,7 +31,9 @@ class BitSaversPageTester extends BitSaversPage
 
 class TestBitSaversPage extends PHPUnit\Framework\TestCase
 {
-    private $_vars;
+    /** @var Container */
+    private $_config;
+
     /** @var IManxDatabase */
     private $_db;
     /** @var IManx */
@@ -57,6 +61,10 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_file = new FakeFile();
+        $this->_config = new Container();
+        $this->_config['manx'] = $this->_manx;
+        $this->_config['fileSystem'] = $this->_fileSystem;
+        $this->_config['whatsNewPageFactory'] = $this->_factory;
     }
 
     public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
@@ -544,7 +552,7 @@ EOH;
     private function createPage($vars = array())
     {
         $_SERVER['PATH_INFO'] = '';
-        $this->_vars = $vars;
-        $this->_page = new BitSaversPageTester($this->_manx, $this->_vars, $this->_fileSystem, $this->_factory);
+        $this->_config['vars'] = $vars;
+        $this->_page = new BitSaversPageTester($this->_config);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use Pimple\Container;
+
 require_once 'pages/UrlWizardPage.php';
 
 class UrlWizardPageTester extends UrlWizardPage
@@ -32,15 +34,29 @@ class UrlWizardPageTester extends UrlWizardPage
 
 class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 {
+    /** @var Container */
+    private $_config;
+    /** @var IManx */
     private $_manx;
+
+    protected function setUp()
+    {
+        $manx = $this->createMock(IManx::class);
+
+        $config = new Container();
+        $config['manx'] = $manx;
+
+        $this->_manx = $manx;
+        $this->_config = $config;
+    }
 
     public function testConstruct()
     {
-        $this->_manx = $this->createMock(IManx::class);
         $_SERVER['PATH_INFO'] = '';
         $vars = array();
+        $this->_config['vars'] = $vars;
 
-        $page = new URLWizardPage($this->_manx, $vars);
+        $page = new URLWizardPage($this->_config);
 
         $this->assertTrue(is_object($page));
         $this->assertFalse(is_null($page));
@@ -49,7 +65,6 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
     public function testDocumentAdded()
     {
         $db = $this->createMock(IManxDatabase::class);
-        $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
@@ -96,12 +111,13 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'supersession_search_keywords' => '4010 Maintenance Manual',
             'supersession_old_pub' => '5634',
             'next' => 'Next+%3E');
+        $this->_config['vars'] = $vars;
         $this->_manx->expects($this->once())->method('addPublication')
             ->with($this->anything(), $this->anything(), $part, $this->anything(), $title,
                 $this->anything(), $this->anything(), $this->anything(), $keywords, $this->anything(),
                 $abstract, $this->anything())
             ->willReturn(19690);
-        $page = new URLWizardPageTester($this->_manx, $vars);
+        $page = new URLWizardPageTester($this->_config);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
         $db->expects($this->never())->method('addCompany');
@@ -120,7 +136,6 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testNewBitSaversDirectoryAdded()
     {
-        $this->_manx = $this->createMock(IManx::class);
         $db = $this->createMock(IManxDatabase::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
@@ -168,12 +183,13 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'supersession_search_keywords' => '4010 Maintenance Manual',
             'supersession_old_pub' => '5634',
             'next' => 'Next+%3E');
+        $this->_config['vars'] = $vars;
         $this->_manx->expects($this->once())->method('addPublication')
             ->with($this->anything(), $this->anything(), $part, $this->anything(), $title,
                 $this->anything(), $this->anything(), $this->anything(), $keywords, $this->anything(),
                 $abstract, $this->anything())
             ->willReturn(19690);
-        $page = new URLWizardPageTester($this->_manx, $vars);
+        $page = new URLWizardPageTester($this->_config);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
         $db->expects($this->never())->method('addCompany');
@@ -192,12 +208,10 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testNewChiClassicCompDirectoryAdded()
     {
-        $this->_manx = $this->createMock(IManx::class);
         $db = $this->createMock(IManxDatabase::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $this->_manx->addPublicationFakeResult = 19690;
         $vars = array(
             'site_company_directory' => 'DEC',
             'copy_url' => 'http%3A%2F%2Fchiclassiccomp.org%2Fdocs%2Fcontent%2Fcomputing%2FDEC%2FChicagoDECStore1.jpg',
@@ -238,7 +252,8 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'supersession_old_pub' => '-1',
             'supersession_new_pub' => '-1',
             'next' => 'Next+%3E');
-        $page = new URLWizardPageTester($this->_manx, $vars);
+        $this->_config['vars'] = $vars;
+        $page = new URLWizardPageTester($this->_config);
         $md5 = '01234567890123456789012345678901';
         $page->md5ForFileFakeResult = $md5;
         $db->expects($this->once())->method('addSiteDirectory')
@@ -254,10 +269,10 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $db = $this->createMock(IManxDatabase::class);
         $db->expects($this->once())->method('getSites')->willReturn(array());
         $db->expects($this->once())->method('getCompanyList')->willReturn(array());
-        $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $vars = array();
-        $page = new URLWizardPageTester($this->_manx, $vars);
+        $this->_config['vars'] = $vars;
+        $page = new URLWizardPageTester($this->_config);
 
         $page->renderBodyContent();
 

@@ -1,15 +1,19 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
+use Pimple\Container;
+
 require_once 'pages/PublicationPage.php';
 require_once 'test/DatabaseTester.php';
 require_once 'test/FakeFile.php';
 
 class PublicationPageTester extends PublicationPage
 {
-    public function __construct($manx, $vars)
+    public function __construct($config)
     {
         $this->redirectCalled = false;
-        parent::__construct($manx, $vars);
+        parent::__construct($config);
     }
 
     public function getMenuType()
@@ -37,8 +41,9 @@ class PublicationPageTester extends PublicationPage
 
 class TestPublicationPage extends PHPUnit\Framework\TestCase
 {
-    /** @var array */
-    private $_vars;
+    /** @var Container */
+    private $_config;
+
     /** @var IManxDatabase */
     private $_db;
     /** @var IManx */
@@ -55,13 +60,15 @@ class TestPublicationPage extends PHPUnit\Framework\TestCase
         $this->_manx->method('getDatabase')->willReturn($this->_db);
         $this->_user = $this->createMock(IUser::class);
         $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($this->_user);
+        $this->_config = new Container();
+        $this->_config['manx'] = $this->_manx;
     }
 
     function createPage($vars = array())
     {
         $_SERVER['PATH_INFO'] = '';
-        $this->_vars = $vars;
-        $this->_page = new PublicationPageTester($this->_manx, $this->_vars);
+        $this->_config['vars'] = $vars;
+        $this->_page = new PublicationPageTester($this->_config);
     }
 
     public function testMenuTypeIsPublicationPage()

@@ -6,6 +6,8 @@ require_once 'File.php';
 require_once 'UnknownPathDefs.php';
 require_once 'WhatsNewPageFactory.php';
 
+use Pimple\Container;
+
 define('BIT_SAVERS_SITE_NAME', 'bitsavers');
 define('CHI_CLASSIC_COMP_SITE_NAME', 'ChiClassicComp');
 
@@ -21,9 +23,10 @@ class WhatsNewPageBase extends AdminPageBase
     private $_page;
     private $_title;
 
-    public function __construct($manx, $vars, $opts, IFileSystem $fileSystem = null, IWhatsNewPageFactory $factory = null)
+    public function __construct(Container $config)
     {
-        parent::__construct($manx, $vars);
+        parent::__construct($config);
+        $opts = $config['opts'];
         $this->_timeStampProperty = $opts['timeStampProperty'];
         $this->_indexByDateUrl = $opts['indexByDateUrl'];
         $this->_indexByDateFile = $opts['indexByDateFile'];
@@ -32,8 +35,8 @@ class WhatsNewPageBase extends AdminPageBase
         $this->_menuType = $opts['menuType'];
         $this->_page = $opts['page'];
         $this->_title = $opts['title'];
-        $this->_fileSystem = is_null($fileSystem) ? new FileSystem() : $fileSystem;
-        $this->_factory = is_null($factory) ? new WhatsNewPageFactory() : $factory;
+        $this->_fileSystem = $config['fileSystem'];
+        $this->_factory = $config['whatsNewPageFactory'];
         if ($this->needIndexByDateFile())
         {
             $this->getIndexByDateFile();

@@ -1,15 +1,17 @@
 <?php
 
+use Pimple\Container;
+
 require_once 'pages/CompanyPage.php';
 require_once 'test/DatabaseTester.php';
 require_once 'test/FakeFile.php';
 
 class CompanyPageTester extends CompanyPage
 {
-    public function __construct($manx, $vars)
+    public function __construct($config)
     {
         $this->redirectCalled = false;
-        parent::__construct($manx, $vars);
+        parent::__construct($config);
     }
 
     public function getMenuType()
@@ -37,7 +39,8 @@ class CompanyPageTester extends CompanyPage
 
 class TestCompanyPage extends PHPUnit\Framework\TestCase
 {
-    private $_vars;
+    /** @var Container */
+    private $_config;
     /** @var IManxDatabase */
     private $_db;
     /** @var IManx */
@@ -65,13 +68,16 @@ class TestCompanyPage extends PHPUnit\Framework\TestCase
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_file = new FakeFile();
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $this->_config = $config;
     }
 
     function createPage($vars = array())
     {
         $_SERVER['PATH_INFO'] = '';
-        $this->_vars = $vars;
-        $this->_page = new CompanyPageTester($this->_manx, $this->_vars, $this->_fileSystem, $this->_factory);
+        $this->_config['vars'] = $vars;
+        $this->_page = new CompanyPageTester($this->_config, $this->_fileSystem, $this->_factory);
     }
 
     public function testMenuTypeIsCompanyPage()

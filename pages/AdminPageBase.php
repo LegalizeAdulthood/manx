@@ -6,10 +6,10 @@ abstract class AdminPageBase extends PageBase
 {
     protected $_vars;
 
-    public function __construct($manx, $vars)
+    public function __construct($config)
     {
-        parent::__construct($manx);
-        $this->_vars = $vars;
+        parent::__construct($config);
+        $this->_vars = $config['vars'];
     }
 
     protected function param($name, $defaultValue = '')

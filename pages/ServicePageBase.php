@@ -2,6 +2,8 @@
 
 require_once 'IManx.php';
 
+use Pimple\Container;
+
 abstract class ServicePageBase
 {
     /** @var \IManx */
@@ -13,13 +15,13 @@ abstract class ServicePageBase
     /** @var \IManxDatabase */
     protected $_db;
 
-    public function __construct(IManx $manx, $vars)
+    public function __construct(Container $config)
     {
-        $this->_manx = $manx;
+        $this->_manx = $config['manx'];
         $this->_topDir = array_key_exists('PATH_INFO', $_SERVER) ?
             str_repeat('../', count(explode('/', $_SERVER['PATH_INFO'])) - 1) : '';
         $this->_user = $this->_manx->getUserFromSession();
-        $this->_vars = $vars;
+        $this->_vars = $config['vars'];
         $this->_db = $this->_manx->getDatabase();
     }
 

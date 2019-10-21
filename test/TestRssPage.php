@@ -3,6 +3,8 @@
 require_once 'pages/RssPage.php';
 require_once 'pages/IDateTimeProvider.php';
 
+use Pimple\Container;
+
 class RssPageTester extends RssPage
 {
     public function renderBody()
@@ -37,7 +39,10 @@ class TestRssPage extends PHPUnit\Framework\TestCase
         $manx->expects($this->once())->method('getDatabase')->willReturn($db);
         $dtp = $this->createMock(DateTimeProvider::class);
         $dtp->expects($this->once())->method('now')->willReturn(new DateTime("03 Dec 1964 15:00:00 -0400"));
-        $page = new RssPageTester($manx, $dtp);
+        $config = new Container();
+        $config['manx'] = $manx;
+        $config['dateTimeProvider'] = $dtp;
+        $page = new RssPageTester($config);
 
         $page->renderBody();
 

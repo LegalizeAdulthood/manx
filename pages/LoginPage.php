@@ -2,14 +2,16 @@
 
 require_once 'PageBase.php';
 
+use Pimple\Container;
+
 class LoginPage extends PageBase
 {
     private $_loginFailed;
     private $_cookieFailed;
 
-    public function __construct(IManx $manx)
+    public function __construct(Container $config)
     {
-        parent::__construct($manx);
+        parent::__construct($config);
         $this->_loginFailed = false;
         $this->_cookieFailed = false;
     }

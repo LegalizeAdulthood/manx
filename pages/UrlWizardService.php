@@ -26,6 +26,8 @@ require_once 'CurlApi.php';
 require_once 'UrlInfo.php';
 require_once 'UrlInfoFactory.php';
 
+use Pimple\Container;
+
 class Site
 {
     const BitSavers = 3;
@@ -39,10 +41,10 @@ class UrlWizardService extends ServicePageBase
     /** @var IUrlInfoFactory */
     private $_urlInfoFactory;
 
-    public function __construct($manx, $vars, $urlInfoFactory = null)
+    public function __construct(Container $config)
     {
-        parent::__construct($manx, $vars);
-        $this->_urlInfoFactory = is_null($urlInfoFactory) ? new UrlInfoFactory() : $urlInfoFactory;
+        parent::__construct($config);
+        $this->_urlInfoFactory = $config['urlInfoFactory'];
     }
 
     private function determineData()

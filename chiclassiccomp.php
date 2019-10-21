@@ -1,9 +1,17 @@
 <?php
 
-require_once 'pages/Manx.php';
+require_once 'vendor/autoload.php';
 require_once 'pages/ChiClassicCompPage.php';
+require_once 'pages/File.php';
+require_once 'pages/Manx.php';
+require_once 'pages/WhatsNewPageFactory.php';
 
-$manx = Manx::getInstance();
-$vars = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $_POST : $_GET;
-$page = new ChiClassicCompPage($manx, $vars);
+use Pimple\Container;
+
+$config = new Container();
+$config['manx'] = Manx::getInstance();
+$config['vars'] = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $_POST : $_GET;
+$config['fileSystem'] = new FileSystem();
+$config['whatsNewPageFactory'] = new WhatsNewPageFactory();
+$page = new ChiClassicCompPage($config);
 $page->renderPage();
