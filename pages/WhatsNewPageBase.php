@@ -8,9 +8,6 @@ require_once 'WhatsNewPageFactory.php';
 
 use Pimple\Container;
 
-define('BIT_SAVERS_SITE_NAME', 'bitsavers');
-define('CHI_CLASSIC_COMP_SITE_NAME', 'ChiClassicComp');
-
 class WhatsNewPageBase extends AdminPageBase
 {
     private $_factory;
