@@ -2,8 +2,13 @@
 
 require_once 'cron/BitSaversCleaner.php';
 
+use Pimple\Container;
+
 class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
 {
+    /** @var Container */
+    private $_config;
+
     /** @var IManxDatabase */
     private $_db;
     /** @var IManx */
@@ -26,7 +31,12 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
-        $this->_cleaner = new BitSaversCleaner($this->_manx, $this->_factory, $this->_logger);
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $config['logger'] = $this->_logger;
+        $config['whatsNewPageFactory'] = $this->_factory;
+        $this->_config = $config;
+        $this->_cleaner = new BitSaversCleaner($this->_config);
     }
 
     public function testNonExistentPathsAreRemoved()

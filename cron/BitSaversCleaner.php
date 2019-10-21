@@ -2,6 +2,8 @@
 
 require_once 'pages/IManx.php';
 
+use Pimple\Container;
+
 interface ILogger
 {
     public function log($line);
@@ -22,12 +24,12 @@ class BitSaversCleaner
     private $_factory;
     private $_logger;
 
-    public function __construct(IManx $manx, IWhatsNewPageFactory $factory, ILogger $logger = null)
+    public function __construct(Container $config)
     {
-        $this->_manx = $manx;
-        $this->_db = $manx->getDatabase();
-        $this->_factory = $factory;
-        $this->_logger = is_null($logger) ? new Logger() : $logger;
+        $this->_manx = $config['manx'];
+        $this->_db = $this->_manx->getDatabase();
+        $this->_factory = $config['whatsNewPageFactory'];
+        $this->_logger = $config['logger'];
     }
 
     public function removeNonExistentUnknownPaths()
