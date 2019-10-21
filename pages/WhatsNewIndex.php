@@ -63,6 +63,11 @@ class WhatsNewIndex implements IWhatsNewIndex
             && $this->_manxDb->siteIgnoredPath($this->_siteName, $line) === false;
     }
 
+    private static function escapeSpecialChars($path)
+    {
+        return str_replace("#", urlencode("#"), $path);
+    }
+
     private $_manxDb;
     private $_factory;
     private $_timeStampProperty;

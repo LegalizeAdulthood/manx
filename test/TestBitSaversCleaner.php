@@ -120,6 +120,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_whatsNewIndex->expects($this->once())->method('needIndexByDateFile')->willReturn(true);
         $this->_whatsNewIndex->expects($this->once())->method('getIndexByDateFile');
         $this->_whatsNewIndex->expects($this->once())->method('parseIndexByDateFile');
+        $this->_logger->expects($this->once())->method('log');
 
         $this->_cleaner->updateWhatsNewIndex();
     }

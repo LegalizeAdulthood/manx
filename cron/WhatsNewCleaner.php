@@ -71,6 +71,7 @@ class WhatsNewCleaner
     {
         if ($this->_whatsNewIndex->needIndexByDateFile())
         {
+            $this->_logger->log('Updating WhatsNew.txt for site ' . $this->_siteName);
             $this->_whatsNewIndex->getIndexByDateFile();
             $this->_whatsNewIndex->parseIndexByDateFile();
         }
