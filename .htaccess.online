@@ -1,2 +1,2 @@
 DirectoryIndex search.php
-Redirect /maintenance.html /search.php
+RedirectMatch (.*)/maintenance.html $1/search.php
