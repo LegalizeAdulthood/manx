@@ -24,6 +24,7 @@ class WhatsNewCleaner
     private $_factory;
     private $_logger;
     private $_siteName;
+    private $_whatsNewIndex;
 
     public function __construct(Container $config)
     {
@@ -34,6 +35,7 @@ class WhatsNewCleaner
         $this->_siteName = $config['siteName'];
         $this->_baseCheckUrl = $config['baseCheckUrl'];
         $this->_baseUrl = $config['baseUrl'];
+        $this->_whatsNewIndex = $config['whatsNewIndex'];
     }
 
     public function removeNonExistentUnknownPaths()
@@ -62,6 +64,15 @@ class WhatsNewCleaner
                 $this->_db->siteFileMoved($this->_siteName, $row['copy_id'], $row['path_id'], $this->_baseUrl . $path);
                 $this->_logger->log('Path: ' . $path);
             }
+        }
+    }
+
+    public function updateWhatsNewIndex()
+    {
+        if ($this->_whatsNewIndex->needIndexByDateFile())
+        {
+            $this->_whatsNewIndex->getIndexByDateFile();
+            $this->_whatsNewIndex->parseIndexByDateFile();
         }
     }
 
