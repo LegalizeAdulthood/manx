@@ -9,7 +9,7 @@ install:
 script:
   - mkdir private
   - echo "<?php define('PRIVATE_DIR', 'private/');" > pages/Config.php
-  - vendor/bin/phpunit -v test/AllTests.php
+  - vendor/bin/phpunit -v test/AllTests.php --coverage-clover build/logs/clover.xml --whitelist ./
  
 after_success:
   - travis_retry php vendor/bin/php-coveralls -v
