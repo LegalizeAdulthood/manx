@@ -695,11 +695,20 @@ class ManxDatabase implements IManxDatabase
             array($name, $value, $value));
     }
 
-    public function addSiteUnknownPath($siteName, $path)
+    public function addSiteUnknownPaths($siteName, array $paths)
     {
-        $this->execute(
-            "INSERT INTO `site_unknown`(`site_id`,`path`) VALUES ((SELECT `site_id` FROM `site` WHERE `name`=?),?)",
-            array($siteName, $path));
+        $this->beginTransaction();
+        $siteId = $this->siteIdForName($siteName);
+        $values = [];
+        $params = [];
+        foreach ($paths as $path)
+        {
+            $values[] = $siteId;
+            $values[] = $path;
+            $params[] = '(?, ?)';
+        }
+        $this->execute("INSERT INTO `site_unknown`(`site_id`, `path`) VALUES " . implode(', ', $params) . " ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)", $values);
+        $this->commit();
     }
 
     public function ignoreSitePath($siteName, $path)

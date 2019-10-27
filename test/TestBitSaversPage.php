@@ -96,7 +96,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
                 [ 'http://bitsavers.trailing-edge.com/pdf/dec/A.pdf' ]
             )
             ->willReturn(false);
-        $this->_db->expects($this->never())->method('addSiteUnknownPath');
+        $this->_db->expects($this->never())->method('addSiteUnknownPaths');
 
         $this->createPage();
 

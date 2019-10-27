@@ -106,7 +106,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
                 [ 'http://chiclassiccomp.org/docs/content/telephony/SouthernBell/PTC320-L1_Relay&ApparatusAdjustment_BellSystemPracticesUnit1.pdf' ]
             )
             ->willReturn(false);
-        $this->_db->expects($this->never())->method('addSiteUnknownPath');
+        $this->_db->expects($this->never())->method('addSiteUnknownPaths');
 
         $this->createPage();
 

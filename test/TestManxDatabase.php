@@ -551,17 +551,23 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_manxDb->setProperty('foo', 'bar');
     }
 
-    public function testAddSiteUnknownPath()
+    public function testAddSiteUnknownPaths()
     {
-        $insert = "INSERT INTO `site_unknown`(`site_id`,`path`) VALUES ((SELECT `site_id` FROM `site` WHERE `name`=?),?)";
-        $this->_db->expects($this->once())->method('execute')
-            ->with($insert, array('bitsavers', 'foo/frob.jpg'))
+        $this->_db->expects($this->once())->method('beginTransaction');
+        $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
+        $update = "INSERT INTO `site_unknown`(`site_id`, `path`) VALUES (?, ?), (?, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
+        $this->_db->expects($this->exactly(2))->method('execute')
+            ->withConsecutive(
+                [$select, ['bitsavers']],
+                [$update, [3, 'foo/frob.jpg', 3, 'bar/bar.pdf']]
+            )
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
                 null
             );
+        $this->_db->expects($this->once())->method('commit');
 
-        $this->_manxDb->addSiteUnknownPath('bitsavers', 'foo/frob.jpg');
+        $this->_manxDb->addSiteUnknownPaths('bitsavers', ['foo/frob.jpg', 'bar/bar.pdf']);
     }
 
     public function testIgnoreSitePath()

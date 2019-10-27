@@ -46,14 +46,13 @@ class WhatsNewIndex implements IWhatsNewIndex
     public function parseIndexByDateFile()
     {
         $indexByDate = $this->_fileSystem->openFile(PRIVATE_DIR . $this->_indexByDateFile, 'r');
+        $paths = [];
         while (!$indexByDate->eof())
         {
             $line = substr(trim($indexByDate->getString()), 20);
-            if (strlen($line) && $this->pathUnknown($line))
-            {
-                $this->_manxDb->addSiteUnknownPath($this->_siteName, $line);
-            }
+            array_push($paths, $line);
         }
+        $this->_manxDb->addSiteUnknownPaths($this->_siteName, $paths);
     }
 
     private function pathUnknown($line)

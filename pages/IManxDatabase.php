@@ -52,7 +52,7 @@ interface IManxDatabase
     function getMissingMD5Documents();
     function getProperty($name);
     function setProperty($name, $value);
-    function addSiteUnknownPath($siteName, $path);
+    function addSiteUnknownPaths($siteName, array $paths);
     function ignoreSitePath($siteName, $path);
     function getSiteUnknownPathCount($siteName);
     function getSiteUnknownPathsOrderedById($siteName, $start, $ascending);

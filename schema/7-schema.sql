@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS `site_unknown` (
   `site_id` INT(11) NOT NULL,
   `path` VARCHAR(255) NOT NULL,
   `ignored` TINYINT(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`site_id`, `path`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
