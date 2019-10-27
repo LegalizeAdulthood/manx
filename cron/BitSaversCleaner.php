@@ -13,8 +13,8 @@ class BitSaversCleaner extends WhatsNewCleaner
         $config['timeStampProperty'] = 'bitsavers_whats_new_timestamp';
         $config['indexByDateFile'] = 'bitsavers-IndexByDate.txt';
         $config['indexByDateUrl'] = 'http://bitsavers.trailing-edge.com/pdf/IndexByDate.txt';
-        $config['baseCheckUrl'] = 'http://bitsavers.trailing-edge.com/pdf/';
-        $config['baseUrl'] = 'http://bitsavers.org/pdf/';
+        $config['baseCheckUrl'] = 'http://bitsavers.trailing-edge.com/pdf';
+        $config['baseUrl'] = 'http://bitsavers.org/pdf';
         parent::__construct($config);
     }
 }

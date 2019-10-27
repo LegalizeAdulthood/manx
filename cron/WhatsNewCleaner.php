@@ -17,6 +17,20 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     private $_siteName;
     private $_whatsNewIndex;
 
+    private static function endsWith($str, $needle)
+    {
+        if (strlen($str) < strlen($needle))
+        {
+            return false;
+        }
+        return substr($str, -strlen($needle)) == $needle;
+    }
+
+    private static function ensureTrailingSlash($url)
+    {
+        return self::endsWith($url, '/') ? $url : $url . '/';
+    }
+
     public function __construct(Container $config)
     {
         $this->_manx = $config['manx'];
@@ -24,8 +38,8 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->_factory = $config['whatsNewPageFactory'];
         $this->_logger = $config['logger'];
         $this->_siteName = $config['siteName'];
-        $this->_baseCheckUrl = $config['baseCheckUrl'];
-        $this->_baseUrl = $config['baseUrl'];
+        $this->_baseCheckUrl = self::ensureTrailingSlash($config['baseCheckUrl']);
+        $this->_baseUrl = self::ensureTrailingSlash($config['baseUrl']);
         $this->_whatsNewIndex = $config['whatsNewIndex'];
     }
 
