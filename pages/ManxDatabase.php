@@ -780,4 +780,17 @@ class ManxDatabase implements IManxDatabase
         $this->execute("DELETE FROM site_unknown WHERE site_id=? AND id=?", array($siteId, $pathId));
         $this->execute("UPDATE copy SET url=? WHERE copy_id=?", array($url, $copyId));
     }
+
+    public function removeUnknownPathsWithCopy($siteName, $baseUrl)
+    {
+        $this->beginTransaction();
+        $siteId = $this->siteIdForName($siteName);
+        $this->execute('DELETE FROM `site_unknown` '
+            . 'WHERE `site_unknown`.`site_id = `copy`.`site` '
+            . 'AND `copy`.`pub` = `pub_history`.`ph_pub` '
+            . 'AND `copy`.`site` = ? '
+            . 'AND `copy`.`url` = CONCAT(?, `site_unknown`.`path`)',
+            [$siteId, $baseUrl]);
+        $this->commit();
+    }
 }

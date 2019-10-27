@@ -769,6 +769,29 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_manxDb->updateCompany(66, 'Digital Equipment Corporation', 'DEC', 'dec', true, 'notes');
     }
 
+    public function testRemoveUnknownPathsWithCopy()
+    {
+        $this->_db->expects($this->once())->method('beginTransaction');
+        $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
+        $update = "DELETE FROM `site_unknown` "
+                . "WHERE `site_unknown`.`site_id = `copy`.`site` "
+                . "AND `copy`.`pub` = `pub_history`.`ph_pub` "
+                . "AND `copy`.`site` = ? "
+                . "AND `copy`.`url` = CONCAT(?, `site_unknown`.`path`)";
+        $this->_db->expects($this->exactly(2))->method('execute')
+            ->withConsecutive(
+                [ $select, array('bitsavers') ],
+                [ $update, array(3, 'http://bitsavers.org/pdf/') ]
+            )
+            ->willReturn(
+                DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
+                null
+            );
+        $this->_db->expects($this->once())->method('commit');
+
+        $this->_manxDb->removeUnknownPathsWithCopy('bitsavers', 'http://bitsavers.org/pdf/');
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");
