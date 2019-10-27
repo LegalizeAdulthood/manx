@@ -26,13 +26,13 @@ class URLWizardPage extends AdminPageBase
 
     protected function postPage()
     {
-        $company = $this->addCompany();
-        $this->addSiteCompanyDirectory($company);
-        $pubId = $this->addPublication($company);
+        $companyId = $this->addCompany();
+        $this->addSiteCompanyDirectory($companyId);
+        $pubId = $this->addPublication($companyId);
         $this->addSupersession($pubId);
         $siteId = $this->addSite();
         $this->addCopy($pubId, $siteId);
-        $this->redirect(sprintf("details.php/%s,%s", $company, $pubId));
+        $this->redirect(sprintf("details.php/%s,%s", $companyId, $pubId));
     }
 
     private function addCompany()
