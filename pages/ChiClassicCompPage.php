@@ -12,16 +12,14 @@ class ChiClassicCompPage extends WhatsNewPageBase
 {
     public function __construct(Container $config)
     {
-        $config['opts'] = array(
-            'indexByDateFile' => CCC_INDEX_BY_DATE_FILE,
-            'indexByDateUrl' => CCC_INDEX_BY_DATE_URL,
-            'timeStampProperty' => CCC_TIMESTAMP_PROPERTY,
-            'urlBase' => 'http://chiclassiccomp.org/docs/content',
-            'siteName' => 'ChiClassicComp',
-            'menuType' => MenuType::ChiClassicComp,
-            'page' => 'chiclassiccomp.php',
-            'title' => 'ChiClassicComp'
-        );
+        $config['indexByDateFile'] = CCC_INDEX_BY_DATE_FILE;
+        $config['indexByDateUrl'] = CCC_INDEX_BY_DATE_URL;
+        $config['timeStampProperty'] = CCC_TIMESTAMP_PROPERTY;
+        $config['baseUrl'] = 'http://chiclassiccomp.org/docs/content';
+        $config['siteName'] = 'ChiClassicComp';
+        $config['menuType'] = MenuType::ChiClassicComp;
+        $config['page'] = 'chiclassiccomp.php';
+        $config['title'] = 'ChiClassicComp';
         parent::__construct($config);
     }
 }

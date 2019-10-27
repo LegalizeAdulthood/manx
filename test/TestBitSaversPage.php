@@ -4,10 +4,10 @@ use Pimple\Container;
 
 require_once 'pages/BitSaversPage.php';
 require_once 'test/DatabaseTester.php';
-require_once 'test/FakeFile.php';
 
 class BitSaversPageTester extends BitSaversPage
 {
+    // lift visibility of some functions for testing
     public function getMenuType()
     {
         return parent::getMenuType();
@@ -48,8 +48,20 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     private $_transfer;
     /** @var BitSaversPageTester */
     private $_page;
-    /** @var FakeFile */
-    private $_file;
+    /** @var IWhatsNewIndex */
+    private $_whatsNewIndex;
+
+    private function createPage($vars = array())
+    {
+        $_SERVER['PATH_INFO'] = '';
+        $this->_config['vars'] = $vars;
+        $this->_page = new BitSaversPageTester($this->_config);
+    }
+
+    private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
+    {
+        return $this->createPage($vars);
+    }
 
     protected function setUp()
     {
@@ -60,90 +72,30 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
-        $this->_file = new FakeFile();
-        $this->_config = new Container();
-        $this->_config['manx'] = $this->_manx;
-        $this->_config['fileSystem'] = $this->_fileSystem;
-        $this->_config['whatsNewPageFactory'] = $this->_factory;
+        $this->_whatsNewIndex = $this->createMock(IWhatsNewIndex::class);
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $config['fileSystem'] = $this->_fileSystem;
+        $config['whatsNewIndex'] = $this->_whatsNewIndex;
+        $config['whatsNewPageFactory'] = $this->_factory;
+        $this->_config = $config;
     }
 
-    public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
+    public function testConstruct()
     {
-        $this->_db->expects($this->once())->method('getProperty')
-            ->with(TIMESTAMP_PROPERTY)
-            ->willReturn(false);
-        $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
-            'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
-        $lines = array();
-        foreach ($paths as $path)
-        {
-            array_push($lines, '2013-10-07 21:02:00 ' . $path);
-        }
-        $this->_file->getStringFakeResults = array_merge($lines);
-        $this->expectIndexFileTransferred();
-        $this->expectIndexFileOpened();
-        $this->_db->expects($this->any())->method('copyExistsForUrl')
-            ->withConsecutive(
-                [ 'http://bitsavers.trailing-edge.com/pdf/dec/1.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdf/dec/2.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdf/dec/3.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdf/dec/4.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdf/dec/5.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdf/dec/6.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdf/dec/7.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdf/dec/8.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdf/dec/9.pdf' ],
-                [ 'http://bitsavers.trailing-edge.com/pdf/dec/A.pdf' ]
-            )
-            ->willReturn(false);
+        $this->_db->expects($this->never())->method('getProperty')->with('bitsavers_whats_new_timestamp');
+        $this->_factory->expects($this->never())->method('createUrlTransfer');
         $this->_db->expects($this->never())->method('addSiteUnknownPaths');
 
         $this->createPage();
 
         $this->assertTrue(is_object($this->_page));
         $this->assertFalse(is_null($this->_page));
-        $this->assertFileParsedPaths($paths);
-    }
-
-    public function testConstructWithNoLastModifiedGetsIndexByDateFile()
-    {
-        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
-        $this->_info->expects($this->once())->method('lastModified')->willReturn(false);
-        $this->_factory->method('getCurrentTime')->willReturn('12');
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with(INDEX_BY_DATE_URL)->willReturn($this->_info);
-        $this->expectIndexFileTransferred();
-        $this->expectIndexFileOpened();
-
-        $this->createPage();
-    }
-
-    public function testConstructWithLastModifiedEqualsTimeStampDoesNotGetIndexByDateFile()
-    {
-        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
-        $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with(INDEX_BY_DATE_URL)->willReturn($this->_info);
-        $this->_factory->expects($this->never())->method('createUrlTransfer');
-
-        $this->createPage();
-    }
-
-    public function testConstructWithLastModifiedNewerThanTimeStampGetsIndexByDateFile()
-    {
-        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
-        $this->_info->expects($this->once())->method('lastModified')->willReturn('20');
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with(INDEX_BY_DATE_URL)->willReturn($this->_info);
-        $this->expectIndexFileTransferred();
-        $this->expectIndexFileOpened();
-
-        $this->createPage();
     }
 
     public function testMenuTypeIsBitSaversPage()
     {
-        $this->createPageWithoutFetchingIndexByDateFile();
+        $this->createPage();
 
         $this->assertEquals(MenuType::BitSavers, $this->_page->getMenuType());
     }
@@ -446,26 +398,6 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->expectOutputString("<h1>No New BitSavers Publications Found</h1>\n");
     }
 
-    private function expectIndexFileTransferred()
-    {
-        $this->_factory->expects($this->once())->method('createUrlTransfer')
-            ->with(INDEX_BY_DATE_URL)->willReturn($this->_transfer);
-        $this->_transfer->expects($this->once())->method('get')->with(PRIVATE_DIR . INDEX_BY_DATE_FILE);
-    }
-
-    private function expectIndexFileOpened()
-    {
-        $this->_fileSystem->expects($this->once())->method('openFile')
-            ->with(PRIVATE_DIR . INDEX_BY_DATE_FILE, 'r')
-            ->willReturn($this->_file);
-    }
-
-    private function assertFileParsedPaths($paths)
-    {
-        $this->assertTrue($this->_file->eofCalled);
-        $this->assertTrue($this->_file->getStringCalled);
-    }
-
     private static function createResultRowsForUnknownPaths($items, $idStart = 1)
     {
         $id = $idStart;
@@ -523,7 +455,7 @@ EOH;
             $checks = array_slice($checks, 1);
             $item = <<<EOH
 <tr><td>$n.</td><td><input type="checkbox" id="ignore$i" name="ignore$i" value="$path" $checked/>
-<a href="url-wizard.php?url=http://bitsavers.trailing-edge.com/pdf/$urlPath">$path</a></td></tr>
+<a href="url-wizard.php?url=http://bitsavers.org/pdf/$urlPath">$path</a></td></tr>
 
 EOH;
             $expected = $expected . $item;
@@ -540,19 +472,4 @@ EOH;
         return $expected;
     }
 
-    private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
-    {
-        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
-        $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with(INDEX_BY_DATE_URL)->willReturn($this->_info);
-        $this->createPage($vars);
-    }
-
-    private function createPage($vars = array())
-    {
-        $_SERVER['PATH_INFO'] = '';
-        $this->_config['vars'] = $vars;
-        $this->_page = new BitSaversPageTester($this->_config);
-    }
 }

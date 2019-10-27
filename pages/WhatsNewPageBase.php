@@ -14,7 +14,7 @@ class WhatsNewPageBase extends AdminPageBase
     private $_timeStampProperty;
     private $_indexByDateUrl;
     private $_indexByDateFile;
-    private $_urlBase;
+    private $_baseUrl;
     private $_siteName;
     private $_menuType;
     private $_page;
@@ -23,66 +23,16 @@ class WhatsNewPageBase extends AdminPageBase
     public function __construct(Container $config)
     {
         parent::__construct($config);
-        $opts = $config['opts'];
-        $this->_timeStampProperty = $opts['timeStampProperty'];
-        $this->_indexByDateUrl = $opts['indexByDateUrl'];
-        $this->_indexByDateFile = $opts['indexByDateFile'];
-        $this->_urlBase = $opts['urlBase'];
-        $this->_siteName = $opts['siteName'];
-        $this->_menuType = $opts['menuType'];
-        $this->_page = $opts['page'];
-        $this->_title = $opts['title'];
+        $this->_siteName = $config['siteName'];
+        $config['timeStampProperty'] = $this->_siteName . '_whats_new_timestamp';
+        $this->_indexByDateUrl = $config['indexByDateUrl'];
+        $this->_indexByDateFile = $config['indexByDateFile'];
+        $this->_baseUrl = $config['baseUrl'];
+        $this->_menuType = $config['menuType'];
+        $this->_page = $config['page'];
+        $this->_title = $config['title'];
         $this->_fileSystem = $config['fileSystem'];
         $this->_factory = $config['whatsNewPageFactory'];
-        if ($this->needIndexByDateFile())
-        {
-            $this->getIndexByDateFile();
-            $this->parseIndexByDateFile();
-        }
-    }
-
-    private function needIndexByDateFile()
-    {
-        $timeStamp = $this->_manxDb->getProperty($this->_timeStampProperty);
-        if ($timeStamp === false)
-        {
-            return true;
-        }
-        $urlInfo = $this->_factory->createUrlInfo($this->_indexByDateUrl);
-        $lastModified = $urlInfo->lastModified();
-        if ($lastModified === false)
-        {
-            $lastModified = $this->_factory->getCurrentTime();
-        }
-        $this->_manxDb->setProperty($this->_timeStampProperty, $lastModified);
-        return $lastModified > $timeStamp;
-    }
-
-    private function getIndexByDateFile()
-    {
-        $transfer = $this->_factory->createUrlTransfer($this->_indexByDateUrl);
-        $transfer->get(PRIVATE_DIR . $this->_indexByDateFile);
-        $this->_manxDb->setProperty($this->_timeStampProperty, $this->_factory->getCurrentTime());
-    }
-
-    private function parseIndexByDateFile()
-    {
-        $indexByDate = $this->_fileSystem->openFile(PRIVATE_DIR . $this->_indexByDateFile, 'r');
-        while (!$indexByDate->eof())
-        {
-            $line = substr(trim($indexByDate->getString()), 20);
-            if (strlen($line) && $this->pathUnknown($line))
-            {
-                $this->_manxDb->addSiteUnknownPath($this->_siteName, $line);
-            }
-        }
-    }
-
-    private function pathUnknown($line)
-    {
-        $url = $this->_urlBase . '/' . self::escapeSpecialChars($line);
-        return $this->_manxDb->copyExistsForUrl($url) === false
-            && $this->_manxDb->siteIgnoredPath($this->_siteName, $line) === false;
     }
 
     protected function getMenuType()
@@ -172,7 +122,7 @@ EOH;
             $urlPath = self::escapeSpecialChars(trim($path));
             $checked = self::ignoreExtension($this->_manxDb, $extension) ? 'checked' : '';
             printf('<tr><td>%1$d.</td><td><input type="checkbox" id="ignore%2$d" name="ignore%2$d" value="%3$s" %5$s/>' . "\n" .
-                '<a href="url-wizard.php?url=' . $this->_urlBase . '/%4$s">%3$s</a></td></tr>' . "\n",
+                '<a href="url-wizard.php?url=' . $this->_baseUrl . '/%4$s">%3$s</a></td></tr>' . "\n",
                 $unknownPaths[$i]['id'], $i, $path, $urlPath, $checked);
         }
         print <<<EOH

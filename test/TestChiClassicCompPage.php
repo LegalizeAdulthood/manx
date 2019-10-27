@@ -2,7 +2,6 @@
 
 require_once 'pages/ChiClassicCompPage.php';
 require_once 'test/DatabaseTester.php';
-require_once 'test/FakeFile.php';
 
 use Pimple\Container;
 
@@ -47,8 +46,22 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     private $_transfer;
     /** @var ChiClassicCompPageTester */
     private $_page;
-    /** @var FakeFile */
-    private $_file;
+    /** @var IWhatsNewIndex */
+    private $_whatsNewIndex;
+
+    private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
+    {
+        $this->_db->expects($this->never())->method('getProperty');
+        $this->_factory->expects($this->never())->method('createUrlInfo');
+        $this->createPage($vars);
+    }
+
+    private function createPage($vars = array())
+    {
+        $_SERVER['PATH_INFO'] = '';
+        $this->_config['vars'] = $vars;
+        $this->_page = new ChiClassicCompPageTester($this->_config);
+    }
 
     protected function setUp()
     {
@@ -59,95 +72,25 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
-        $this->_file = new FakeFile();
+        $this->_whatsNewIndex = $this->createMock(IWhatsNewIndex::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
         $config['fileSystem'] = $this->_fileSystem;
         $config['whatsNewPageFactory'] = $this->_factory;
+        $config['whatsNewIndex'] = $this->_whatsNewIndex;
         $this->_config = $config;
     }
 
-    public function testConstructWithNoTimeStampPropertyGetsIndexByDateFile()
+    public function testConstruct()
     {
-        $this->_db->expects($this->once())->method('getProperty')
-            ->with(CCC_TIMESTAMP_PROPERTY)
-            ->willReturn(false);
-        $paths = array(
-            'computing/_Punchedcards/Sears.jpg',
-            'computing/_Punchedcards/harrisbankhollerithcard2.png',
-            'computing/DEC/Pathworks/AA-MF87D-TH_PathworksDOSWindowsSupportGuide_Aug91.pdf',
-            'computing/Morrow/Morrow_TRICEPBrochure.pdf',
-            'telephony/BellSystem/512-740-405-I03_7028+7028M+27028+27028MSetsSpeakerphone4A_Apr79.pdf',
-            'telephony/BellSystem/512-700-100-I2_4ASpeakerphoneSystem_Sept74.pdf',
-            'telephony/BellSystem/512-700-100-I4_4ASpeakerphoneSystem_May78.pdf',
-            'telephony/BellSystem/100-100-101_35-TypeTestSets.pdf',
-            'computing/IBM/Mainframe/Hardware/System/GC20-2021-2_Guide4381Processor_Apr86.pdf',
-            'telephony/SouthernBell/PTC320-L1_Relay&ApparatusAdjustment_BellSystemPracticesUnit1.pdf'
-        );
-        $lines = array();
-        foreach ($paths as $path)
-        {
-            array_push($lines, '2013-10-07 21:02:00 ' . $path);
-        }
-        $this->_file->getStringFakeResults = array_merge($lines);
-        $this->expectIndexFileTransferred();
-        $this->expectIndexFileOpened();
-        $this->_db->expects($this->any())->method('copyExistsForUrl')
-            ->withConsecutive(
-                [ 'http://chiclassiccomp.org/docs/content/computing/_Punchedcards/Sears.jpg' ],
-                [ 'http://chiclassiccomp.org/docs/content/computing/_Punchedcards/harrisbankhollerithcard2.png' ],
-                [ 'http://chiclassiccomp.org/docs/content/computing/DEC/Pathworks/AA-MF87D-TH_PathworksDOSWindowsSupportGuide_Aug91.pdf' ],
-                [ 'http://chiclassiccomp.org/docs/content/computing/Morrow/Morrow_TRICEPBrochure.pdf' ],
-                [ 'http://chiclassiccomp.org/docs/content/telephony/BellSystem/512-740-405-I03_7028+7028M+27028+27028MSetsSpeakerphone4A_Apr79.pdf' ],
-                [ 'http://chiclassiccomp.org/docs/content/telephony/BellSystem/512-700-100-I2_4ASpeakerphoneSystem_Sept74.pdf' ],
-                [ 'http://chiclassiccomp.org/docs/content/telephony/BellSystem/512-700-100-I4_4ASpeakerphoneSystem_May78.pdf' ],
-                [ 'http://chiclassiccomp.org/docs/content/telephony/BellSystem/100-100-101_35-TypeTestSets.pdf' ],
-                [ 'http://chiclassiccomp.org/docs/content/computing/IBM/Mainframe/Hardware/System/GC20-2021-2_Guide4381Processor_Apr86.pdf' ],
-                [ 'http://chiclassiccomp.org/docs/content/telephony/SouthernBell/PTC320-L1_Relay&ApparatusAdjustment_BellSystemPracticesUnit1.pdf' ]
-            )
-            ->willReturn(false);
+        $this->_db->expects($this->never())->method('getProperty');
+        $this->_factory->expects($this->never())->method('createUrlTransfer');
         $this->_db->expects($this->never())->method('addSiteUnknownPaths');
 
         $this->createPage();
 
         $this->assertTrue(is_object($this->_page));
         $this->assertFalse(is_null($this->_page));
-        $this->assertFileParsedPaths($paths);
-    }
-
-    public function testConstructWithNoLastModifiedGetsIndexByDateFile()
-    {
-        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
-        $this->_info->expects($this->once())->method('lastModified')->willReturn(false);
-        $this->_factory->method('getCurrentTime')->willReturn('12');
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
-        $this->expectIndexFileTransferred();
-        $this->expectIndexFileOpened();
-
-        $this->createPage();
-    }
-
-    public function testConstructWithLastModifiedEqualsTimeStampDoesNotGetIndexByDateFile()
-    {
-        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
-        $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
-
-        $this->createPage();
-    }
-
-    public function testConstructWithLastModifiedNewerThanTimeStampGetsIndexByDateFile()
-    {
-        $this->_db->expects($this->once())->method('getProperty')->willReturn('10');
-        $this->_info->expects($this->once())->method('lastModified')->willReturn('20');
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
-        $this->expectIndexFileTransferred();
-        $this->expectIndexFileOpened();
-
-        $this->createPage();
     }
 
     public function testMenuTypeIsChiClassicCompPage()
@@ -454,27 +397,6 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->expectOutputString("<h1>No New ChiClassicComp Publications Found</h1>\n");
     }
 
-    private function expectIndexFileTransferred()
-    {
-        $this->_transfer->expects($this->once())->method('get')
-            ->with(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE);
-        $this->_factory->expects($this->once())->method('createUrlTransfer')
-            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_transfer);
-    }
-
-    private function expectIndexFileOpened()
-    {
-        $this->_fileSystem->expects($this->once())->method('openFile')
-            ->with(PRIVATE_DIR . CCC_INDEX_BY_DATE_FILE, 'r')
-            ->willReturn($this->_file);
-    }
-
-    private function assertFileParsedPaths($paths)
-    {
-        $this->assertTrue($this->_file->eofCalled);
-        $this->assertTrue($this->_file->getStringCalled);
-    }
-
     private static function createResultRowsForUnknownPaths($items, $idStart = 1)
     {
         $id = $idStart;
@@ -557,41 +479,5 @@ EOH;
 EOH;
         $expected = $expected . $trailer;
         return $expected;
-    }
-
-    private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
-    {
-        $this->_db->expects($this->once())->method('getProperty')->with(CCC_TIMESTAMP_PROPERTY)->willReturn('10');
-        $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
-        $this->createPage($vars);
-    }
-
-    private function createPageWithoutFetchingIndexByDateFile2($vars = array('sort' => SORT_ORDER_BY_ID))
-    {
-        $this->_db2->getPropertyFakeResult = '10';
-        $this->_info->expects($this->once())->method('lastModified')->willReturn('10');
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with(CCC_INDEX_BY_DATE_URL)->willReturn($this->_info);
-        $this->createPage($vars);
-    }
-
-    private function createPage($vars = array())
-    {
-        $_SERVER['PATH_INFO'] = '';
-        $this->_config['vars'] = $vars;
-        $this->_page = new ChiClassicCompPageTester($this->_config);
-    }
-
-    private function assertPropertyRead($name)
-    {
-        $this->assertTrue($this->_db2->getPropertyCalled);
-        $this->assertEquals($name, $this->_db2->getPropertyLastName);
-    }
-
-    private function assertIndexByDateFileTransferred()
-    {
-        $this->assertTrue($this->_db2->setPropertyCalled);
     }
 }
