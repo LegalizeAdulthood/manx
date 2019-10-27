@@ -106,6 +106,14 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_cleaner->updateMovedFiles();
     }
 
+    public function testRemoveUnknownPathsWithCopy()
+    {
+        $this->_db->expects($this->once())->method('removeUnknownPathsWithCopy')->with('bitsavers', 'http://bitsavers.org/pdf/');
+        $this->_logger->expects($this->once())->method('log');
+
+        $this->_cleaner->removeUnknownPathsWithCopy();
+    }
+
     public function testUpdateWhatsNewNotNewer()
     {
         $this->_whatsNewIndex->expects($this->once())->method('needIndexByDateFile')->willReturn(false);

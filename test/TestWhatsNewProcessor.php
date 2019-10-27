@@ -35,6 +35,14 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
         $this->_processor->process(['cleaner.php', 'index']);
     }
 
+
+    public function testUnknownCopies()
+    {
+        $this->_cleaner->expects($this->once())->method('removeUnknownPathsWithCopy');
+
+        $this->_processor->process(['cleaner.php', 'unknown-copies']);
+    }
+
     private $_cleaner;
     private $_processor;
 }

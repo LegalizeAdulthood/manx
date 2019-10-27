@@ -82,6 +82,12 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         }
     }
 
+    public function removeUnknownPathsWithCopy()
+    {
+        $this->_logger->log('Purging unknown paths with known copies.');
+        $this->_db->removeUnknownPathsWithCopy($this->_siteName, $this->_baseUrl);
+    }
+
     private static function escapeSpecialChars($path)
     {
         return str_replace("#", urlencode("#"), $path);

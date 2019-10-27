@@ -25,5 +25,9 @@ class WhatsNewProcessor
         {
             $this->_cleaner->updateWhatsNewIndex();
         }
+        else if ($args[1] == 'unknown-copies')
+        {
+            $this->_cleaner->removeUnknownPathsWithCopy();
+        }
     }
 }
