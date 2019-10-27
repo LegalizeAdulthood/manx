@@ -1,28 +1,19 @@
 <?php
 
 require_once 'pages/IManx.php';
+require_once 'cron/ILogger.php';
+require_once 'cron/IWhatsNewCleaner.php';
 
 use Pimple\Container;
 
-interface ILogger
-{
-    public function log($line);
-}
-
-class Logger implements ILogger
-{
-    function log($line)
-    {
-        print($line . "\n");
-    }
-}
-
-class WhatsNewCleaner
+class WhatsNewCleaner implements IWhatsNewCleaner
 {
     private $_manx;
     private $_db;
     private $_factory;
+    /** @var ILogger */
     private $_logger;
+    /** @var string */
     private $_siteName;
     private $_whatsNewIndex;
 

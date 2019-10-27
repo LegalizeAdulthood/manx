@@ -127,4 +127,21 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
 
         $this->_whatsNew->parseIndexByDateFile();
     }
+
+    public function testParseIndexSkipsBlankLines()
+    {
+        $file = $this->createMock(IFile::class);
+        $this->_fileSystem->expects($this->once())->method('openFile')->with(PRIVATE_DIR . $this->_indexFile, 'r')->willReturn($file);
+        $file->expects($this->exactly(4))->method('eof')->willReturn(false, false, false, true);
+        $file->expects($this->exactly(3))->method('getString')->willReturn(
+            '2019-10-27 03:40:42 ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
+            '2019-10-27 01:24:00 ibm/370/VM_SP/Release_5_Dec86/SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf',
+            '');
+        $this->_db->expects($this->once())->method('addSiteUnknownPaths')->
+            with($this->_config['siteName'],
+                ['ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
+                'ibm/370/VM_SP/Release_5_Dec86/SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf']);
+
+        $this->_whatsNew->parseIndexByDateFile();
+    }
 }

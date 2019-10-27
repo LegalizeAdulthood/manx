@@ -50,7 +50,10 @@ class WhatsNewIndex implements IWhatsNewIndex
         while (!$indexByDate->eof())
         {
             $line = substr(trim($indexByDate->getString()), 20);
-            array_push($paths, $line);
+            if ($line !== false)
+            {
+                array_push($paths, $line);
+            }
         }
         $this->_manxDb->addSiteUnknownPaths($this->_siteName, $paths);
     }

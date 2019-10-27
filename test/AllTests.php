@@ -20,33 +20,36 @@ require_once 'test/TestUrlWizardPage.php';
 require_once 'test/TestUrlWizardService.php';
 require_once 'test/TestUrlWizardServiceProcessRequest.php';
 require_once 'test/TestWhatsNewIndex.php';
+require_once 'test/TestWhatsNewProcessor.php';
 
 class AllTests
 {
     public static function suite()
     {
         $suite = new PHPUnit\Framework\TestSuite('ManxTests');
-        foreach (array(
-            'TestAboutPage',
-            'TestAdminPageBase',
-            'TestBitSaversCleaner',
-            'TestBitSaversPage',
-            'TestChiClassicCompPage',
-            'TestCompanyPage',
-            'TestDetailsPage',
-            'TestHtmlFormatter',
-            'TestManxDatabase',
-            'TestManxDatabaseUtils',
-            'TestPageBase',
-            'TestPublicationPage',
-            'TestRssPage',
-            'TestSearcher',
-            'TestUrlInfo',
-            'TestUrlTransfer',
-            'TestUrlWizardPage',
-            'TestUrlWizardService',
-            'TestUrlWizardServiceProcessRequest',
-            'TestWhatsNewIndex') as $name)
+        foreach ([
+                'TestAboutPage',
+                'TestAdminPageBase',
+                'TestBitSaversCleaner',
+                'TestBitSaversPage',
+                'TestChiClassicCompPage',
+                'TestCompanyPage',
+                'TestDetailsPage',
+                'TestHtmlFormatter',
+                'TestManxDatabase',
+                'TestManxDatabaseUtils',
+                'TestPageBase',
+                'TestPublicationPage',
+                'TestRssPage',
+                'TestSearcher',
+                'TestUrlInfo',
+                'TestUrlTransfer',
+                'TestUrlWizardPage',
+                'TestUrlWizardService',
+                'TestUrlWizardServiceProcessRequest',
+                'TestWhatsNewIndex',
+                'TestWhatsNewProcessor'
+            ] as $name)
         {
             $suite->addTestSuite($name);
         }

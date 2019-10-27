@@ -2,6 +2,8 @@
 
 require_once 'vendor/autoload.php';
 require_once 'cron/BitSaversCleaner.php';
+require_once 'cron/Logger.php';
+require_once 'cron/WhatsNewProcessor.php';
 require_once 'pages/File.php';
 require_once 'pages/Manx.php';
 require_once 'pages/WhatsNewIndex.php';
@@ -18,20 +20,13 @@ $config['whatsNewIndex'] = function($c)
 {
     return new WhatsNewIndex($c);
 };
-$cleaner = new BitSaversCleaner($config);
+$config['whatsNewCleaner'] = function($c)
+{
+    return new BitSaversCleaner($c);
+};
+$processor = new WhatsNewProcessor($config);
 
 if (count($argv) > 1)
 {
-    if ($argv[1] == 'existence')
-    {
-        $cleaner->removeNonExistentUnknownPaths();
-    }
-    else if ($argv[1] == 'moved')
-    {
-        $cleaner->updateMovedFiles();
-    }
-    else if ($argv[1] == 'index')
-    {
-        $cleaner->updateWhatsNewIndex();
-    }
+    $processor->process($argv);
 }
