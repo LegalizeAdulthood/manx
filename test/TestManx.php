@@ -45,18 +45,9 @@ class TestManx extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('addPublication')->with($pubHistId)->willReturn($pubId);
         $this->_db->expects($this->once())->method('updatePubHistoryPubId')->with($pubHistId, $pubId);
 
-        $result = $this->_manx->addPublication($user,
-            $companyId,
-            $part,
-            $pubDate,
-            $title,
-            $pubType,
-            $altPart,
-            $revision,
-            $keywords,
-            $notes,
-            $abstract,
-            $languages);
+        $result = $this->_manx->addPublication($user, $companyId, $part, $pubDate,
+            $title, $pubType, $altPart, $revision,
+            $keywords, $notes, $abstract, $languages);
 
         $this->assertEquals($pubId, $result);
     }
