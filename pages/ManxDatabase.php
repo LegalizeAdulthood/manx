@@ -761,7 +761,7 @@ class ManxDatabase implements IManxDatabase
     public function removeSiteUnknownPathById($siteName, $siteUnknownId)
     {
         return $this->execute("DELETE FROM `site_unknown` WHERE `site_id`=? AND `id`=?",
-            array($this->siteIdForName($siteName), $id));
+            array($this->siteIdForName($siteName), $siteUnknownId));
     }
 
     public function getPossiblyMovedSiteUnknownPaths($siteName)
