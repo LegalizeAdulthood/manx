@@ -150,7 +150,7 @@ EOH;
         }
     }
 
-    private function renderMenu()
+    protected function renderMenu()
     {
         $menu = $this->getMenuType();
 

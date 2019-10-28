@@ -18,6 +18,11 @@ class PageBaseTester extends PageBase
     {
         parent::renderAuthorization();
     }
+
+    public function renderMenu()
+    {
+        parent::renderMenu();
+    }
 }
 
 class TestPageBase extends PHPUnit\Framework\TestCase
@@ -67,6 +72,40 @@ class TestPageBase extends PHPUnit\Framework\TestCase
 <tr><td>&nbsp;</td></tr>
 <tr><td class="version" align="right">version 2.0.7</td></tr>
 </table></div>
+
+EOH;
+        $this->expectOutputString($output);
+    }
+
+    public function testRenderMenu()
+    {
+        $this->_user->expects($this->once())->method('isAdmin')->willReturn(false);
+        $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($this->_user);
+        $this->createInstance();
+
+        $this->_page->renderMenu();
+
+        $output = <<<EOH
+<div class="menu"><a class="first" href="search.php">Search</a><a href="news.php">News</a><a href="about.php">About</a><a href="help.php">Help</a></div>
+
+EOH;
+        $this->expectOutputString($output);
+    }
+
+    public function testRenderAdminMenu()
+    {
+        $this->_user->expects($this->once())->method('isAdmin')->willReturn(true);
+        $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($this->_user);
+        $this->createInstance();
+
+        $this->_page->renderMenu();
+
+        $output = <<<EOH
+<div class="menu"><a class="first" href="search.php">Search</a><a href="news.php">News</a><a href="about.php">About</a><a href="help.php">Help</a></div>
+<div class="menu">
+<a class="first" href="url-wizard.php">URL Wizard</a><a href="bitsavers.php">BitSavers</a><a href="chiclassiccomp.php">ChiClassicComp</a><a href="size-report.php">Size Report</a><a href="md5-report.php">MD5 Report</a></div>
+<div class="menu">
+<a class="first" href="site.php">Site</a><a href="mirror.php">Mirror</a></div>
 
 EOH;
         $this->expectOutputString($output);
