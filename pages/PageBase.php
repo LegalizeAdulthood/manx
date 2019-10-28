@@ -240,9 +240,8 @@ EOH;
 
     protected function renderAuthorization()
     {
-        $user = User::getInstanceFromSession($this->_manxDb);
-        print "<div id=\"AUTH\"><table>\n<tr><td>" . $user->displayName() . ' | ';
-        if ($user->isLoggedIn())
+        print "<div id=\"AUTH\"><table>\n<tr><td>" . $this->_user->displayName() . ' | ';
+        if ($this->_user->isLoggedIn())
         {
             $this->renderLogoutLink($_SERVER);
         }
