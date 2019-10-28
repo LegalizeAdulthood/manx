@@ -159,6 +159,7 @@ EOH;
         $this->renderMenuItem(($menu == MenuType::News), "news.php", "News");
         $this->renderMenuItem(($menu == MenuType::About), "about.php", "About");
         $this->renderMenuItem(($menu == MenuType::Help), "help.php", "Help");
+        print '<a href="rss.php"><img src="assets/rss.png"></a>';
         print "</div>\n";
         $this->renderAdminMenu($menu);
     }
