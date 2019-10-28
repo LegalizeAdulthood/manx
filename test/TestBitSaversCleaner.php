@@ -108,7 +108,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
 
     public function testRemoveUnknownPathsWithCopy()
     {
-        $this->_db->expects($this->once())->method('removeUnknownPathsWithCopy')->with('bitsavers', 'http://bitsavers.org/pdf/');
+        $this->_db->expects($this->once())->method('removeUnknownPathsWithCopy');
         $this->_logger->expects($this->once())->method('log');
 
         $this->_cleaner->removeUnknownPathsWithCopy();

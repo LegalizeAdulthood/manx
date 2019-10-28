@@ -771,25 +771,14 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testRemoveUnknownPathsWithCopy()
     {
-        $this->_db->expects($this->once())->method('beginTransaction');
-        $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
-        $update = "DELETE FROM `site_unknown` "
-                . "WHERE `site_unknown`.`site_id = `copy`.`site` "
-                . "AND `copy`.`pub` = `pub_history`.`ph_pub` "
-                . "AND `copy`.`site` = ? "
-                . "AND `copy`.`url` = CONCAT(?, `site_unknown`.`path`)";
-        $this->_db->expects($this->exactly(2))->method('execute')
-            ->withConsecutive(
-                [ $select, array('bitsavers') ],
-                [ $update, array(3, 'http://bitsavers.org/pdf/') ]
-            )
-            ->willReturn(
-                DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
-                null
-            );
-        $this->_db->expects($this->once())->method('commit');
 
-        $this->_manxDb->removeUnknownPathsWithCopy('bitsavers', 'http://bitsavers.org/pdf/');
+        $update = "DELETE FROM `site_unknown` USING `site_unknown` "
+            . "INNER JOIN `copy` ON `copy`.`site` = `site_unknown`.`site_id` "
+            . "INNER JOIN `site` ON `site`.`site_id` = `site_unknown`.`site_id` "
+            . "WHERE `copy`.`url` = CONCAT(`site`.`copy_base`, `site_unknown`.`path`)";
+        $this->_db->expects($this->once())->method('execute')->with($update, [])->willReturn(null);
+
+        $this->_manxDb->removeUnknownPathsWithCopy();
     }
 
     private function assertColumnValuesForRows($rows, $column, $values)
