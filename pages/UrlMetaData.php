@@ -359,4 +359,45 @@ class UrlMetaData implements IUrlMetaData
         }
         return $title;
     }
+
+    private static function emptyStringIfNull($str)
+    {
+        return is_null($str) ? '' : $str;
+    }
+
+    private function accumulatePublicationsForKeywords($company, $keywords, $online)
+    {
+        $data = array();
+        foreach ($this->_db->searchForPublications($company, $keywords, $online) as $row)
+        {
+            $pubId = $row['pub_id'];
+            if (!array_key_exists($pubId, $data))
+            {
+                $data[$pubId] = array('pub_id' => $row['pub_id'],
+                    'ph_part' => self::emptyStringIfNull($row['ph_part']),
+                    'ph_revision' => self::emptyStringIfNull($row['ph_revision']),
+                    'ph_title' => $row['ph_title']);
+            }
+        }
+        return $data;
+    }
+
+    private function mergePubs($left, $right)
+    {
+        foreach (array_keys($right) as $pubId)
+        {
+            if (!array_key_exists($pubId, $left))
+            {
+                $left[$pubId] = $right[$pubId];
+            }
+        }
+        return $left;
+    }
+
+    private function findPublicationsForKeywords($company, $keywords)
+    {
+        return $this->mergePubs(
+            $this->accumulatePublicationsForKeywords($company, $keywords, false),
+            $this->accumulatePublicationsForKeywords($company, $keywords, true));
+    }
 }
