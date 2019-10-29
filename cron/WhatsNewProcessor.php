@@ -29,5 +29,9 @@ class WhatsNewProcessor
         {
             $this->_cleaner->removeUnknownPathsWithCopy();
         }
+        else if ($args[1] == 'ingest')
+        {
+            $this->_cleaner->ingest();
+        }
     }
 }

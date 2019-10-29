@@ -6,4 +6,5 @@ interface IWhatsNewCleaner
     function updateMovedFiles();
     function updateWhatsNewIndex();
     function removeUnknownPathsWithCopy();
+    function ingest();
 }

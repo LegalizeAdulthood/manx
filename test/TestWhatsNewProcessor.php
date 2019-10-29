@@ -43,6 +43,13 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
         $this->_processor->process(['cleaner.php', 'unknown-copies']);
     }
 
+    public function testIngest()
+    {
+        $this->_cleaner->expects($this->once())->method('ingest');
+
+        $this->_processor->process(['cleaner.php', 'ingest']);
+    }
+
     private $_cleaner;
     private $_processor;
 }

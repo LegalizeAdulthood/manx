@@ -16,6 +16,8 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     /** @var string */
     private $_siteName;
     private $_whatsNewIndex;
+    /** @var IUrlMetaData */
+    private $_urlMetaData;
 
     private static function endsWith($str, $needle)
     {
@@ -41,6 +43,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->_baseCheckUrl = self::ensureTrailingSlash($config['baseCheckUrl']);
         $this->_baseUrl = self::ensureTrailingSlash($config['baseUrl']);
         $this->_whatsNewIndex = $config['whatsNewIndex'];
+        $this->_urlMetaData = $config['urlMetaData'];
     }
 
     public function removeNonExistentUnknownPaths()
@@ -86,6 +89,47 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     {
         $this->_logger->log('Purging unknown paths with known copies.');
         $this->_db->removeUnknownPathsWithCopy();
+    }
+
+    public function ingest()
+    {
+        $user = $this->_manx->getUserFromSession();
+        $pubIds = [];
+        foreach ($this->_db->getUnknownPathsForCompanies() as $row)
+        {
+            $url = $row['url'];
+            // Don't need to re-extract data[url] because we're working from the site's base copy URL.
+            // The url argument to determineData will never be a mirror URL.
+            $data = $this->_urlMetaData->determineData($url);
+            $part = $data['part'];
+            $title = $data['title'];
+            $pubDate = $data['pub_date'];
+
+            // Conservatively ingest only documents where we could guess most metadata.
+            if (strlen($part) > 0 && strlen($title) > 0 && strlen($pubDate) > 0)
+            {
+                $siteId = $row['site_id'];
+                $companyId = $row['company_id'];
+                $file = $row['file'];
+                $pubType = 'D';
+                $altPart = '';
+                $revision = '';
+                $keywords = '';
+                $notes = '';
+                $abstract = '';
+                $languages = '';
+                $pubId = $this->_manx->addPublication($user, $companyId, $part, $pubDate, $title, $pubType, $altPart, $revision, $keywords, $notes, $abstract, $languages);
+                $pubIds[] = $pubId;
+
+                $format = $data['format'];
+                $copyNotes = '';
+                $copySize = $data['size'];
+                $copyMD5 = '';
+                $credits = '';
+                $amendSerial = '';
+                $this->_db->addCopy($pubId, $format, $siteId, $url, $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
+            }
+        }
     }
 
     private static function escapeSpecialChars($path)
