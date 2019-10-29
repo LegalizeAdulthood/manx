@@ -781,6 +781,30 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_manxDb->removeUnknownPathsWithCopy();
     }
 
+    public function testGetUnknownPathsForKnownCompanies()
+    {
+        $select = "SELECT su.site_id, "
+            . "scd.company_id, "
+            . "CONCAT(s.copy_base, su.path) AS url, "
+            . "SUBSTR(path, LENGTH(path) - INSTR(REVERSE(path), '/') + 2) AS file "
+        . "FROM site_unknown su, site_company_dir scd, site s "
+        . "WHERE su.site_id = scd.site_id "
+        . "AND su.path LIKE CONCAT(scd.directory, '/%\_%\_%.pdf') "
+        . "AND s.site_id = su.site_id "
+        . "AND NOT (su.path LIKE '%+%' OR su.path LIKE '%#%' OR su.path LIKE '% %' OR su.path LIKE '%&%' OR su.path LIKE '%\%%')";
+        $rows = DatabaseTester::createResultRowsForColumns(
+            ['site_id', 'company_id', 'url', 'file'],
+            [
+                [3, 13, 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf', 'EK-3333-01_Jumbotron_Users_Guide.pdf' ],
+                [3, 13, 'http://bitsavers.org/pdf/dec/foo/EK-6666-01_Jumbotron_Reference_Manual.pdf', 'EK-6666-01_Jumbotron_Reference_Manual.pdf' ]
+            ]);
+        $this->_db->expects($this->once())->method('execute')->with($select, [])->willReturn($rows);
+
+        $results = $this->_manxDb->getUnknownPathsForCompanies();
+
+        $this->assertEquals($rows, $results);
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");

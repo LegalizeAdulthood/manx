@@ -788,4 +788,17 @@ class ManxDatabase implements IManxDatabase
             . "INNER JOIN `site` ON `site`.`site_id` = `site_unknown`.`site_id` "
             . "WHERE `copy`.`url` = CONCAT(`site`.`copy_base`, `site_unknown`.`path`)", []);
     }
+
+    public function getUnknownPathsForCompanies()
+    {
+        return $this->execute("SELECT su.site_id, "
+                . "scd.company_id, "
+                . "CONCAT(s.copy_base, su.path) AS url, "
+                . "SUBSTR(path, LENGTH(path) - INSTR(REVERSE(path), '/') + 2) AS file "
+            . "FROM site_unknown su, site_company_dir scd, site s "
+            . "WHERE su.site_id = scd.site_id "
+            . "AND su.path LIKE CONCAT(scd.directory, '/%\_%\_%.pdf') "
+            . "AND s.site_id = su.site_id "
+            . "AND NOT (su.path LIKE '%+%' OR su.path LIKE '%#%' OR su.path LIKE '% %' OR su.path LIKE '%&%' OR su.path LIKE '%\%%')", []);
+    }
 }
