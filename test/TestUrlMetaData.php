@@ -7,6 +7,71 @@ use Pimple\Container;
 
 class TestUrlMetaData extends PHPUnit\Framework\TestCase
 {
+    public function setUp()
+    {
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_urlInfoFactory = $this->createMock(IUrlInfoFactory::class);
+        $this->_urlInfo = $this->createMock(IUrlInfo::class);
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $config['db'] = $this->_db;
+        $config['urlInfoFactory'] = $this->_urlInfoFactory;
+        $this->_config = $config;
+        $this->_meta = new UrlMetaData($config);
+    }
+
+    public function testConstruct()
+    {
+        $this->assertTrue(is_object($this->_meta));
+        $this->assertFalse(is_null($this->_meta));
+    }
+
+    public function testDetermineDataForBitSavers()
+    {
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
+        $copySize = 4096;
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn($copySize);
+        $siteId = 3;
+        $bitsaversSiteRow = [
+                'site_id' => $siteId,
+                'name' => 'bitsavers',
+                'url' => 'http://bitsavers.org',
+                'description' => '',
+                'copy_base' => 'http://bitsavers.org/pdf/',
+                'low' => 'N',
+                'live' => 'Y',
+                'display_order' => 1
+            ];
+        $this->_db->expects($this->once())->method('getSites')->willReturn([$bitsaversSiteRow]);
+        $url = 'http://bitsavers.org/pdf/microdata/periph/2602_Bisync_Controller/PS20002602_2602_Bisync_Interface_Product_Specification_Mar1977.pdf';
+        $companyId = 13;
+        $part = 'PS20002602';
+        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('bitsavers', 'microdata')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with($part, $companyId)->willReturn([]);
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('copyExistsForUrl')->with($url)->willReturn(false);
+        $this->_db->expects($this->never())->method('getMirrors');
+
+        $data = $this->_meta->determineData($url);
+
+        $expectedData = [
+            'url' => $url,
+            'mirror_url' => '',
+            'size' => $copySize,
+            'valid' => true,
+            'site' => $bitsaversSiteRow,
+            'company' => 13,
+            'part' => $part,
+            'pub_date' => '1977-03',
+            'title' => '2602 Bisync Interface Product Specification',
+            'format' => 'PDF',
+            'site_company_directory' => 'microdata',
+            'pubs' => [],
+            ];
+        $this->assertEquals($expectedData, $data);
+    }
+
     public function testUrlComponentsMatchBitSaversOrg()
     {
         $this->assertUrlMatchesSite(
@@ -70,20 +135,6 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $this->assertEquals('foo_bar', $newFileBase);
     }
 
-    public function testConstruct()
-    {
-        $this->_manx = $this->createMock(IManx::class);
-        $config = new Container();
-        $config['manx'] = $this->_manx;
-        $config['db'] = $this->createMock(IManxDatabase::class);
-        $config['urlInfoFactory'] = $this->createMock(IUrlInfoFactory::class);
-
-        $meta = new UrlMetaData($config);
-
-        $this->assertTrue(is_object($meta));
-        $this->assertFalse(is_null($meta));
-    }
-
     public function testTitleForBaseWithPoundSign()
     {
         $this->assertTitleForFileBase('Micro Cornucopia #50', 'Micro_Cornucopia_%2350');
@@ -135,4 +186,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $right = $right[0];
         return array($left, $right);
     }
+
+    private $_manx;
+
 }

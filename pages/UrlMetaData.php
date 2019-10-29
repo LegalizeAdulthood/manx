@@ -3,6 +3,7 @@
 require_once 'pages/IManxDatabase.php';
 require_once 'pages/IUrlInfoFactory.php';
 require_once 'pages/IUrlMetaData.php';
+require_once 'pages/Site.php';
 
 use Pimple\Container;
 
