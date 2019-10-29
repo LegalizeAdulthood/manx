@@ -132,7 +132,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 $amendSerial = '';
                 $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url, $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
 
-                $this->log(sprintf('Added %d.%d %s %s "%s" (%s)', $pubId, $copyId, $data['site_company_directory'], $pubDate, $title, $part));
+                $this->log(sprintf('Added %d.%d.%d %s %s "%s" (%s)', $siteId, $pubId, $copyId, $data['site_company_directory'], $pubDate, $title, $part));
 
                 $count++;
                 if ($count > $this->_limit)
