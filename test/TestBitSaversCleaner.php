@@ -177,6 +177,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $amendSerial = '';
         $this->_db->expects($this->once())->method('addCopy')->with($pubId, $format, $siteId, $url,
                 $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
+        $this->_logger->expects($this->once())->method('log');
 
         $this->_cleaner->ingest();
     }

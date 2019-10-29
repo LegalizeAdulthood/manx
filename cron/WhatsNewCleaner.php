@@ -56,7 +56,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             if (!$urlInfo->exists())
             {
                 $this->_db->removeSiteUnknownPathById($this->_siteName, $row['id']);
-                $this->_logger->log('Path: ' . $path);
+                $this->log('Path: ' . $path);
             }
         }
     }
@@ -70,7 +70,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             if ($urlInfo->md5() == $row['md5'])
             {
                 $this->_db->siteFileMoved($this->_siteName, $row['copy_id'], $row['path_id'], $this->_baseUrl . $path);
-                $this->_logger->log('Path: ' . $path);
+                $this->log('Path: ' . $path);
             }
         }
     }
@@ -79,7 +79,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     {
         if ($this->_whatsNewIndex->needIndexByDateFile())
         {
-            $this->_logger->log('Updating WhatsNew.txt for site ' . $this->_siteName);
+            $this->log('Updating WhatsNew.txt for site ' . $this->_siteName);
             $this->_whatsNewIndex->getIndexByDateFile();
             $this->_whatsNewIndex->parseIndexByDateFile();
         }
@@ -87,7 +87,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 
     public function removeUnknownPathsWithCopy()
     {
-        $this->_logger->log('Purging unknown paths with known copies.');
+        $this->log('Purging unknown paths with known copies.');
         $this->_db->removeUnknownPathsWithCopy();
     }
 
@@ -127,7 +127,9 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 $copyMD5 = '';
                 $credits = '';
                 $amendSerial = '';
-                $this->_db->addCopy($pubId, $format, $siteId, $url, $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
+                $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url, $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
+
+                $this->log(sprintf('Added %d.%d %s "%s" (%s)', $pubId, $copyId, $data['site_company_directory'], $pubDate, $title, $part));
             }
         }
     }
@@ -135,5 +137,10 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     private static function escapeSpecialChars($path)
     {
         return str_replace("#", urlencode("#"), $path);
+    }
+
+    private function log($text)
+    {
+        $this->_logger->log($text);
     }
 }
