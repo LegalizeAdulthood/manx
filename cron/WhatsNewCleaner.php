@@ -93,6 +93,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 
     public function ingest()
     {
+        $this->log("Ingesting unknown paths for sites with IndexByDate.txt");
         $user = $this->_manx->getUserFromSession();
         $pubIds = [];
         foreach ($this->_db->getUnknownPathsForCompanies() as $row)
@@ -128,7 +129,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 $amendSerial = '';
                 $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url, $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
 
-                $this->log(sprintf('Added %d.%d %s "%s" (%s)', $pubId, $copyId, $data['site_company_directory'], $pubDate, $title, $part));
+                $this->log(sprintf('Added %d.%d %s %s "%s" (%s)', $pubId, $copyId, $data['site_company_directory'], $pubDate, $title, $part));
             }
         }
     }

@@ -193,7 +193,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
             ->willReturn($pubId);
         $this->_db->expects($this->once())->method('addCopy')->with($pubId, $data['format'], $siteId, $url,
                 $copyData['notes'], $data['size'], $copyData['md5'], $copyData['credits'], $copyData['amend_serial']);
-        $this->_logger->expects($this->once())->method('log');
+        $this->_logger->expects($this->exactly(2))->method('log');
 
         $this->_cleaner->ingest();
     }
@@ -219,7 +219,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
-        $this->_logger->expects($this->never())->method('log');
+        $this->_logger->expects($this->once())->method('log');
 
         $this->_cleaner->ingest();
     }
