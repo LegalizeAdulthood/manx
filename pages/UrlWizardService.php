@@ -23,16 +23,11 @@ require_once 'Manx.php';
 require_once 'Searcher.php';
 require_once 'ServicePageBase.php';
 require_once 'CurlApi.php';
+require_once 'Site.php';
 require_once 'UrlInfo.php';
 require_once 'UrlInfoFactory.php';
 
 use Pimple\Container;
-
-class Site
-{
-    const BitSavers = 3;
-    const ChiClassicComp = 58;
-}
 
 class UrlWizardService extends ServicePageBase
 {
