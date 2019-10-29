@@ -119,31 +119,12 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_cleaner->removeUnknownPathsWithCopy();
     }
 
-    public function testIngest()
+    private function bitsaversMetaData($siteId, $companyId, $url)
     {
-        $siteId = 3;
-        $companyId = 13;
-        $part = 'EK-3333-01';
-        $pubDate = '1977-02';
-        $title = 'Jumbotron Users Guide';
-        $pubType = 'D';
-        $altPart = '';
-        $revision = '';
-        $keywords = '';
-        $notes = '';
-        $abstract = '';
-        $languages = '';
-        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
-        $pathRows = DatabaseTester::createResultRowsForColumns(['site_id', 'company_id', 'url', 'file'],
-            [
-                [$siteId, $companyId, $url, 'EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf' ]
-            ]);
-        $copySize = 5555;
-        $format = 'PDF';
-        $data = [
+        return [
             'url' => $url,
             'mirror_url' => '',
-            'size' => $copySize,
+            'size' => 5555,
             'valid' => true,
             'site' => [
                 'site_id' => $siteId,
@@ -155,29 +136,90 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
                 'live' => 'Y',
                 'display_order' => 1
             ],
-            'company' => 1,
-            'part' => $part,
-            'pub_date' => $pubDate,
-            'title' => $title,
-            'format' => $format,
+            'company' => $companyId,
+            'part' => 'EK-3333-01',
+            'pub_date' => '1977-02',
+            'title' => 'Jumbotron Users Guide',
+            'format' => 'PDF',
             'site_company_directory' => 'dec',
             'pubs' => [],
         ];
+    }
+
+    private function stockPubData()
+    {
+        return [
+            'pub_type' => 'D',
+            'alt_part' => '',
+            'revision' => '',
+            'keywords' => '',
+            'notes' => '',
+            'abstract' => '',
+            'languages' => ''
+        ];
+    }
+
+    private function stockCopyData()
+    {
+        return [
+            'notes' => '',
+            'md5' => '',
+            'credits' => '',
+            'amend_serial' => ''
+        ];
+    }
+
+    public function testIngest()
+    {
+        $companyId = 13;
+        $siteId = 3;
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $pathRows = DatabaseTester::createResultRowsForColumns(['site_id', 'company_id', 'url'],
+            [
+                [$siteId, $companyId, $url ]
+            ]);
+        $data = $this->bitsaversMetaData($siteId, $companyId, $url);
+        $pubData = $this->stockPubData();
+        $copyData = $this->stockCopyData();
         $user = $this->createMock(IUser::class);
         $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($user);
         $this->_urlMetaData->expects($this->once())->method('determineData')->with($url)->willReturn($data);
         $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
         $pubId = 23;
         $this->_manx->expects($this->once())->method('addPublication')
-            ->with($user, $companyId, $part, $pubDate, $title, $pubType, $altPart, $revision, $keywords, $notes, $abstract, $languages)
+            ->with($user, $companyId, $data['part'], $data['pub_date'],
+                $data['title'], $pubData['pub_type'], $pubData['alt_part'], $pubData['revision'],
+                $pubData['keywords'], $pubData['notes'], $pubData['abstract'], $pubData['languages'])
             ->willReturn($pubId);
-        $copyNotes = '';
-        $copyMD5 = '';
-        $credits = '';
-        $amendSerial = '';
-        $this->_db->expects($this->once())->method('addCopy')->with($pubId, $format, $siteId, $url,
-                $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
+        $this->_db->expects($this->once())->method('addCopy')->with($pubId, $data['format'], $siteId, $url,
+                $copyData['notes'], $data['size'], $copyData['md5'], $copyData['credits'], $copyData['amend_serial']);
         $this->_logger->expects($this->once())->method('log');
+
+        $this->_cleaner->ingest();
+    }
+
+    public function testIngestCopyExists()
+    {
+        $companyId = 13;
+        $siteId = 3;
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $pathRows = DatabaseTester::createResultRowsForColumns(['site_id', 'company_id', 'url'],
+            [
+                [$siteId, $companyId, $url ]
+            ]);
+        $data = $this->bitsaversMetaData($siteId, $companyId, $url);
+        $data['exists'] = true;
+        $pubId = 23;
+        $data['ph_pub'] = $pubId;
+        $pubData = $this->stockPubData();
+        $copyData = $this->stockCopyData();
+        $user = $this->createMock(IUser::class);
+        $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($user);
+        $this->_urlMetaData->expects($this->once())->method('determineData')->with($url)->willReturn($data);
+        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
+        $this->_manx->expects($this->never())->method('addPublication');
+        $this->_db->expects($this->never())->method('addCopy');
+        $this->_logger->expects($this->never())->method('log');
 
         $this->_cleaner->ingest();
     }

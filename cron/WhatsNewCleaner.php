@@ -106,11 +106,10 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             $pubDate = $data['pub_date'];
 
             // Conservatively ingest only documents where we could guess most metadata.
-            if (strlen($part) > 0 && strlen($title) > 0 && strlen($pubDate) > 0)
+            if (!array_key_exists('exists', $data) && strlen($part) > 0 && strlen($title) > 0 && strlen($pubDate) > 0)
             {
                 $siteId = $row['site_id'];
                 $companyId = $row['company_id'];
-                $file = $row['file'];
                 $pubType = 'D';
                 $altPart = '';
                 $revision = '';
