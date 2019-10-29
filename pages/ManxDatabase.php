@@ -799,7 +799,6 @@ class ManxDatabase implements IManxDatabase
             . "AND su.path LIKE CONCAT(scd.directory, '/%\_%\_%.pdf') "
             . "AND s.site_id = su.site_id "
             . "AND NOT (su.path LIKE '%+%' OR su.path LIKE '%#%' OR su.path LIKE '% %' OR su.path LIKE '%&%' OR su.path LIKE '%\%%') "
-            . "ORDER BY su.id "
-            . "LIMIT 0, 100", []);
+            . "ORDER BY su.id", []);
     }
 }

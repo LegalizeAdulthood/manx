@@ -18,6 +18,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     private $_whatsNewIndex;
     /** @var IUrlMetaData */
     private $_urlMetaData;
+    private $_limit;
 
     private static function endsWith($str, $needle)
     {
@@ -44,6 +45,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->_baseUrl = self::ensureTrailingSlash($config['baseUrl']);
         $this->_whatsNewIndex = $config['whatsNewIndex'];
         $this->_urlMetaData = $config['urlMetaData'];
+        $this->_limit = 100;
     }
 
     public function removeNonExistentUnknownPaths()
@@ -96,6 +98,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->log("Ingesting unknown paths for sites with IndexByDate.txt");
         $user = $this->_manx->getUserFromSession();
         $pubIds = [];
+        $count = 0;
         foreach ($this->_db->getUnknownPathsForCompanies() as $row)
         {
             $url = $row['url'];
@@ -130,6 +133,12 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url, $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
 
                 $this->log(sprintf('Added %d.%d %s %s "%s" (%s)', $pubId, $copyId, $data['site_company_directory'], $pubDate, $title, $part));
+
+                $count++;
+                if ($count > $this->_limit)
+                {
+                    return;
+                }
             }
         }
     }
