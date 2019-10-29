@@ -785,15 +785,15 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $select = "SELECT su.site_id, "
             . "scd.company_id, "
-            . "CONCAT(s.copy_base, su.path) AS url, "
-            . "SUBSTR(path, LENGTH(path) - INSTR(REVERSE(path), '/') + 2) AS file "
+            . "CONCAT(s.copy_base, su.path) AS url "
         . "FROM site_unknown su, site_company_dir scd, site s "
         . "WHERE su.site_id = scd.site_id "
         . "AND su.path LIKE CONCAT(scd.directory, '/%\_%\_%.pdf') "
         . "AND s.site_id = su.site_id "
-        . "AND NOT (su.path LIKE '%+%' OR su.path LIKE '%#%' OR su.path LIKE '% %' OR su.path LIKE '%&%' OR su.path LIKE '%\%%')";
+        . "AND NOT (su.path LIKE '%+%' OR su.path LIKE '%#%' OR su.path LIKE '% %' OR su.path LIKE '%&%' OR su.path LIKE '%\%%') "
+        . "ORDER BY su.id LIMIT 0, 100" ;
         $rows = DatabaseTester::createResultRowsForColumns(
-            ['site_id', 'company_id', 'url', 'file'],
+            ['site_id', 'company_id', 'url'],
             [
                 [3, 13, 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf', 'EK-3333-01_Jumbotron_Users_Guide.pdf' ],
                 [3, 13, 'http://bitsavers.org/pdf/dec/foo/EK-6666-01_Jumbotron_Reference_Manual.pdf', 'EK-6666-01_Jumbotron_Reference_Manual.pdf' ]
