@@ -17,6 +17,7 @@ require_once 'test/TestPublicationPage.php';
 require_once 'test/TestRssPage.php';
 require_once 'test/TestSearcher.php';
 require_once 'test/TestUrlInfo.php';
+require_once 'test/TestUrlMetaData.php';
 require_once 'test/TestUrlTransfer.php';
 require_once 'test/TestUrlWizardPage.php';
 require_once 'test/TestUrlWizardService.php';
@@ -47,6 +48,7 @@ class AllTests
                 'TestRssPage',
                 'TestSearcher',
                 'TestUrlInfo',
+                'TestUrlMetaData',
                 'TestUrlTransfer',
                 'TestUrlWizardPage',
                 'TestUrlWizardService',
