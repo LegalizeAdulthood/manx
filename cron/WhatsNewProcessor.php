@@ -9,11 +9,25 @@ class WhatsNewProcessor
     public function __construct(Container $config)
     {
         $this->_cleaner = $config['whatsNewCleaner'];
+        $this->_logger = $config['logger'];
+    }
+
+    private function log($text)
+    {
+        $this->_logger->log($text);
     }
 
     public function process(array $args)
     {
-        if ($args[1] == 'existence')
+        if ($args[1] == 'help')
+        {
+            $this->log("existence:      remove non-existent unknown paths");
+            $this->log("moved           update moved files");
+            $this->log("index           fetch IndexByDate.txt");
+            $this->log("unknown-copies  remove unknown paths with existing copy");
+            $this->log("ingest          ingest copies from guessable unknown paths");
+        }
+        else if ($args[1] == 'existence')
         {
             $this->_cleaner->removeNonExistentUnknownPaths();
         }
