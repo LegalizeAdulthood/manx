@@ -199,6 +199,35 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_cleaner->ingest();
     }
 
+    public function testIngestMultiplePubsExistForPartSkipsIngestion()
+    {
+        $companyId = 13;
+        $siteId = 3;
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $pathRows = DatabaseTester::createResultRowsForColumns(['site_id', 'company_id', 'url'],
+            [
+                [$siteId, $companyId, $url ]
+            ]);
+        $data = $this->bitsaversMetaData($siteId, $companyId, $url);
+        $data['pubs'] = DatabaseTester::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title'],
+            [
+                [44, 'EK-3333-01', 'Some Other Manual'],
+                [45, 'EK-3333-01', 'Another Unrelated Manual']
+            ]);
+        $pubData = $this->stockPubData();
+        $copyData = $this->stockCopyData();
+        $user = $this->createMock(IUser::class);
+        $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($user);
+        $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
+        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
+        $pubId = 23;
+        $this->_manx->expects($this->never())->method('addPublication');
+        $this->_db->expects($this->never())->method('addCopy');
+        $this->_logger->expects($this->once())->method('log');
+
+        $this->_cleaner->ingest();
+    }
+
     public function testIngestCopyExists()
     {
         $companyId = 13;
