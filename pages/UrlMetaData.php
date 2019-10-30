@@ -20,6 +20,54 @@ class UrlMetaData implements IUrlMetaData
         $this->_urlInfoFactory = $config['urlInfoFactory'];
     }
 
+    public function determineIngestData($siteId, $companyId, $url)
+    {
+        $urlInfo = $this->_urlInfoFactory->createUrlInfo($url);
+        $size = $urlInfo->size();
+        if ($size === false)
+        {
+            $data['valid'] = false;
+            return $data;
+        }
+
+        $data['url'] = $url;
+        $data['size'] = $size;
+        $data['valid'] = true;
+        $this->_sites = $this->_db->getSites();
+        $data['site'] = $this->getMatchingSite($siteId);
+        $data['company'] = $companyId;
+        $data['part'] = '';
+        $data['pub_date'] = '';
+        $data['title'] = '';
+        if ($this->siteIsBitSavers($data))
+        {
+            $this->determineIngestBitSaversData($data);
+        }
+        else if ($this->siteIsChiClassicComp($data))
+        {
+            $this->determineIngestChiClassicCompData($data);
+        }
+        else
+        {
+            $this->determineUrlData($data);
+        }
+        $this->determineUrlExists($data);
+        unset($data['url']);
+        return $data;
+    }
+
+    private function getMatchingSite($siteId)
+    {
+        foreach ($this->_sites as $site)
+        {
+            if ($site['site_id'] == $siteId)
+            {
+                return $site;
+            }
+        }
+        throw new Exception("Couldn't find site for id " . $siteId);
+    }
+
     public function determineData($url)
     {
         $urlInfo = $this->_urlInfoFactory->createUrlInfo($url);
@@ -287,6 +335,22 @@ class UrlMetaData implements IUrlMetaData
             'oct' => '10', 'nov' => '11', 'dec' => '12');
     }
 
+    private function determineIngestSiteData($siteName, $companyComponent, &$data)
+    {
+        $url = $data['url'];
+        $urlComponents = parse_url($url);
+        $dirs = explode('/', $urlComponents['path']);
+        $fileName = array_pop($dirs);
+        $fileParts = explode('.', $fileName);
+        $extension = array_pop($fileParts);
+        $fileBase = implode('.', $fileParts);
+        list($data['pub_date'], $fileBase) = self::extractPubDate($fileBase);
+        $parts = explode('_', $fileBase);
+        $data['part'] = array_shift($parts);
+        $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
+        $data['title'] = self::titleForFileBase(implode(' ', $parts));
+    }
+
     private function determineSiteData($siteName, $companyComponent, &$data)
     {
         $url = $data['url'];
@@ -328,6 +392,16 @@ class UrlMetaData implements IUrlMetaData
             $data['title'] = self::titleForFileBase($fileBase);
         }
         $data['format'] = $this->_db->getFormatForExtension($extension);
+    }
+
+    private function determineIngestBitSaversData(&$data)
+    {
+        $this->determineIngestSiteData('bitsavers', 2, $data);
+    }
+
+    private function determineIngestChiClassicCompData(&$data)
+    {
+        $this->determineIngestSiteData('ChiClassicComp', 4, $data);
     }
 
     private function determineBitSaversData(&$data)
