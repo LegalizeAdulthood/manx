@@ -124,7 +124,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 $pubId = $this->_manx->addPublication($user, $companyId, $part, $pubDate, $title, $pubType, $altPart, $revision, $keywords, $notes, $abstract, $languages);
                 $pubIds[] = $pubId;
 
-                $format = $data['format'];
+                $format = 'PDF';
                 $copyNotes = '';
                 $copySize = $data['size'];
                 $copyMD5 = '';
