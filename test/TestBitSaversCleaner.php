@@ -174,9 +174,9 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $companyId = 13;
         $siteId = 3;
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
-        $pathRows = DatabaseTester::createResultRowsForColumns(['site_id', 'company_id', 'url'],
+        $pathRows = DatabaseTester::createResultRowsForColumns(['site_id', 'company_id', 'directory', 'url'],
             [
-                [$siteId, $companyId, $url ]
+                [$siteId, $companyId, 'dec', $url ]
             ]);
         $data = $this->bitsaversMetaData($siteId, $companyId, $url);
         $pubData = $this->stockPubData();

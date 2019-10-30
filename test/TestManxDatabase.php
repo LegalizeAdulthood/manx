@@ -785,6 +785,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $select = "SELECT `su`.`site_id`, "
             . "`scd`.`company_id`, "
+            . "`scd`.`directory`, "
             . "CONCAT(`s`.`copy_base`, `su`.`path`) AS `url` "
         . "FROM `site_unknown` `su`, `site_company_dir` `scd`, `site` `s` "
         . "WHERE `su`.`site_id` = `scd`.`site_id` "
@@ -793,10 +794,10 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         . "AND NOT (`su`.`path` LIKE '%+%' OR `su`.`path` LIKE '%#%' OR `su`.`path` LIKE '% %' OR `su`.`path` LIKE '%&%' OR `su`.`path` LIKE '%\%%') "
         . "ORDER BY `su`.`id`" ;
         $rows = DatabaseTester::createResultRowsForColumns(
-            ['site_id', 'company_id', 'url'],
+            ['site_id', 'company_id', 'directory', 'url'],
             [
-                [3, 13, 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf', 'EK-3333-01_Jumbotron_Users_Guide.pdf' ],
-                [3, 13, 'http://bitsavers.org/pdf/dec/foo/EK-6666-01_Jumbotron_Reference_Manual.pdf', 'EK-6666-01_Jumbotron_Reference_Manual.pdf' ]
+                [3, 13, 'dec', 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf'],
+                [3, 13, 'dec', 'http://bitsavers.org/pdf/dec/foo/EK-6666-01_Jumbotron_Reference_Manual.pdf']
             ]);
         $this->_db->expects($this->once())->method('execute')->with($select, [])->willReturn($rows);
 

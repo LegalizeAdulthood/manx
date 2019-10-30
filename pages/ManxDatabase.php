@@ -793,6 +793,7 @@ class ManxDatabase implements IManxDatabase
     {
         return $this->execute("SELECT `su`.`site_id`, "
                 . "`scd`.`company_id`, "
+                . "`scd`.`directory`, "
                 . "CONCAT(`s`.`copy_base`, `su`.`path`) AS `url` "
             . "FROM `site_unknown` `su`, `site_company_dir` `scd`, `site` `s` "
             . "WHERE `su`.`site_id` = `scd`.`site_id` "
