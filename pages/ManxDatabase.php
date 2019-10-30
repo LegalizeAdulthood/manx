@@ -791,14 +791,14 @@ class ManxDatabase implements IManxDatabase
 
     public function getUnknownPathsForCompanies()
     {
-        return $this->execute("SELECT su.site_id, "
-                . "scd.company_id, "
-                . "CONCAT(s.copy_base, su.path) AS url "
-            . "FROM site_unknown su, site_company_dir scd, site s "
-            . "WHERE su.site_id = scd.site_id "
-            . "AND su.path LIKE CONCAT(scd.directory, '/%\_%\_%.pdf') "
-            . "AND s.site_id = su.site_id "
-            . "AND NOT (su.path LIKE '%+%' OR su.path LIKE '%#%' OR su.path LIKE '% %' OR su.path LIKE '%&%' OR su.path LIKE '%\%%') "
-            . "ORDER BY su.id", []);
+        return $this->execute("SELECT `su`.`site_id`, "
+                . "`scd`.`company_id`, "
+                . "CONCAT(`s`.`copy_base`, `su`.`path`) AS `url` "
+            . "FROM `site_unknown` `su`, `site_company_dir` `scd`, `site` `s` "
+            . "WHERE `su`.`site_id` = `scd`.`site_id` "
+            . "AND `su`.`path` LIKE CONCAT(`scd`.`directory`, '/%\_%\_%.pdf') "
+            . "AND `s`.`site_id` = `su`.`site_id` "
+            . "AND NOT (`su`.`path` LIKE '%+%' OR `su`.`path` LIKE '%#%' OR `su`.`path` LIKE '% %' OR `su`.`path` LIKE '%&%' OR `su`.`path` LIKE '%\%%') "
+            . "ORDER BY `su`.`id`", []);
     }
 }
