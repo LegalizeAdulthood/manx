@@ -183,7 +183,8 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $copyData = $this->stockCopyData();
         $user = $this->createMock(IUser::class);
         $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($user);
-        $this->_urlMetaData->expects($this->once())->method('determineData')->with($url)->willReturn($data);
+        $this->_urlMetaData->expects($this->never())->method('determineData');
+        $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
         $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
         $pubId = 23;
         $this->_manx->expects($this->once())->method('addPublication')
@@ -215,7 +216,8 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $copyData = $this->stockCopyData();
         $user = $this->createMock(IUser::class);
         $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($user);
-        $this->_urlMetaData->expects($this->once())->method('determineData')->with($url)->willReturn($data);
+        $this->_urlMetaData->expects($this->never())->method('determineData')->with($url)->willReturn($data);
+        $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
         $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');

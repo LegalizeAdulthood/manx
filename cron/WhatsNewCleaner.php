@@ -104,7 +104,9 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             $url = $row['url'];
             // Don't need to re-extract data[url] because we're working from the site's base copy URL.
             // The url argument to determineData will never be a mirror URL.
-            $data = $this->_urlMetaData->determineData($url);
+            $siteId = $row['site_id'];
+            $companyId = $row['company_id'];
+            $data = $this->_urlMetaData->determineIngestData($siteId, $companyId, $url);
             $part = $data['part'];
             $title = $data['title'];
             $pubDate = $data['pub_date'];
@@ -112,8 +114,6 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             // Conservatively ingest only documents where we could guess most metadata.
             if (!array_key_exists('exists', $data) && strlen($part) > 0 && strlen($title) > 0 && strlen($pubDate) > 0)
             {
-                $siteId = $row['site_id'];
-                $companyId = $row['company_id'];
                 $pubType = 'D';
                 $altPart = '';
                 $revision = '';
