@@ -358,8 +358,8 @@ class DetailsPage extends PageBase
         {
             print <<<EOH
 <p>No copies are known to be online.  Feel
-free to <a href="http://manx.codeplex.com/WorkItem/Create">create a bug
-report</a> on our <a href="http://manx.codeplex.com">CodePlex project</a> if
+free to <a href="https://github.com/LegalizeAdulthood/manx/issues/new">create a bug
+report</a> on our <a href="https://github.com/LegalizeAdulthood/manx">GitHub project</a> if
 you know of an online copy of this publication.</p>
 
 EOH;
