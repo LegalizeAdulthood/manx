@@ -817,6 +817,18 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_manxDb->markUnknownPathScanned($unknownId);
     }
 
+    public function testGetIngestionRobotUser()
+    {
+        $select = "SELECT `id` FROM `user` WHERE `first_name` = 'Ingestion' AND `last_name` = 'Robot'";
+        $userId = 66;
+        $this->_db->expects($this->once())->method('query')->with($select)->willReturn($this->_statement);
+        $this->_statement->expects($this->once())->method('fetch')->willReturn(array($userId));
+
+        $result = $this->_manxDb->getIngestionRobotUser();
+
+        $this->assertEquals($userId, $result);
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");

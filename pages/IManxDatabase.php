@@ -65,4 +65,5 @@ interface IManxDatabase
     function removeUnknownPathsWithCopy();
     function getUnknownPathsForCompanies();
     function markUnknownPathScanned($unknownId);
+    function getIngestionRobotUser();
 }

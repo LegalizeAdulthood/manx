@@ -810,4 +810,10 @@ class ManxDatabase implements IManxDatabase
     {
         $this->execute("UPDATE `site_unknown` SET `scanned` = 1 WHERE `id` = ?", [$unknownId]);
     }
+
+    public function getIngestionRobotUser()
+    {
+        $rows = $this->fetch("SELECT `id` FROM `user` WHERE `first_name` = 'Ingestion' AND `last_name` = 'Robot'");
+        return $rows[0];
+    }
 }
