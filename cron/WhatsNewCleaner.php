@@ -101,6 +101,8 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $count = 0;
         foreach ($this->_db->getUnknownPathsForCompanies() as $row)
         {
+            $this->_db->markUnknownPathScanned($row['id']);
+
             $url = $row['url'];
             // Don't need to re-extract data[url] because we're working from the site's base copy URL.
             // The url argument to determineData will never be a mirror URL.
