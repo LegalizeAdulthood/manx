@@ -107,6 +107,11 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             $siteId = $row['site_id'];
             $companyId = $row['company_id'];
             $data = $this->_urlMetaData->determineIngestData($siteId, $companyId, $url);
+            if (!is_array($data) || !array_key_exists('part', $data) || !array_key_exists('title', $data) || !array_key_exists('pub_date', $data))
+            {
+                $this->log(sprintf("Couldn't identify document %d.%d %s", $siteId, $companyId, $url));
+                continue;
+            }
             $part = $data['part'];
             $title = $data['title'];
             $pubDate = $data['pub_date'];
