@@ -341,14 +341,21 @@ class UrlMetaData implements IUrlMetaData
         $urlComponents = parse_url($url);
         $dirs = explode('/', $urlComponents['path']);
         $fileName = array_pop($dirs);
-        $fileParts = explode('.', $fileName);
-        $extension = array_pop($fileParts);
-        $fileBase = implode('.', $fileParts);
+        $filePieces = explode('.', $fileName);
+        array_pop($filePieces);
+        $fileBase = implode('.', $filePieces);
         list($data['pub_date'], $fileBase) = self::extractPubDate($fileBase);
+
         $parts = explode('_', $fileBase);
-        $data['part'] = array_shift($parts);
-        $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
+        if (count($parts) > 1)
+        {
+            if (1 == preg_match('/[0-9][0-9]+/', $parts[0]))
+            {
+                $data['part'] = array_shift($parts);
+            }
+        }
         $data['title'] = self::titleForFileBase(implode(' ', $parts));
+        $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
     }
 
     private function determineSiteData($siteName, $companyComponent, &$data)
