@@ -9,6 +9,7 @@ require_once 'test/TestChiClassicCompPage.php';
 require_once 'test/TestCompanyPage.php';
 require_once 'test/TestDetailsPage.php';
 require_once 'test/TestHtmlFormatter.php';
+require_once 'test/TestIngestionRobotUser.php';
 require_once 'test/TestManx.php';
 require_once 'test/TestManxDatabase.php';
 require_once 'test/TestManxDatabaseUtils.php';
@@ -40,6 +41,7 @@ class AllTests
                 'TestCompanyPage',
                 'TestDetailsPage',
                 'TestHtmlFormatter',
+                'TestIngestionRobotUser',
                 'TestManx',
                 'TestManxDatabase',
                 'TestManxDatabaseUtils',

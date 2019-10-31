@@ -16,11 +16,6 @@ class User implements IUser
 
     public static function getInstanceFromSession(IManxDatabase $manxDb)
     {
-        return new User($manxDb);
-    }
-
-    private function __construct(IManxDatabase $manxDb)
-    {
         $row = $manxDb->getUserFromSessionId(Cookie::get());
         if (array_key_exists('user_id', $row))
         {
@@ -30,25 +25,25 @@ class User implements IUser
                 $manxDb->deleteUserSession(Cookie::get());
                 Cookie::delete();
             }
-            else
-            {
-                $this->_userId = $row['user_id'];
-                $this->_loggedIn = $row['logged_in'] != 0;
-                $this->_firstName = $row['first_name'];
-                $this->_lastName = $row['last_name'];
-                $this->_displayName = sprintf("%s %s", $this->_firstName, $this->_lastName);
-                $this->_admin = $this->_loggedIn;
-            }
         }
         else
         {
-            $this->_userId = -1;
-            $this->_loggedIn = false;
-            $this->_firstName = 'Guest';
-            $this->_lastName = '';
-            $this->_displayName = $this->_firstName;
-            $this->_admin = false;
+            $row['user_id'] = -1;
+            $row['logged_in'] = 0;
+            $row['first_name'] = 'Guest';
+            $row['last_name'] = '';
         }
+        return new User($row);
+    }
+
+    protected function __construct($row)
+    {
+        $this->_userId = $row['user_id'];
+        $this->_loggedIn = $row['logged_in'] != 0;
+        $this->_firstName = $row['first_name'];
+        $this->_lastName = $row['last_name'];
+        $this->_displayName = sprintf("%s %s", $this->_firstName, $this->_lastName);
+        $this->_admin = $this->_loggedIn;
     }
 
     public function isAdmin()
