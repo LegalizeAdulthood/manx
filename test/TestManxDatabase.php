@@ -783,7 +783,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testGetUnknownPathsForKnownCompanies()
     {
-        $select = "SELECT `su`.`site_id`, "
+        $select = "SELECT `su`.`id`, "
+            . "`su`.`site_id`, "
             . "`scd`.`company_id`, "
             . "`scd`.`directory`, "
             . "CONCAT(`s`.`copy_base`, `su`.`path`) AS `url` "
@@ -796,10 +797,10 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         . "AND NOT (`su`.`path` LIKE '%+%' OR `su`.`path` LIKE '%#%' OR `su`.`path` LIKE '% %' OR `su`.`path` LIKE '%&%' OR `su`.`path` LIKE '%\%%') "
         . "ORDER BY `su`.`id`" ;
         $rows = DatabaseTester::createResultRowsForColumns(
-            ['site_id', 'company_id', 'directory', 'url'],
+            ['id', 'site_id', 'company_id', 'directory', 'url'],
             [
-                [3, 13, 'dec', 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf'],
-                [3, 13, 'dec', 'http://bitsavers.org/pdf/dec/foo/EK-6666-01_Jumbotron_Reference_Manual.pdf']
+                [7766, 3, 13, 'dec', 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf'],
+                [7767, 3, 13, 'dec', 'http://bitsavers.org/pdf/dec/foo/EK-6666-01_Jumbotron_Reference_Manual.pdf']
             ]);
         $this->_db->expects($this->once())->method('execute')->with($select, [])->willReturn($rows);
 

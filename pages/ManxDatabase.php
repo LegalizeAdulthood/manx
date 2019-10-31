@@ -791,7 +791,8 @@ class ManxDatabase implements IManxDatabase
 
     public function getUnknownPathsForCompanies()
     {
-        return $this->execute("SELECT `su`.`site_id`, "
+        return $this->execute("SELECT `su`.`id`, "
+                . "`su`.`site_id`, "
                 . "`scd`.`company_id`, "
                 . "`scd`.`directory`, "
                 . "CONCAT(`s`.`copy_base`, `su`.`path`) AS `url` "
