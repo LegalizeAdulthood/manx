@@ -196,7 +196,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('addCopy')->with($pubId, $data['format'], $siteId, $url,
                 $copyData['notes'], $data['size'], $copyData['md5'], $copyData['credits'], $copyData['amend_serial']);
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
-        $this->_logger->expects($this->exactly(2))->method('log');
+        $this->_logger->expects($this->exactly(4))->method('log');
 
         $this->_cleaner->ingest();
     }
@@ -207,9 +207,9 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $companyId = 13;
         $siteId = 3;
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
-        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'url'],
+        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
-                [$unknownId, $siteId, $companyId, $url]
+                [$unknownId, $siteId, $companyId, 'dec', $url]
             ]);
         $data = $this->bitsaversMetaData($siteId, $companyId, $url);
         $data['pubs'] = DatabaseTester::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title'],
@@ -227,7 +227,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
-        $this->_logger->expects($this->once())->method('log');
+        $this->_logger->expects($this->exactly(2))->method('log');
 
         $this->_cleaner->ingest();
     }
@@ -238,9 +238,9 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $companyId = 13;
         $siteId = 3;
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
-        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'url'],
+        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
-                [$unknownId, $siteId, $companyId, $url]
+                [$unknownId, $siteId, $companyId, 'dec', $url]
             ]);
         $data = $this->bitsaversMetaData($siteId, $companyId, $url);
         $data['exists'] = true;
@@ -256,7 +256,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
-        $this->_logger->expects($this->once())->method('log');
+        $this->_logger->expects($this->exactly(2))->method('log');
 
         $this->_cleaner->ingest();
     }
