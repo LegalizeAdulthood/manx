@@ -789,6 +789,8 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "CONCAT(`s`.`copy_base`, `su`.`path`) AS `url` "
         . "FROM `site_unknown` `su`, `site_company_dir` `scd`, `site` `s` "
         . "WHERE `su`.`site_id` = `scd`.`site_id` "
+        . "AND `su`.`ignored` = 0 "
+        . "AND `su`.`scanned` = 0 "
         . "AND `su`.`path` LIKE CONCAT(`scd`.`directory`, '/%\_%\_%.pdf') "
         . "AND `s`.`site_id` = `su`.`site_id` "
         . "AND NOT (`su`.`path` LIKE '%+%' OR `su`.`path` LIKE '%#%' OR `su`.`path` LIKE '% %' OR `su`.`path` LIKE '%&%' OR `su`.`path` LIKE '%\%%') "
