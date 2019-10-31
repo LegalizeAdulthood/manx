@@ -59,6 +59,11 @@ DROP TABLE IF EXISTS `bitsavers_unknown`;
 DROP TABLE IF EXISTS `chiclassiccomp_unknown`;
 
 --
+-- Automatic ingestion user
+--
+INSERT INTO `user`(`email`,`first_name`,`last_name`) VALUES ('ingestion@manx-docs.org', 'Ingestion', 'Robot');
+
+--
 -- Manx version 2.0.7
 --
 UPDATE `properties`
