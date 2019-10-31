@@ -804,4 +804,9 @@ class ManxDatabase implements IManxDatabase
             . "AND NOT (`su`.`path` LIKE '%+%' OR `su`.`path` LIKE '%#%' OR `su`.`path` LIKE '% %' OR `su`.`path` LIKE '%&%' OR `su`.`path` LIKE '%\%%') "
             . "ORDER BY `su`.`id`", []);
     }
+
+    public function markUnknownPathScanned($unknownId)
+    {
+        $this->execute("UPDATE `site_unknown` SET `scanned` = 1 WHERE `id` = ?", [$unknownId]);
+    }
 }

@@ -808,6 +808,14 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals($rows, $results);
     }
 
+    public function testMarkUnknownPathScanned()
+    {
+        $unknownId = 13;
+        $this->_db->expects($this->once())->method('execute')->with('UPDATE `site_unknown` SET `scanned` = 1 WHERE `id` = ?', array($unknownId));
+
+        $this->_manxDb->markUnknownPathScanned($unknownId);
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");
