@@ -6,19 +6,33 @@ use Pimple\Container;
 
 class TestIngestionRobotUser extends PHPUnit\Framework\TestCase
 {
+    public function setUp()
+    {
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_userId = 3;
+        $this->_db->expects($this->once())->method('getIngestionRobotUser')->willReturn($this->_userId);
+        $this->_manx->method('getDatabase')->willReturn($this->_db);
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+
+        $this->_user = new IngestionRobotUser($config);
+    }
+
     public function testConstruct()
     {
-        $manx = $this->createMock(IManx::class);
-        $db = $this->createMock(IManxDatabase::class);
-        $userId = 3;
-        $db->expects($this->once())->method('getIngestionRobotUser')->willReturn($userId);
-        $manx->method('getDatabase')->willReturn($db);
-        $config = new Container();
-        $config['manx'] = $manx;
 
-        $user = new IngestionRobotUser($config);
+        $this->assertFalse(is_null($this->_user));
+        $this->assertTrue(is_object($this->_user));
+    }
 
-        $this->assertFalse(is_null($user));
-        $this->assertTrue(is_object($user));
+    public function testUserId()
+    {
+        $this->assertEquals($this->_userId, $this->_user->userId());
+    }
+
+    public function testDisplayName()
+    {
+        $this->assertEquals('Ingestion Robot', $this->_user->displayName());
     }
 }

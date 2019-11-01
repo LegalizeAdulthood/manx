@@ -10,7 +10,13 @@ class IngestionRobotUser extends User
     {
         $manx = $config['manx'];
         $db = $manx->getDatabase();
-        $row = $db->getIngestionRobotUser();
+        $userId = $db->getIngestionRobotUser();
+        $row = [
+            'user_id' => $userId,
+            'first_name' => 'Ingestion',
+            'last_name' => 'Robot',
+            'logged_in' => 0
+        ];
         parent::__construct($row);
     }
 }
