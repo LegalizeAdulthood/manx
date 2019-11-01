@@ -45,6 +45,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->_baseUrl = self::ensureTrailingSlash($config['baseUrl']);
         $this->_whatsNewIndex = $config['whatsNewIndex'];
         $this->_urlMetaData = $config['urlMetaData'];
+        $this->_user = $config['user'];
         $this->_limit = 100;
     }
 
@@ -96,7 +97,6 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     public function ingest()
     {
         $this->log("Ingesting unknown paths for sites with IndexByDate.txt");
-        $user = $this->_manx->getUserFromSession();
         $pubIds = [];
         $count = 0;
         foreach ($this->_db->getUnknownPathsForCompanies() as $row)
@@ -129,7 +129,9 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 $notes = '';
                 $abstract = '';
                 $languages = '';
-                $pubId = $this->_manx->addPublication($user, $companyId, $part, $pubDate, $title, $pubType, $altPart, $revision, $keywords, $notes, $abstract, $languages);
+                $pubId = $this->_manx->addPublication($this->_user, $companyId, $part, $pubDate,
+                    $title, $pubType, $altPart, $revision,
+                    $keywords, $notes, $abstract, $languages);
                 $this->log(sprintf('Publication: %d.%d %s %s "%s" (%s)', $siteId, $pubId, $row['directory'], $pubDate, $title, $part));
                 $pubIds[] = $pubId;
 
@@ -139,7 +141,8 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 $copyMD5 = '';
                 $credits = '';
                 $amendSerial = '';
-                $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url, $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
+                $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url,
+                    $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
                 $this->log(sprintf('Copy:        %d.%d %s %s "%s" (%s)', $siteId, $copyId, $row['directory'], $pubDate, $title, $part));
 
                 $count++;

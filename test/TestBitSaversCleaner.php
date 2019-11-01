@@ -24,6 +24,8 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     private $_factory;
     /** @var ILogger */
     private $_logger;
+    /** @var IUser
+    private $_user;
     /** @var BitSaversCleaner */
     private $_cleaner;
     /** @var IWhatsNewIndex */
@@ -40,6 +42,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
         $this->_whatsNewIndex = $this->createMock(IWhatsNewIndex::class);
         $this->_urlMetaData = $this->createMock(IUrlMetaData::class);
+        $this->_user = $this->createMock(IUser::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
         $config['logger'] = $this->_logger;
@@ -47,6 +50,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $config['whatsNewIndex'] = $this->_whatsNewIndex;
         $config['fileSystem'] = $this->createMock(IFileSystem::class);
         $config['urlMetaData'] = $this->_urlMetaData;
+        $config['user'] = $this->_user;
         $this->_config = $config;
         $this->_cleaner = new BitSaversCleaner($this->_config);
     }
@@ -182,14 +186,13 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $data = $this->bitsaversMetaData($siteId, $companyId, $url);
         $pubData = $this->stockPubData();
         $copyData = $this->stockCopyData();
-        $user = $this->createMock(IUser::class);
-        $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($user);
+        $this->_manx->expects($this->never())->method('getUserFromSession');
         $this->_urlMetaData->expects($this->never())->method('determineData');
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
         $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
         $pubId = 23;
         $this->_manx->expects($this->once())->method('addPublication')
-            ->with($user, $companyId, $data['part'], $data['pub_date'],
+            ->with($this->_user, $companyId, $data['part'], $data['pub_date'],
                 $data['title'], $pubData['pub_type'], $pubData['alt_part'], $pubData['revision'],
                 $pubData['keywords'], $pubData['notes'], $pubData['abstract'], $pubData['languages'])
             ->willReturn($pubId);
@@ -219,8 +222,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
             ]);
         $pubData = $this->stockPubData();
         $copyData = $this->stockCopyData();
-        $user = $this->createMock(IUser::class);
-        $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($user);
+        $this->_manx->expects($this->never())->method('getUserFromSession');
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
         $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
         $pubId = 23;
@@ -249,7 +251,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $pubData = $this->stockPubData();
         $copyData = $this->stockCopyData();
         $user = $this->createMock(IUser::class);
-        $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($user);
+        $this->_manx->expects($this->never())->method('getUserFromSession');
         $this->_urlMetaData->expects($this->never())->method('determineData')->with($url)->willReturn($data);
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
         $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
