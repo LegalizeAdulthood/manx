@@ -1,9 +1,36 @@
 <?php
 
 require_once 'test/DatabaseTester.php';
-require_once 'test/UrlWizardServiceTester.php';
+require_once 'pages/UrlWizardService.php';
 
 use Pimple\Container;
+
+class UrlWizardServiceTester extends UrlWizardService
+{
+    public function renderBodyContent()
+    {
+        parent::renderBodyContent();
+    }
+
+    protected function redirect($target)
+    {
+        $this->redirectCalled = true;
+        $this->redirectLastTarget = $target;
+    }
+    public $redirectCalled, $redirectLastTarget;
+
+    public function postPage()
+    {
+        parent::postPage();
+    }
+
+    protected function header($field)
+    {
+        $this->headerCalled = true;
+        $this->headerLastField = $field;
+    }
+    public $headerCalled, $headerLastField;
+}
 
 class TestUrlWizardService extends PHPUnit\Framework\TestCase
 {
