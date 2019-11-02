@@ -45,6 +45,7 @@ class WhatsNewProcessor
         }
         else if ($args[1] == 'ingest')
         {
+            $this->_cleaner->updateWhatsNewIndex();
             $this->_cleaner->ingest();
             $this->_cleaner->removeUnknownPathsWithCopy();
         }

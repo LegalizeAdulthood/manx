@@ -48,6 +48,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
 
     public function testIngest()
     {
+        $this->_cleaner->expects($this->once())->method('updateWhatsNewIndex');
         $this->_cleaner->expects($this->once())->method('ingest');
         $this->_cleaner->expects($this->once())->method('removeUnknownPathsWithCopy');
 
