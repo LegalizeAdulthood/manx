@@ -191,15 +191,72 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
         $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
         $pubId = 23;
-        $this->_manx->expects($this->once())->method('addPublication')
+        $this->_manx->expects($this->never())->method('addPublication')
             ->with($this->_user, $companyId, $data['part'], $data['pub_date'],
                 $data['title'], $pubData['pub_type'], $pubData['alt_part'], $pubData['revision'],
                 $pubData['keywords'], $pubData['notes'], $pubData['abstract'], $pubData['languages'])
             ->willReturn($pubId);
+        $this->_db->expects($this->never())->method('addCopy')->with($pubId, $data['format'], $siteId, $url,
+                $copyData['notes'], $data['size'], $copyData['md5'], $copyData['credits'], $copyData['amend_serial']);
+        $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
+        $this->_logger->expects($this->exactly(2))->method('log');
+
+        $this->_cleaner->ingest();
+    }
+
+    public function testIngestSinglePubsExistForPartAddsCopy()
+    {
+        $unknownId = 66;
+        $companyId = 13;
+        $siteId = 3;
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
+            [
+                [$unknownId, $siteId, $companyId, 'dec', $url]
+            ]);
+        $data = $this->bitsaversMetaData($siteId, $companyId, $url);
+        $pubId = 23;
+        $data['pubs'] = DatabaseTester::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title'],
+            [
+                [$pubId, 'EK-3333-01', 'Jumbotron Users Guide'],
+            ]);
+        $pubData = $this->stockPubData();
+        $copyData = $this->stockCopyData();
+        $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
+        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
+        $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->once())->method('addCopy')->with($pubId, $data['format'], $siteId, $url,
                 $copyData['notes'], $data['size'], $copyData['md5'], $copyData['credits'], $copyData['amend_serial']);
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
         $this->_logger->expects($this->exactly(4))->method('log');
+
+        $this->_cleaner->ingest();
+    }
+
+    public function testIngestSinglePubsExistForPartWithMismatchedPartSkips()
+    {
+        $unknownId = 66;
+        $companyId = 13;
+        $siteId = 3;
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
+            [
+                [$unknownId, $siteId, $companyId, 'dec', $url]
+            ]);
+        $data = $this->bitsaversMetaData($siteId, $companyId, $url);
+        $pubId = 23;
+        $data['pubs'] = DatabaseTester::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title'],
+            [
+                [$pubId, 'EK-3333-02', 'Jumbotron Users Guide'],
+            ]);
+        $pubData = $this->stockPubData();
+        $copyData = $this->stockCopyData();
+        $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
+        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
+        $this->_manx->expects($this->never())->method('addPublication');
+        $this->_db->expects($this->never())->method('addCopy');
+        $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
+        $this->_logger->expects($this->exactly(3))->method('log');
 
         $this->_cleaner->ingest();
     }
@@ -229,7 +286,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
-        $this->_logger->expects($this->exactly(2))->method('log');
+        $this->_logger->expects($this->exactly(3))->method('log');
 
         $this->_cleaner->ingest();
     }
@@ -258,7 +315,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
-        $this->_logger->expects($this->exactly(2))->method('log');
+        $this->_logger->expects($this->exactly(3))->method('log');
 
         $this->_cleaner->ingest();
     }

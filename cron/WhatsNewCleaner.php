@@ -101,6 +101,11 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $count = 0;
         foreach ($this->_db->getUnknownPathsForCompanies() as $row)
         {
+            $count++;
+            if ($count > $this->_limit)
+            {
+                return;
+            }
             $this->_db->markUnknownPathScanned($row['id']);
             $siteId = $row['site_id'];
             $companyId = $row['company_id'];
@@ -115,13 +120,46 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 $this->log(sprintf("Skipped:     Couldn't identify document %d.%d %s", $siteId, $companyId, $url));
                 continue;
             }
+            if (array_key_exists('exists', $data))
+            {
+                $this->log(sprintf('Skipped:     Copy already exists "%s".', $data['title']));
+                continue;
+            }
             $part = $data['part'];
+            if (strlen($part) == 0)
+            {
+                $this->log("Skipped:     Couldn't guess part number.");
+                continue;
+            }
             $title = $data['title'];
             $pubDate = $data['pub_date'];
+            if (strlen($pubDate) == 0)
+            {
+                $this->log("Skipped:     Couldn't guess publication date.");
+                continue;
+            }
 
             // Conservatively ingest only documents where we could guess most metadata.
-            if (count($data['pubs']) == 0 && !array_key_exists('exists', $data) && strlen($part) > 0 && strlen($title) > 0 && strlen($pubDate) > 0)
+            $pubs = $data['pubs'];
+            $numPubs = count($pubs);
+            if ($numPubs > 1)
             {
+                $this->log(sprintf("MultiPubs:   %d", $numPubs));
+            }
+            else if ($numPubs == 1)
+            {
+                $pubPart = $pubs[0]['ph_part'];
+                $this->log(sprintf("OnePub:      %s (%s %s)", $pubs[0]['ph_title'], $pubPart, $pubPart == $data['part'] ? "match" : "no match"));
+                $data['pub_id'] = $pubs[0]['pub_id'];
+                if ($pubPart == $data['part'])
+                {
+                    $this->addCopy($data, $row);
+                }
+            }
+            else if ($numPubs == 0 && !array_key_exists('exists', $data) && strlen($part) > 0 && strlen($title) > 0 && strlen($pubDate) > 0)
+            {
+                continue;
+
                 $pubType = 'D';
                 $altPart = '';
                 $revision = '';
@@ -132,26 +170,29 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 $pubId = $this->_manx->addPublication($this->_user, $companyId, $part, $pubDate,
                     $title, $pubType, $altPart, $revision,
                     $keywords, $notes, $abstract, $languages);
+                $data['pub_id'] = $pubId;
                 $this->log(sprintf('Publication: %d.%d %s %s "%s" (%s)', $siteId, $pubId, $row['directory'], $pubDate, $title, $part));
                 $pubIds[] = $pubId;
 
-                $format = 'PDF';
-                $copyNotes = '';
-                $copySize = $data['size'];
-                $copyMD5 = '';
-                $credits = '';
-                $amendSerial = '';
-                $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url,
-                    $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
-                $this->log(sprintf('Copy:        %d.%d %s %s "%s" (%s)', $siteId, $copyId, $row['directory'], $pubDate, $title, $part));
-
-                $count++;
-                if ($count > $this->_limit)
-                {
-                    return;
-                }
+                $this->addCopy($data, $row);
             }
         }
+    }
+
+    private function addCopy($data, $row)
+    {
+        $pubId = $data['pub_id'];
+        $format = 'PDF';
+        $siteId = $row['site_id'];
+        $url = $row['url'];
+        $copyNotes = '';
+        $copySize = $data['size'];
+        $copyMD5 = '';
+        $credits = '';
+        $amendSerial = '';
+        $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url,
+            $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
+        $this->log(sprintf('Copy:        %d.%d %s %s "%s" (%s)', $siteId, $copyId, $row['directory'], $data['pub_date'], $data['title'], $data['part']));
     }
 
     private static function escapeSpecialChars($path)
