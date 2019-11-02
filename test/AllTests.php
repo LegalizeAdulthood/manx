@@ -23,7 +23,6 @@ require_once 'test/TestUrlMetaDataHelpers.php';
 require_once 'test/TestUrlTransfer.php';
 require_once 'test/TestUrlWizardPage.php';
 require_once 'test/TestUrlWizardService.php';
-require_once 'test/TestUrlWizardServiceProcessRequest.php';
 require_once 'test/TestWhatsNewIndex.php';
 require_once 'test/TestWhatsNewProcessor.php';
 
@@ -56,7 +55,6 @@ class AllTests
                 'TestUrlTransfer',
                 'TestUrlWizardPage',
                 'TestUrlWizardService',
-                'TestUrlWizardServiceProcessRequest',
                 'TestWhatsNewIndex',
                 'TestWhatsNewProcessor'
             ] as $name)

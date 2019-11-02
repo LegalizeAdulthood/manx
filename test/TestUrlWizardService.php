@@ -7,152 +7,245 @@ use Pimple\Container;
 
 class TestUrlWizardService extends PHPUnit\Framework\TestCase
 {
-    public function testUrlComponentsMatchBitSaversOrg()
-    {
-        $this->assertUrlMatchesSite(
-            'http://bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf',
-            'http://bitsavers.org/pdf/');
-    }
+    /** @var Container */
+    private $_config;
+    private $_db;
+    private $_manx;
+    private $_urlInfoFactory;
+    private $_urlInfo;
 
-    public function testUrlComponentsMatchWwwBitSaversOrg()
+    protected function setUp()
     {
-        $this->assertUrlMatchesSite(
-            'http://www.bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf',
-            'http://bitsavers.org/pdf/');
-    }
-
-    private function assertUrlMatchesSite($url, $site)
-    {
-        $this->assertTrue(UrlWizardService::urlComponentsMatch(parse_url($url), parse_url($site)));
-    }
-
-    public function testExtractPubDateSingleTrailingDigit()
-    {
-        list($date, $newFileBase) = UrlWizardService::extractPubDate('foo_bar_3');
-        $this->assertEquals('', $date);
-        $this->assertEquals('foo_bar_3', $newFileBase);
-    }
-
-    public function testExtractPubDateSeparateMonthYear()
-    {
-        $this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar_1975');
-    }
-
-    public function testExtractPubDateMonthYear()
-    {
-        $this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar1975');
-    }
-
-    public function testExtractPubDateYear()
-    {
-        $this->assertPubDateForFileBase('1975', 'foo_bar_1975');
-    }
-
-    public function testExtractPubDateTwoDigitYear()
-    {
-        $this->assertPubDateForFileBase('1975', 'foo_bar_75');
-    }
-
-    public function testExtractPubDateSeparateMonthTwoDigitYear()
-    {
-        $this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar_75');
-    }
-
-    public function testExtractPubDateMonthTwoDigitYear()
-    {
-        $this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar75');
-    }
-
-    private function assertPubDateForFileBase($pubDate, $fileBase)
-    {
-        list($date, $newFileBase) = UrlWizardService::extractPubDate($fileBase);
-        $this->assertEquals($pubDate, $date);
-        $this->assertEquals('foo_bar', $newFileBase);
-    }
-
-    public function testConstruct()
-    {
+        $this->_db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
+        $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
+        $user = $this->createMock(IUser::class);
+        $user->expects($this->once())->method('isLoggedIn')->willReturn(true);
+        $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($user);
         $_SERVER['PATH_INFO'] = '';
-        $vars = array();
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $this->_urlInfo = $this->createMock(IUrlInfo::class);
+        $this->_urlInfoFactory = $this->createMock(IUrlInfoFactory::class);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
         $config = new Container();
         $config['manx'] = $this->_manx;
-        $config['vars'] = $vars;
-        $config['urlInfoFactory'] = $this->createMock(IUrlInfoFactory::class);
-
-        $page = new UrlWizardServiceTester($config);
-
-        $this->assertTrue(is_object($page));
-        $this->assertFalse(is_null($page));
+        $config['urlInfoFactory'] = $this->_urlInfoFactory;
+        $this->_config = $config;
     }
 
-    public function testComparePublicationsByTitle()
+    public function testProcessRequestNonExistentUrl()
     {
-        list($left, $right) = $this->createPublicationsForCompare('', '', 'foo', '', '', 'bar');
-        $this->assertEquals(1, UrlWizardService::comparePublications($left, $right));
+        $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(false);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with($url)->willReturn($this->_urlInfo);
+        $vars = self::varsForUrlLookup($url);
+        $this->_config['vars'] = $vars;
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $expected = json_encode(array('valid' => false));
+        $this->expectOutputString($expected);
     }
 
-    public function testComparePublicationsByPart()
+    public function testProcessRequestNewBitSaversCompany()
     {
-        list($left, $right) = $this->createPublicationsForCompare('00', '', 'foo', '01', '', 'bar');
-        $this->assertEquals(-1, UrlWizardService::comparePublications($left, $right));
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers());
+        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->willReturn('-1');
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('', '-1')->willReturn(array());
+        $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
+        $this->_config['vars'] = self::varsForUrlLookup($url);
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $expected = json_encode(array(
+            'url' => $url,
+            'mirror_url' => '',
+            'size' => 1266,
+            'valid' => true,
+            'site' => self::bitSaversSiteRow(),
+            'company' => '-1',
+            'part' => '',
+            'pub_date' => '1979-05',
+            'title' => 'Graphic 7 Monitor Preliminary Users Guide',
+            'format' => 'PDF',
+            'site_company_directory' => 'sandersAssociates',
+            'pubs' => array()
+            ));
+        $this->expectOutputString($expected);
     }
 
-    public function testComparePublicationsByRev()
+    public function testProcessRequestUrlLookup()
     {
-        list($left, $right) = $this->createPublicationsForCompare('00', 'B', 'foo', '00', 'A', 'foo');
-        $this->assertEquals(1, UrlWizardService::comparePublications($left, $right));
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers());
+        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('bitsavers', 'tektronix')->willReturn('5');
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('getMirrors')->willReturn(
+            array(self::databaseRowFromDictionary(array(
+                'mirror_id' => '2',
+                'site' => '3',
+                'original_stem' => 'http://bitsavers.org/',
+                'copy_stem' => 'http://bitsavers.trailing-edge.com/',
+                'rank' => '9'
+                )
+            )));
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('070-1183-01', '5')->willReturn(array());
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with('http://bitsavers.trailing-edge.com/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf')
+            ->willReturn($this->_urlInfo);
+        $urlBase = '/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf';
+        $this->_config['vars'] = self::varsForUrlLookup('http://bitsavers.trailing-edge.com' . $urlBase);
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $expected = json_encode(array(
+            'url' => 'http://bitsavers.org' . $urlBase,
+            'mirror_url' => 'http://bitsavers.trailing-edge.com' . $urlBase,
+            'size' => 1266,
+            'valid' => true,
+            'site' => self::bitSaversSiteRow(),
+            'company' => '5',
+            'part' => '070-1183-01',
+            'pub_date' => '1976-04',
+            'title' => 'Rev B 4010 Maintenance Manual',
+            'format' => 'PDF',
+            'site_company_directory' => 'tektronix',
+            'pubs' => array()
+        ));
+        $this->expectOutputString($expected);
     }
 
-    public function testTitleForBaseWithPoundSign()
+    public function testWwwBitSaversOrgProcessRequestUrlLookup()
     {
-        $this->assertTitleForFileBase('Micro Cornucopia #50', 'Micro_Cornucopia_%2350');
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers());
+        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('bitsavers', 'univac')->willReturn('-1');
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('UE-637', '-1')->willReturn(array());
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with('http://www.bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf')
+            ->willReturn($this->_urlInfo);
+        $urlBase = '/pdf/univac/1100/UE-637_1108execUG_1970.pdf';
+        $this->_config['vars'] = self::varsForUrlLookup('http://www.bitsavers.org' . $urlBase);
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $expected = json_encode(array(
+            'url' => 'http://bitsavers.org' . $urlBase,
+            'mirror_url' => '',
+            'size' => 1266,
+            'valid' => true,
+            'site' => self::bitsaversSiteRow(),
+            'company' => '-1',
+            'part' => 'UE-637',
+            'pub_date' => '1970',
+            'title' => '1108exec UG',
+            'format' => 'PDF',
+            'site_company_directory' => 'univac',
+            'pubs' => array()
+        ));
+        $this->expectOutputString($expected);
     }
 
-    public function testTitleForFileBaseWithUnderscores()
+    public function testChiClassicCompUrlLookup()
     {
-        $this->assertTitleForFileBase('Foo Bar Gronky', 'Foo_Bar_Gronky');
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForChiClassicComp());
+        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('ChiClassicComp', 'Motorola')->willReturn('66');
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('6064A-5M-668', '66')->willReturn(array());
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with('http://chiclassiccomp.org/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf')
+            ->wilLReturn($this->_urlInfo);
+        $urlBase = '/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf';
+        $this->_config['vars'] = self::varsForUrlLookup('http://chiclassiccomp.org' . $urlBase);
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $expected = json_encode(array(
+            'url' => 'http://chiclassiccomp.org' . $urlBase,
+            'mirror_url' => '',
+            'size' => 1266,
+            'valid' => true,
+            'site' => self::chiClassicCompSiteRow(),
+            'company' => '66',
+            'part' => '6064A-5M-668',
+            'pub_date' => '',
+            'title' => 'MDR-1000Brochure',
+            'format' => 'PDF',
+            'site_company_directory' => 'Motorola',
+            'pubs' => array()
+        ));
+        $this->expectOutputString($expected);
     }
 
-    public function testTitleForFileBaseWithSpaces()
+    private static function databaseRowFromDictionary(array $dict)
     {
-        $this->assertTitleForFileBase('Foo Bar Gronky', 'Foo_Bar Gronky');
+        $result = array();
+        $i = 0;
+        foreach ($dict as $key => $value)
+        {
+            $result[$key] = $value;
+            $result[$i] = $value;
+            $i++;
+        }
+        return $result;
     }
 
-    public function testTitleForFileBaseWithMixedCase()
+    private static function sitesResultsForBitSavers()
     {
-        $this->assertTitleForFileBase('Foo Bar Gronky', 'FooBarGronky');
+        return array(self::bitSaversSiteRow());
     }
 
-    public function testTitleMixedCaseAndUnderscores()
+    private static function sitesResultsForChiClassicComp()
     {
-        $this->assertTitleForFileBase('TI CBL Real World Math Guidebook', 'TI_CBL_RealWorldMath_Guidebook');
+        return array(self::chiClassicCompSiteRow());
     }
 
-    public function testTitleForFileBaseWithMixedCaseTwoWords()
+    private static function bitSaversSiteRow()
     {
-        $this->assertTitleForFileBase('Foo Bar', 'FooBar');
+        return self::databaseRowFromDictionary(
+            array(
+                'site_id' => '3',
+                'name' => 'bitsavers',
+                'url' => 'http://bitsavers.org/',
+                'description' => "Al Kossow's Bitsavers",
+                'copy_base' => 'http://bitsavers.org/pdf/',
+                'low' => 'N',
+                'live' => 'Y',
+                'display_order' => '999'
+            ));
     }
 
-    public function testTitleForFileBaseWithMixedCaseFourWords()
+    private static function chiClassicCompSiteRow()
     {
-        $this->assertTitleForFileBase('Foo Bar Blobby Phlegm', 'FooBarBlobbyPhlegm');
+        return self::databaseRowFromDictionary(
+            array(
+                'site_id' => '58',
+                'name' => 'ChiClassicComp',
+                'url' => 'http://chiclassiccomp.org/',
+                'description' => "Chicago Classic Computing's document archive",
+                'copy_base' => 'http://chiclassiccomp.org/docs/content/',
+                'low' => 'N',
+                'live' => 'Y',
+                'display_order' => '999'
+            ));
     }
 
-    private function assertTitleForFileBase($title, $fileBase)
+    private static function varsForUrlLookup($url)
     {
-        $this->assertEquals($title, UrlWizardService::titleForFileBase($fileBase));
-    }
-
-    private function createPublicationsForCompare($leftPart, $leftRev, $leftTitle, $rightPart, $rightRev, $rightTitle)
-    {
-        $columns = array('ph_pub', 'ph_part', 'ph_revision', 'ph_title');
-        $left = DatabaseTester::createResultRowsForColumns($columns,
-            array(array('1', $leftPart, $leftRev, $leftTitle)));
-        $left = $left[0];
-        $right = DatabaseTester::createResultRowsForColumns($columns,
-            array(array('2', $rightPart, $rightRev, $rightTitle)));
-        $right = $right[0];
-        return array($left, $right);
+        return array(
+            'method' => 'url-lookup',
+            'url' => $url
+        );
     }
 }

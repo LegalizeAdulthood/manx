@@ -19,13 +19,14 @@
 
 */
 
+require_once 'CurlApi.php';
 require_once 'Manx.php';
 require_once 'Searcher.php';
 require_once 'ServicePageBase.php';
-require_once 'CurlApi.php';
 require_once 'Site.php';
 require_once 'UrlInfo.php';
 require_once 'UrlInfoFactory.php';
+require_once 'UrlMetaData.php';
 
 use Pimple\Container;
 
@@ -120,61 +121,9 @@ class UrlWizardService extends ServicePageBase
         {
             return;
         }
-        list($data['pub_date'], $fileBase) = UrlWizardService::extractPubDate($matches[1]);
-        $data['title'] = UrlWizardService::titleForFileBase($fileBase);
+        list($data['pub_date'], $fileBase) = UrlMetaData::extractPubDate($matches[1]);
+        $data['title'] = UrlMetaData::titleForFileBase($fileBase);
         $data['format'] = $this->_db->getFormatForExtension($matches[2]);
-    }
-
-    public static function extractPubDate($fileBase)
-    {
-        $pubDate = '';
-        $parts = explode('_', $fileBase);
-        if (count($parts) > 1)
-        {
-            $lastPart = count($parts)-1;
-            $year = strtolower($parts[$lastPart]);
-            $months = UrlWizardService::months();
-            if (is_numeric($year) && $year > 9)
-            {
-                if ($year < 100)
-                {
-                    $year += 1900;
-                }
-                $pubDate = $year;
-                --$lastPart;
-                $month = strtolower(substr($parts[$lastPart], 0, 3));
-                foreach (array_keys($months) as $prefix)
-                {
-                    if ($month == $prefix)
-                    {
-                        $pubDate = sprintf("%s-%s", $pubDate, $months[$prefix]);
-                        --$lastPart;
-                        break;
-                    }
-                }
-                $fileBase = implode('_', array_slice($parts, 0, $lastPart + 1));
-            }
-            else if (1 == preg_match('/^([a-z]+)([0-9]+)$/', $year, $matches))
-            {
-                $month = strtolower(substr($matches[1], 0, 3));
-                $year = $matches[2];
-                if ($year < 100)
-                {
-                    $year += 1900;
-                }
-                foreach (array_keys($months) as $prefix)
-                {
-                    if ($month == $prefix)
-                    {
-                        $pubDate = sprintf("%d-%s", $year, $months[$prefix]);
-                        --$lastPart;
-                        $fileBase = implode('_', array_slice($parts, 0, $lastPart + 1));
-                        break;
-                    }
-                }
-            }
-        }
-        return array($pubDate, $fileBase);
     }
 
     private function findSiteById($id)
@@ -232,7 +181,7 @@ class UrlWizardService extends ServicePageBase
                 $siteBase = $site['url'];
             }
             $siteComponents = parse_url($siteBase);
-            if (UrlWizardService::urlComponentsMatch($components, $siteComponents))
+            if (UrlMetaData::urlComponentsMatch($components, $siteComponents))
             {
                 if (strlen($siteBase) > strlen($matchingPrefix))
                 {
@@ -247,67 +196,13 @@ class UrlWizardService extends ServicePageBase
         }
         $siteComponents = parse_url($matchingSite['url']);
         $components['host'] = $siteComponents['host'];
-        $data['url'] = UrlWizardService::buildUrl($components);
+        $data['url'] = self::buildUrl($components);
         return $matchingSite;
     }
 
     private static function buildUrl($components)
     {
         return sprintf("%s://%s%s", $components['scheme'], $components['host'], $components['path']);
-    }
-
-    private static function componentEqual($component, $lhs, $rhs)
-    {
-        return (!array_key_exists($component, $lhs) && !array_key_exists($component, $rhs))
-            || (array_key_exists($component, $lhs)
-                && array_key_exists($component, $rhs)
-                && $lhs[$component] == $rhs[$component]);
-    }
-
-    public static function urlComponentsMatch($components, $siteComponents)
-    {
-        $path = $components['path'];
-        $sitePath = $siteComponents['path'];
-        if (strlen($sitePath) > strlen($path))
-        {
-            return false;
-        }
-        if (UrlWizardService::componentEqual('scheme', $components, $siteComponents)
-            && UrlWizardService::componentEqual('port', $components, $siteComponents))
-        {
-            $hostEqual = false;
-            if (UrlWizardService::componentEqual('host', $components, $siteComponents))
-            {
-                $hostEqual = true;
-            }
-            else
-            {
-                $host = explode('.', $components['host']);
-                $siteHost = explode('.', $siteComponents['host']);
-                if ((count($siteHost) == 2)
-                    && (count($host) == 3)
-                    && ($host[0] == 'www'))
-                {
-                    array_shift($host);
-                    $hostEqual = implode('.', $host) == implode('.', $siteHost);
-                }
-            }
-            if ($hostEqual
-                && (substr($path, 0, strlen($sitePath)) == $sitePath))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static function months()
-    {
-        return array('jan' => '01', 'feb' => '02', 'mar' => '03',
-            'apr' => '04', 'may' => '05', 'jun' => '06',
-            'jul' => '07', 'aug' => '08', 'sep' => '09',
-            'oct' => '10', 'nov' => '11', 'dec' => '12');
     }
 
     private function determineSiteData($siteName, $companyComponent, &$data)
@@ -334,7 +229,7 @@ class UrlWizardService extends ServicePageBase
             $extension = array_pop($fileParts);
             $fileBase = implode('.', $fileParts);
         }
-        list($data['pub_date'], $fileBase) = UrlWizardService::extractPubDate($fileBase);
+        list($data['pub_date'], $fileBase) = UrlMetaData::extractPubDate($fileBase);
         $parts = explode('_', $fileBase);
         if (count($parts) > 1)
         {
@@ -343,12 +238,12 @@ class UrlWizardService extends ServicePageBase
                 $data['part'] = array_shift($parts);
             }
             $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
-            $data['title'] = self::titleForFileBase(implode(' ', $parts));
+            $data['title'] = UrlMetaData::titleForFileBase(implode(' ', $parts));
         }
         else
         {
             $data['pubs'] = $this->findPublicationsForKeywords($company, array($fileBase));
-            $data['title'] = self::titleForFileBase($fileBase);
+            $data['title'] = UrlMetaData::titleForFileBase($fileBase);
         }
         $data['format'] = $this->_db->getFormatForExtension($extension);
     }
@@ -404,20 +299,6 @@ class UrlWizardService extends ServicePageBase
         return $left;
     }
 
-    public static function comparePublications($left, $right)
-    {
-        $result = strcmp($left['ph_part'], $right['ph_part']);
-        if ($result == 0)
-        {
-            $result = strcmp($left['ph_revision'], $right['ph_revision']);
-        }
-        if ($result == 0)
-        {
-            $result = strcmp($left['ph_title'], $right['ph_title']);
-        }
-        return ($result < 0) ? -1 : ($result > 0 ? 1 : 0);
-    }
-
     private function findPublications()
     {
         $company = $this->param('company');
@@ -467,25 +348,5 @@ class UrlWizardService extends ServicePageBase
         }
 
         return false;
-    }
-
-    public static function titleForFileBase($fileBase)
-    {
-        $title = str_replace('_', ' ', str_replace(urlencode('#'), '#', $fileBase));
-        if (1 == preg_match('/[a-z][A-Z]/', $title))
-        {
-            $words = array();
-            $pieces = preg_split('/([a-z])([A-Z])/', $title, -1, PREG_SPLIT_DELIM_CAPTURE);
-            $i = 0;
-            array_push($words, $pieces[$i + 0] . $pieces[$i + 1]);
-            $i += 2;
-            for (; $i < count($pieces) - 2; $i += 3)
-            {
-                array_push($words, $pieces[$i + 0] . $pieces[$i + 1] . $pieces[$i + 2]);
-            }
-            array_push($words, $pieces[$i + 0] . $pieces[$i + 1]);
-            $title = implode(' ', $words);
-        }
-        return $title;
     }
 }
