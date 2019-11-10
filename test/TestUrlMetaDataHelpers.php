@@ -29,8 +29,35 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
     public function testExtractPubDateSingleTrailingDigit()
     {
         list($date, $newFileBase) = UrlMetaData::extractPubDate('foo_bar_3');
+
         $this->assertEquals('', $date);
         $this->assertEquals('foo_bar_3', $newFileBase);
+    }
+
+    public function testExtractPubDateSeparateMonthDayYear()
+    {
+        $this->assertPubDateForFileBase('1975-03-15', 'foo_bar_March_15_1975');
+    }
+
+    public function testExtractPubDateSeparateMonthPrefixDayYear()
+    {
+        list($date, $newFileBase) = UrlMetaData::extractPubDate('foo_bar_Marching_15_1975');
+
+        $this->assertEquals('1975', $date);
+        $this->assertEquals('foo_bar_Marching_15', $newFileBase);
+    }
+
+    public function testExtractPubDateSeparateMonthInvalidDayYear()
+    {
+        list($date, $newFileBase) = UrlMetaData::extractPubDate('foo_bar_Marching_32_1975');
+
+        $this->assertEquals('1975', $date);
+        $this->assertEquals('foo_bar_Marching_32', $newFileBase);
+    }
+
+    public function testExtractPubDateSeparateDayMonthYear()
+    {
+        $this->assertPubDateForFileBase('1975-03-15', 'foo_bar_15_March_1975');
     }
 
     public function testExtractPubDateSeparateMonthYear()

@@ -158,7 +158,6 @@ class UrlMetaData implements IUrlMetaData
         {
             $lastPart = count($parts)-1;
             $year = strtolower($parts[$lastPart]);
-            $months = self::months();
             if (is_numeric($year) && $year > 9)
             {
                 if ($year < 100)
@@ -167,39 +166,92 @@ class UrlMetaData implements IUrlMetaData
                 }
                 $pubDate = $year;
                 --$lastPart;
-                $month = strtolower(substr($parts[$lastPart], 0, 3));
-                foreach (array_keys($months) as $prefix)
+
+                $day = $parts[$lastPart];
+                if ($lastPart > 1 && is_numeric($day) && $day > 0 && $day < 32)
                 {
-                    if ($month == $prefix)
+                    --$lastPart;
+                }
+                else
+                {
+                    $day = '';
+                }
+
+                if ($lastPart > 0)
+                {
+                    $month = self::matchMonth($parts[$lastPart]);
+                    if ($month != '')
                     {
-                        $pubDate = sprintf("%s-%s", $pubDate, $months[$prefix]);
+                        $pubDate = sprintf("%s-%s", $pubDate, $month);
                         --$lastPart;
-                        break;
+
+                        if ($lastPart > 0 && strlen($day) == 0)
+                        {
+                            $day = $parts[$lastPart];
+                            if (is_numeric($day) && $day > 0 && $day < 32)
+                            {
+                                --$lastPart;
+                            }
+                            else
+                            {
+                                $day = '';
+                            }
+                        }
+
+                        if (strlen($day) > 0)
+                        {
+                            $pubDate = sprintf("%s-%02d", $pubDate, $day);
+                        }
+                    }
+                    else if ($day != '')
+                    {
+                        ++$lastPart;
                     }
                 }
+
                 $fileBase = implode('_', array_slice($parts, 0, $lastPart + 1));
             }
             else if (1 == preg_match('/^([a-z]+)([0-9]+)$/', $year, $matches))
             {
-                $month = strtolower(substr($matches[1], 0, 3));
                 $year = $matches[2];
                 if ($year < 100)
                 {
                     $year += 1900;
                 }
-                foreach (array_keys($months) as $prefix)
+                $month = self::matchMonth(substr($matches[1], 0, 3));
+                if ($month != '')
                 {
-                    if ($month == $prefix)
-                    {
-                        $pubDate = sprintf("%d-%s", $year, $months[$prefix]);
-                        --$lastPart;
-                        $fileBase = implode('_', array_slice($parts, 0, $lastPart + 1));
-                        break;
-                    }
+                    $pubDate = sprintf("%d-%s", $year, $month);
+                    --$lastPart;
+                    $fileBase = implode('_', array_slice($parts, 0, $lastPart + 1));
                 }
             }
         }
-        return array($pubDate, $fileBase);
+        return [$pubDate, $fileBase];
+    }
+
+    private static function matchMonth($text)
+    {
+        $text = strtolower($text);
+        $months = self::months();
+        foreach (array_keys($months) as $prefix)
+        {
+            if ($text == $prefix)
+            {
+                return $months[$text];
+            }
+        }
+
+        $months = self::monthNames();
+        foreach (array_keys($months) as $name)
+        {
+            if ($text == $name)
+            {
+                return $months[$text];
+            }
+        }
+
+        return '';
     }
 
     private function findSiteById($id)
@@ -329,10 +381,18 @@ class UrlMetaData implements IUrlMetaData
 
     private static function months()
     {
-        return array('jan' => '01', 'feb' => '02', 'mar' => '03',
+        return ['jan' => '01', 'feb' => '02', 'mar' => '03',
             'apr' => '04', 'may' => '05', 'jun' => '06',
             'jul' => '07', 'aug' => '08', 'sep' => '09',
-            'oct' => '10', 'nov' => '11', 'dec' => '12');
+            'oct' => '10', 'nov' => '11', 'dec' => '12'];
+    }
+
+    private static function monthNames()
+    {
+        return ['january' => '01', 'february' => '02', 'march' => '03',
+            'april' => '04', 'may' => '05', 'june' => '06',
+            'july' => '07', 'august' => '08', 'september' => '09',
+            'october' => '10', 'november' => '11', 'december' => '12'];
     }
 
     private function determineIngestSiteData($siteName, $companyComponent, &$data)
