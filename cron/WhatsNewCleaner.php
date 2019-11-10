@@ -207,7 +207,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $url = $row['url'];
         $copyNotes = '';
         $copySize = $data['size'];
-        $copyMD5 = $data['md5'];
+        $copyMD5 = $this->_urlMetaData->getCopyMD5($url);
         $credits = '';
         $amendSerial = '';
         $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url,
