@@ -22,14 +22,6 @@ class UrlWizardPageTester extends UrlWizardPage
     {
         parent::postPage();
     }
-
-    protected function md5ForFile($url)
-    {
-        $this->md5ForFileCalled = true;
-        $this->md5ForFileLastUrl = $url;
-        return $this->md5ForFileFakeResult;
-    }
-    public $md5ForFileCalled, $md5ForFileLastUrl, $md5ForFileFakeResult;
 }
 
 class TestUrlWizardPage extends PHPUnit\Framework\TestCase
@@ -118,15 +110,13 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
                 $abstract, $this->anything())
             ->willReturn(19690);
         $page = new URLWizardPageTester($this->_config);
-        $md5 = '01234567890123456789012345678901';
-        $page->md5ForFileFakeResult = $md5;
         $db->expects($this->never())->method('addCompany');
         $db->expects($this->once())->method('addSupersession')->with(5634, 19690);
         $db->expects($this->never())->method('addSite');
         $db->expects($this->once())->method('addCopy')
             ->with(
                 19690, $vars['copy_format'], $vars['copy_site'], rawurldecode($vars['copy_url']),
-                $vars['copy_notes'], $vars['copy_size'], $md5, $vars['copy_credits'],
+                $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
                 $vars['copy_amend_serial']);
 
         $page->postPage();
@@ -190,14 +180,12 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
                 $abstract, $this->anything())
             ->willReturn(19690);
         $page = new URLWizardPageTester($this->_config);
-        $md5 = '01234567890123456789012345678901';
-        $page->md5ForFileFakeResult = $md5;
         $db->expects($this->never())->method('addCompany');
         $db->expects($this->once())->method('addSupersession')->with(5634, 19690);
         $db->expects($this->once())->method('addCopy')
             ->with(
                 19690, $vars['copy_format'], $vars['copy_site'], rawurldecode($vars['copy_url']),
-                $vars['copy_notes'], $vars['copy_size'], $md5, $vars['copy_credits'],
+                $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
                 $vars['copy_amend_serial']
             );
 
@@ -254,8 +242,6 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'next' => 'Next+%3E');
         $this->_config['vars'] = $vars;
         $page = new URLWizardPageTester($this->_config);
-        $md5 = '01234567890123456789012345678901';
-        $page->md5ForFileFakeResult = $md5;
         $db->expects($this->once())->method('addSiteDirectory')
             ->with('ChiClassicComp', '5', 'DEC');
 

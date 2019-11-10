@@ -121,23 +121,8 @@ class URLWizardPage extends AdminPageBase
     {
         $this->_db->addCopy($pubId, $this->param('copy_format'),
             $siteId, $this->param('copy_url'), $this->param('copy_notes'),
-            $this->param('copy_size'), $this->getCopyMD5(),
+            $this->param('copy_size'), '' /* MD5 */,
             $this->param('copy_credits'), $this->param('copy_amend_serial'));
-    }
-
-    private function getCopyMD5()
-    {
-        $md5 = $this->param('copy_md5');
-        if (!strlen($md5))
-        {
-            $url = $this->param('copy_mirror_url');
-            if (!strlen($url))
-            {
-                $url = $this->param('copy_url');
-            }
-            $md5 = $this->md5ForFile($url);
-        }
-        return $md5;
     }
 
     private function renderInitialData($id, $var)
@@ -406,10 +391,5 @@ EOH;
 </div>
 
 EOH;
-    }
-
-    protected function md5ForFile($url)
-    {
-        return md5_file($url);
     }
 }
