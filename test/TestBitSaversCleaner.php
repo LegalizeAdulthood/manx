@@ -129,6 +129,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
             'url' => $url,
             'mirror_url' => '',
             'size' => 5555,
+            'md5' => '37e10bd2e8da6bd96eb3a72feeea56ee',
             'valid' => true,
             'site' => [
                 'site_id' => $siteId,
@@ -167,7 +168,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     {
         return [
             'notes' => '',
-            'md5' => '',
+            'md5' => 'deadbeeffacef00d',
             'credits' => '',
             'amend_serial' => ''
         ];
@@ -187,7 +188,6 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $pubData = $this->stockPubData();
         $copyData = $this->stockCopyData();
         $this->_manx->expects($this->never())->method('getUserFromSession');
-        $this->_urlMetaData->expects($this->never())->method('determineData');
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
         $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
         $pubId = 23;
@@ -226,7 +226,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->once())->method('addCopy')->with($pubId, $data['format'], $siteId, $url,
-                $copyData['notes'], $data['size'], $copyData['md5'], $copyData['credits'], $copyData['amend_serial']);
+                $copyData['notes'], $data['size'], $data['md5'], $copyData['credits'], $copyData['amend_serial']);
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
         $this->_logger->expects($this->exactly(6))->method('log');
 
