@@ -673,7 +673,7 @@ class ManxDatabase implements IManxDatabase
 
     function getMissingMD5Documents()
     {
-        return $this->fetchAll("SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title` "
+        return $this->fetchAll("SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title`,`url` "
             . "FROM `copy`,`pub_history` "
             . "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
             . "AND (`copy`.`md5` IS NULL) "

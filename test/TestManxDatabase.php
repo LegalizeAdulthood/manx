@@ -507,7 +507,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testGetMissingMD5Documents()
     {
-        $query = "SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title` "
+        $query = "SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title`,`url` "
             . "FROM `copy`,`pub_history` "
             . "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
             . "AND (`copy`.`md5` IS NULL) "
@@ -515,19 +515,16 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . " LIMIT 0,10";
         $this->_db->expects($this->once())->method('query')
             ->with($query)->willReturn($this->_statement);
-        $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            DatabaseTester::createResultRowsForColumns(
-                array('copy_id', 'ph_company', 'ph_pub', 'ph_title'),
-                array(array('66', '1', '2', 'IM1 Schematic'))
-            ));
+        $rows = DatabaseTester::createResultRowsForColumns(
+            ['copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url'],
+            [
+                ['66', '1', '2', 'IM1 Schematic', 'http://bitsavers.org/pdf/dec/IM1_Schematic.pdf' ]
+            ]);
+        $this->_statement->expects($this->once())->method('fetchAll')->willReturn($rows);
 
-        $rows = $this->_manxDb->getMissingMD5Documents();
+        $result = $this->_manxDb->getMissingMD5Documents();
 
-        $this->assertEquals(1, count($rows));
-        $this->assertEquals(66, $rows[0]['copy_id']);
-        $this->assertEquals(1, $rows[0]['ph_company']);
-        $this->assertEquals(2, $rows[0]['ph_pub']);
-        $this->assertEquals('IM1 Schematic', $rows[0]['ph_title']);
+        $this->assertEquals($rows, $result);
     }
 
     public function testGetProperty()
