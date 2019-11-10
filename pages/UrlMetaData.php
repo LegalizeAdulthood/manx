@@ -32,6 +32,7 @@ class UrlMetaData implements IUrlMetaData
 
         $data['url'] = $url;
         $data['size'] = $size;
+        $data['md5'] = $urlInfo->md5();
         $data['valid'] = true;
         $this->_sites = $this->_db->getSites();
         $data['site'] = $this->getMatchingSite($siteId);

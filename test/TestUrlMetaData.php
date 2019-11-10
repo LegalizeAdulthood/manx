@@ -32,6 +32,8 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
         $copySize = 4096;
         $this->_urlInfo->expects($this->once())->method('size')->willReturn($copySize);
+        $copyMD5 = 'deadbeeffacef00d';
+        $this->_urlInfo->expects($this->once())->method('md5')->willReturn($copyMD5);
         $siteId = 3;
         $bitsaversSiteRow = $this->bitSaversSiteRow($siteId);
         $this->_db->expects($this->once())->method('getSites')->willReturn([$bitsaversSiteRow]);
@@ -59,8 +61,9 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'title' => $title,
             'pubs' => [],
             'exists' => true,
-            'pub_id' => $pubId
-            ];
+            'pub_id' => $pubId,
+            'md5' => $copyMD5
+        ];
         $this->assertEquals($expectedData, $data);
     }
 
