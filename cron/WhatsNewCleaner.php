@@ -46,7 +46,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->_whatsNewIndex = $config['whatsNewIndex'];
         $this->_urlMetaData = $config['urlMetaData'];
         $this->_user = $config['user'];
-        $this->_limit = 100;
+        $this->_limit = 500;
     }
 
     public function removeNonExistentUnknownPaths()
@@ -99,13 +99,15 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->log("Ingesting unknown paths for sites with IndexByDate.txt");
         $pubIds = [];
         $count = 0;
+        $ingestCount = 0;
         foreach ($this->_db->getUnknownPathsForCompanies() as $row)
         {
-            $count++;
-            if ($count > $this->_limit)
+            ++$count;
+            if ($count >= $this->_limit)
             {
-                return;
+                break;
             }
+
             $this->_db->markUnknownPathScanned($row['id']);
             $siteId = $row['site_id'];
             $companyId = $row['company_id'];
@@ -139,12 +141,26 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 continue;
             }
 
+            $this->log(sprintf("Meta:        Date %s, Part %s", $pubDate, $part));
+
             // Conservatively ingest only documents where we could guess most metadata.
             $pubs = $data['pubs'];
             $numPubs = count($pubs);
             if ($numPubs > 1)
             {
                 $this->log(sprintf("MultiPubs:   %d", $numPubs));
+                foreach ($pubs as $pub)
+                {
+                    $pubPart = $pub['ph_part'];
+                    if ($pubPart == $part && $pubDate == $pub['ph_pub_date'])
+                    {
+                        $this->log(sprintf("PubMatch:    %s %s (%s %s)", $pubs[0]['ph_title'], $pubPart, $pubDate, $pubPart == $data['part'] ? "match" : "no match"));
+                        $data['pub_id'] = $pub['pub_id'];
+                        $this->addCopy($data, $row);
+                        ++$ingestCount;
+                        break;
+                    }
+                }
             }
             else if ($numPubs == 1)
             {
@@ -154,6 +170,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 if ($pubPart == $data['part'])
                 {
                     $this->addCopy($data, $row);
+                    ++$ingestCount;
                 }
             }
             else if ($numPubs == 0 && !array_key_exists('exists', $data) && strlen($part) > 0 && strlen($title) > 0 && strlen($pubDate) > 0)
@@ -175,8 +192,11 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 $pubIds[] = $pubId;
 
                 $this->addCopy($data, $row);
+                ++$ingestCount;
             }
         }
+
+        $this->log(sprintf('Ingestion:   %d scanned, %d ingested (%0.2f%%)', $count, $ingestCount, $count > 0 ? 100*($ingestCount/$count) : 0));
     }
 
     private function addCopy($data, $row)

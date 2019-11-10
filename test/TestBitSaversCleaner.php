@@ -199,7 +199,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->never())->method('addCopy')->with($pubId, $data['format'], $siteId, $url,
                 $copyData['notes'], $data['size'], $copyData['md5'], $copyData['credits'], $copyData['amend_serial']);
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
-        $this->_logger->expects($this->exactly(2))->method('log');
+        $this->_logger->expects($this->exactly(4))->method('log');
 
         $this->_cleaner->ingest();
     }
@@ -228,7 +228,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('addCopy')->with($pubId, $data['format'], $siteId, $url,
                 $copyData['notes'], $data['size'], $copyData['md5'], $copyData['credits'], $copyData['amend_serial']);
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
-        $this->_logger->expects($this->exactly(4))->method('log');
+        $this->_logger->expects($this->exactly(6))->method('log');
 
         $this->_cleaner->ingest();
     }
@@ -256,7 +256,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
-        $this->_logger->expects($this->exactly(3))->method('log');
+        $this->_logger->expects($this->exactly(5))->method('log');
 
         $this->_cleaner->ingest();
     }
@@ -272,10 +272,10 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
                 [$unknownId, $siteId, $companyId, 'dec', $url]
             ]);
         $data = $this->bitsaversMetaData($siteId, $companyId, $url);
-        $data['pubs'] = DatabaseTester::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title'],
+        $data['pubs'] = DatabaseTester::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
             [
-                [44, 'EK-3333-01', 'Some Other Manual'],
-                [45, 'EK-3333-01', 'Another Unrelated Manual']
+                [44, 'EK-3333-01', 'Some Other Manual', '1977-01'],
+                [45, 'EK-3333-01', 'Another Unrelated Manual', '1982-04']
             ]);
         $pubData = $this->stockPubData();
         $copyData = $this->stockCopyData();
@@ -286,7 +286,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
-        $this->_logger->expects($this->exactly(3))->method('log');
+        $this->_logger->expects($this->exactly(5))->method('log');
 
         $this->_cleaner->ingest();
     }
@@ -315,7 +315,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
-        $this->_logger->expects($this->exactly(3))->method('log');
+        $this->_logger->expects($this->exactly(4))->method('log');
 
         $this->_cleaner->ingest();
     }
