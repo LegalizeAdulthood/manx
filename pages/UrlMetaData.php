@@ -20,6 +20,12 @@ class UrlMetaData implements IUrlMetaData
         $this->_urlInfoFactory = $config['urlInfoFactory'];
     }
 
+    public function getCopyMD5($url)
+    {
+        $urlInfo = $this->_urlInfoFactory->createUrlInfo($url);
+        return $urlInfo->md5();
+    }
+
     public function determineIngestData($siteId, $companyId, $url)
     {
         $urlInfo = $this->_urlInfoFactory->createUrlInfo($url);
@@ -32,7 +38,6 @@ class UrlMetaData implements IUrlMetaData
 
         $data['url'] = $url;
         $data['size'] = $size;
-        $data['md5'] = $urlInfo->md5();
         $data['valid'] = true;
         $this->_sites = $this->_db->getSites();
         $data['site'] = $this->getMatchingSite($siteId);

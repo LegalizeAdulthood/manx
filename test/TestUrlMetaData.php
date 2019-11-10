@@ -27,17 +27,27 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $this->assertTrue(is_object($this->_meta));
     }
 
-    public function testDetermineIngestDataForBitSaversNoCopy()
+    public function testGetCopyMD5()
     {
-        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
-        $copySize = 4096;
-        $this->_urlInfo->expects($this->once())->method('size')->willReturn($copySize);
+        $url = 'http://bitsavers.org/pdf/microdata/periph/2602_Bisync_Controller/PS20002602_2602_Bisync_Interface_Product_Specification_Mar1977.pdf';
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
         $copyMD5 = 'deadbeeffacef00d';
         $this->_urlInfo->expects($this->once())->method('md5')->willReturn($copyMD5);
+
+        $md5 = $this->_meta->getCopyMD5($url);
+
+        $this->assertEquals($copyMD5, $md5);
+    }
+
+    public function testDetermineIngestDataForBitSaversNoCopy()
+    {
+        $url = 'http://bitsavers.org/pdf/microdata/periph/2602_Bisync_Controller/PS20002602_2602_Bisync_Interface_Product_Specification_Mar1977.pdf';
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
+        $copySize = 4096;
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn($copySize);
         $siteId = 3;
         $bitsaversSiteRow = $this->bitSaversSiteRow($siteId);
         $this->_db->expects($this->once())->method('getSites')->willReturn([$bitsaversSiteRow]);
-        $url = 'http://bitsavers.org/pdf/microdata/periph/2602_Bisync_Controller/PS20002602_2602_Bisync_Interface_Product_Specification_Mar1977.pdf';
         $companyId = 13;
         $part = 'PS20002602';
         $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with($part, $companyId)->willReturn([]);
@@ -62,7 +72,6 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'pubs' => [],
             'exists' => true,
             'pub_id' => $pubId,
-            'md5' => $copyMD5
         ];
         $this->assertEquals($expectedData, $data);
     }
