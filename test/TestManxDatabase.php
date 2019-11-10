@@ -829,6 +829,29 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals($userId, $result);
     }
 
+    public function testGetPublicationsForPart()
+    {
+        $companyId = 55;
+        $select = 'SELECT pub_id,ph_part,ph_title,ph_pub_date '
+            . 'FROM pub '
+            . 'JOIN pub_history ON pub_history = ph_id '
+            . 'WHERE (ph_match_part LIKE ? OR ph_match_alt_part LIKE ?) '
+            . 'AND ph_company = ? '
+            . 'ORDER BY ph_sort_part, ph_pub_date '
+            . 'LIMIT 10';
+        $rows = DatabaseTester::createResultRowsForColumns(
+            ['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
+            [
+                [7766, 'AA-44422', 'Jumbotron Users Guide', '1977-01'],
+                [7767, 'AA-44422-02', "Jumbotron User's Guide", '1978-04']
+            ]);
+        $this->_db->expects($this->once())->method('execute')->with($select)->willReturn($rows);
+
+        $result = $this->_manxDb->getPublicationsForPartNumber('AA-44422', $companyId);
+
+        $this->assertEquals($rows, $result);
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");

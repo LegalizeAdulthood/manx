@@ -466,7 +466,7 @@ class ManxDatabase implements IManxDatabase
     function getPublicationsForPartNumber($part, $companyId)
     {
         $part = "%" . ManxDatabase::normalizePartNumber($part) . "%";
-        return $this->_db->execute("SELECT pub_id,ph_part,ph_title "
+        return $this->_db->execute("SELECT pub_id,ph_part,ph_title,ph_pub_date "
                 . "FROM pub JOIN pub_history ON pub_history = ph_id "
                 . "WHERE (ph_match_part LIKE ? OR ph_match_alt_part LIKE ?) AND ph_company = ? "
                 . "ORDER BY ph_sort_part, ph_pub_date LIMIT 10",
