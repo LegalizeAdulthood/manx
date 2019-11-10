@@ -7,4 +7,5 @@ interface IWhatsNewCleaner
     function updateWhatsNewIndex();
     function removeUnknownPathsWithCopy();
     function ingest();
+    function computeMissingMD5();
 }

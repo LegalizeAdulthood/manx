@@ -17,6 +17,13 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
         $this->_processor = new WhatsNewProcessor($config);
     }
 
+    public function testMD5()
+    {
+        $this->_cleaner->expects($this->once())->method('computeMissingMD5');
+
+        $this->_processor->process(['cleaner.php', 'md5']);
+    }
+
     public function testExistence()
     {
         $this->_cleaner->expects($this->once())->method('removeNonExistentUnknownPaths');
@@ -57,12 +64,13 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
 
     public function testHelp()
     {
-        $this->_logger->expects($this->exactly(5))->method('log')->withConsecutive(
+        $this->_logger->expects($this->exactly(6))->method('log')->withConsecutive(
             [ "existence:      remove non-existent unknown paths" ],
             [ "moved           update moved files" ],
             [ "index           fetch IndexByDate.txt" ],
             [ "unknown-copies  remove unknown paths with existing copy" ],
-            [ "ingest          ingest copies from guessable unknown paths" ]
+            [ "ingest          ingest copies from guessable unknown paths" ],
+            [ "md5             compute MD5 hashes for copies" ]
         );
 
         $this->_processor->process(['cleaner.php', 'help']);

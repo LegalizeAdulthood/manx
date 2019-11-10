@@ -94,6 +94,10 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->_db->removeUnknownPathsWithCopy();
     }
 
+    public function computeMissingMD5()
+    {
+    }
+
     public function ingest()
     {
         $this->log("Ingesting unknown paths for sites with IndexByDate.txt");

@@ -26,6 +26,7 @@ class WhatsNewProcessor
             $this->log("index           fetch IndexByDate.txt");
             $this->log("unknown-copies  remove unknown paths with existing copy");
             $this->log("ingest          ingest copies from guessable unknown paths");
+            $this->log("md5             compute MD5 hashes for copies");
         }
         else if ($args[1] == 'existence')
         {
@@ -48,6 +49,10 @@ class WhatsNewProcessor
             $this->_cleaner->updateWhatsNewIndex();
             $this->_cleaner->ingest();
             $this->_cleaner->removeUnknownPathsWithCopy();
+        }
+        else if ($args[1] == 'md5')
+        {
+            $this->_cleaner->computeMissingMD5();
         }
     }
 }
