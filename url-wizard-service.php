@@ -12,7 +12,7 @@ use Pimple\Container;
 $config = new Container();
 $manx = Manx::getInstance();
 $config['manx'] = $manx;
-$config['db'] = $manx->getManxDatabase();
+$config['db'] = $manx->getDatabase();
 $config['vars'] = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $_POST : $_GET;
 $config['urlInfoFactory'] = new UrlInfoFactory();
 $config['urlMetaData'] = function($c)
