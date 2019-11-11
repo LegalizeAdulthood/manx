@@ -172,6 +172,62 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         ];
     }
 
+    public function testComputeMissingMD5CopyExists()
+    {
+        $url = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron_Users_Manual.pdf';
+        $copyId = 5544;
+        $docs = DatabaseTester::createResultRowsForColumns([ 'copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url' ],
+            [
+                [ $copyId, 23, 100, 'Jumobotron Users Manual', $url ]
+            ]);
+        $this->_db->expects($this->once())->method('getAllMissingMD5Documents')->willReturn($docs);
+        $this->_factory->expects($this->once())->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
+        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
+        $copyMD5 = 'deadbeeffacef00d';
+        $this->_urlInfo->expects($this->once())->method('md5')->willReturn($copyMD5);
+        $this->_db->expects($this->once())->method('updateMD5ForCopy')->with($copyId, $copyMD5);
+        $this->_logger->expects($this->exactly(2))->method('log');
+
+        $this->_cleaner->computeMissingMD5();
+    }
+
+    public function testComputeMissingMD5CopyExistsSpaces()
+    {
+        $url = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron Users Manual.pdf';
+        $encodedUrl = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron+Users+Manual.pdf';
+        $copyId = 5544;
+        $docs = DatabaseTester::createResultRowsForColumns([ 'copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url' ],
+            [
+                [ $copyId, 23, 100, 'Jumobotron Users Manual', $url ]
+            ]);
+        $this->_db->expects($this->once())->method('getAllMissingMD5Documents')->willReturn($docs);
+        $this->_factory->expects($this->once())->method('createUrlInfo')->with($encodedUrl)->willReturn($this->_urlInfo);
+        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
+        $copyMD5 = 'deadbeeffacef00d';
+        $this->_urlInfo->expects($this->once())->method('md5')->willReturn($copyMD5);
+        $this->_db->expects($this->once())->method('updateMD5ForCopy')->with($copyId, $copyMD5);
+        $this->_logger->expects($this->exactly(2))->method('log');
+
+        $this->_cleaner->computeMissingMD5();
+    }
+
+    public function testComputeMissingMD5CopyDoesNotExist()
+    {
+        $url = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron_Users_Manual.pdf';
+        $copyId = 5544;
+        $docs = DatabaseTester::createResultRowsForColumns([ 'copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url' ],
+            [
+                [ $copyId, 23, 100, 'Jumobotron Users Manual', $url ]
+            ]);
+        $this->_db->expects($this->once())->method('getAllMissingMD5Documents')->willReturn($docs);
+        $this->_factory->expects($this->once())->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
+        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(false);
+        $this->_db->expects($this->once())->method('updateMD5ForCopy')->with($copyId, '');
+        $this->_logger->expects($this->exactly(2))->method('log');
+
+        $this->_cleaner->computeMissingMD5();
+    }
+
     public function testIngest()
     {
         $unknownId = 66;

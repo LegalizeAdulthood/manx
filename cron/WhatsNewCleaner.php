@@ -96,6 +96,24 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 
     public function computeMissingMD5()
     {
+        $this->log("Computing missing MD5 hashes for known copies.");
+        foreach ($this->_db->getAllMissingMD5Documents() as $row)
+        {
+            $url = self::escapeSpecialChars($row['url']);
+            $urlInfo = $this->_factory->createUrlInfo($url);
+            $md5 = '';
+            if ($urlInfo->exists())
+            {
+                $md5 = $urlInfo->md5();
+            }
+            $this->_db->updateMD5ForCopy($row['copy_id'], $md5);
+            $this->log(sprintf("%d %s %s", $row['copy_id'], $url, $md5 != '' ? $md5 : '<missing>'));
+        }
+    }
+
+    private function urlEncode($url)
+    {
+        return str_replace(str_replace($url, ' ', urlencode(' ')), '#', urlencode('#'));
     }
 
     public function ingest()
@@ -219,9 +237,9 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->log(sprintf('Copy:        %d.%d %s %s "%s" (%s)', $siteId, $copyId, $row['directory'], $data['pub_date'], $data['title'], $data['part']));
     }
 
-    private static function escapeSpecialChars($path)
+    private static function escapeSpecialChars($url)
     {
-        return str_replace("#", urlencode("#"), $path);
+        return str_replace(' ', urlencode(' '), str_replace("#", urlencode("#"), $url));
     }
 
     private function log($text)
