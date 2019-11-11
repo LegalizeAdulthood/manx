@@ -101,16 +101,17 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
         $this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
             ->with('bitsavers')
-            ->willReturn( array(
-                array('path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
-                    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'md5' => $md5)
-            ));
+            ->willReturn( [
+                ['path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
+                    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'md5' => $md5]
+            ]);
         $this->_db->expects($this->once())->method('siteFileMoved')
             ->with('bitsavers', 10, 16, 'http://bitsavers.org/pdf/hp/newDir/foo.pdf');
-        $this->_urlInfo->expects($this->once())->method('md5')->willReturn($md5);
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with('http://bitsavers.trailing-edge.com/pdf/hp/newDir/foo.pdf')
             ->willReturn($this->_urlInfo);
+        $this->_urlInfo->expects($this->once())->method('md5')->willReturn($md5);
+        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
 
         $this->_cleaner->updateMovedFiles();
     }

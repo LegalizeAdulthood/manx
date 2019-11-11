@@ -70,10 +70,13 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         {
             $path = $row['path'];
             $urlInfo = $this->_factory->createUrlInfo($this->_baseCheckUrl . $path);
-            if ($urlInfo->md5() == $row['md5'])
+            if ($urlInfo->exists() && $row['md5'] != '')
             {
-                $this->_db->siteFileMoved($this->_siteName, $row['copy_id'], $row['path_id'], $this->_baseUrl . $path);
-                $this->log('Path: ' . $path);
+                if ($urlInfo->md5() == $row['md5'])
+                {
+                    $this->_db->siteFileMoved($this->_siteName, $row['copy_id'], $row['path_id'], $this->_baseUrl . $path);
+                    $this->log('Path: ' . $path);
+                }
             }
         }
     }
