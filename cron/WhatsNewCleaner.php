@@ -51,6 +51,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 
     public function removeNonExistentUnknownPaths()
     {
+        $this->log("Remove non-existent unknown paths");
         foreach($this->_db->getAllSiteUnknownPaths($this->_siteName) as $row)
         {
             $path = $row['path'];
@@ -66,6 +67,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 
     public function updateMovedFiles()
     {
+        $this->log("Updating location of moved files");
         foreach($this->_db->getPossiblyMovedSiteUnknownPaths($this->_siteName) as $row)
         {
             $path = $row['path'];

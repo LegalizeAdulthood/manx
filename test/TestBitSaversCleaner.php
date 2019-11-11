@@ -66,6 +66,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with('http://bitsavers.trailing-edge.com/pdf/foo/path.pdf')
             ->willReturn($this->_urlInfo);
+        $this->_logger->expects($this->exactly(2))->method('log');
 
         $this->_cleaner->removeNonExistentUnknownPaths();
     }
@@ -78,6 +79,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
             ));
         $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
         $this->_factory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
+        $this->_logger->expects($this->once())->method('log');
 
         $this->_cleaner->removeNonExistentUnknownPaths();
     }
