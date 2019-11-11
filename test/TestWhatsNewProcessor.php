@@ -1,6 +1,7 @@
 <?php
 
 require_once 'cron/WhatsNewProcessor.php';
+require_once 'cron/IExclusiveLock.php';
 require_once 'cron/ILogger.php';
 
 use Pimple\Container;
@@ -9,16 +10,19 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
 {
     public function setUp()
     {
+        $this->_locker = $this->createMock(IExclusiveLock::class);
         $this->_cleaner = $this->createMock(IWhatsNewCleaner::class);
         $this->_logger = $this->createMock(ILogger::class);
         $config = new Container();
         $config['whatsNewCleaner'] = $this->_cleaner;
         $config['logger'] = $this->_logger;
+        $config['locker'] = $this->_locker;
         $this->_processor = new WhatsNewProcessor($config);
     }
 
     public function testMD5()
     {
+        $this->_locker->expects($this->once())->method('lock')->with('md5.lock');
         $this->_cleaner->expects($this->once())->method('computeMissingMD5');
 
         $this->_processor->process(['cleaner.php', 'md5']);
@@ -26,6 +30,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
 
     public function testExistence()
     {
+        $this->_locker->expects($this->once())->method('lock')->with('existence.lock');
         $this->_cleaner->expects($this->once())->method('removeNonExistentUnknownPaths');
 
         $this->_processor->process(['cleaner.php', 'existence']);
@@ -33,6 +38,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
 
     public function testMoved()
     {
+        $this->_locker->expects($this->once())->method('lock')->with('moved.lock');
         $this->_cleaner->expects($this->once())->method('updateMovedFiles');
 
         $this->_processor->process(['cleaner.php', 'moved']);
@@ -40,6 +46,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
 
     public function testIndex()
     {
+        $this->_locker->expects($this->once())->method('lock')->with('index.lock');
         $this->_cleaner->expects($this->once())->method('updateWhatsNewIndex');
 
         $this->_processor->process(['cleaner.php', 'index']);
@@ -48,6 +55,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
 
     public function testUnknownCopies()
     {
+        $this->_locker->expects($this->once())->method('lock')->with('unknown-copies.lock');
         $this->_cleaner->expects($this->once())->method('removeUnknownPathsWithCopy');
 
         $this->_processor->process(['cleaner.php', 'unknown-copies']);
@@ -55,6 +63,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
 
     public function testIngest()
     {
+        $this->_locker->expects($this->once())->method('lock')->with('ingest.lock');
         $this->_cleaner->expects($this->once())->method('updateWhatsNewIndex');
         $this->_cleaner->expects($this->once())->method('ingest');
         $this->_cleaner->expects($this->once())->method('removeUnknownPathsWithCopy');
@@ -76,6 +85,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
         $this->_processor->process(['cleaner.php', 'help']);
     }
 
+    private $_locker;
     private $_cleaner;
     private $_logger;
     private $_processor;

@@ -10,6 +10,7 @@ class WhatsNewProcessor
     {
         $this->_cleaner = $config['whatsNewCleaner'];
         $this->_logger = $config['logger'];
+        $this->_locker = $config['locker'];
     }
 
     private function log($text)
@@ -30,29 +31,40 @@ class WhatsNewProcessor
         }
         else if ($args[1] == 'existence')
         {
+            $this->lock($args[1]);
             $this->_cleaner->removeNonExistentUnknownPaths();
         }
         else if ($args[1] == 'moved')
         {
+            $this->lock($args[1]);
             $this->_cleaner->updateMovedFiles();
         }
         else if ($args[1] == 'index')
         {
+            $this->lock($args[1]);
             $this->_cleaner->updateWhatsNewIndex();
         }
         else if ($args[1] == 'unknown-copies')
         {
+            $this->lock($args[1]);
             $this->_cleaner->removeUnknownPathsWithCopy();
         }
         else if ($args[1] == 'ingest')
         {
+            $this->lock($args[1]);
             $this->_cleaner->updateWhatsNewIndex();
             $this->_cleaner->ingest();
             $this->_cleaner->removeUnknownPathsWithCopy();
         }
         else if ($args[1] == 'md5')
         {
+            $this->lock($args[1]);
             $this->_cleaner->computeMissingMD5();
         }
+    }
+
+    private function lock($name)
+    {
+        $this->_lock = $this->_locker->lock($name . '.lock');
     }
 }
