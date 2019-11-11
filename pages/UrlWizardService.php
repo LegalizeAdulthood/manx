@@ -97,7 +97,7 @@ class UrlWizardService extends ServicePageBase
                 $data = $this->mergePubs($data, $this->findPublicationsForKeywords($company, $filtered));
             }
             $data = array_values($data);
-            usort($data, array('UrlWizardService', 'comparePublications'));
+            usort($data, ['UrlWizardService', 'comparePublications']);
         }
         else
         {
@@ -132,5 +132,19 @@ class UrlWizardService extends ServicePageBase
         }
 
         return false;
+    }
+
+    public static function comparePublications($left, $right)
+    {
+        $result = strcmp($left['ph_part'], $right['ph_part']);
+        if ($result == 0)
+        {
+            $result = strcmp($left['ph_revision'], $right['ph_revision']);
+        }
+        if ($result == 0)
+        {
+            $result = strcmp($left['ph_title'], $right['ph_title']);
+        }
+        return ($result < 0) ? -1 : ($result > 0 ? 1 : 0);
     }
 }
