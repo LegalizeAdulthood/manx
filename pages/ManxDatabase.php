@@ -179,6 +179,7 @@ class ManxDatabase implements IManxDatabase
             . "`copy`.`credits`,`copy_id`"
             . " FROM `copy`,`site`"
             . " WHERE `copy`.`site`=`site`.`site_id` AND `pub`=%d"
+            . " AND `site`.`live`='Y'"
             . " ORDER BY `site`.`display_order`,`site`.`site_id`", $pubId);
         return $this->fetchAll($query);
     }

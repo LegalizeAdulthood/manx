@@ -261,6 +261,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "`copy`.`credits`,`copy_id`"
             . " FROM `copy`,`site`"
             . " WHERE `copy`.`site`=`site`.`site_id` AND `pub`=123"
+            . " AND `site`.`live`='Y'"
             . " ORDER BY `site`.`display_order`,`site`.`site_id`";
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
             DatabaseTester::createResultRowsForColumns(
