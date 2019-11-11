@@ -527,6 +527,27 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals($rows, $result);
     }
 
+    public function testGetAllMissingMD5Documents()
+    {
+        $query = "SELECT `copy_id`,`ph_company`,`ph_pub`,`ph_title`,`url` "
+            . "FROM `copy`,`pub_history` "
+            . "WHERE `copy`.`pub`=`pub_history`.`ph_pub` "
+            . "AND (`copy`.`md5` IS NULL) "
+            . "AND `copy`.`format` <> 'HTML'";
+        $this->_db->expects($this->once())->method('query')
+            ->with($query)->willReturn($this->_statement);
+        $rows = DatabaseTester::createResultRowsForColumns(
+            ['copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url'],
+            [
+                ['66', '1', '2', 'IM1 Schematic', 'http://bitsavers.org/pdf/dec/IM1_Schematic.pdf' ]
+            ]);
+        $this->_statement->expects($this->once())->method('fetchAll')->willReturn($rows);
+
+        $result = $this->_manxDb->getAllMissingMD5Documents();
+
+        $this->assertEquals($rows, $result);
+    }
+
     public function testGetProperty()
     {
         $query = "SELECT `value` FROM `properties` WHERE `name` = ?";

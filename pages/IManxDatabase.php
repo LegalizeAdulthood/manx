@@ -50,6 +50,7 @@ interface IManxDatabase
     function updateSizeForCopy($copyId, $size);
     function updateMD5ForCopy($copyId, $md5);
     function getMissingMD5Documents();
+    function getAllMissingMD5Documents();
     function getProperty($name);
     function setProperty($name, $value);
     function addSiteUnknownPaths($siteName, array $paths);
