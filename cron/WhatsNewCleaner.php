@@ -116,18 +116,13 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         }
     }
 
-    private function urlEncode($url)
-    {
-        return str_replace(str_replace($url, ' ', urlencode(' ')), '#', urlencode('#'));
-    }
-
     public function ingest()
     {
         $this->log("Ingesting unknown paths for sites with IndexByDate.txt");
         $pubIds = [];
         $count = 0;
         $ingestCount = 0;
-        foreach ($this->_db->getUnknownPathsForCompanies() as $row)
+        foreach ($this->_db->getUnknownPathsForCompanies($this->_siteName) as $row)
         {
             ++$count;
             if ($count >= $this->_limit)
@@ -244,7 +239,16 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 
     private static function escapeSpecialChars($url)
     {
-        return str_replace(' ', urlencode(' '), str_replace("#", urlencode("#"), $url));
+        $replacements = [
+            ' ' => '%20',
+            '#' => urlencode('#'),
+            '&' => urlencode('&')
+        ];
+        foreach (array_keys($replacements) as $special)
+        {
+            $url = str_replace($special, $replacements[$special], $url);
+        }
+        return $url;
     }
 
     private function log($text)

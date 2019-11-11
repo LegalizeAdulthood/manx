@@ -799,7 +799,7 @@ class ManxDatabase implements IManxDatabase
             . "WHERE `copy`.`url` = CONCAT(`site`.`copy_base`, `site_unknown`.`path`)", []);
     }
 
-    public function getUnknownPathsForCompanies()
+    public function getUnknownPathsForCompanies($siteName)
     {
         return $this->execute("SELECT `su`.`id`, "
                 . "`su`.`site_id`, "
@@ -808,12 +808,13 @@ class ManxDatabase implements IManxDatabase
                 . "CONCAT(`s`.`copy_base`, `su`.`path`) AS `url` "
             . "FROM `site_unknown` `su`, `site_company_dir` `scd`, `site` `s` "
             . "WHERE `su`.`site_id` = `scd`.`site_id` "
+            . "AND `s`.`site_id` = `su`.`site_id` "
+            . "AND `s`.`name` = ? "
             . "AND `su`.`ignored` = 0 "
             . "AND `su`.`scanned` = 0 "
             . "AND `su`.`path` LIKE CONCAT(`scd`.`directory`, '/%\_%\_%.pdf') "
-            . "AND `s`.`site_id` = `su`.`site_id` "
             . "AND NOT (`su`.`path` LIKE '%+%' OR `su`.`path` LIKE '%#%' OR `su`.`path` LIKE '% %' OR `su`.`path` LIKE '%&%' OR `su`.`path` LIKE '%\%%') "
-            . "ORDER BY `su`.`id`", []);
+            . "ORDER BY `su`.`id`", [$siteName]);
     }
 
     public function markUnknownPathScanned($unknownId)

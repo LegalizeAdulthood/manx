@@ -802,6 +802,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testGetUnknownPathsForKnownCompanies()
     {
+        $siteName = 'bitsavers';
         $select = "SELECT `su`.`id`, "
             . "`su`.`site_id`, "
             . "`scd`.`company_id`, "
@@ -809,21 +810,22 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "CONCAT(`s`.`copy_base`, `su`.`path`) AS `url` "
         . "FROM `site_unknown` `su`, `site_company_dir` `scd`, `site` `s` "
         . "WHERE `su`.`site_id` = `scd`.`site_id` "
+        . "AND `s`.`site_id` = `su`.`site_id` "
+        . "AND `s`.`name` = ? "
         . "AND `su`.`ignored` = 0 "
         . "AND `su`.`scanned` = 0 "
         . "AND `su`.`path` LIKE CONCAT(`scd`.`directory`, '/%\_%\_%.pdf') "
-        . "AND `s`.`site_id` = `su`.`site_id` "
         . "AND NOT (`su`.`path` LIKE '%+%' OR `su`.`path` LIKE '%#%' OR `su`.`path` LIKE '% %' OR `su`.`path` LIKE '%&%' OR `su`.`path` LIKE '%\%%') "
         . "ORDER BY `su`.`id`" ;
         $rows = DatabaseTester::createResultRowsForColumns(
-            ['id', 'site_id', 'company_id', 'directory', 'url'],
+            ['id', 'company_id', 'directory', 'url'],
             [
-                [7766, 3, 13, 'dec', 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf'],
-                [7767, 3, 13, 'dec', 'http://bitsavers.org/pdf/dec/foo/EK-6666-01_Jumbotron_Reference_Manual.pdf']
+                [7766, 13, 'dec', 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf'],
+                [7767, 13, 'dec', 'http://bitsavers.org/pdf/dec/foo/EK-6666-01_Jumbotron_Reference_Manual.pdf']
             ]);
-        $this->_db->expects($this->once())->method('execute')->with($select, [])->willReturn($rows);
+        $this->_db->expects($this->once())->method('execute')->with($select, [$siteName])->willReturn($rows);
 
-        $results = $this->_manxDb->getUnknownPathsForCompanies();
+        $results = $this->_manxDb->getUnknownPathsForCompanies($siteName);
 
         $this->assertEquals($rows, $results);
     }

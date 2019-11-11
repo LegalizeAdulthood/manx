@@ -197,7 +197,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     public function testComputeMissingMD5CopyExistsSpaces()
     {
         $url = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron Users Manual.pdf';
-        $encodedUrl = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron+Users+Manual.pdf';
+        $encodedUrl = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron%20Users%20Manual.pdf';
         $copyId = 5544;
         $docs = DatabaseTester::createResultRowsForColumns([ 'copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url' ],
             [
@@ -236,6 +236,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $unknownId = 66;
         $companyId = 13;
         $siteId = 3;
+        $siteName = 'bitsavers';
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
         $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
@@ -246,7 +247,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $copyData = $this->stockCopyData();
         $this->_manx->expects($this->never())->method('getUserFromSession');
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
-        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
+        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->with($siteName)->willReturn($pathRows);
         $pubId = 23;
         $this->_manx->expects($this->never())->method('addPublication')
             ->with($this->_user, $companyId, $data['part'], $data['pub_date'],
@@ -265,6 +266,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $unknownId = 66;
         $companyId = 13;
         $siteId = 3;
+        $siteName = 'bitsavers';
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
         $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
@@ -281,7 +283,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
         $copyMD5 = 'deadbeeffacef00d';
         $this->_urlMetaData->expects($this->once())->method('getCopyMD5')->with($url)->willReturn($copyMD5);
-        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
+        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->with($siteName)->willReturn($pathRows);
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->once())->method('addCopy')->with($pubId, $data['format'], $siteId, $url,
                 $copyData['notes'], $data['size'], $copyMD5, $copyData['credits'], $copyData['amend_serial']);
@@ -296,6 +298,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $unknownId = 66;
         $companyId = 13;
         $siteId = 3;
+        $siteName = 'bitsavers';
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
         $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
@@ -311,7 +314,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $copyData = $this->stockCopyData();
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
         $this->_urlMetaData->expects($this->never())->method('getCopyMD5');
-        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
+        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->with($siteName)->willReturn($pathRows);
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
@@ -325,6 +328,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $unknownId = 66;
         $companyId = 13;
         $siteId = 3;
+        $siteName = 'bitsavers';
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
         $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
@@ -340,7 +344,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $copyData = $this->stockCopyData();
         $this->_manx->expects($this->never())->method('getUserFromSession');
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
-        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
+        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->with($siteName)->willReturn($pathRows);
         $pubId = 23;
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
@@ -355,6 +359,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $unknownId = 66;
         $companyId = 13;
         $siteId = 3;
+        $siteName = 'bitsavers';
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
         $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
@@ -370,7 +375,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->never())->method('getUserFromSession');
         $this->_urlMetaData->expects($this->never())->method('determineData')->with($url)->willReturn($data);
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);
-        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->willReturn($pathRows);
+        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')->with($siteName)->willReturn($pathRows);
         $this->_manx->expects($this->never())->method('addPublication');
         $this->_db->expects($this->never())->method('addCopy');
         $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
