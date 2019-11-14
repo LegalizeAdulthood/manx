@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `site_company_dir` (
   `site_id` INT(11) NOT NULL,
   `company_id` INT(11) NOT NULL,
   `directory` VARCHAR(255) NOT NULL DEFAULT '',
+  `parent_directory` VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -18,8 +19,8 @@ INSERT INTO `site_company_dir`(`site_id`, `company_id`,`directory`)
   SELECT s.`site_id`, bs.`company_id`, bs.`directory`
   FROM `site` s, `company_bitsavers` bs
   WHERE s.`name` = 'bitsavers';
-INSERT INTO `site_company_dir`(`site_id`, `company_id`, `directory`)
-  SELECT s.`site_id`, cc.`company_id`, cc.`directory`
+INSERT INTO `site_company_dir`(`site_id`, `company_id`, `directory`, `parent_directory`)
+  SELECT s.`site_id`, cc.`company_id`, cc.`directory`, 'computing'
   FROM `site` s, `company_chiclassiccomp` cc
   WHERE s.`name` = 'ChiClassicComp';
 DELETE FROM `company_bitsavers`;
@@ -62,6 +63,12 @@ DROP TABLE IF EXISTS `chiclassiccomp_unknown`;
 -- Automatic ingestion user
 --
 INSERT INTO `user`(`email`,`first_name`,`last_name`) VALUES ('ingestion@manx-docs.org', 'Ingestion', 'Robot');
+
+
+--
+-- Misspelled IndexByDate.txt property
+--
+DELETE FROM `properties` WHERE `name` = 'chiclassiccmp_whats_new_timestamp';
 
 --
 -- Manx version 2.0.7

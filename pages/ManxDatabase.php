@@ -805,6 +805,7 @@ class ManxDatabase implements IManxDatabase
                 . "`su`.`site_id`, "
                 . "`scd`.`company_id`, "
                 . "`scd`.`directory`, "
+                . "`scd`.`parent_directory`, "
                 . "CONCAT(`s`.`copy_base`, `su`.`path`) AS `url` "
             . "FROM `site_unknown` `su`, `site_company_dir` `scd`, `site` `s` "
             . "WHERE `su`.`site_id` = `scd`.`site_id` "
@@ -812,7 +813,11 @@ class ManxDatabase implements IManxDatabase
             . "AND `s`.`name` = ? "
             . "AND `su`.`ignored` = 0 "
             . "AND `su`.`scanned` = 0 "
-            . "AND `su`.`path` LIKE CONCAT(`scd`.`directory`, '/%\_%\_%.pdf') "
+            . "AND ("
+                . "(`su`.`path` LIKE CONCAT(`scd`.`parent_directory`, '/', `scd`.`directory`, '/%\_%\_%.pdf') AND `scd`.`parent_directory` <> '') "
+                . "OR "
+                . "(`su`.`path` LIKE CONCAT(`scd`.`directory`, '/%\_%\_%.pdf') AND `scd`.`parent_directory` = '')"
+            . ") "
             . "AND NOT (`su`.`path` LIKE '%+%' OR `su`.`path` LIKE '%#%' OR `su`.`path` LIKE '% %' OR `su`.`path` LIKE '%&%' OR `su`.`path` LIKE '%\%%') "
             . "ORDER BY `su`.`id`", [$siteName]);
     }
