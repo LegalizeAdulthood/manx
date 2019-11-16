@@ -7,6 +7,14 @@ use Pimple\Container;
 
 class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 {
+    public function testExtractPartNumberLeadingDigitsSpaceSeparators()
+    {
+        list($partNumber, $fileBase) = UrlMetaData::extractPartNumber('800-1023-01 - Adaptec ACB 4000 and 5000 Series Disk Controllers OEM Manual (Preliminary)');
+
+        $this->assertEquals('800-1023-01', $partNumber);
+        $this->assertEquals('- Adaptec ACB 4000 and 5000 Series Disk Controllers OEM Manual (Preliminary)', $fileBase);
+    }
+
     public function testExtractPartNumberLeadingDigitsUnderscoreSeparators()
     {
         list($partNumber, $fileBase) = UrlMetaData::extractPartNumber('800-1023-01_Adaptec_ACB_4000_and_5000_Series_Disk_Controllers_OEM_Manual_(Preliminary)');

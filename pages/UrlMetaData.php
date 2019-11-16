@@ -471,13 +471,19 @@ class UrlMetaData implements IUrlMetaData
     public static function extractPartNumber($fileBase)
     {
         $partNumber = '';
-        $parts = explode('_', $fileBase);
+        $sep = '_';
+        $parts = explode($sep, $fileBase);
+        if (count($parts) == 1)
+        {
+            $sep = ' ';
+            $parts = explode($sep, $fileBase);
+        }
         if (count($parts) > 1)
         {
             if (1 == preg_match('/[0-9][0-9]+/', $parts[0]))
             {
                 $partNumber = array_shift($parts);
-                $fileBase = implode('_', $parts);
+                $fileBase = implode($sep, $parts);
             }
         }
         return [$partNumber, $fileBase];
