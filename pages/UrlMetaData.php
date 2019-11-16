@@ -450,21 +450,26 @@ class UrlMetaData implements IUrlMetaData
 
         list($fileName, $fileBase, $extension) = self::extractFileNameExtension(array_pop($dirs));
         list($data['pub_date'], $fileBase) = self::extractPubDate($fileBase);
-        $parts = explode('_', $fileBase);
-        if (count($parts) > 1)
+        list($data['part'], $fileBase) = self::extractPartNumber($fileBase);
+        if ($company != -1)
         {
-            if (1 == preg_match('/[0-9][0-9]+/', $parts[0]))
+            if (strlen($data['part']) > 0)
             {
-                $data['part'] = array_shift($parts);
+                // Search for publications by part number
+                $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
             }
-            $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
-            $data['title'] = self::titleForFileBase(implode(' ', $parts));
+            else
+            {
+                // Search for publications by keyword
+                $data['pubs'] = $this->findPublicationsForKeywords($company, array($fileBase));
+            }
         }
         else
         {
-            $data['pubs'] = $this->findPublicationsForKeywords($company, array($fileBase));
-            $data['title'] = self::titleForFileBase($fileBase);
+            // We can only search for publications when we know the company
+            $data['pubs'] = [];
         }
+        $data['title'] = self::titleForFileBase($fileBase);
         $data['format'] = $this->_db->getFormatForExtension($extension);
     }
 

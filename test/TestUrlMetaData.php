@@ -94,7 +94,8 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers($siteId));
         $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->willReturn('-1');
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
-        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('', '-1')->willReturn([]);
+        $this->_db->expects($this->never())->method('getPublicationsForPartNumber');
+        $this->_db->expects($this->never())->method('searchForPublications');
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
@@ -168,7 +169,8 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers($siteId));
         $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('bitsavers', 'univac', '')->willReturn('-1');
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
-        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('UE-637', '-1')->willReturn(array());
+        $this->_db->expects($this->never())->method('getPublicationsForPartNumber');
+        $this->_db->expects($this->never())->method('searchForPublications');
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
             ->with('http://bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf')
