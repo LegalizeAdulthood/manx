@@ -12,8 +12,8 @@ class ChiClassicCompConfig
         $config['timeStampProperty'] = 'chiclassiccomp_whats_new_timestamp';
         $config['indexByDateFile'] = 'chiClassicComp-IndexByDate.txt';
         $config['indexByDateUrl'] = 'http://chiclassiccomp.org/docs/content/IndexByDate.txt';
-        $config['baseCheckUrl'] = 'http://chiclassiccomp.com/docs/content/';
-        $config['baseUrl'] = 'http://chiclassiccomp.com/docs/content/';
+        $config['baseCheckUrl'] = 'http://chiclassiccomp.org/docs/content';
+        $config['baseUrl'] = 'http://chiclassiccomp.org/docs/content';
         $config['menuType'] = MenuType::ChiClassicComp;
         $config['page'] = 'chiclassiccomp.php';
         $config['title'] = 'ChiClassicComp';

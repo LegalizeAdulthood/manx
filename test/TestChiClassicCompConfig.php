@@ -34,12 +34,12 @@ class TestChiClassicCompConfig extends PHPUnit\Framework\TestCase
 
     public function testBaseCheckUrl()
     {
-        $this->assertEquals('http://chiclassiccomp.com/docs/content/', $this->_config['baseCheckUrl']);
+        $this->assertEquals('http://chiclassiccomp.org/docs/content', $this->_config['baseCheckUrl']);
     }
 
     public function testBaseUrl()
     {
-        $this->assertEquals('http://chiclassiccomp.com/docs/content/', $this->_config['baseUrl']);
+        $this->assertEquals('http://chiclassiccomp.org/docs/content', $this->_config['baseUrl']);
     }
 
     public function testMenuType()
