@@ -5,6 +5,7 @@ require_once 'test/TestAdminPageBase.php';
 require_once 'test/TestBitSaversPage.php';
 require_once 'test/TestBitSaversCleaner.php';
 require_once 'test/TestBitSaversConfig.php';
+require_once 'test/TestChiClassicCompConfig.php';
 require_once 'test/TestChiClassicCompPage.php';
 require_once 'test/TestCompanyPage.php';
 require_once 'test/TestDetailsPage.php';
@@ -37,6 +38,7 @@ class AllTests
                 'TestBitSaversCleaner',
                 'TestBitSaversConfig',
                 'TestBitSaversPage',
+                'TestChiClassicCompConfig',
                 'TestChiClassicCompPage',
                 'TestCompanyPage',
                 'TestDetailsPage',
