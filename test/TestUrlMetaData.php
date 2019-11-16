@@ -379,7 +379,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         return [self::bitSaversSiteRow($id)];
     }
 
-    private function bitSaversSiteRow($siteId)
+    private static function bitSaversSiteRow($siteId)
     {
         return [
             'site_id' => $siteId,
