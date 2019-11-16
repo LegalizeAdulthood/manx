@@ -52,7 +52,7 @@ class URLWizardPage extends AdminPageBase
         $directory = $this->param('site_company_directory');
         if (strlen($directory) > 0)
         {
-            $this->_db->addSiteDirectory($this->param('site_name'), $companyId, $directory);
+            $this->_db->addSiteDirectory($this->param('site_name'), $companyId, $directory, $this->param('site_company_parent_directory'));
         }
     }
 
@@ -229,6 +229,7 @@ EOH;
 
 <fieldset id="site_company_field" class="hidden">
 <input type="hidden" id="site_company_directory" name="site_company_directory" value="" />
+<input type="hidden" id="site_company_parent_directory" name="site_company_parent_directory" value="" />
 </fieldset>
 
 <fieldset id="site_fields" class="hidden">

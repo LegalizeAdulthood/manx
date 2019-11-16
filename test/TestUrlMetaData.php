@@ -55,7 +55,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $title = '2602 Bisync Interface Product Specification';
         $copyExistsRow = ['ph_company' => $companyId, 'ph_pub' => $pubId, 'ph_title' => $title ];
         $this->_db->expects($this->once())->method('copyExistsForUrl')->with($url)->willReturn($copyExistsRow);
-        $this->_db->expects($this->never())->method('getCompanyForSiteDirectory');
+        $this->_db->expects($this->never())->method('getCompanyIdForSiteDirectory');
         $this->_db->expects($this->never())->method('getFormatForExtension');
         $this->_db->expects($this->never())->method('getMirrors');
 
@@ -92,7 +92,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
     {
         $siteId = 3;
         $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers($siteId));
-        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->willReturn('-1');
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->willReturn('-1');
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
         $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('', '-1')->willReturn([]);
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
@@ -113,6 +113,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'title' => 'Graphic 7 Monitor Preliminary Users Guide',
             'format' => 'PDF',
             'site_company_directory' => 'sandersAssociates',
+            'site_company_parent_directory' => '',
             'pubs' => []
         ];
         $this->assertEquals($expectedData, $data);
@@ -122,7 +123,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
     {
         $siteId = 3;
         $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers($siteId));
-        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('bitsavers', 'tektronix')->willReturn('5');
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('bitsavers', 'tektronix', '')->willReturn('5');
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
         $this->_db->expects($this->once())->method('getMirrors')->willReturn([
             self::databaseRowFromDictionary([
@@ -155,6 +156,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'title' => 'Rev B 4010 Maintenance Manual',
             'format' => 'PDF',
             'site_company_directory' => 'tektronix',
+            'site_company_parent_directory' => '',
             'pubs' => []
         ];
         $this->assertEquals($data, $expected);
@@ -164,7 +166,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
     {
         $siteId = 3;
         $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers($siteId));
-        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('bitsavers', 'univac')->willReturn('-1');
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('bitsavers', 'univac', '')->willReturn('-1');
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
         $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('UE-637', '-1')->willReturn(array());
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
@@ -188,6 +190,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'title' => '1108exec UG',
             'format' => 'PDF',
             'site_company_directory' => 'univac',
+            'site_company_parent_directory' => '',
             'pubs' => []
         ];
         $this->assertEquals($expected, $data);
@@ -196,7 +199,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
     public function testDetermineDataChiClassicComp()
     {
         $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForChiClassicComp());
-        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('ChiClassicComp', 'Motorola')->willReturn('66');
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('ChiClassicComp', 'Motorola', 'computing')->willReturn('66');
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
         $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('6064A-5M-668', '66')->willReturn(array());
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
@@ -220,6 +223,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'title' => 'MDR-1000Brochure',
             'format' => 'PDF',
             'site_company_directory' => 'Motorola',
+            'site_company_parent_directory' => 'computing',
             'pubs' => []
         ];
         $this->assertEquals($data, $expected);
@@ -236,7 +240,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/pdf/microdata/periph/2602_Bisync_Controller/PS20002602_2602_Bisync_Interface_Product_Specification_Mar1977.pdf';
         $companyId = 13;
         $part = 'PS20002602';
-        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('bitsavers', 'microdata')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('bitsavers', 'microdata', '')->willReturn($companyId);
         $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with($part, $companyId)->willReturn([]);
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
         $pubId = 23;
@@ -259,6 +263,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'title' => $title,
             'format' => 'PDF',
             'site_company_directory' => 'microdata',
+            'site_company_parent_directory' => '',
             'pubs' => [],
             'exists' => true,
             'pub_id' => $pubId
@@ -277,7 +282,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/pdf/microdata/periph/2602_Bisync_Controller/PS20002602_2602_Bisync_Interface_Product_Specification_Mar1977.pdf';
         $companyId = 13;
         $part = 'PS20002602';
-        $this->_db->expects($this->once())->method('getCompanyForSiteDirectory')->with('bitsavers', 'microdata')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('bitsavers', 'microdata', '')->willReturn($companyId);
         $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with($part, $companyId)->willReturn([]);
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
         $this->_db->expects($this->once())->method('copyExistsForUrl')->with($url)->willReturn(true);
@@ -297,6 +302,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'title' => null,
             'format' => 'PDF',
             'site_company_directory' => 'microdata',
+            'site_company_parent_directory' => '',
             'pubs' => [],
             'exists' => true,
             'pub_id' => null

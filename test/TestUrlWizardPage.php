@@ -330,6 +330,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
 <fieldset id="site_company_field" class="hidden">
 <input type="hidden" id="site_company_directory" name="site_company_directory" value="" />
+<input type="hidden" id="site_company_parent_directory" name="site_company_parent_directory" value="" />
 </fieldset>
 
 <fieldset id="site_fields" class="hidden">

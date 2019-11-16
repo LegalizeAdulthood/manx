@@ -35,13 +35,13 @@ interface IManxDatabase
     function getMirrors();
     function getSites();
     function getFormatForExtension($extension);
-    function getCompanyForSiteDirectory($siteName, $dir);
+    function getCompanyIdForSiteDirectory($siteName, $dir, $parentDir);
     function deleteUserSession($session);
     function addSupersession($oldPub, $newPub);
     function addSite($name, $url, $description, $copy_base, $low, $live);
     function addCopy($pubId, $format, $siteId, $url,
         $notes, $size, $md5, $credits, $amendSerial);
-    function addSiteDirectory($siteName, $companyId, $directory);
+    function addSiteDirectory($siteName, $companyId, $directory, $parentDirectory);
     function getMostRecentDocuments($count);
     function getManxVersion();
     function copyExistsForUrl($url);

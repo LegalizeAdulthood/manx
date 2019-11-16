@@ -424,16 +424,28 @@ class UrlMetaData implements IUrlMetaData
         $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
     }
 
-    private function determineSiteData($siteName, $companyComponent, &$data)
+    private function determineIngestBitSaversData(&$data)
+    {
+        $this->determineIngestSiteData('bitsavers', 2, $data);
+    }
+
+    private function determineIngestChiClassicCompData(&$data)
+    {
+        $this->determineIngestSiteData('ChiClassicComp', 4, $data);
+    }
+
+    private function determineSiteData($siteName, $companyComponent, $parentDirComponent, &$data)
     {
         $url = $data['url'];
         $urlComponents = parse_url($url);
         $dirs = explode('/', $urlComponents['path']);
         $companyDir = $dirs[$companyComponent];
+        $parentDir = $parentDirComponent == -1 ? '' : $dirs[$parentDirComponent];
 
-        $company = $this->_db->getCompanyForSiteDirectory($siteName, $companyDir);
+        $company = $this->_db->getCompanyIdForSiteDirectory($siteName, $companyDir, $parentDir);
         $data['company'] = $company;
         $data['site_company_directory'] = $companyDir;
+        $data['site_company_parent_directory'] = $parentDir;
 
         $fileName = array_pop($dirs);
         $dotPos = strrpos($fileName, '.');
@@ -467,24 +479,14 @@ class UrlMetaData implements IUrlMetaData
         $data['format'] = $this->_db->getFormatForExtension($extension);
     }
 
-    private function determineIngestBitSaversData(&$data)
-    {
-        $this->determineIngestSiteData('bitsavers', 2, $data);
-    }
-
-    private function determineIngestChiClassicCompData(&$data)
-    {
-        $this->determineIngestSiteData('ChiClassicComp', 4, $data);
-    }
-
     private function determineBitSaversData(&$data)
     {
-        $this->determineSiteData('bitsavers', 2, $data);
+        $this->determineSiteData('bitsavers', 2, -1, $data);
     }
 
     private function determineChiClassicCompData(&$data)
     {
-        $this->determineSiteData('ChiClassicComp', 4, $data);
+        $this->determineSiteData('ChiClassicComp', 4, 3, $data);
     }
 
     public static function titleForFileBase($fileBase)

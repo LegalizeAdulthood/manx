@@ -158,6 +158,7 @@ $(function()
     function set_site_company_directory(data)
     {
         $("#site_company_directory").val(data.site_company_directory);
+        $("#site_company_parent_directory").val(data.site_company_parent_directory);
     }
 
     function reset_site()

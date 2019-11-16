@@ -560,10 +560,14 @@ class ManxDatabase implements IManxDatabase
         return $siteId[0]['site_id'];
     }
 
-    public function getCompanyForSiteDirectory($siteName, $dir)
+    public function getCompanyIdForSiteDirectory($siteName, $dir, $parentDir)
     {
-        $rows = $this->execute("SELECT `company_id` FROM `site_company_dir` WHERE `site_id`=? AND `directory`=?",
-            array($this->siteIdForName($siteName), $dir));
+        $rows = $this->execute("SELECT `scd`.`company_id` FROM `site_company_dir` `scd`, `site` `s` "
+            . "WHERE `scd`.`site_id` = `s`.`site_id` "
+            . "AND `s`.`name` = ? "
+            . "AND `scd`.`directory` = ? "
+            . "AND `scd`.`parent_directory` = ?",
+            [ $siteName, $dir, $parentDir ]);
         return (count($rows) > 0) ? $rows[0]['company_id'] : -1;
     }
 
@@ -604,14 +608,17 @@ class ManxDatabase implements IManxDatabase
         return is_string($md5) ? $md5 : null;
     }
 
-    public function addSiteDirectory($siteName, $companyId, $directory)
+    public function addSiteDirectory($siteName, $companyId, $directory, $parentDirectory)
     {
-        $siteId = $this->siteIdForName($siteName);
-        $row = $this->execute("SELECT * FROM `site_company_dir` WHERE `site_id`=? AND `company_id`=?", array($siteId, $companyId));
+        $row = $this->execute("SELECT * FROM `site_company_dir` `scd`, `site` `s` "
+            . "WHERE `scd`.`site_id`=`s`.`site_id` "
+            . "AND `s`.`name`=? "
+            . "AND `scd`.`company_id`=?", [$siteName, $companyId]);
         if (count($row) == 0)
         {
-            $this->_db->execute('INSERT INTO `site_company_dir`(`site_id`,`company_id`,`directory`) VALUES (?,?,?)',
-                array($siteId, $companyId, $directory));
+            $this->_db->execute("INSERT INTO `site_company_dir`(`site_id`, `company_id`, `directory`, `parent_directory`) "
+                . "(SELECT `site_id`, ?, ?, ? FROM `site` WHERE `name`=?)",
+                [$companyId, $directory, $parentDirectory, $siteName]);
         }
     }
 

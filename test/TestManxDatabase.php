@@ -878,6 +878,45 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals($rows, $result);
     }
 
+    public function testAddSiteDirectory()
+    {
+        $siteName = 'ChiClassicComp';
+        $companyId = 44;
+        $directory = 'DigitalResearch';
+        $parentDirectory = 'computing';
+        $select = "SELECT * FROM `site_company_dir` `scd`, `site` `s` "
+            . "WHERE `scd`.`site_id`=`s`.`site_id` "
+            . "AND `s`.`name`=? "
+            . "AND `scd`.`company_id`=?";
+        $execute = "INSERT INTO `site_company_dir`(`site_id`, `company_id`, `directory`, `parent_directory`) "
+            . "(SELECT `site_id`, ?, ?, ? FROM `site` WHERE `name`=?)";
+        $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
+                [$select, [$siteName, $companyId]],
+                [$execute, [$companyId, $directory, $parentDirectory, $siteName]])
+            ->willReturn([], []);
+
+        $this->_manxDb->addSiteDirectory($siteName, $companyId, $directory, $parentDirectory);
+    }
+
+    public function testGetCompanyForSiteDirectory()
+    {
+        $siteName = 'ChiClassicComp';
+        $directory = 'DigitalResearch';
+        $parentDirectory = 'computing';
+        $select = "SELECT `scd`.`company_id` FROM `site_company_dir` `scd`, `site` `s` "
+            . "WHERE `scd`.`site_id` = `s`.`site_id` "
+            . "AND `s`.`name` = ? "
+            . "AND `scd`.`directory` = ? "
+            . "AND `scd`.`parent_directory` = ?";
+        $companyId = 38;
+        $rows = DatabaseTester::createResultRowsForColumns([ 'company_id' ], [ [ $companyId ] ]);
+        $this->_db->expects($this->once())->method('execute')->with($select, [ $siteName, $directory, $parentDirectory ])->willReturn($rows);
+
+        $result = $this->_manxDb->getCompanyIdForSiteDirectory($siteName, $directory, $parentDirectory);
+
+        $this->assertEquals($companyId, $result);
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");
