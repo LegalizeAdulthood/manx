@@ -7,6 +7,33 @@ use Pimple\Container;
 
 class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 {
+    public function testExtractFileNameExtensionWithExtension()
+    {
+        list($fileName, $fileBase, $extension) = UrlMetaData::extractFileNameExtension('foo.bar.pdf');
+
+        $this->assertEquals('foo.bar.pdf', $fileName);
+        $this->assertEquals('foo.bar', $fileBase);
+        $this->assertEquals('pdf', $extension);
+    }
+
+    public function testExtractFileNameExtensionNoExtension()
+    {
+        list($fileName, $fileBase, $extension) = UrlMetaData::extractFileNameExtension('foo_bar');
+
+        $this->assertEquals('foo_bar', $fileName);
+        $this->assertEquals('foo_bar', $fileBase);
+        $this->assertEquals('', $extension);
+    }
+
+    public function testExtractFileNameExtensionEncodedChars()
+    {
+        list($fileName, $fileBase, $extension) = UrlMetaData::extractFileNameExtension('foo%20bar%2Epdf');
+
+        $this->assertEquals('foo bar.pdf', $fileName);
+        $this->assertEquals('foo bar', $fileBase);
+        $this->assertEquals('pdf', $extension);
+    }
+
     public function testUrlComponentsMatchBitSaversOrg()
     {
         $this->assertUrlMatchesSite(

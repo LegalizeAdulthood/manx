@@ -468,7 +468,7 @@ class UrlMetaData implements IUrlMetaData
         $data['format'] = $this->_db->getFormatForExtension($extension);
     }
 
-    static function extractFileNameExtension($fileName)
+    public static function extractFileNameExtension($fileName)
     {
         $fileName = urldecode($fileName);
         $dotPos = strrpos($fileName, '.');
