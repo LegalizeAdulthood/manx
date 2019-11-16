@@ -401,15 +401,16 @@ class UrlMetaData implements IUrlMetaData
             'october' => '10', 'november' => '11', 'december' => '12'];
     }
 
+    // Unlike determineSiteData where we have arbitrary URLs coming in, when
+    // we are ingesting, we've already identified the company via the site_company_dir
+    // table entries that match the unknown paths, so we don't need to compute
+    // site_company_directory or site_company_parent_directory data elements.
     private function determineIngestSiteData($siteName, $companyComponent, &$data)
     {
         $url = $data['url'];
         $urlComponents = parse_url($url);
         $dirs = explode('/', $urlComponents['path']);
-        $fileName = array_pop($dirs);
-        $filePieces = explode('.', $fileName);
-        array_pop($filePieces);
-        $fileBase = implode('.', $filePieces);
+        list($fileName, $fileBase, $extension) = self::extractFileNameExtension(array_pop($dirs));
         list($data['pub_date'], $fileBase) = self::extractPubDate($fileBase);
 
         $parts = explode('_', $fileBase);
@@ -447,19 +448,7 @@ class UrlMetaData implements IUrlMetaData
         $data['site_company_directory'] = $companyDir;
         $data['site_company_parent_directory'] = $parentDir;
 
-        $fileName = urldecode(array_pop($dirs));
-        $dotPos = strrpos($fileName, '.');
-        if ($dotPos === false)
-        {
-            $fileBase = $fileName;
-            $extension = '';
-        }
-        else
-        {
-            $fileParts = explode('.', $fileName);
-            $extension = array_pop($fileParts);
-            $fileBase = implode('.', $fileParts);
-        }
+        list($fileName, $fileBase, $extension) = self::extractFileNameExtension(array_pop($dirs));
         list($data['pub_date'], $fileBase) = self::extractPubDate($fileBase);
         $parts = explode('_', $fileBase);
         if (count($parts) > 1)
@@ -477,6 +466,24 @@ class UrlMetaData implements IUrlMetaData
             $data['title'] = self::titleForFileBase($fileBase);
         }
         $data['format'] = $this->_db->getFormatForExtension($extension);
+    }
+
+    static function extractFileNameExtension($fileName)
+    {
+        $fileName = urldecode($fileName);
+        $dotPos = strrpos($fileName, '.');
+        if ($dotPos === false)
+        {
+            $fileBase = $fileName;
+            $extension = '';
+        }
+        else
+        {
+            $fileParts = explode('.', $fileName);
+            $extension = array_pop($fileParts);
+            $fileBase = implode('.', $fileParts);
+        }
+        return [$fileName, $fileBase, $extension];
     }
 
     private function determineBitSaversData(&$data)
