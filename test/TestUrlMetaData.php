@@ -203,11 +203,9 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
         $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('6064A-5M-668', '66')->willReturn(array());
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
-        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
-            ->with('http://chiclassiccomp.org/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf')
-            ->wilLReturn($this->_urlInfo);
         $urlBase = '/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf';
         $url = 'http://chiclassiccomp.org' . $urlBase;
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->wilLReturn($this->_urlInfo);
 
         $data = $this->_meta->determineData($url);
 
@@ -223,6 +221,40 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'title' => 'MDR-1000Brochure',
             'format' => 'PDF',
             'site_company_directory' => 'Motorola',
+            'site_company_parent_directory' => 'computing',
+            'pubs' => []
+        ];
+        $this->assertEquals($data, $expected);
+    }
+
+    public function testDetermineDataChiClassicCompUrlWithSpaces()
+    {
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForChiClassicComp());
+        $companyId = 66;
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('ChiClassicComp', 'Sun', 'computing')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $part = '800-1023-01';
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with($part, $companyId)->willReturn(array());
+        $copySize = 1266;
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn($copySize);
+        $urlBase = '/docs/content/computing/Sun/hardware/800-1023-01_Adaptec%20ACB%204000%20and%205000%20Series%20Disk%20Controllers%20OEM%20Manual%20(Preliminary).pdf';
+        $url = 'http://chiclassiccomp.org' . $urlBase;
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->wilLReturn($this->_urlInfo);
+
+        $data = $this->_meta->determineData($url);
+
+        $expected = [
+            'url' => $url,
+            'mirror_url' => '',
+            'size' => $copySize,
+            'valid' => true,
+            'site' => self::chiClassicCompSiteRow(),
+            'company' => $companyId,
+            'part' => $part,
+            'pub_date' => '',
+            'title' => 'Adaptec ACB 4000 and 5000 Series Disk Controllers OEM Manual (Preliminary)',
+            'format' => 'PDF',
+            'site_company_directory' => 'Sun',
             'site_company_parent_directory' => 'computing',
             'pubs' => []
         ];

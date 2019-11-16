@@ -447,7 +447,7 @@ class UrlMetaData implements IUrlMetaData
         $data['site_company_directory'] = $companyDir;
         $data['site_company_parent_directory'] = $parentDir;
 
-        $fileName = array_pop($dirs);
+        $fileName = urldecode(array_pop($dirs));
         $dotPos = strrpos($fileName, '.');
         if ($dotPos === false)
         {
