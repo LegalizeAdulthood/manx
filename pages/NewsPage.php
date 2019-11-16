@@ -16,8 +16,11 @@ class NewsPage extends PageBase
 
 <h2>Version 2.0.7</h2>
 
-<p>Eliminate duplication between bitsavers and ChiClassicComp front ends.
-Use composer for dependency on PHPUnit, update to PHPUnit 6.</p>
+<p>Minor bug fix release with the beginnings of support for automatic
+ingestion of documents from sites with an IndexByDate.txt structure
+like bitsavers.  Eliminate duplication between bitsavers and ChiClassicComp
+front ends. Modernize the code with use of composer for dependency on PHPUnit,
+update to PHPUnit 6.</p>
 
 <h2>Version 2.0.5</h2>
 
