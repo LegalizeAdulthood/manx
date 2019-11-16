@@ -7,6 +7,14 @@ use Pimple\Container;
 
 class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 {
+    public function testExtractPartNumberLeadingDigitsUnderscoreSeparators()
+    {
+        list($partNumber, $fileBase) = UrlMetaData::extractPartNumber('800-1023-01_Adaptec_ACB_4000_and_5000_Series_Disk_Controllers_OEM_Manual_(Preliminary)');
+
+        $this->assertEquals('800-1023-01', $partNumber);
+        $this->assertEquals('Adaptec_ACB_4000_and_5000_Series_Disk_Controllers_OEM_Manual_(Preliminary)', $fileBase);
+    }
+
     public function testExtractFileNameExtensionWithExtension()
     {
         list($fileName, $fileBase, $extension) = UrlMetaData::extractFileNameExtension('foo.bar.pdf');

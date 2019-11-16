@@ -405,6 +405,7 @@ class UrlMetaData implements IUrlMetaData
     // we are ingesting, we've already identified the company via the site_company_dir
     // table entries that match the unknown paths, so we don't need to compute
     // site_company_directory or site_company_parent_directory data elements.
+    //
     private function determineIngestSiteData($siteName, $companyComponent, &$data)
     {
         $url = $data['url'];
@@ -412,17 +413,16 @@ class UrlMetaData implements IUrlMetaData
         $dirs = explode('/', $urlComponents['path']);
         list($fileName, $fileBase, $extension) = self::extractFileNameExtension(array_pop($dirs));
         list($data['pub_date'], $fileBase) = self::extractPubDate($fileBase);
-
-        $parts = explode('_', $fileBase);
-        if (count($parts) > 1)
+        list($data['part'], $fileBase) = self::extractPartNumber($fileBase);
+        if (strlen($data['part']) > 1)
         {
-            if (1 == preg_match('/[0-9][0-9]+/', $parts[0]))
-            {
-                $data['part'] = array_shift($parts);
-            }
+            $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
         }
-        $data['title'] = self::titleForFileBase(implode(' ', $parts));
-        $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
+        else
+        {
+            $data['pubs'] = $this->findPublicationsForKeywords($data['company'], [$fileBase]);
+        }
+        $data['title'] = self::titleForFileBase($fileBase);
     }
 
     private function determineIngestBitSaversData(&$data)
@@ -466,6 +466,21 @@ class UrlMetaData implements IUrlMetaData
             $data['title'] = self::titleForFileBase($fileBase);
         }
         $data['format'] = $this->_db->getFormatForExtension($extension);
+    }
+
+    public static function extractPartNumber($fileBase)
+    {
+        $partNumber = '';
+        $parts = explode('_', $fileBase);
+        if (count($parts) > 1)
+        {
+            if (1 == preg_match('/[0-9][0-9]+/', $parts[0]))
+            {
+                $partNumber = array_shift($parts);
+                $fileBase = implode('_', $parts);
+            }
+        }
+        return [$partNumber, $fileBase];
     }
 
     public static function extractFileNameExtension($fileName)
