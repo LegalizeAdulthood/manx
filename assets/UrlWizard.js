@@ -336,6 +336,7 @@ $(function()
                 show(error_id);
                 $(this).html(response.responseText);
             }
+            next_enable(true);
         };
     }
 
@@ -348,6 +349,7 @@ $(function()
         {
             $("#" + error_id).ajaxError(ajax_error_handler(error_id));
             show(working_id);
+            next_enable(false);
             wizard_service(
                 {
                     'error_id': error_id,
@@ -359,6 +361,7 @@ $(function()
                 {
                     callback(json);
                     hide(working_id);
+                    next_enable(true);
                 });
         }
     }
@@ -425,6 +428,7 @@ $(function()
         if (url.length > 0)
         {
             show("copy_url_working");
+            next_enable(false);
             wizard_service(
                 {
                     'error_id': 'copy_url_error',
@@ -455,6 +459,7 @@ $(function()
                         show("supersession_fields");
                     }
                     hide("copy_url_working");
+                    next_enable(true);
                 });
         }
         else
@@ -509,6 +514,12 @@ $(function()
         toggle("pub_history_ph_amend_serial_field");
         clear_errors();
         show_hide_details_link(id_field);
+    }
+
+    function next_enable(enabled)
+    {
+        var next = $("input[name='next']");
+        next.prop('disabled', !enabled);
     }
 
     function next_click(event)
