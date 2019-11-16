@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS `site_company_dir` (
   `company_id` INT(11) NOT NULL,
   `directory` VARCHAR(255) NOT NULL DEFAULT '',
   `parent_directory` VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE (`site_id`, `company_id`, `directory`(128), `parent_directory`(128))
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
