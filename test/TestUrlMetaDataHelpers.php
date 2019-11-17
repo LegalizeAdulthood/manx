@@ -178,7 +178,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     public function testTitleMixedCaseAndUnderscores()
     {
-        $this->assertTitleForFileBase('TI CBL Real World Math Guidebook', 'TI_CBL_RealWorldMath_Guidebook');
+        $this->assertTitleForFileBase('TI CBL RealWorldMath Guidebook', 'TI_CBL_RealWorldMath_Guidebook');
     }
 
     public function testTitleForFileBaseWithMixedCaseTwoWords()
@@ -189,6 +189,11 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
     public function testTitleForFileBaseWithMixedCaseFourWords()
     {
         $this->assertTitleForFileBase('Foo Bar Blobby Phlegm', 'FooBarBlobbyPhlegm');
+    }
+
+    public function testTitleForFileBaseWithMixedCaseWordsUnderscoreSeparator()
+    {
+        $this->assertTitleForFileBase('Foo Bar BlobbyPhlegm', 'Foo_Bar_BlobbyPhlegm');
     }
 
     private function assertTitleForFileBase($title, $fileBase)

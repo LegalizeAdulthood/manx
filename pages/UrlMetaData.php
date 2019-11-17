@@ -531,7 +531,7 @@ class UrlMetaData implements IUrlMetaData
     public static function titleForFileBase($fileBase)
     {
         $title = str_replace('_', ' ', str_replace(urlencode('#'), '#', $fileBase));
-        if (1 == preg_match('/[a-z][A-Z]/', $title))
+        if (1 != preg_match('/ /', $title) && 1 == preg_match('/[a-z][A-Z]/', $title))
         {
             $words = array();
             $pieces = preg_split('/([a-z])([A-Z])/', $title, -1, PREG_SPLIT_DELIM_CAPTURE);
