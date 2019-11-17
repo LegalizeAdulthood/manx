@@ -77,6 +77,14 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
         $this->assertEquals('foo_bar_3', $newFileBase);
     }
 
+    public function testExtractPubDateBogusNumber()
+    {
+        list($date, $newFileBase) = UrlMetaData::extractPubDate('foo_bar_9985');
+
+        $this->assertEquals('', $date);
+        $this->assertEquals('foo_bar_9985', $newFileBase);
+    }
+
     public function testExtractPubDateSeparateMonthDayYear()
     {
         $this->assertPubDateForFileBase('1975-03-15', 'foo_bar_March_15_1975');

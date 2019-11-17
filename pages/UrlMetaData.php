@@ -164,7 +164,7 @@ class UrlMetaData implements IUrlMetaData
         {
             $lastPart = count($parts)-1;
             $year = strtolower($parts[$lastPart]);
-            if (is_numeric($year) && $year > 9)
+            if (is_numeric($year) && $year > 9 && $year < 2100)
             {
                 if ($year < 100)
                 {
