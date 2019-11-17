@@ -69,6 +69,14 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
         $this->assertTrue(UrlMetaData::urlComponentsMatch(parse_url($url), parse_url($site)));
     }
 
+    public function testExtractPubDateSpaceSeparator()
+    {
+        list($pubDate, $newFileBase) = UrlMetaData::extractPubDate('foo bar March 15 1975');
+
+        $this->assertEquals('1975-03-15', $pubDate);
+        $this->assertEquals('foo bar', $newFileBase);
+    }
+
     public function testExtractPubDateSingleTrailingDigit()
     {
         list($date, $newFileBase) = UrlMetaData::extractPubDate('foo_bar_3');

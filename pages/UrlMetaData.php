@@ -159,7 +159,13 @@ class UrlMetaData implements IUrlMetaData
     public static function extractPubDate($fileBase)
     {
         $pubDate = '';
-        $parts = explode('_', $fileBase);
+        $sep = '_';
+        $parts = explode($sep, $fileBase);
+        if (count($parts) == 1)
+        {
+            $sep = ' ';
+            $parts = explode($sep, $fileBase);
+        }
         if (count($parts) > 1)
         {
             $lastPart = count($parts)-1;
@@ -215,7 +221,7 @@ class UrlMetaData implements IUrlMetaData
                     }
                 }
 
-                $fileBase = implode('_', array_slice($parts, 0, $lastPart + 1));
+                $fileBase = implode($sep, array_slice($parts, 0, $lastPart + 1));
             }
             else if (1 == preg_match('/^([a-z]+)([0-9]+)$/', $year, $matches))
             {
@@ -229,7 +235,7 @@ class UrlMetaData implements IUrlMetaData
                 {
                     $pubDate = sprintf("%d-%s", $year, $month);
                     --$lastPart;
-                    $fileBase = implode('_', array_slice($parts, 0, $lastPart + 1));
+                    $fileBase = implode($sep, array_slice($parts, 0, $lastPart + 1));
                 }
             }
         }
