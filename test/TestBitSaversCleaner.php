@@ -24,7 +24,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     private $_factory;
     /** @var ILogger */
     private $_logger;
-    /** @var IUser
+    /** @var IUser */
     private $_user;
     /** @var BitSaversCleaner */
     private $_cleaner;
