@@ -30,11 +30,11 @@ class SiteChecker
                     $docInfo = $this->_factory->createUrlInfo($doc['url']);
                     if (!$docInfo->exists())
                     {
-                        $this->log("     No  " . $doc['url']);
+                        $this->log(sprintf("     offline %s", $doc['url']));
                     }
                     else
                     {
-                        $this->log("     Yes " . $doc['url']);
+                        $this->log(sprintf("      online %s", $doc['url']));
                         $anyDocExists = true;
                         break;
                     }
