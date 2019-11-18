@@ -67,4 +67,6 @@ interface IManxDatabase
     function getUnknownPathsForCompanies($siteName);
     function markUnknownPathScanned($unknownId);
     function getIngestionRobotUser();
+    function setSiteLive($siteId, $liveNotDead);
+    function getSampleCopiesForSite($siteId);
 }

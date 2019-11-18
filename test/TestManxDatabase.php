@@ -917,6 +917,27 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals($companyId, $result);
     }
 
+    public function testSetSiteLive()
+    {
+        $execute = "UPDATE `site` SET `live`=? WHERE `site_id`=?";
+        $siteId = 3;
+        $this->_db->expects($this->once())->method('execute')->with($execute, [ 'Y', $siteId ]);
+
+        $this->_manxDb->setSiteLive($siteId, true);
+    }
+
+    public function testGetSampleCopiesForSite()
+    {
+        $select = "SELECT `url` FROM `copy` WHERE `site` = ? AND `size` <> 0 AND `md5` <> '' LIMIT 0, 5";
+        $siteId = 3;
+        $rows = DatabaseTester::createResultRowsForColumns([ 'url' ], [ [ 'http://bitsavers.org/pdf/dec/foo.pdf' ] ]);
+        $this->_db->expects($this->once())->method('execute')->with($select, [ $siteId ])->willReturn($rows);
+
+        $results = $this->_manxDb->getSampleCopiesForSite($siteId);
+
+        $this->assertEquals($rows, $results);
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");

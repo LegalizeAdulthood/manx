@@ -839,4 +839,14 @@ class ManxDatabase implements IManxDatabase
         $rows = $this->fetch("SELECT `id` FROM `user` WHERE `first_name` = 'Ingestion' AND `last_name` = 'Robot'");
         return $rows[0];
     }
+
+    public function setSiteLive($siteId, $live)
+    {
+        $this->execute("UPDATE `site` SET `live`=? WHERE `site_id`=?", [$live ? 'Y' : 'N', $siteId]);
+    }
+
+    public function getSampleCopiesForSite($siteId)
+    {
+        return $this->execute("SELECT `url` FROM `copy` WHERE `site` = ? AND `size` <> 0 AND `md5` <> '' LIMIT 0, 5", [ $siteId ]);
+    }
 }
