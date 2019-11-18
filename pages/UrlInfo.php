@@ -37,6 +37,7 @@ class UrlInfo implements IUrlInfo
 
     private function getValueFromHeadResponse($header)
     {
+        $this->init();
         $result = $this->head();
         if (!$result)
         {
@@ -52,7 +53,7 @@ class UrlInfo implements IUrlInfo
         {
             $value = $this->getHeaderValue($result, $header);
         }
-        else if ($httpStatus == 302)
+        else if ($this->moved($httpStatus))
         {
             $url = $this->getHeaderValue($result, 'location');
             if ($url)
@@ -64,9 +65,42 @@ class UrlInfo implements IUrlInfo
         return $value;
     }
 
+    private function moved($status)
+    {
+        return $status == 301 || $status == 302;
+    }
+
     public function exists()
     {
-        return $this->size() !== false;
+        $this->init();
+        while (true)
+        {
+            $result = $this->head();
+            $status = $this->httpStatus();
+            if ($this->moved($status))
+            {
+                $url = $this->getHeaderValue($result, 'location');
+                if ($url)
+                {
+                    $this->_url = $url;
+                }
+                else
+                {
+                    $this->close();
+                    return false;
+                }
+            }
+            else if ($status == 200)
+            {
+                $this->close();
+                return true;
+            }
+            else
+            {
+                $this->close();
+                return false;
+            }
+        }
     }
 
     private function httpStatus()
@@ -74,9 +108,13 @@ class UrlInfo implements IUrlInfo
         return $this->_api->getinfo($this->_session, CURLINFO_HTTP_CODE);
     }
 
-    private function head()
+    private function init()
     {
         $this->_session = $this->_api->init($this->_url);
+    }
+
+    private function head()
+    {
         $this->_api->setopt($this->_session, CURLOPT_HEADER, 1);
         $this->_api->setopt($this->_session, CURLOPT_NOBODY, 1);
         $this->_api->setopt($this->_session, CURLOPT_RETURNTRANSFER, 1);
