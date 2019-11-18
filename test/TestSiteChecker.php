@@ -1,0 +1,75 @@
+<?php
+
+require_once 'cron/SiteChecker.php';
+require_once 'cron/ILogger.php';
+require_once 'pages/IManx.php';
+require_once 'pages/IManxDatabase.php';
+require_once 'pages/IUrlInfo.php';
+require_once 'pages/IUrlInfoFactory.php';
+require_once 'pages/IUser.php';
+
+use Pimple\Container;
+
+class TestSiteChecker extends PHPUnit\Framework\TestCase
+{
+    /** @var Container */
+    private $_config;
+
+    /** @var IManxDatabase */
+    private $_db;
+    /** @var IManx */
+    private $_manx;
+    /** @var IUrlInfo */
+    private $_urlInfo;
+    /** @var IUrlInfoFactory */
+    private $_factory;
+    /** @var ILogger */
+    private $_logger;
+    /** @var IUser */
+    private $_user;
+    /** @var SiteChecker */
+    private $_checker;
+
+    protected function setUp()
+    {
+        $this->_urlInfo = $this->createMock(IUrlInfo::class);
+        $this->_factory = $this->createMock(IUrlInfoFactory::class);
+        $this->_logger = $this->createMock(ILogger::class);
+        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
+        $this->_user = $this->createMock(IUser::class);
+
+        $config = new Container();
+        $config['manx'] = $this->_manx;
+        $config['urlInfoFactory'] = $this->_factory;
+        $config['logger'] = $this->_logger;
+        $config['user'] = $this->_user;
+        $this->_config = $config;
+        $this->_checker = new SiteChecker($this->_config);
+    }
+
+    public function testCheckSiteOnlineWhenSiteAndDocsExist()
+    {
+        $siteUrl = 'http://bitsavers.org/pdf';
+        $docUrl = 'http://bitsavers.org/pdf/dec/jumbotron.pdf';
+        $docUrlInfo = $this->createMock(IUrlInfo::class);
+        $this->_factory->expects($this->exactly(2))->method('createUrlInfo')->withConsecutive([$siteUrl], [$docUrl])->willReturn($this->_urlInfo, $docUrlInfo);
+        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
+        $this->_urlInfo->method('url')->willReturn($siteUrl);
+        $siteId = 3;
+        $siteRows = DatabaseTester::createResultRowsForColumns(
+            ['site_id', 'name', 'url', 'description', 'copy_base', 'low', 'live', 'display_order'],
+            [
+                [$siteId, 'bitsavers', $siteUrl, '', '', 'N', 'Y', 0]
+            ]);
+        $this->_db->expects($this->once())->method('getSites')->willReturn($siteRows);
+        $urlRows = DatabaseTester::createResultRowsForColumns([ 'url' ], [ [ $docUrl ] ]);
+        $this->_db->expects($this->once())->method('getSampleCopiesForSite')->with($siteId)->willReturn($urlRows);
+        $docUrlInfo->expects($this->once())->method('exists')->willReturn(true);
+        $this->_db->expects($this->once())->method('setSiteLive')->with($siteId, true);
+        $this->_logger->expects($this->exactly(3))->method('log');
+
+        $this->_checker->checkSites();
+    }
+}

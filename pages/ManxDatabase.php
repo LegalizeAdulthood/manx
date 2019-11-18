@@ -847,6 +847,6 @@ class ManxDatabase implements IManxDatabase
 
     public function getSampleCopiesForSite($siteId)
     {
-        return $this->execute("SELECT `url` FROM `copy` WHERE `site` = ? AND `size` <> 0 AND `md5` <> '' LIMIT 0, 5", [ $siteId ]);
+        return $this->execute("SELECT `url` FROM `copy` WHERE `site` = ? AND `size` <> 0 AND `md5` <> '' LIMIT 0, 50", [ $siteId ]);
     }
 }

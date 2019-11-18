@@ -18,6 +18,7 @@ require_once 'test/TestPageBase.php';
 require_once 'test/TestPublicationPage.php';
 require_once 'test/TestRssPage.php';
 require_once 'test/TestSearcher.php';
+require_once 'test/TestSiteChecker.php';
 require_once 'test/TestUrlInfo.php';
 require_once 'test/TestUrlMetaData.php';
 require_once 'test/TestUrlMetaDataHelpers.php';
@@ -51,6 +52,7 @@ class AllTests
                 'TestPublicationPage',
                 'TestRssPage',
                 'TestSearcher',
+                'TestSiteChecker',
                 'TestUrlInfo',
                 'TestUrlMetaData',
                 'TestUrlMetaDataHelpers',
