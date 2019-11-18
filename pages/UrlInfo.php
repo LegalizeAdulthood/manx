@@ -15,6 +15,11 @@ class UrlInfo implements IUrlInfo
         $this->_api = is_null($api) ? CurlApi::getInstance() : $api;
     }
 
+    public function url()
+    {
+        return $this->_url;
+    }
+
     public function md5()
     {
         return md5_file($this->_url);
@@ -37,7 +42,6 @@ class UrlInfo implements IUrlInfo
 
     private function getValueFromHeadResponse($header)
     {
-        $this->init();
         $result = $this->head();
         if (!$result)
         {
@@ -72,11 +76,11 @@ class UrlInfo implements IUrlInfo
 
     public function exists()
     {
-        $this->init();
         while (true)
         {
             $result = $this->head();
             $status = $this->httpStatus();
+            $this->close();
             if ($this->moved($status))
             {
                 $url = $this->getHeaderValue($result, 'location');
@@ -86,18 +90,15 @@ class UrlInfo implements IUrlInfo
                 }
                 else
                 {
-                    $this->close();
                     return false;
                 }
             }
             else if ($status == 200)
             {
-                $this->close();
                 return true;
             }
             else
             {
-                $this->close();
                 return false;
             }
         }
@@ -108,13 +109,9 @@ class UrlInfo implements IUrlInfo
         return $this->_api->getinfo($this->_session, CURLINFO_HTTP_CODE);
     }
 
-    private function init()
-    {
-        $this->_session = $this->_api->init($this->_url);
-    }
-
     private function head()
     {
+        $this->_session = $this->_api->init($this->_url);
         $this->_api->setopt($this->_session, CURLOPT_HEADER, 1);
         $this->_api->setopt($this->_session, CURLOPT_NOBODY, 1);
         $this->_api->setopt($this->_session, CURLOPT_RETURNTRANSFER, 1);

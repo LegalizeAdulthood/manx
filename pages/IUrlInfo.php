@@ -6,4 +6,5 @@ interface IUrlInfo
     function lastModified();
     function exists();
     function md5();
+    function url();
 }

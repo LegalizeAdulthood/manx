@@ -10,11 +10,11 @@ class TestUrlInfo extends PHPUnit\Framework\TestCase
         $this->_url = 'http://bitsavers.org/pdf/IndexByDate.txt';
         $this->_info = new UrlInfo($this->_url, $this->_curl);
         $this->_session = 0xdeadbeef;
-        $this->_curl->expects($this->once())->method('init')->willReturn($this->_session);
     }
 
     public function testSizeReturnsContentLength()
     {
+        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
         $this->_curl->expects($this->once())->method('exec')->with($this->_session)->willReturn("HTTP/1.0 200 OK\n"
             . "Content-Length: 4096\n"
             . "\n");
@@ -27,6 +27,7 @@ class TestUrlInfo extends PHPUnit\Framework\TestCase
 
     public function testGetLastModified()
     {
+        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
         $this->_curl->method('exec')->with($this->_session)->willReturn("HTTP/1.0 200 OK\n"
             . "Last-Modified: Wed, 15 Nov 1995 04:58:08 GMT\n"
             . "\n");
@@ -39,6 +40,7 @@ class TestUrlInfo extends PHPUnit\Framework\TestCase
 
     public function test404ErrorGivesSizeOfFalse()
     {
+        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
         $this->_curl->expects($this->once())->method('exec')->with($this->_session)->willReturn("HTTP/1.0 404 Not found\n"
             . "\n");
         $this->_curl->expects($this->once())->method('getinfo')->with($this->_session, CURLINFO_HTTP_CODE)->willReturn(404);
@@ -50,6 +52,7 @@ class TestUrlInfo extends PHPUnit\Framework\TestCase
 
     public function testExistsHttpStatus200()
     {
+        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
         $this->_curl->expects($this->once())->method('exec')->with($this->_session)->willReturn("HTTP/1.0 200 OK\n"
             . "\n");
         $this->_curl->expects($this->once())->method('getinfo')->with($this->_session, CURLINFO_HTTP_CODE)->willReturn(200);
@@ -61,6 +64,7 @@ class TestUrlInfo extends PHPUnit\Framework\TestCase
 
     public function testExistsHttpStatus404()
     {
+        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
         $this->_curl->expects($this->once())->method('exec')->with($this->_session)->willReturn("HTTP/1.0 404 Not found\n"
             . "\n");
         $this->_curl->expects($this->once())->method('getinfo')->with($this->_session, CURLINFO_HTTP_CODE)->willReturn(404);
@@ -72,10 +76,12 @@ class TestUrlInfo extends PHPUnit\Framework\TestCase
 
     public function testExistsHttpStatus301()
     {
+        $newUrl = 'http://other.org/pdf/IndexByDate.txt';
+        $this->_curl->expects($this->exactly(2))->method('init')->withConsecutive([$this->_url], [$newUrl])->willReturn($this->_session);
         $this->_curl->expects($this->exactly(2))->method('exec')
             ->with($this->_session)
             ->willReturn("HTTP/1.0 301 Permanently moved\n"
-                . "Location: http://bitsavers.org/pdf/IndexByDate.txt\n"
+                . "Location: http://other.org/pdf/IndexByDate.txt\n"
                 . "\n",
                 "HTTP/1.0 200 OK\n"
                 . "Last-Modified: Wed, 15 Nov 1995 04:58:08 GMT\n"
@@ -87,14 +93,17 @@ class TestUrlInfo extends PHPUnit\Framework\TestCase
         $result = $this->_info->exists();
 
         $this->assertTrue($result);
+        $this->assertEquals($newUrl, $this->_info->url());
     }
 
     public function testExistsHttpStatus302()
     {
+        $newUrl = 'http://other.org/pdf/IndexByDate.txt';
+        $this->_curl->expects($this->exactly(2))->method('init')->withConsecutive([$this->_url], [$newUrl])->willReturn($this->_session);
         $this->_curl->expects($this->exactly(2))->method('exec')
             ->with($this->_session)
             ->willReturn("HTTP/1.0 302 Temporarily moved\n"
-                . "Location: http://bitsavers.org/pdf/IndexByDate.txt\n"
+                . "Location: http://other.org/pdf/IndexByDate.txt\n"
                 . "\n",
                 "HTTP/1.0 200 OK\n"
                 . "Last-Modified: Wed, 15 Nov 1995 04:58:08 GMT\n"
@@ -106,10 +115,12 @@ class TestUrlInfo extends PHPUnit\Framework\TestCase
         $result = $this->_info->exists();
 
         $this->assertTrue($result);
+        $this->assertEquals($newUrl, $this->_info->url());
     }
 
     public function testExistsHttpStatus0()
     {
+        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
         $this->_curl->expects($this->once())->method('exec')->with($this->_session)->willReturn("");
         $this->_curl->expects($this->once())->method('getinfo')->with($this->_session, CURLINFO_HTTP_CODE)->willReturn(0);
 
