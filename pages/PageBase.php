@@ -235,7 +235,7 @@ EOH;
     {
         $prefix = PageBase::getRelativePrefixFromPathInfo();
         $absolutePrefix = PageBase::getAbsolutePrefixFromScriptName($server);
-        printf('<a href="http://%s/%slogin.php?LOGO=1&redirect=%ssearch.php">Logout</a>',
+        printf('<a href="https://%s/%slogin.php?LOGO=1&redirect=%ssearch.php">Logout</a>',
             $server['SERVER_NAME'], $absolutePrefix, $prefix);
     }
 
