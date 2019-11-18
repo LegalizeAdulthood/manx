@@ -928,7 +928,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testGetSampleCopiesForSite()
     {
-        $select = "SELECT `url` FROM `copy` WHERE `site` = ? AND `size` <> 0 AND `md5` <> '' LIMIT 0, 50";
+        $select = "SELECT `url` FROM `copy` WHERE `site` = ? AND `size` <> 0 AND `md5` <> '' LIMIT 0, 1000";
         $siteId = 3;
         $rows = DatabaseTester::createResultRowsForColumns([ 'url' ], [ [ 'http://bitsavers.org/pdf/dec/foo.pdf' ] ]);
         $this->_db->expects($this->once())->method('execute')->with($select, [ $siteId ])->willReturn($rows);
