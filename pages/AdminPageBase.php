@@ -34,9 +34,17 @@ abstract class AdminPageBase extends PageBase
         if (!$this->_user->isLoggedIn())
         {
             $host = $_SERVER['SERVER_NAME'];
-            $absolutePrefix = PageBase::getAbsolutePrefixFromScriptName($_SERVER);
-            $this->redirect(sprintf("https://%s/%slogin.php?redirect=%s",
-                $host, $absolutePrefix, urlencode($_SERVER['PHP_SELF'])));
+            $self = $_SERVER['PHP_SELF'];
+            if (preg_match('/\/login\.php/', $self))
+            {
+                $redirect = $self;
+            }
+            else
+            {
+                $absolutePrefix = PageBase::getAbsolutePrefixFromScriptName($_SERVER);
+                $redirect = sprintf("https://%s/%slogin.php?redirect=%s", $host, $absolutePrefix, urlencode($self));
+            }
+            $this->redirect($redirect);
             return;
         }
 

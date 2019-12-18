@@ -221,14 +221,21 @@ EOH;
 
     public function renderLoginLink($server)
     {
-        $redirect = $server['PHP_SELF'];
+        $self = $server['PHP_SELF'];
         if (array_key_exists('QUERY_STRING', $server) and strlen($server['QUERY_STRING']) > 0)
         {
-            $redirect = sprintf("%s?%s", $redirect, $server['QUERY_STRING']);
+            $self = $self . '?' . $server['QUERY_STRING'];
         }
-        $prefix = PageBase::getAbsolutePrefixFromScriptName($server);
-        printf('<a href="https://%s/%slogin.php?redirect=%s">Login</a>',
-            $server['SERVER_NAME'], $prefix, urlencode($redirect));
+        if (preg_match('/\/login.php/', $self))
+        {
+            $redirect = $self;
+        }
+        else
+        {
+            $prefix = PageBase::getAbsolutePrefixFromScriptName($server);
+            $redirect = sprintf("/%slogin.php?redirect=%s", $prefix, urlencode($self));
+        }
+        printf('<a href="https://%s%s">Login</a>', $server['SERVER_NAME'], $redirect);
     }
 
     private function renderLogoutLink($server)

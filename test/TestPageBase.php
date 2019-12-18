@@ -46,9 +46,20 @@ class TestPageBase extends PHPUnit\Framework\TestCase
     {
         $this->createInstance();
 
-        $this->_page->renderLoginLink(array('PHP_SELF' => '/manx/about.php',
+        $this->_page->renderLoginLink(['PHP_SELF' => '/manx/about.php',
             'SCRIPT_NAME' => '/manx/about.php',
-            'SERVER_NAME' => 'localhost'));
+            'SERVER_NAME' => 'localhost']);
+
+        $this->expectOutputString('<a href="https://localhost/manx/login.php?redirect=%2Fmanx%2Fabout.php">Login</a>');
+    }
+
+    public function testRenderLoginLinkFromLoginPage()
+    {
+        $this->createInstance();
+
+        $this->_page->renderLoginLink(['PHP_SELF' => '/manx/login.php?redirect=%2Fmanx%2Fabout.php',
+            'SCRIPT_NAME' => '/manx/login.php',
+            'SERVER_NAME' => 'localhost']);
 
         $this->expectOutputString('<a href="https://localhost/manx/login.php?redirect=%2Fmanx%2Fabout.php">Login</a>');
     }
