@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx\Cron;
+
 interface IWhatsNewCleaner
 {
     function removeNonExistentUnknownPaths();

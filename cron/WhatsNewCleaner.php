@@ -1,12 +1,13 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/IManx.php';
 require_once 'cron/ILogger.php';
-require_once 'cron/IWhatsNewCleaner.php';
 
 use Pimple\Container;
 
-class WhatsNewCleaner implements IWhatsNewCleaner
+class WhatsNewCleaner implements Manx\Cron\IWhatsNewCleaner
 {
     private $_manx;
     private $_db;
