@@ -1,6 +1,7 @@
 <?php
 
-require_once 'pages/UrlMetaData.php';
+require_once 'vendor/autoload.php';
+
 require_once 'test/DatabaseTester.php';
 
 use Pimple\Container;
@@ -9,7 +10,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 {
     public function testExtractPartNumberLeadingDigitsSpaceSeparators()
     {
-        list($partNumber, $fileBase) = UrlMetaData::extractPartNumber('800-1023-01 - Adaptec ACB 4000 and 5000 Series Disk Controllers OEM Manual (Preliminary)');
+        list($partNumber, $fileBase) = Manx\UrlMetaData::extractPartNumber('800-1023-01 - Adaptec ACB 4000 and 5000 Series Disk Controllers OEM Manual (Preliminary)');
 
         $this->assertEquals('800-1023-01', $partNumber);
         $this->assertEquals('- Adaptec ACB 4000 and 5000 Series Disk Controllers OEM Manual (Preliminary)', $fileBase);
@@ -17,7 +18,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     public function testExtractPartNumberLeadingDigitsUnderscoreSeparators()
     {
-        list($partNumber, $fileBase) = UrlMetaData::extractPartNumber('800-1023-01_Adaptec_ACB_4000_and_5000_Series_Disk_Controllers_OEM_Manual_(Preliminary)');
+        list($partNumber, $fileBase) = Manx\UrlMetaData::extractPartNumber('800-1023-01_Adaptec_ACB_4000_and_5000_Series_Disk_Controllers_OEM_Manual_(Preliminary)');
 
         $this->assertEquals('800-1023-01', $partNumber);
         $this->assertEquals('Adaptec_ACB_4000_and_5000_Series_Disk_Controllers_OEM_Manual_(Preliminary)', $fileBase);
@@ -25,7 +26,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     public function testExtractFileNameExtensionWithExtension()
     {
-        list($fileName, $fileBase, $extension) = UrlMetaData::extractFileNameExtension('foo.bar.pdf');
+        list($fileName, $fileBase, $extension) = Manx\UrlMetaData::extractFileNameExtension('foo.bar.pdf');
 
         $this->assertEquals('foo.bar.pdf', $fileName);
         $this->assertEquals('foo.bar', $fileBase);
@@ -34,7 +35,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     public function testExtractFileNameExtensionNoExtension()
     {
-        list($fileName, $fileBase, $extension) = UrlMetaData::extractFileNameExtension('foo_bar');
+        list($fileName, $fileBase, $extension) = Manx\UrlMetaData::extractFileNameExtension('foo_bar');
 
         $this->assertEquals('foo_bar', $fileName);
         $this->assertEquals('foo_bar', $fileBase);
@@ -43,7 +44,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     public function testExtractFileNameExtensionEncodedChars()
     {
-        list($fileName, $fileBase, $extension) = UrlMetaData::extractFileNameExtension('foo%20bar%2Epdf');
+        list($fileName, $fileBase, $extension) = Manx\UrlMetaData::extractFileNameExtension('foo%20bar%2Epdf');
 
         $this->assertEquals('foo bar.pdf', $fileName);
         $this->assertEquals('foo bar', $fileBase);
@@ -66,12 +67,12 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     private function assertUrlMatchesSite($url, $site)
     {
-        $this->assertTrue(UrlMetaData::urlComponentsMatch(parse_url($url), parse_url($site)));
+        $this->assertTrue(Manx\UrlMetaData::urlComponentsMatch(parse_url($url), parse_url($site)));
     }
 
     public function testExtractPubDateSpaceSeparator()
     {
-        list($pubDate, $newFileBase) = UrlMetaData::extractPubDate('foo bar March 15 1975');
+        list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foo bar March 15 1975');
 
         $this->assertEquals('1975-03-15', $pubDate);
         $this->assertEquals('foo bar', $newFileBase);
@@ -79,7 +80,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     public function testExtractPubDateSingleTrailingDigit()
     {
-        list($date, $newFileBase) = UrlMetaData::extractPubDate('foo_bar_3');
+        list($date, $newFileBase) = Manx\UrlMetaData::extractPubDate('foo_bar_3');
 
         $this->assertEquals('', $date);
         $this->assertEquals('foo_bar_3', $newFileBase);
@@ -87,7 +88,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     public function testExtractPubDateBogusNumber()
     {
-        list($date, $newFileBase) = UrlMetaData::extractPubDate('foo_bar_9985');
+        list($date, $newFileBase) = Manx\UrlMetaData::extractPubDate('foo_bar_9985');
 
         $this->assertEquals('', $date);
         $this->assertEquals('foo_bar_9985', $newFileBase);
@@ -100,7 +101,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     public function testExtractPubDateSeparateMonthPrefixDayYear()
     {
-        list($date, $newFileBase) = UrlMetaData::extractPubDate('foo_bar_Marching_15_1975');
+        list($date, $newFileBase) = Manx\UrlMetaData::extractPubDate('foo_bar_Marching_15_1975');
 
         $this->assertEquals('1975', $date);
         $this->assertEquals('foo_bar_Marching_15', $newFileBase);
@@ -108,7 +109,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     public function testExtractPubDateSeparateMonthInvalidDayYear()
     {
-        list($date, $newFileBase) = UrlMetaData::extractPubDate('foo_bar_Marching_32_1975');
+        list($date, $newFileBase) = Manx\UrlMetaData::extractPubDate('foo_bar_Marching_32_1975');
 
         $this->assertEquals('1975', $date);
         $this->assertEquals('foo_bar_Marching_32', $newFileBase);
@@ -151,7 +152,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     private function assertPubDateForFileBase($pubDate, $fileBase)
     {
-        list($date, $newFileBase) = UrlMetaData::extractPubDate($fileBase);
+        list($date, $newFileBase) = Manx\UrlMetaData::extractPubDate($fileBase);
         $this->assertEquals($pubDate, $date);
         $this->assertEquals('foo_bar', $newFileBase);
     }
@@ -198,7 +199,7 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
 
     private function assertTitleForFileBase($title, $fileBase)
     {
-        $this->assertEquals($title, UrlMetaData::titleForFileBase($fileBase));
+        $this->assertEquals($title, Manx\UrlMetaData::titleForFileBase($fileBase));
     }
 
     private function createPublicationsForCompare($leftPart, $leftRev, $leftTitle, $rightPart, $rightRev, $rightTitle)

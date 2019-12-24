@@ -1,16 +1,16 @@
 <?php
 
-require_once 'vendor/autoload.php';
+namespace Manx;
 
-require_once 'pages/IManxDatabase.php';
+require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
-class UrlMetaData implements Manx\IUrlMetaData
+class UrlMetaData implements IUrlMetaData
 {
     /** @var IManxDatabase */
     private $_db;
-    /** @var Manx\IUrlInfoFactory */
+    /** @var IUrlInfoFactory */
     private $_urlInfoFactory;
 
     public function __construct(Container $config)
@@ -124,12 +124,12 @@ class UrlMetaData implements Manx\IUrlMetaData
 
     private function siteIsBitSavers($data)
     {
-        return $this->siteMatchesId($data, Manx\Site::BitSavers);
+        return $this->siteMatchesId($data, Site::BitSavers);
     }
 
     private function siteIsChiClassicComp($data)
     {
-        return $this->siteMatchesId($data, Manx\Site::ChiClassicComp);
+        return $this->siteMatchesId($data, Site::ChiClassicComp);
     }
 
     private function siteMatchesId($data, $siteId)

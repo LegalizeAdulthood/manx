@@ -2,7 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/UrlMetaData.php';
 require_once 'test/DatabaseTester.php';
 
 use Pimple\Container;
@@ -20,7 +19,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
         $config['db'] = $this->_db;
         $config['urlInfoFactory'] = $this->_urlInfoFactory;
         $this->_config = $config;
-        $this->_meta = new UrlMetaData($config);
+        $this->_meta = new Manx\UrlMetaData($config);
     }
 
     public function testConstruct()
