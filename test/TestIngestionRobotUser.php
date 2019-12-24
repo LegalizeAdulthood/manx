@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/IngestionRobotUser.php';
 
 use Pimple\Container;
@@ -8,7 +10,7 @@ class TestIngestionRobotUser extends PHPUnit\Framework\TestCase
 {
     public function setUp()
     {
-        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_db = $this->createMock(IManxDatabase::class);
         $this->_userId = 3;
         $this->_db->expects($this->once())->method('getIngestionRobotUser')->willReturn($this->_userId);

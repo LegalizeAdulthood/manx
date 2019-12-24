@@ -38,7 +38,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
     /** @var IManxDatabase */
     private $_db;
-    /** @var IManx */
+    /** @var Manx\IManx */
     private $_manx;
     /** @var Manx\IFileSystem */
     private $_fileSystem;
@@ -68,7 +68,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->_db = $this->createMock(IManxDatabase::class);
-        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_manx->method('getDatabase')->willReturn($this->_db);
         $this->_fileSystem = $this->createMock(Manx\IFileSystem::class);
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);

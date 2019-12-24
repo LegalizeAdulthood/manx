@@ -45,7 +45,7 @@ class TestUrlWizardService extends PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->_db = $this->createMock(IManxDatabase::class);
-        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_manx->expects($this->once())->method('getDatabase')->willReturn($this->_db);
         $user = $this->createMock(Manx\IUser::class);
         $user->expects($this->once())->method('isLoggedIn')->willReturn(true);

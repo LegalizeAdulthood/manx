@@ -46,7 +46,7 @@ class TestAdminPageBase extends PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $manx = $this->createMock(IManx::class);
+        $manx = $this->createMock(Manx\IManx::class);
         $db = $this->createMock(IManxDatabase::class);
         $this->_user = $this->createMock(Manx\IUser::class);
         $manx->expects($this->once())->method('getDatabase')->willReturn($db);

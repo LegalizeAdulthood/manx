@@ -1,13 +1,14 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'PDODatabaseAdapter.php';
 require_once 'IDateTimeProvider.php';
 require_once 'ManxDatabase.php';
-require_once 'IManx.php';
 require_once 'User.php';
 require_once 'Cookie.php';
 
-class Manx implements IManx
+class Manx implements Manx\IManx
 {
     private $_manxDb;
 

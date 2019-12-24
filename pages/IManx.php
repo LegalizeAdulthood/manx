@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 interface IManx
 {
     public function getDatabase();

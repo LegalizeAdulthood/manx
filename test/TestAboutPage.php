@@ -12,7 +12,7 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
     {
         $_SERVER['PATH_INFO'] = '';
         $this->_db = $this->createMock(IManxDatabase::class);
-        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_manx->expects($this->any())->method('getDatabase')->willReturn($this->_db);
         $config = new Container();
         $config['manx'] = $this->_manx;

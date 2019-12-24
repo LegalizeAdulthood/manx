@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/DetailsPage.php';
 require_once 'test/DatabaseTester.php';
 
@@ -149,7 +151,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
 {
     /** @var IManxDatabase */
     private $_db;
-    /** @var IManx */
+    /** @var Manx\IManx */
     private $_manx;
     /** @var DetailsPage */
     private $_page;
@@ -158,7 +160,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     {
         $_SERVER['PATH_INFO'] = '/1,3';
         $this->_db = $this->createMock(IManxDatabase::class);
-        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
         $config = new Container();
         $config['manx'] = $this->_manx;

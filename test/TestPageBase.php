@@ -2,7 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/IManx.php';
 require_once 'pages/IManxDatabase.php';
 require_once 'pages/PageBase.php';
 
@@ -29,7 +28,7 @@ class TestPageBase extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {
-        $this->_manx = $this->createMock(IManx::class);
+        $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_user = $this->createMock(Manx\IUser::class);
         $this->_db = $this->createMock(IManxDatabase::class);
     }
@@ -122,7 +121,7 @@ EOH;
         $this->expectOutputString($output);
     }
 
-    /** @var IManx */
+    /** @var Manx\IManx */
     private $_manx;
     /** @var Manx\IUser */
     private $_user;

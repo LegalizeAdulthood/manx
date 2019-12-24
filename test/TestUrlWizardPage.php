@@ -28,12 +28,12 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;
-    /** @var IManx */
+    /** @var Manx\IManx */
     private $_manx;
 
     protected function setUp()
     {
-        $manx = $this->createMock(IManx::class);
+        $manx = $this->createMock(Manx\IManx::class);
 
         $config = new Container();
         $config['manx'] = $manx;
