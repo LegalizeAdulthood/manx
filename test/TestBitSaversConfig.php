@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/BitSaversConfig.php';
-
 use Pimple\Container;
 
 class TestBitSaversConfig extends PHPUnit\Framework\TestCase
@@ -11,7 +9,7 @@ class TestBitSaversConfig extends PHPUnit\Framework\TestCase
     public function setUp()
     {
         $this->_config = new Container();
-        BitSaversConfig::configure($this->_config);
+        Manx\BitSaversConfig::configure($this->_config);
     }
 
     public function testSiteName()

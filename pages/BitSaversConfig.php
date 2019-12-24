@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
 use Pimple\Container;
@@ -14,7 +16,7 @@ class BitSaversConfig
         $config['indexByDateUrl'] = 'http://bitsavers.trailing-edge.com/pdf/IndexByDate.txt';
         $config['baseCheckUrl'] = 'http://bitsavers.trailing-edge.com/pdf';
         $config['baseUrl'] = 'http://bitsavers.org/pdf';
-        $config['menuType'] = Manx\MenuType::BitSavers;
+        $config['menuType'] = MenuType::BitSavers;
         $config['page'] = 'bitsavers.php';
         $config['title'] = 'BitSavers';
     }
