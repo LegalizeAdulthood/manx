@@ -5,7 +5,6 @@ require_once 'vendor/autoload.php';
 require_once 'cron/ExclusiveLock.php';
 require_once 'cron/Logger.php';
 require_once 'cron/WhatsNewProcessor.php';
-require_once 'pages/File.php';
 require_once 'pages/IngestionRobotUser.php';
 require_once 'pages/Manx.php';
 require_once 'pages/UrlInfoFactory.php';
@@ -26,7 +25,7 @@ class CleanupConfig
         $config['whatsNewPageFactory'] = new WhatsNewPageFactory();
         $config['locker'] = new ExclusiveLock();
         $config['logger'] = new Logger();
-        $config['fileSystem'] = new FileSystem();
+        $config['fileSystem'] = new Manx\FileSystem();
         $config['user'] = function($c)
         {
             return new IngestionRobotUser($c);

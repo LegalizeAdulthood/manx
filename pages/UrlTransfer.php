@@ -8,7 +8,7 @@ class UrlTransfer implements Manx\IUrlTransfer
     {
         $this->_url = $url;
         $this->_curl = is_null($curlApi) ? Manx\CurlApi::getInstance() : $curlApi;
-        $this->_fileSystem = is_null($fileSystem) ? new FileSystem() : $fileSystem;
+        $this->_fileSystem = is_null($fileSystem) ? new Manx\FileSystem() : $fileSystem;
     }
 
     public function get($destination)
