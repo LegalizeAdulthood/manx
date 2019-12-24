@@ -2,7 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'PDODatabaseAdapter.php';
 require_once 'IDateTimeProvider.php';
 require_once 'ManxDatabase.php';
 require_once 'User.php';
@@ -14,7 +13,7 @@ class Manx implements Manx\IManx
 
     public static function getInstance()
     {
-        $db = PDODatabaseAdapter::getInstance();
+        $db = Manx\PDODatabaseAdapter::getInstance();
         /** @var $manxDb Manx\IManxDatabase */
         $manxDb = ManxDatabase::getInstanceForDatabase($db);
         return Manx::getInstanceForDatabase($manxDb);

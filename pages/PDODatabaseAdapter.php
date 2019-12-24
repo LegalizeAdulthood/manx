@@ -1,15 +1,17 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
-require_once 'Config.php';
+require_once 'pages/Config.php';
 
-class PDODatabaseAdapter implements Manx\IDatabase
+class PDODatabaseAdapter implements IDatabase
 {
     public static function getInstance()
     {
         $config = explode(" ", trim(file_get_contents(PRIVATE_DIR . "config.txt")));
-        $pdo = new PDO($config[0], $config[1], $config[2]);
+        $pdo = new \PDO($config[0], $config[1], $config[2]);
         return new PDODatabaseAdapter($pdo);
     }
     private function __construct($pdo)
