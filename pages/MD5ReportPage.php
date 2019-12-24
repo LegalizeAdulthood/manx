@@ -4,8 +4,6 @@ namespace Manx;
 
 require_once 'vendor/autoload.php';
 
-require_once 'UrlInfo.php';
-
 class MD5ReportPage extends AdminPageBase
 {
     protected function getMenuType()

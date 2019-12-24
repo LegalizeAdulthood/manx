@@ -2,15 +2,13 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/UrlInfo.php';
-
 class TestUrlInfo extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {
         $this->_curl = $this->createMock(Manx\ICurlApi::class);
         $this->_url = 'http://bitsavers.org/pdf/IndexByDate.txt';
-        $this->_info = new UrlInfo($this->_url, $this->_curl);
+        $this->_info = new Manx\UrlInfo($this->_url, $this->_curl);
         $this->_session = 0xdeadbeef;
     }
 
@@ -136,6 +134,6 @@ class TestUrlInfo extends PHPUnit\Framework\TestCase
     private $_url;
     /** @var Manx\ICurlApi */
     private $_curl;
-    /** @var UrlInfo */
+    /** @var Manx\UrlInfo */
     private $_info;
 }

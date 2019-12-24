@@ -5,14 +5,13 @@ require_once 'vendor/autoload.php';
 require_once 'File.php';
 require_once 'IWhatsNewPageFactory.php';
 require_once 'IDateTimeProvider.php';
-require_once 'UrlInfo.php';
 require_once 'UrlTransfer.php';
 
 class WhatsNewPageFactory implements Manx\IWhatsNewPageFactory
 {
     function createUrlInfo($url)
     {
-        return new UrlInfo($url);
+        return new Manx\UrlInfo($url);
     }
 
     function createUrlTransfer($url)

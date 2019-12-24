@@ -1,17 +1,19 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
-class UrlInfo implements Manx\IUrlInfo
+class UrlInfo implements IUrlInfo
 {
     private $_api;
     private $_url;
     private $_session;
 
-    public function __construct($url, Manx\ICurlApi $api = null)
+    public function __construct($url, ICurlApi $api = null)
     {
         $this->_url = $url;
-        $this->_api = is_null($api) ? Manx\CurlApi::getInstance() : $api;
+        $this->_api = is_null($api) ? CurlApi::getInstance() : $api;
     }
 
     public function url()
