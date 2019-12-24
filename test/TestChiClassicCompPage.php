@@ -2,12 +2,11 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/ChiClassicCompPage.php';
 require_once 'test/DatabaseTester.php';
 
 use Pimple\Container;
 
-class ChiClassicCompPageTester extends ChiClassicCompPage
+class ChiClassicCompPageTester extends Manx\ChiClassicCompPage
 {
     public function getMenuType()
     {
@@ -336,13 +335,13 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     public function testPoundSignEscaped()
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia_%2350_Nov89.pdf",
-            ChiClassicCompPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
+            Manx\ChiClassicCompPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
     }
 
     public function testSpaceEscaped()
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia%2050_Nov89.pdf",
-            ChiClassicCompPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
+            Manx\ChiClassicCompPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
     }
 
     public function testRenderPageSelectionBarManyPagesByPath()
@@ -461,7 +460,7 @@ EOH;
         $n = $idStart;
         foreach ($paths as $path)
         {
-            $urlPath = ChiClassicCompPage::escapeSpecialChars($path);
+            $urlPath = Manx\ChiClassicCompPage::escapeSpecialChars($path);
             $checked = $checks[0];
             $checks = array_slice($checks, 1);
             $item = <<<EOH
