@@ -3,7 +3,6 @@
 require_once 'vendor/autoload.php';
 
 require_once 'pages/Config.php';
-require_once 'pages/WhatsNewIndex.php';
 require_once 'test/DatabaseTester.php';
 
 use Pimple\Container;
@@ -32,6 +31,8 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
     private $_property;
     /** @var Manx\IUrlInfo */
     private $_urlInfo;
+    /** @var Manx\WhatsNewIndex */
+    private $_whatsNew;
 
     protected function setUp()
     {
@@ -55,7 +56,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
         $config['baseUrl'] = 'http://www.bitsavers.org/pdf';
         $config['siteName'] = 'bitsavers';
         $this->_config = $config;
-        $this->_whatsNew = new WhatsNewIndex($config);
+        $this->_whatsNew = new Manx\WhatsNewIndex($config);
     }
 
     public function testIndexNeededWithoutTimeStampProperty()

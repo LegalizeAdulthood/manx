@@ -1,11 +1,13 @@
 <?php
 
-require_once 'Config.php';
-require_once 'IWhatsNewIndex.php';
+namespace Manx;
+
+// For PRIVATE_DIR
+require_once 'pages/Config.php';
 
 use Pimple\Container;
 
-class WhatsNewIndex implements Manx\IWhatsNewIndex
+class WhatsNewIndex implements IWhatsNewIndex
 {
     public function __construct(Container $config)
     {
