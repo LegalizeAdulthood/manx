@@ -2,7 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'HtmlFormatter.php';
 require_once 'Searcher.php';
 
 class SearchPage extends Manx\PageBase
@@ -27,7 +26,7 @@ class SearchPage extends Manx\PageBase
             . (array_key_exists('on', $params) ? 'checked="checked" ' : '')
             . '/> '
             . '<input id="Submit1" type="submit" value="Search" /></div></form></div>';
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
         $online = array_key_exists('on', $params) && ($params['on'] != '0');
         $searcher->renderSearchResults($formatter, $company, $keywords, $online);
     }

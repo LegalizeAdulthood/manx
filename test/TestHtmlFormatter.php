@@ -1,19 +1,21 @@
 <?php
+
+require_once 'vendor/autoload.php';
+
 require_once 'test/DatabaseTester.php';
-require_once 'pages/HtmlFormatter.php';
 
 class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 {
     public function testConstruct()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
         $this->assertTrue(is_object($formatter));
         $this->assertFalse(is_null($formatter));
     }
 
     public function testRenderResultsBarAllDocumentsOneResult()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
 
         $formatter->renderResultsBar(array(), array(), 0, 0, 1);
 
@@ -22,23 +24,23 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 
     public function testNeatQuotedListOneWord()
     {
-        $this->assertEquals('"graphics"', HtmlFormatter::neatQuotedList(array('graphics')));
+        $this->assertEquals('"graphics"', Manx\HtmlFormatter::neatQuotedList(array('graphics')));
     }
 
     public function testNeatQuotedListTwoWords()
     {
-        $this->assertEquals('"graphics" and "terminal"', HtmlFormatter::neatQuotedList(array('graphics', 'terminal')));
+        $this->assertEquals('"graphics" and "terminal"', Manx\HtmlFormatter::neatQuotedList(array('graphics', 'terminal')));
     }
 
     public function testNeatQuotedListThreeWords()
     {
         $this->assertEquals('"graphics", "terminal" and "serial"',
-            HtmlFormatter::neatQuotedList(array('graphics', 'terminal', 'serial')));
+            Manx\HtmlFormatter::neatQuotedList(array('graphics', 'terminal', 'serial')));
     }
 
     public function testRenderResultsBarSearchWordsOneResult()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
 
         $formatter->renderResultsBar(array(), array('graphics', 'terminal'), 0, 0, 1);
 
@@ -47,7 +49,7 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 
     public function testRenderResultsBarIgnoredWordsOneResult()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
 
         $formatter->renderResultsBar(array('a', 'an', 'it'), array('graphics', 'terminal'), 0, 0, 1);
 
@@ -57,7 +59,7 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarOnePage()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
 
         $formatter->renderPageSelectionBar(0, 4, 10, array());
 
@@ -66,7 +68,7 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarPageOneOfTwo()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
 
         $formatter->renderPageSelectionBar(0, 19, 10, array('q' => 'vt220 terminal', 'cp' => 1));
 
@@ -78,7 +80,7 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarPageTwoOfThree()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
 
         $formatter->renderPageSelectionBar(10, 29, 10, array('q' => 'vt220 terminal', 'cp' => 1, 'start' => 10));
 
@@ -92,7 +94,7 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarPageThreeOfThree()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
 
         $formatter->renderPageSelectionBar(20, 29, 10, array('q' => 'vt100 terminal', 'cp' => 1, 'start' => 20));
 
@@ -105,7 +107,7 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarPageOneOfTwoOnline()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
 
         $formatter->renderPageSelectionBar(0, 19, 10, array('q' => 'vt220 terminal', 'cp' => 1, 'on' => 'on'));
 
@@ -117,7 +119,7 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarPageOneOfTwoFivePerPage()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
 
         $formatter->renderPageSelectionBar(0, 9, 5, array('q' => 'vt220 terminal', 'cp' => 1, 'on' => 'on', 'num' => 5));
 
@@ -129,7 +131,7 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 
     public function testRenderResultsPage()
     {
-        $formatter = HtmlFormatter::getInstance();
+        $formatter = Manx\HtmlFormatter::getInstance();
         $rows = DatabaseTester::createResultRowsForColumns(
             array('pub_id', 'ph_part', 'ph_title', 'pub_has_online_copies',
                 'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pub_date',

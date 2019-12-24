@@ -1,8 +1,10 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
-class HtmlFormatter implements Manx\IFormatter
+class HtmlFormatter implements IFormatter
 {
     public static function getInstance()
     {
@@ -29,13 +31,13 @@ class HtmlFormatter implements Manx\IFormatter
     {
         if (count($ignoredWords) > 0)
         {
-            print '<p class="warning">Ignoring ' . HtmlFormatter::neatQuotedList($ignoredWords)
+            print '<p class="warning">Ignoring ' . self::neatQuotedList($ignoredWords)
                 . '.  All search words must be at least three letters long.</p>';
         }
         print '<div class="resbar">';
         if (count($searchWords) > 0)
         {
-            print 'Searching for ' . HtmlFormatter::neatQuotedList($searchWords) . '.';
+            print 'Searching for ' . self::neatQuotedList($searchWords) . '.';
         }
         else
         {
