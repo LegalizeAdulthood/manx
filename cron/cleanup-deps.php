@@ -5,7 +5,6 @@ require_once 'vendor/autoload.php';
 require_once 'cron/ExclusiveLock.php';
 require_once 'cron/Logger.php';
 require_once 'cron/WhatsNewProcessor.php';
-require_once 'pages/IngestionRobotUser.php';
 require_once 'pages/Manx.php';
 require_once 'pages/UrlInfoFactory.php';
 require_once 'pages/UrlMetaData.php';
@@ -28,7 +27,7 @@ class CleanupConfig
         $config['fileSystem'] = new Manx\FileSystem();
         $config['user'] = function($c)
         {
-            return new IngestionRobotUser($c);
+            return new Manx\IngestionRobotUser($c);
         };
         $config['whatsNewIndex'] = function($c)
         {

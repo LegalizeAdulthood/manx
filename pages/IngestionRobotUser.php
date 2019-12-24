@@ -1,10 +1,12 @@
 <?php
 
+namespace Manx;
+
 require_once 'pages/User.php';
 
 use Pimple\Container;
 
-class IngestionRobotUser extends Manx\User
+class IngestionRobotUser extends User
 {
     public function __construct(Container $config)
     {

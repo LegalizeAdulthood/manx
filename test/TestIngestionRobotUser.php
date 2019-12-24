@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/IngestionRobotUser.php';
-
 use Pimple\Container;
 
 class TestIngestionRobotUser extends PHPUnit\Framework\TestCase
@@ -18,7 +16,7 @@ class TestIngestionRobotUser extends PHPUnit\Framework\TestCase
         $config = new Container();
         $config['manx'] = $this->_manx;
 
-        $this->_user = new IngestionRobotUser($config);
+        $this->_user = new Manx\IngestionRobotUser($config);
     }
 
     public function testConstruct()
