@@ -3,7 +3,6 @@
 require_once 'vendor/autoload.php';
 
 require_once 'pages/IManxDatabase.php';
-require_once 'pages/Site.php';
 
 use Pimple\Container;
 
@@ -125,12 +124,12 @@ class UrlMetaData implements Manx\IUrlMetaData
 
     private function siteIsBitSavers($data)
     {
-        return $this->siteMatchesId($data, Site::BitSavers);
+        return $this->siteMatchesId($data, Manx\Site::BitSavers);
     }
 
     private function siteIsChiClassicComp($data)
     {
-        return $this->siteMatchesId($data, Site::ChiClassicComp);
+        return $this->siteMatchesId($data, Manx\Site::ChiClassicComp);
     }
 
     private function siteMatchesId($data, $siteId)
