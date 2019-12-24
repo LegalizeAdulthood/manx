@@ -1,9 +1,10 @@
 <?php
 
-require_once 'cron/IExclusiveLock.php';
+require_once 'vendor/autoload.php';
+
 require_once 'pages/Config.php';
 
-class ExclusiveLock implements IExclusiveLock
+class ExclusiveLock implements Manx\Cron\IExclusiveLock
 {
     public function lock($name)
     {
