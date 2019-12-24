@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 const TIME_ZONE = 'America/Denver';
 
 interface IDateTimeProvider

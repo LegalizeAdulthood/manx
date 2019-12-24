@@ -1,13 +1,13 @@
 <?php
 
-require_once 'DateTimeProvider.php';
+require_once 'vendor/autoload.php';
 
 class RssWriter
 { 
     private $_dateTimeProvider;
     private $_writer;
 
-    public function __construct(IDateTimeProvider $dateTimeProvider, $xsltFilePath = '')
+    public function __construct(Manx\IDateTimeProvider $dateTimeProvider, $xsltFilePath = '')
     {
         $this->_dateTimeProvider = $dateTimeProvider;
         $this->_writer = new XMLWriter();

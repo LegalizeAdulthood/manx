@@ -22,7 +22,7 @@ class WhatsNewPageFactory implements Manx\IWhatsNewPageFactory
 
     function getCurrentTime()
     {
-        date_default_timezone_set(TIME_ZONE);
+        date_default_timezone_set(Manx\TIME_ZONE);
         return time();
     }
 }

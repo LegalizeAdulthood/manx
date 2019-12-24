@@ -1,7 +1,8 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/RssPage.php';
-require_once 'pages/IDateTimeProvider.php';
 
 use Pimple\Container;
 
@@ -37,7 +38,7 @@ class TestRssPage extends PHPUnit\Framework\TestCase
             ));
         $manx = $this->createMock(IManx::class);
         $manx->expects($this->once())->method('getDatabase')->willReturn($db);
-        $dtp = $this->createMock(DateTimeProvider::class);
+        $dtp = $this->createMock(Manx\IDateTimeProvider::class);
         $dtp->expects($this->once())->method('now')->willReturn(new DateTime("03 Dec 1964 15:00:00 -0400"));
         $config = new Container();
         $config['manx'] = $manx;

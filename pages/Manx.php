@@ -39,7 +39,7 @@ class Manx implements IManx
 
     private function generateSessionId()
     {
-        date_default_timezone_set(TIME_ZONE);
+        date_default_timezone_set(Manx\TIME_ZONE);
         return sprintf("%s.%06d",
             strftime("%Y%m%d%H%M%S", time()),
             rand(0, 1000000));

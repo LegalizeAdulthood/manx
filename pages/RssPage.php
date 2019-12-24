@@ -1,8 +1,9 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'PageBase.php';
 require_once 'RssWriter.php';
-require_once 'IDateTimeProvider.php';
 
 use Pimple\Container;
 

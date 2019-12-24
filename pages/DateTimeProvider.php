@@ -1,8 +1,8 @@
 <?php
 
-require_once 'IDateTimeProvider.php';
+require_once 'vendor/autoload.php';
 
-class DateTimeProvider implements IDateTimeProvider
+class DateTimeProvider implements Manx\IDateTimeProvider
 {
     public function now()
     {

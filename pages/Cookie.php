@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 class Cookie
 {
     const NAME = 'manxSession';
@@ -17,7 +19,7 @@ class Cookie
 
     public static function delete()
     {
-        date_default_timezone_set(TIME_ZONE);
+        date_default_timezone_set(Manx\TIME_ZONE);
         setcookie(Cookie::NAME, 'OUT', time() - 60);
     }
 }
