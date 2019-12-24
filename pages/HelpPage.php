@@ -1,12 +1,12 @@
 <?php
 
-require_once 'PageBase.php';
+require_once 'vendor/autoload.php';
 
-class HelpPage extends PageBase
+class HelpPage extends Manx\PageBase
 {
     protected function getMenuType()
     {
-        return MenuType::Help;
+        return Manx\MenuType::Help;
     }
 
     protected function renderBodyContent()

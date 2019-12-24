@@ -1,14 +1,15 @@
 <?php
 
-require_once 'PageBase.php';
+require_once 'vendor/autoload.php';
+
 require_once 'HtmlFormatter.php';
 require_once 'Searcher.php';
 
-class SearchPage extends PageBase
+class SearchPage extends Manx\PageBase
 {
     protected function getMenuType()
     {
-        return MenuType::Search;
+        return Manx\MenuType::Search;
     }
 
     protected function renderBodyContent()

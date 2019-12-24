@@ -1,10 +1,10 @@
 <?php
 
-require_once 'PageBase.php';
+require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
-class LoginPage extends PageBase
+class LoginPage extends Manx\PageBase
 {
     private $_loginFailed;
     private $_cookieFailed;

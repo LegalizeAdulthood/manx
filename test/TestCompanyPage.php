@@ -86,7 +86,7 @@ class TestCompanyPage extends PHPUnit\Framework\TestCase
     {
         $this->createPage();
 
-        $this->assertEquals(MenuType::Company, $this->_page->getMenuType());
+        $this->assertEquals(Manx\MenuType::Company, $this->_page->getMenuType());
     }
 
     public function testRenderSelectCompany()

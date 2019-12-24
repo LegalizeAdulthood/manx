@@ -1,10 +1,10 @@
 <?php
 
-require_once 'PageBase.php';
+require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
-class DetailsPage extends PageBase
+class DetailsPage extends Manx\PageBase
 {
     private $_details;
 

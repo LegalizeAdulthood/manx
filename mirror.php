@@ -10,7 +10,7 @@ class MirrorPage extends AdminPageBase
 {
     protected function getMenuType()
     {
-        return MenuType::Mirror;
+        return Manx\MenuType::Mirror;
     }
 
     protected function renderBodyContent()

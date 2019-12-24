@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'Manx.php';
 require_once 'AdminPageBase.php';
 
@@ -7,7 +9,7 @@ class CompanyPage extends AdminPageBase
 {
     protected function getMenuType()
     {
-        return MenuType::Company;
+        return Manx\MenuType::Company;
     }
 
     private function renderBeginForm($method, $heading = 'Edit Company')

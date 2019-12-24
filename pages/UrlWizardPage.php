@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'Manx.php';
 require_once 'AdminPageBase.php';
 require_once 'BitSaversPage.php';
@@ -21,7 +23,7 @@ class URLWizardPage extends AdminPageBase
 
     protected function getMenuType()
     {
-        return MenuType::UrlWizard;
+        return Manx\MenuType::UrlWizard;
     }
 
     protected function postPage()

@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/BitSaversConfig.php';
 
 use Pimple\Container;
@@ -44,7 +46,7 @@ class TestBitSaversConfig extends PHPUnit\Framework\TestCase
 
     public function testMenuType()
     {
-        $this->assertEquals(MenuType::BitSavers, $this->_config['menuType']);
+        $this->assertEquals(Manx\MenuType::BitSavers, $this->_config['menuType']);
     }
 
     public function testPage()

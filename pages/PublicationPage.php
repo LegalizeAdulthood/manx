@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 use Pimple\Container;
 
 require_once 'AdminPageBase.php';
@@ -9,7 +11,7 @@ class PublicationPage extends AdminPageBase
 {
     protected function getMenuType()
     {
-        return MenuType::Publication;
+        return Manx\MenuType::Publication;
     }
 
     protected function renderHeaderContent()

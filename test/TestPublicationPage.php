@@ -75,7 +75,7 @@ class TestPublicationPage extends PHPUnit\Framework\TestCase
     {
         $this->createPage();
 
-        $this->assertEquals(MenuType::Publication, $this->_page->getMenuType());
+        $this->assertEquals(Manx\MenuType::Publication, $this->_page->getMenuType());
     }
 
     function testRenderAddPublicationForm()

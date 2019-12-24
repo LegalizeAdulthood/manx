@@ -2,12 +2,11 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'PageBase.php';
 require_once 'RssWriter.php';
 
 use Pimple\Container;
 
-class RssPage extends PageBase
+class RssPage extends Manx\PageBase
 {
     private $_rss;
 

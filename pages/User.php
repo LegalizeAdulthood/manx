@@ -14,7 +14,7 @@ class User implements Manx\IUser
     private $_displayName;
     private $_admin;
 
-    public static function getInstanceFromSession(IManxDatabase $manxDb)
+    public static function getInstanceFromSession(Manx\IManxDatabase $manxDb)
     {
         $row = $manxDb->getUserFromSessionId(Manx\Cookie::get());
         if (array_key_exists('user_id', $row))

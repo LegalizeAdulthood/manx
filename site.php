@@ -1,6 +1,7 @@
 <?php
 
 require_once 'vendor/autoload.php';
+
 require_once 'pages/Manx.php';
 require_once 'pages/AdminPageBase.php';
 
@@ -10,7 +11,7 @@ class SitePage extends AdminPageBase
 {
     protected function getMenuType()
     {
-        return MenuType::Site;
+        return Manx\MenuType::Site;
     }
 
     protected function renderBodyContent()

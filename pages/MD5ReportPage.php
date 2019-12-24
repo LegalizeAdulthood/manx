@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'AdminPageBase.php';
 require_once 'UrlInfo.php';
 
@@ -7,7 +9,7 @@ class MD5ReportPage extends AdminPageBase
 {
     protected function getMenuType()
     {
-        return MenuType::MD5Report;
+        return Manx\MenuType::MD5Report;
     }
 
     protected function postPage()

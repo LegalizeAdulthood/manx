@@ -99,7 +99,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $this->createPage();
 
-        $this->assertEquals(MenuType::BitSavers, $this->_page->getMenuType());
+        $this->assertEquals(Manx\MenuType::BitSavers, $this->_page->getMenuType());
     }
 
     public function testRenderBodyContentWithPlentyOfPaths()

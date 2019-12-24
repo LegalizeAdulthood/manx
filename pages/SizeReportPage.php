@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'AdminPageBase.php';
 require_once 'UrlInfo.php';
 
@@ -7,7 +9,7 @@ class SizeReportPage extends AdminPageBase
 {
     protected function getMenuType()
     {
-        return MenuType::SizeReport;
+        return Manx\MenuType::SizeReport;
     }
 
     protected function postPage()

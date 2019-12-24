@@ -99,7 +99,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     {
         $this->createPageWithoutFetchingIndexByDateFile();
 
-        $this->assertEquals(MenuType::ChiClassicComp, $this->_page->getMenuType());
+        $this->assertEquals(Manx\MenuType::ChiClassicComp, $this->_page->getMenuType());
     }
 
     public function testRenderBodyContentWithPlentyOfPaths()

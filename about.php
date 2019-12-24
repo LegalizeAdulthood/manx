@@ -1,6 +1,7 @@
 <?php
 
 require_once 'vendor/autoload.php';
+
 require_once 'pages/Manx.php';
 require_once 'pages/AboutPage.php';
 

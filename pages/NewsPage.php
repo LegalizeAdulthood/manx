@@ -1,12 +1,12 @@
 <?php
 
-require_once 'PageBase.php';
+require_once 'vendor/autoload.php';
 
-class NewsPage extends PageBase
+class NewsPage extends Manx\PageBase
 {
     protected function getMenuType()
     {
-        return MenuType::News;
+        return Manx\MenuType::News;
     }
 
     protected function renderBodyContent()

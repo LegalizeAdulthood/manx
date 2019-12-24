@@ -2,11 +2,9 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/PageBase.php';
-
 use Pimple\Container;
 
-class PageBaseTester extends PageBase
+class PageBaseTester extends Manx\PageBase
 {
     protected function renderBodyContent()
     {
