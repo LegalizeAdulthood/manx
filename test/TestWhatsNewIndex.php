@@ -1,10 +1,12 @@
 <?php
 
-use Pimple\Container;
+require_once 'vendor/autoload.php';
 
 require_once 'pages/Config.php';
 require_once 'pages/WhatsNewIndex.php';
 require_once 'test/DatabaseTester.php';
+
+use Pimple\Container;
 
 class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
 {
@@ -17,7 +19,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
     private $_manx;
     /** @var IFileSystem */
     private $_fileSystem;
-    /** @var IWhatsNewPageFactory */
+    /** @var Manx\IWhatsNewPageFactory */
     private $_factory;
     /** @var IUrlInfo */
     private $_info;
@@ -39,7 +41,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->method('getDatabase')->willReturn($this->_db);
         $this->_fileSystem = $this->createMock(IFileSystem::class);
-        $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
+        $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_urlInfo = $this->createMock(IUrlInfo::class);
         $config = new Container();
