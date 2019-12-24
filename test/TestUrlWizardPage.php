@@ -4,7 +4,7 @@ use Pimple\Container;
 
 require_once 'pages/UrlWizardPage.php';
 
-class UrlWizardPageTester extends UrlWizardPage
+class UrlWizardPageTester extends Manx\UrlWizardPage
 {
     public function renderBodyContent()
     {
@@ -48,7 +48,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $vars = array();
         $this->_config['vars'] = $vars;
 
-        $page = new URLWizardPage($this->_config);
+        $page = new Manx\UrlWizardPage($this->_config);
 
         $this->assertTrue(is_object($page));
         $this->assertFalse(is_null($page));
@@ -109,7 +109,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
                 $this->anything(), $this->anything(), $this->anything(), $keywords, $this->anything(),
                 $abstract, $this->anything())
             ->willReturn(19690);
-        $page = new URLWizardPageTester($this->_config);
+        $page = new UrlWizardPageTester($this->_config);
         $db->expects($this->never())->method('addCompany');
         $db->expects($this->once())->method('addSupersession')->with(5634, 19690);
         $db->expects($this->never())->method('addSite');
@@ -179,7 +179,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
                 $this->anything(), $this->anything(), $this->anything(), $keywords, $this->anything(),
                 $abstract, $this->anything())
             ->willReturn(19690);
-        $page = new URLWizardPageTester($this->_config);
+        $page = new UrlWizardPageTester($this->_config);
         $db->expects($this->never())->method('addCompany');
         $db->expects($this->once())->method('addSupersession')->with(5634, 19690);
         $db->expects($this->once())->method('addCopy')
@@ -241,7 +241,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             'supersession_new_pub' => '-1',
             'next' => 'Next+%3E');
         $this->_config['vars'] = $vars;
-        $page = new URLWizardPageTester($this->_config);
+        $page = new UrlWizardPageTester($this->_config);
         $db->expects($this->once())->method('addSiteDirectory')
             ->with('ChiClassicComp', '5', 'DEC');
 
@@ -258,7 +258,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $vars = array();
         $this->_config['vars'] = $vars;
-        $page = new URLWizardPageTester($this->_config);
+        $page = new UrlWizardPageTester($this->_config);
 
         $page->renderBodyContent();
 

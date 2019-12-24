@@ -1,14 +1,12 @@
 <?php
 
-require_once 'vendor/autoload.php';
+namespace Manx;
 
-require_once 'Manx.php';
-require_once 'BitSaversPage.php';
-require_once 'UrlInfo.php';
+require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
-class URLWizardPage extends Manx\AdminPageBase
+class UrlWizardPage extends AdminPageBase
 {
     /** @var \IManxDatabase */
     private $_db;
@@ -22,7 +20,7 @@ class URLWizardPage extends Manx\AdminPageBase
 
     protected function getMenuType()
     {
-        return Manx\MenuType::UrlWizard;
+        return MenuType::UrlWizard;
     }
 
     protected function postPage()
