@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'cron/SiteChecker.php';
-
 use Pimple\Container;
 
 class TestSiteChecker extends PHPUnit\Framework\TestCase
@@ -23,7 +21,7 @@ class TestSiteChecker extends PHPUnit\Framework\TestCase
     private $_logger;
     /** @var Manx\IUser */
     private $_user;
-    /** @var SiteChecker */
+    /** @var Manx\Cron\SiteChecker */
     private $_checker;
 
     protected function setUp()
@@ -42,7 +40,7 @@ class TestSiteChecker extends PHPUnit\Framework\TestCase
         $config['logger'] = $this->_logger;
         $config['user'] = $this->_user;
         $this->_config = $config;
-        $this->_checker = new SiteChecker($this->_config);
+        $this->_checker = new Manx\Cron\SiteChecker($this->_config);
     }
 
     public function testCheckSiteOnlineWhenSiteAndDocsExist()

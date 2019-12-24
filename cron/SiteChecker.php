@@ -1,8 +1,12 @@
 <?php
 
+namespace Manx\Cron;
+
+use Pimple\Container;
+
 class SiteChecker
 {
-    public function __construct($config)
+    public function __construct(Container $config)
     {
         $this->_db = $config['manx']->getDatabase();
         $this->_factory = $config['urlInfoFactory'];
@@ -51,7 +55,10 @@ class SiteChecker
         $this->_logger->log($text);
     }
 
+    /** @var IManxDatabase */
     private $_db;
+    /** @var IUrlInfoFactory */
     private $_factory;
+    /** @var ILogger */
     private $_logger;
 }
