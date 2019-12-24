@@ -1,5 +1,7 @@
 --
--- Function `manx_parent_dir` returns the parent directory string of a path
+-- `manx_parent_dir`
+-- 
+-- Returns the parent directory string of a path.
 --
 DROP FUNCTION IF EXISTS `manx_parent_dir`;
 CREATE FUNCTION `manx_parent_dir`(`path` VARCHAR(255))
@@ -21,10 +23,30 @@ CREATE TABLE site_unknown_dir (
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- manx_unknown_directory_migrater creates complete directory hierarchies
--- from existing directories in the site_unknown_dir table.
--- As long as directory paths containing '/' exist with a parent
--- directory id of -1, insert parent directories and update
+-- Update table structure for `site_unknown` to include `dir_id` column
+--
+DROP PROCEDURE IF EXISTS `manx_add_site_unknown_dir_id`;
+DELIMITER //
+CREATE PROCEDURE `manx_add_site_unknown_dir_id`()
+BEGIN
+    IF EXISTS (SELECT * FROM `information_schema`.`columns` WHERE `table_schema` = SCHEMA() AND `table_name` = 'site_unknown' AND `column_name` = 'dir_id') THEN
+        ALTER TABLE `site_unknown` DROP COLUMN `dir_id`;
+    END IF;
+    ALTER TABLE `site_unknown`
+        ADD COLUMN `dir_id` INT(11) NOT NULL DEFAULT -1,
+        DROP INDEX `site_id`,
+        ADD UNIQUE KEY `site_id`(`site_id`, `path`, `dir_id`);
+END//
+DELIMITER ;
+CALL manx_add_site_unknown_dir_id();
+DROP PROCEDURE `manx_add_site_unknown_dir_id`;
+
+--
+-- `manx_unknown_directory_migrater`
+--
+-- Creates complete directory hierarchies from existing directories in the
+-- site_unknown_dir table.  As long as directory paths containing '/' exist
+-- with a parent directory id of -1, insert parent directories and update
 -- parent directory ids.
 --
 DROP PROCEDURE IF EXISTS `manx_unknown_directory_migrater`;
@@ -32,9 +54,17 @@ DELIMITER //
 CREATE PROCEDURE `manx_unknown_directory_migrater`()
 BEGIN
     DECLARE `dir_count` INT(11);
+
+    -- Initial site unknown directories from site unknown paths
+    INSERT INTO `site_unknown_dir`(`site_id`, `path` )
+        SELECT DISTINCT `site_id`, manx_parent_dir(`path`) AS `path`
+        FROM `site_unknown`
+        WHERE INSTR(`path`, '/') > 0;
+
+    -- Populate directory tree
     SELECT COUNT(*) FROM `site_unknown_dir` WHERE INSTR(`path`, '/') > 0 AND `parent_dir_id` = -1 LIMIT 1 INTO `dir_count`;
     WHILE `dir_count` > 0 DO
-        -- insert parent directories from existing directories
+        -- Insert parent directories from existing directories
         INSERT INTO `site_unknown_dir`(`site_id`, `path`)
             SELECT DISTINCT
                 `sud2`.`site_id`,
@@ -47,7 +77,7 @@ BEGIN
             ON DUPLICATE KEY UPDATE
                 `site_unknown_dir`.`site_id` = `site_unknown_dir`.`site_id`;
 
-        -- update parent directory ids
+        -- Update parent directory ids
         UPDATE
             `site_unknown_dir` `sud`,
             `site_unknown_dir` `sud2`
@@ -58,9 +88,18 @@ BEGIN
             AND INSTR(`sud`.`path`, '/') > 0
             AND `sud2`.`path` = manx_parent_dir(`sud`.`path`);
 
-        -- update count of subdirectories with no parent directory id
+        -- Update count of subdirectories with no parent directory id
         SELECT COUNT(*) FROM `site_unknown_dir` WHERE INSTR(`path`, '/') > 0 AND `parent_dir_id` = -1 LIMIT 1 INTO `dir_count`;
     END WHILE;
+
+    -- Replace directory prefix with directory id in site unknown paths
+    UPDATE `site_unknown` `su`, `site_unknown_dir` `sud`
+        SET
+            `su`.`dir_id` = `sud`.`id`,
+            `su`.`path` = SUBSTRING_INDEX(`su`.`path`, '/', -1)
+        WHERE
+            `su`.`dir_id` = -1
+            AND `su`.`path` = CONCAT(`sud`.`path`, '/', SUBSTRING_INDEX(`su`.`path`, '/', -1));
 END//
 DELIMITER ;
 
@@ -68,14 +107,6 @@ DELIMITER ;
 -- Begin data modification
 --
 START TRANSACTION;
-
---
--- Initial site unknown directories from site unknown paths
---
-INSERT INTO `site_unknown_dir`(`site_id`, `path` )
-SELECT DISTINCT `site_id`, manx_parent_dir(`path`) AS `path`
-    FROM `site_unknown`
-    WHERE INSTR(`path`, '/') > 0;
 
 --
 -- Populate remaining directory tree
