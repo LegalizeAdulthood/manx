@@ -2,16 +2,15 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/DetailsPage.php';
 require_once 'test/DatabaseTester.php';
 
 use Pimple\Container;
 
-class RenderDetailsTester extends DetailsPage
+class RenderDetailsTester extends Manx\DetailsPage
 {
     public function __construct(Container $config)
     {
-        DetailsPage::__construct($config);
+        parent::__construct($config);
         $this->renderLanguageCalled = false;
         $this->renderAmendmentsCalled = false;
         $this->renderOSTagsCalled = false;
@@ -89,22 +88,22 @@ class TestDetailsPageStatic extends PHPUnit\Framework\TestCase
 {
     public function testNeatListPlainOneItem()
     {
-        $this->assertEquals('English', DetailsPage::neatListPlain(array('English')));
+        $this->assertEquals('English', Manx\DetailsPage::neatListPlain(array('English')));
     }
 
     public function testNeatListPlainTwoItems()
     {
-        $this->assertEquals('English and French', DetailsPage::neatListPlain(array('English', 'French')));
+        $this->assertEquals('English and French', Manx\DetailsPage::neatListPlain(array('English', 'French')));
     }
 
     public function testNeatListPlainThreeItems()
     {
-        $this->assertEquals('English, French and German', DetailsPage::neatListPlain(array('English', 'French', 'German')));
+        $this->assertEquals('English, French and German', Manx\DetailsPage::neatListPlain(array('English', 'French', 'German')));
     }
 
     public function testDetailParamsForPathInfoCompanyAndId()
     {
-        $params = DetailsPage::detailParamsForPathInfo('/1,2');
+        $params = Manx\DetailsPage::detailParamsForPathInfo('/1,2');
 
         $this->assertEquals(4, count(array_keys($params)));
         $this->assertEquals(1, $params['cp']);
@@ -117,7 +116,7 @@ class TestDetailsPageStatic extends PHPUnit\Framework\TestCase
     {
         $row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => NULL);
 
-        $result = DetailsPage::formatDocRef($row);
+        $result = Manx\DetailsPage::formatDocRef($row);
 
         $this->assertEquals('<a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>', $result);
     }
@@ -126,24 +125,24 @@ class TestDetailsPageStatic extends PHPUnit\Framework\TestCase
     {
         $row = array('ph_company' => 1, 'ph_pub' => 3, 'ph_title' => 'Frobozz Electric Company Grid Adjustor & Pulminator Reference', 'ph_part' => 'FECGAPR');
 
-        $result = DetailsPage::formatDocRef($row);
+        $result = Manx\DetailsPage::formatDocRef($row);
 
         $this->assertEquals('FECGAPR, <a href="../details.php/1,3"><cite>Frobozz Electric Company Grid Adjustor &amp; Pulminator Reference</cite></a>', $result);
     }
 
     public function testReplaceNullWithEmptyStringOrTrimForNull()
     {
-        $this->assertEquals('', DetailsPage::replaceNullWithEmptyStringOrTrim(null));
+        $this->assertEquals('', Manx\DetailsPage::replaceNullWithEmptyStringOrTrim(null));
     }
 
     public function testReplaceNullWithEmptyStringOrTrimForString()
     {
-        $this->assertEquals('foo', DetailsPage::replaceNullWithEmptyStringOrTrim('foo'));
+        $this->assertEquals('foo', Manx\DetailsPage::replaceNullWithEmptyStringOrTrim('foo'));
     }
 
     public function testReplaceNullWithEmptyStringOrTrimForWhitespace()
     {
-        $this->assertEquals('foo', DetailsPage::replaceNullWithEmptyStringOrTrim(" foo\t\r\n"));
+        $this->assertEquals('foo', Manx\DetailsPage::replaceNullWithEmptyStringOrTrim(" foo\t\r\n"));
     }
 }
 
@@ -164,7 +163,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
         $config = new Container();
         $config['manx'] = $this->_manx;
-        $this->_page = new DetailsPage($config);
+        $this->_page = new Manx\DetailsPage($config);
     }
 
     public function testRenderLanguageEnglishGivesNoOutput()
