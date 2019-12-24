@@ -1,5 +1,11 @@
 <?php
 
+namespace Manx;
+
+require_once 'vendor/autoload.php';
+
+use Pimple\Container;
+
 /*
 
 1. Enter URL and submit to wizard for analysis.
@@ -19,13 +25,7 @@
 
 */
 
-require_once 'vendor/autoload.php';
-
-require_once 'UrlMetaData.php';
-
-use Pimple\Container;
-
-class UrlWizardService extends Manx\ServicePageBase
+class UrlWizardService extends ServicePageBase
 {
     /** @var IUrlMetaData */
     private $_meta;
@@ -87,17 +87,17 @@ class UrlWizardService extends Manx\ServicePageBase
     {
         $company = $this->param('company');
         $ignoredWords = array();
-        $keywords = Manx\Searcher::filterSearchKeywords($this->param('keywords'), $ignoredWords);
+        $keywords = Searcher::filterSearchKeywords($this->param('keywords'), $ignoredWords);
         if (count($keywords))
         {
             $data = $this->findPublicationsForKeywords($company, $keywords);
-            $filtered = Manx\Searcher::filterSearchKeywords($keywords[0], $ignoredWords);
+            $filtered = Searcher::filterSearchKeywords($keywords[0], $ignoredWords);
             if (count($filtered))
             {
                 $data = $this->mergePubs($data, $this->findPublicationsForKeywords($company, $filtered));
             }
             $data = array_values($data);
-            usort($data, ['UrlWizardService', 'comparePublications']);
+            usort($data, ['Manx\UrlWizardService', 'comparePublications']);
         }
         else
         {

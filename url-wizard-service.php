@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/UrlWizardService.php';
-
 use Pimple\Container;
 
 $config = new Container();
@@ -16,5 +14,5 @@ $config['urlMetaData'] = function($c)
 {
     return new Manx\UrlMetaData($c);
 };
-$page = new UrlWizardService($config);
+$page = new Manx\UrlWizardService($config);
 $page->processRequest();

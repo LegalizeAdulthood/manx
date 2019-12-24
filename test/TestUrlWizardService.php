@@ -3,11 +3,10 @@
 require_once 'vendor/autoload.php';
 
 require_once 'test/DatabaseTester.php';
-require_once 'pages/UrlWizardService.php';
 
 use Pimple\Container;
 
-class UrlWizardServiceTester extends UrlWizardService
+class UrlWizardServiceTester extends Manx\UrlWizardService
 {
     public function renderBodyContent()
     {
