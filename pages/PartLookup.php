@@ -1,7 +1,8 @@
 <?php
 
-require_once 'PDODatabaseAdapter.php';
-require_once 'ManxDatabase.php';
+namespace Manx;
+
+require_once 'vendor/autoload.php';
 
 $db = PDODatabaseAdapter::getInstance();
 $manxDb = ManxDatabase::getInstanceForDatabase($db);
