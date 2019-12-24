@@ -2,10 +2,9 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'ISearcher.php';
 require_once 'IManxDatabase.php';
 
-class Searcher implements ISearcher
+class Searcher implements Manx\ISearcher
 {
     private $_searchWords;
     private $_ignoredWords;
