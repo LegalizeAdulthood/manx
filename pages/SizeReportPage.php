@@ -1,14 +1,14 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
-require_once 'UrlInfo.php';
-
-class SizeReportPage extends Manx\AdminPageBase
+class SizeReportPage extends AdminPageBase
 {
     protected function getMenuType()
     {
-        return Manx\MenuType::SizeReport;
+        return MenuType::SizeReport;
     }
 
     protected function postPage()
