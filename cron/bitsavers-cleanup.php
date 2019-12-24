@@ -1,9 +1,10 @@
 <?php
 
-require_once 'cron/cleanup-deps.php';
+require_once 'vendor/autoload.php';
+
 require_once 'cron/BitSaversCleaner.php';
 
-$config = CleanupConfig::getConfig();
+$config = Manx\Cron\CleanupConfig::getConfig();
 $config['whatsNewCleaner'] = function($c)
 {
     return new BitSaversCleaner($c);
