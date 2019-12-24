@@ -1,12 +1,13 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'cron/SiteChecker.php';
 require_once 'cron/ILogger.php';
 require_once 'pages/IManx.php';
 require_once 'pages/IManxDatabase.php';
 require_once 'pages/IUrlInfo.php';
 require_once 'pages/IUrlInfoFactory.php';
-require_once 'pages/IUser.php';
 
 use Pimple\Container;
 
@@ -25,7 +26,7 @@ class TestSiteChecker extends PHPUnit\Framework\TestCase
     private $_factory;
     /** @var ILogger */
     private $_logger;
-    /** @var IUser */
+    /** @var Manx\IUser */
     private $_user;
     /** @var SiteChecker */
     private $_checker;
@@ -38,7 +39,7 @@ class TestSiteChecker extends PHPUnit\Framework\TestCase
         $this->_db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
-        $this->_user = $this->createMock(IUser::class);
+        $this->_user = $this->createMock(Manx\IUser::class);
 
         $config = new Container();
         $config['manx'] = $this->_manx;

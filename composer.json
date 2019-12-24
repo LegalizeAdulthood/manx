@@ -1,4 +1,10 @@
 {
+    "autoload": {
+        "psr-4": {
+            "Manx\\": "pages/",
+            "Manx\\Cron\\": "cron/"
+        }
+    },
     "require": {
         "pimple/pimple": "^3.2"
     },

@@ -1,11 +1,12 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'IDateTimeProvider.php';
 require_once 'IManxDatabase.php';
-require_once 'IUser.php';
 require_once 'Cookie.php';
 
-class User implements IUser
+class User implements Manx\IUser
 {
     private $_userId;
     private $_loggedIn;

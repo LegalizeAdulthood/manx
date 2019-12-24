@@ -1,10 +1,11 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'cron/BitSaversCleaner.php';
 require_once 'pages/IFile.php';
 require_once 'pages/IManx.php';
 require_once 'pages/IManxDatabase.php';
-require_once 'pages/IUser.php';
 require_once 'pages/IWhatsNewIndex.php';
 
 use Pimple\Container;
@@ -24,7 +25,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     private $_factory;
     /** @var ILogger */
     private $_logger;
-    /** @var IUser */
+    /** @var Manx\IUser */
     private $_user;
     /** @var BitSaversCleaner */
     private $_cleaner;
@@ -42,7 +43,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
         $this->_whatsNewIndex = $this->createMock(IWhatsNewIndex::class);
         $this->_urlMetaData = $this->createMock(IUrlMetaData::class);
-        $this->_user = $this->createMock(IUser::class);
+        $this->_user = $this->createMock(Manx\IUser::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
         $config['logger'] = $this->_logger;
@@ -371,7 +372,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $data['ph_pub'] = $pubId;
         $pubData = $this->stockPubData();
         $copyData = $this->stockCopyData();
-        $user = $this->createMock(IUser::class);
+        $user = $this->createMock(Manx\IUser::class);
         $this->_manx->expects($this->never())->method('getUserFromSession');
         $this->_urlMetaData->expects($this->never())->method('determineData')->with($url)->willReturn($data);
         $this->_urlMetaData->expects($this->once())->method('determineIngestData')->with($siteId, $companyId, $url)->willReturn($data);

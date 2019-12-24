@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 interface IUser
 {
     function isLoggedIn();

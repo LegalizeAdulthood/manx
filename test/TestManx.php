@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/Manx.php';
 
 class TestManx extends PHPUnit\Framework\TestCase
@@ -23,7 +25,7 @@ class TestManx extends PHPUnit\Framework\TestCase
     public function testAddPublication()
     {
         $userId = 333;
-        $user = $this->createMock(IUser::class);
+        $user = $this->createMock(Manx\IUser::class);
         $user->expects($this->once())->method('userId')->willReturn($userId);
         $companyId = 10;
         $part = "EK-1011-01";

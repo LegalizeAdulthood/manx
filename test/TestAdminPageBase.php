@@ -41,14 +41,14 @@ class TestAdminPageBase extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;
-    /** @var IUser */
+    /** @var Manx\IUser */
     private $_user;
 
     protected function setUp()
     {
         $manx = $this->createMock(IManx::class);
         $db = $this->createMock(IManxDatabase::class);
-        $this->_user = $this->createMock(Iuser::class);
+        $this->_user = $this->createMock(Manx\IUser::class);
         $manx->expects($this->once())->method('getDatabase')->willReturn($db);
         $manx->expects($this->once())->method('getUserFromSession')->willReturn($this->_user);
 

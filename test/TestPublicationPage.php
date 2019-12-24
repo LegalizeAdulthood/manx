@@ -50,7 +50,7 @@ class TestPublicationPage extends PHPUnit\Framework\TestCase
     private $_manx;
     /** @var PublicationPageTester */
     private $_page;
-    /** @var IUser */
+    /** @var Manx\IUser */
     private $_user;
 
     protected function setUp()
@@ -58,7 +58,7 @@ class TestPublicationPage extends PHPUnit\Framework\TestCase
         $this->_db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->method('getDatabase')->willReturn($this->_db);
-        $this->_user = $this->createMock(IUser::class);
+        $this->_user = $this->createMock(Manx\IUser::class);
         $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($this->_user);
         $this->_config = new Container();
         $this->_config['manx'] = $this->_manx;
