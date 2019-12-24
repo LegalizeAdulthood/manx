@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'AdminPageBase.php';
 require_once 'Config.php';
 require_once 'File.php';
@@ -133,7 +135,7 @@ EOH;
 EOH;
     }
 
-    public static function ignoreExtension(IManxDatabase $manxDb, $extension)
+    public static function ignoreExtension(Manx\IManxDatabase $manxDb, $extension)
     {
         $format = $manxDb->getFormatForExtension($extension);
         $imageFormats = array('TIFF' => 1, 'PNG' => 1, 'JPEG' => 1, 'GIF' => 1);

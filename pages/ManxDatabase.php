@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once('IManxDatabase.php');
-
 class Company
 {
     const DEC = 1;
@@ -18,11 +16,11 @@ class Company
     const GRI = 80;
 }
 
-class ManxDatabase implements IManxDatabase
+class ManxDatabase implements Manx\IManxDatabase
 {
     /**
      * @param Manx\IDatabase $db
-     * @return IManxDatabase
+     * @return Manx\IManxDatabase
      */
     public static function getInstanceForDatabase(Manx\IDatabase $db)
     {

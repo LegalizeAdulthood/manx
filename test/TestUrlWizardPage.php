@@ -56,7 +56,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testDocumentAdded()
     {
-        $db = $this->createMock(IManxDatabase::class);
+        $db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
@@ -126,7 +126,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testNewBitSaversDirectoryAdded()
     {
-        $db = $this->createMock(IManxDatabase::class);
+        $db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
@@ -196,7 +196,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testNewChiClassicCompDirectoryAdded()
     {
-        $db = $this->createMock(IManxDatabase::class);
+        $db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
@@ -252,7 +252,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
     {
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $db = $this->createMock(IManxDatabase::class);
+        $db = $this->createMock(Manx\IManxDatabase::class);
         $db->expects($this->once())->method('getSites')->willReturn(array());
         $db->expects($this->once())->method('getCompanyList')->willReturn(array());
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);

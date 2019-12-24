@@ -12,7 +12,7 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
     public function setUp()
     {
         $this->_manx = $this->createMock(Manx\IManx::class);
-        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_urlInfoFactory = $this->createMock(Manx\IUrlInfoFactory::class);
         $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
         $config = new Container();

@@ -11,7 +11,7 @@ class TestIngestionRobotUser extends PHPUnit\Framework\TestCase
     public function setUp()
     {
         $this->_manx = $this->createMock(Manx\IManx::class);
-        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_userId = 3;
         $this->_db->expects($this->once())->method('getIngestionRobotUser')->willReturn($this->_userId);
         $this->_manx->method('getDatabase')->willReturn($this->_db);

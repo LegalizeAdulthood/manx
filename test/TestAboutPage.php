@@ -11,7 +11,7 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $_SERVER['PATH_INFO'] = '';
-        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_manx->expects($this->any())->method('getDatabase')->willReturn($this->_db);
         $config = new Container();

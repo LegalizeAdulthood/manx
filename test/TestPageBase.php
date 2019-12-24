@@ -2,7 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/IManxDatabase.php';
 require_once 'pages/PageBase.php';
 
 use Pimple\Container;
@@ -30,7 +29,7 @@ class TestPageBase extends PHPUnit\Framework\TestCase
     {
         $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_user = $this->createMock(Manx\IUser::class);
-        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_db = $this->createMock(Manx\IManxDatabase::class);
     }
 
     private function createInstance()
@@ -125,7 +124,7 @@ EOH;
     private $_manx;
     /** @var Manx\IUser */
     private $_user;
-    /** @var IManxDatabase */
+    /** @var Manx\IManxDatabase */
     private $_db;
     /** @var PageBaseTester */
     private $_page;

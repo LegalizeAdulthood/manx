@@ -15,15 +15,15 @@ class Manx implements Manx\IManx
     public static function getInstance()
     {
         $db = PDODatabaseAdapter::getInstance();
-        /** @var $manxDb IManxDatabase */
+        /** @var $manxDb Manx\IManxDatabase */
         $manxDb = ManxDatabase::getInstanceForDatabase($db);
         return Manx::getInstanceForDatabase($manxDb);
     }
-    public static function getInstanceForDatabase(IManxDatabase $db)
+    public static function getInstanceForDatabase(Manx\IManxDatabase $db)
     {
         return new Manx($db);
     }
-    protected function __construct(IManxDatabase $manxDb)
+    protected function __construct(Manx\IManxDatabase $manxDb)
     {
         $this->_manxDb = $manxDb;
     }

@@ -6,14 +6,14 @@ require_once 'pages/Manx.php';
 
 class TestManx extends PHPUnit\Framework\TestCase
 {
-    /** @var IManxDatabase */
+    /** @var Manx\IManxDatabase */
     private $_db;
     /** @var Manx */
     private $_manx;
 
     protected function setUp()
     {
-        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx = Manx::getInstanceForDatabase($this->_db);
     }
 

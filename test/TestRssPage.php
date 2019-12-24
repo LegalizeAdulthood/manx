@@ -19,7 +19,7 @@ class TestRssPage extends PHPUnit\Framework\TestCase
     public function testRenderBody()
     {
         $_SERVER['PATH_INFO'] = '';
-        $db = $this->createMock(IManxDatabase::class);
+        $db = $this->createMock(Manx\IManxDatabase::class);
         $db->expects($this->once())->method('getMostRecentDocuments')
             ->with(200)
             ->willReturn(array(

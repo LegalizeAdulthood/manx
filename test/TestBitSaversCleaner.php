@@ -3,7 +3,6 @@
 require_once 'vendor/autoload.php';
 
 require_once 'cron/BitSaversCleaner.php';
-require_once 'pages/IManxDatabase.php';
 
 use Pimple\Container;
 
@@ -12,7 +11,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     /** @var Container */
     private $_config;
 
-    /** @var IManxDatabase */
+    /** @var Manx\IManxDatabase */
     private $_db;
     /** @var Manx\IManx */
     private $_manx;
@@ -35,7 +34,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
         $this->_logger = $this->createMock(ILogger::class);
 
-        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
         $this->_whatsNewIndex = $this->createMock(Manx\IWhatsNewIndex::class);

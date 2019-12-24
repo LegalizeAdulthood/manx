@@ -43,7 +43,7 @@ class TestCompanyPage extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;
-    /** @var IManxDatabase */
+    /** @var Manx\IManxDatabase */
     private $_db;
     /** @var Manx\IManx */
     private $_manx;
@@ -62,7 +62,7 @@ class TestCompanyPage extends PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $this->_db = $this->createMock(IManxDatabase::class);
+        $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_manx->method('getDatabase')->willReturn($this->_db);
         $this->_fileSystem = $this->createMock(Manx\IFileSystem::class);

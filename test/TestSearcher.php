@@ -8,7 +8,7 @@ class TestSearcher extends PHPUnit\Framework\TestCase
 {
     public function testRenderCompanies()
     {
-        $db = $this->createMock(IManxDatabase::class);
+        $db = $this->createMock(Manx\IManxDatabase::class);
         $db->expects($this->once())->method('getCompanyList')->willReturn(array(
             array('id' => 1, 'name' => 'DEC'),
             array('id' => 2, 'name' => '3Com'),
@@ -66,7 +66,7 @@ class TestSearcher extends PHPUnit\Framework\TestCase
 
     public function testSearchResultsSingleRow()
     {
-        $db = $this->createMock(IManxDatabase::class);
+        $db = $this->createMock(Manx\IManxDatabase::class);
         $pubId = 4344;
         $rows = array(
             array('pub_id' => $pubId,

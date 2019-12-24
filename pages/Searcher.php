@@ -2,20 +2,18 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'IManxDatabase.php';
-
 class Searcher implements Manx\ISearcher
 {
     private $_searchWords;
     private $_ignoredWords;
     private $_manxDb;
 
-    public static function getInstance(IManxDatabase $manxDb)
+    public static function getInstance(Manx\IManxDatabase $manxDb)
     {
         return new Searcher($manxDb);
     }
 
-    private function __construct(IManxDatabase $manxDb)
+    private function __construct(Manx\IManxDatabase $manxDb)
     {
         $this->_manxDb = $manxDb;
     }
