@@ -2,11 +2,9 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'WhatsNewPageBase.php';
-
 use Pimple\Container;
 
-class ChiClassicCompPage extends WhatsNewPageBase
+class ChiClassicCompPage extends Manx\WhatsNewPageBase
 {
     public function __construct(Container $config)
     {
