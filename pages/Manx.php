@@ -4,7 +4,6 @@ require_once 'vendor/autoload.php';
 
 require_once 'IDateTimeProvider.php';
 require_once 'ManxDatabase.php';
-require_once 'User.php';
 
 class Manx implements Manx\IManx
 {
@@ -67,7 +66,7 @@ class Manx implements Manx\IManx
 
     function getUserFromSession()
     {
-        return User::getInstanceFromSession($this->_manxDb);
+        return Manx\User::getInstanceFromSession($this->_manxDb);
     }
 
     public function addPublication($user, $company, $part, $pubDate, $title,

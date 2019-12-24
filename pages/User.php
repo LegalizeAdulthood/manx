@@ -1,11 +1,10 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
-require_once 'IDateTimeProvider.php';
-require_once 'IManxDatabase.php';
-
-class User implements Manx\IUser
+class User implements IUser
 {
     private $_userId;
     private $_loggedIn;
@@ -14,16 +13,16 @@ class User implements Manx\IUser
     private $_displayName;
     private $_admin;
 
-    public static function getInstanceFromSession(Manx\IManxDatabase $manxDb)
+    public static function getInstanceFromSession(IManxDatabase $manxDb)
     {
-        $row = $manxDb->getUserFromSessionId(Manx\Cookie::get());
+        $row = $manxDb->getUserFromSessionId(Cookie::get());
         if (array_key_exists('user_id', $row))
         {
-            date_default_timezone_set(Manx\TIME_ZONE);
+            date_default_timezone_set(TIME_ZONE);
             if (time() - strtotime($row['last_impression']) > 30*60)
             {
-                $manxDb->deleteUserSession(Manx\Cookie::get());
-                Manx\Cookie::delete();
+                $manxDb->deleteUserSession(Cookie::get());
+                Cookie::delete();
             }
         }
         else
