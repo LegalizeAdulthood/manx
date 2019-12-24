@@ -2,10 +2,9 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'AdminPageBase.php';
 require_once 'UrlInfo.php';
 
-class MD5ReportPage extends AdminPageBase
+class MD5ReportPage extends Manx\AdminPageBase
 {
     protected function getMenuType()
     {

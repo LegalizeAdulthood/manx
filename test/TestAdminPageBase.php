@@ -4,9 +4,7 @@ require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
-require_once 'pages/AdminPageBase.php';
-
-class AdminPageBaseTester extends AdminPageBase
+class AdminPageBaseTester extends Manx\AdminPageBase
 {
     public function __construct($config)
     {

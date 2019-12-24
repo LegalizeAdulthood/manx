@@ -2,11 +2,10 @@
 
 require_once 'vendor/autoload.php';
 require_once 'pages/Manx.php';
-require_once 'pages/AdminPageBase.php';
 
 use Pimple\Container;
 
-class MirrorPage extends AdminPageBase
+class MirrorPage extends Manx\AdminPageBase
 {
     protected function getMenuType()
     {

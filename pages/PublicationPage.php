@@ -2,12 +2,11 @@
 
 require_once 'vendor/autoload.php';
 
-use Pimple\Container;
-
-require_once 'AdminPageBase.php';
 require_once 'IManx.php';
 
-class PublicationPage extends AdminPageBase
+use Pimple\Container;
+
+class PublicationPage extends Manx\AdminPageBase
 {
     protected function getMenuType()
     {

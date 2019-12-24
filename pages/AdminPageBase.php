@@ -1,8 +1,10 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
-abstract class AdminPageBase extends Manx\PageBase
+abstract class AdminPageBase extends PageBase
 {
     protected $_vars;
 

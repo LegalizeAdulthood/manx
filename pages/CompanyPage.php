@@ -3,9 +3,8 @@
 require_once 'vendor/autoload.php';
 
 require_once 'Manx.php';
-require_once 'AdminPageBase.php';
 
-class CompanyPage extends AdminPageBase
+class CompanyPage extends Manx\AdminPageBase
 {
     protected function getMenuType()
     {

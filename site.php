@@ -3,11 +3,10 @@
 require_once 'vendor/autoload.php';
 
 require_once 'pages/Manx.php';
-require_once 'pages/AdminPageBase.php';
 
 use Pimple\Container;
 
-class SitePage extends AdminPageBase
+class SitePage extends Manx\AdminPageBase
 {
     protected function getMenuType()
     {

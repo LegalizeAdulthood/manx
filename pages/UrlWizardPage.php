@@ -3,13 +3,12 @@
 require_once 'vendor/autoload.php';
 
 require_once 'Manx.php';
-require_once 'AdminPageBase.php';
 require_once 'BitSaversPage.php';
 require_once 'UrlInfo.php';
 
 use Pimple\Container;
 
-class URLWizardPage extends AdminPageBase
+class URLWizardPage extends Manx\AdminPageBase
 {
     /** @var \IManxDatabase */
     private $_db;
