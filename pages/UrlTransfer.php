@@ -1,14 +1,16 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
-class UrlTransfer implements Manx\IUrlTransfer
+class UrlTransfer implements IUrlTransfer
 {
     public function __construct($url, $curlApi = null, $fileSystem = null)
     {
         $this->_url = $url;
-        $this->_curl = is_null($curlApi) ? Manx\CurlApi::getInstance() : $curlApi;
-        $this->_fileSystem = is_null($fileSystem) ? new Manx\FileSystem() : $fileSystem;
+        $this->_curl = is_null($curlApi) ? CurlApi::getInstance() : $curlApi;
+        $this->_fileSystem = is_null($fileSystem) ? new FileSystem() : $fileSystem;
     }
 
     public function get($destination)

@@ -2,7 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/UrlTransfer.php';
 require_once 'pages/Config.php';
 
 class TestUrlTransfer extends PHPUnit\Framework\TestCase
@@ -15,7 +14,7 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
 
     private function createInstance($url)
     {
-        return new UrlTransfer($url, $this->_curlApi, $this->_fileSystem);
+        return new Manx\UrlTransfer($url, $this->_curlApi, $this->_fileSystem);
     }
 
     public function testConstruct()
