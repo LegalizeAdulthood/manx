@@ -6,7 +6,6 @@ require_once 'cron/SiteChecker.php';
 require_once 'cron/ILogger.php';
 require_once 'pages/IManx.php';
 require_once 'pages/IManxDatabase.php';
-require_once 'pages/IUrlInfoFactory.php';
 
 use Pimple\Container;
 
@@ -21,7 +20,7 @@ class TestSiteChecker extends PHPUnit\Framework\TestCase
     private $_manx;
     /** @var Manx\IUrlInfo */
     private $_urlInfo;
-    /** @var IUrlInfoFactory */
+    /** @var Manx\IUrlInfoFactory */
     private $_factory;
     /** @var ILogger */
     private $_logger;
@@ -33,7 +32,7 @@ class TestSiteChecker extends PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
-        $this->_factory = $this->createMock(IUrlInfoFactory::class);
+        $this->_factory = $this->createMock(Manx\IUrlInfoFactory::class);
         $this->_logger = $this->createMock(ILogger::class);
         $this->_db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
