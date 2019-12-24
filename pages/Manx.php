@@ -1,9 +1,7 @@
 <?php
 
 require_once 'vendor/autoload.php';
-
-require_once 'IDateTimeProvider.php';
-require_once 'ManxDatabase.php';
+require_once 'pages/IDateTimeProvider.php';
 
 class Manx implements Manx\IManx
 {
@@ -13,7 +11,7 @@ class Manx implements Manx\IManx
     {
         $db = Manx\PDODatabaseAdapter::getInstance();
         /** @var $manxDb Manx\IManxDatabase */
-        $manxDb = ManxDatabase::getInstanceForDatabase($db);
+        $manxDb = Manx\ManxDatabase::getInstanceForDatabase($db);
         return Manx::getInstanceForDatabase($manxDb);
     }
     public static function getInstanceForDatabase(Manx\IManxDatabase $db)

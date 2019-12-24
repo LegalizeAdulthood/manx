@@ -2,14 +2,13 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/ManxDatabase.php';
 require_once 'test/DatabaseTester.php';
 
 class TestManxDatabase extends PHPUnit\Framework\TestCase
 {
     /** @var Manx\IDatabase */
     private $_db;
-    /** @var ManxDatabase */
+    /** @var Manx\ManxDatabase */
     private $_manxDb;
     /** @var PDOStatement */
     private $_statement;
@@ -18,7 +17,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $this->_statement = $this->createMock(PDOStatement::class);
         $this->_db = $this->createMock(Manx\IDatabase::class);
-        $this->_manxDb = ManxDatabase::getInstanceForDatabase($this->_db);
+        $this->_manxDb = Manx\ManxDatabase::getInstanceForDatabase($this->_db);
     }
 
     public function testConstruct()
@@ -311,7 +310,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 'ph_pub_type' => '')
             );
         $keywords = array('graphics', 'terminal');
-        $matchClause = ManxDatabase::matchClauseForSearchWords($keywords);
+        $matchClause = Manx\ManxDatabase::matchClauseForSearchWords($keywords);
         $company = 1;
         $query = "SELECT `pub_id`, `ph_part`, `ph_title`,"
             . " `pub_has_online_copies`, `ph_abstract`, `pub_has_toc`,"
@@ -740,9 +739,9 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                     $publicationType, $company, $part, $altPart,
                     $revision, $pubDate, $title, $keywords,
                     $notes, $abstract, $languages,
-                    ManxDatabase::normalizePartNumber($part),
-                        ManxDatabase::normalizePartNumber($altPart),
-                        ManxDatabase::sortPartNumber($company, $part)
+                    Manx\ManxDatabase::normalizePartNumber($part),
+                    Manx\ManxDatabase::normalizePartNumber($altPart),
+                    Manx\ManxDatabase::sortPartNumber($company, $part)
                 )
             );
 

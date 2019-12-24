@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
 class Company
@@ -16,17 +18,17 @@ class Company
     const GRI = 80;
 }
 
-class ManxDatabase implements Manx\IManxDatabase
+class ManxDatabase implements IManxDatabase
 {
     /**
-     * @param Manx\IDatabase $db
-     * @return Manx\IManxDatabase
+     * @param IDatabase $db
+     * @return IManxDatabase
      */
-    public static function getInstanceForDatabase(Manx\IDatabase $db)
+    public static function getInstanceForDatabase(IDatabase $db)
     {
         return new ManxDatabase($db);
     }
-    private function __construct(Manx\IDatabase $db)
+    private function __construct(IDatabase $db)
     {
         $this->_db = $db;
     }
@@ -34,7 +36,7 @@ class ManxDatabase implements Manx\IManxDatabase
     {
         $this->_db = null;
     }
-    /** @var Manx\IDatabase */
+    /** @var IDatabase */
     private $_db;
 
     private function beginTransaction()
