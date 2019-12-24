@@ -2,13 +2,12 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/CompanyPage.php';
 require_once 'test/DatabaseTester.php';
 require_once 'test/FakeFile.php';
 
 use Pimple\Container;
 
-class CompanyPageTester extends CompanyPage
+class CompanyPageTester extends Manx\CompanyPage
 {
     public function __construct($config)
     {

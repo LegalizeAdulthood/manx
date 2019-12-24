@@ -1,14 +1,16 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
 require_once 'Manx.php';
 
-class CompanyPage extends Manx\AdminPageBase
+class CompanyPage extends AdminPageBase
 {
     protected function getMenuType()
     {
-        return Manx\MenuType::Company;
+        return MenuType::Company;
     }
 
     private function renderBeginForm($method, $heading = 'Edit Company')
