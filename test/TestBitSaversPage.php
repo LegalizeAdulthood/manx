@@ -2,6 +2,8 @@
 
 require_once 'vendor/autoload.php';
 
+// For SORT_ORDER_xxx
+require_once 'pages/UnknownPathDefs.php';
 require_once 'test/DatabaseTester.php';
 
 use Pimple\Container;

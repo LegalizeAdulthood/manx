@@ -5,8 +5,6 @@ require_once 'vendor/autoload.php';
 require_once 'cron/ExclusiveLock.php';
 require_once 'cron/Logger.php';
 require_once 'cron/WhatsNewProcessor.php';
-require_once 'pages/WhatsNewIndex.php';
-require_once 'pages/WhatsNewPageFactory.php';
 
 use Pimple\Container;
 
@@ -18,7 +16,7 @@ class CleanupConfig
         $manx = Manx\Manx::getInstance();
         $config['manx'] = $manx;
         $config['db'] = $manx->getDatabase();
-        $config['whatsNewPageFactory'] = new WhatsNewPageFactory();
+        $config['whatsNewPageFactory'] = new Manx\WhatsNewPageFactory();
         $config['locker'] = new ExclusiveLock();
         $config['logger'] = new Logger();
         $config['fileSystem'] = new Manx\FileSystem();
@@ -28,7 +26,7 @@ class CleanupConfig
         };
         $config['whatsNewIndex'] = function($c)
         {
-            return new WhatsNewIndex($c);
+            return new Manx\WhatsNewIndex($c);
         };
         $config['urlMetaData'] = function($c)
         {

@@ -4,15 +4,14 @@ namespace Manx;
 
 require_once 'vendor/autoload.php';
 
-require_once 'Config.php';
-require_once 'File.php';
-require_once 'UnknownPathDefs.php';
-require_once 'WhatsNewPageFactory.php';
+require_once 'pages/Config.php';
+require_once 'pages/UnknownPathDefs.php';
 
 use Pimple\Container;
 
 class WhatsNewPageBase extends AdminPageBase
 {
+    /** @var IWhatsNewPageFactory */
     private $_factory;
     private $_timeStampProperty;
     private $_indexByDateUrl;
