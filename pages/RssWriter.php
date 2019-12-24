@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
 class RssWriter
@@ -7,10 +9,10 @@ class RssWriter
     private $_dateTimeProvider;
     private $_writer;
 
-    public function __construct(Manx\IDateTimeProvider $dateTimeProvider, $xsltFilePath = '')
+    public function __construct(IDateTimeProvider $dateTimeProvider, $xsltFilePath = '')
     {
         $this->_dateTimeProvider = $dateTimeProvider;
-        $this->_writer = new XMLWriter();
+        $this->_writer = new \XMLWriter();
         $this->_writer->openMemory();
         $this->_writer->setIndent(true);
         $this->_writer->setIndentString('  ');
@@ -32,7 +34,7 @@ class RssWriter
         $this->_writer->writeElement('link', $link);
         $this->_writer->writeElement('description', $description);
         $now = $this->_dateTimeProvider->now();
-        $this->_writer->writeElement('lastBuildDate', $now->format(DateTime::RFC1123));
+        $this->_writer->writeElement('lastBuildDate', $now->format(\DateTime::RFC1123));
         return $this;
     }
 

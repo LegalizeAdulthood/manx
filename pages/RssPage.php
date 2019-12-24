@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'RssWriter.php';
-
 use Pimple\Container;
 
 class RssPage extends Manx\PageBase
@@ -15,7 +13,7 @@ class RssPage extends Manx\PageBase
         parent::__construct($config);
         $manx = $config['manx'];
         $dateTimeProvider = $config['dateTimeProvider'];
-        $this->_rss = new RssWriter($dateTimeProvider);
+        $this->_rss = new Manx\RssWriter($dateTimeProvider);
         $this->_rss->beginChannel('New Documents on Manx', 'http://manx-docs.org',
                 'A list of the most recently created documents in the Manx database.')
             ->language('en-us');
