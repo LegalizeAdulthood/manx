@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'Searcher.php';
-
 class SearchPage extends Manx\PageBase
 {
     protected function getMenuType()
@@ -13,8 +11,8 @@ class SearchPage extends Manx\PageBase
 
     protected function renderBodyContent()
     {
-        $params = Searcher::parameterSource($_GET, $_POST);
-        $searcher = Searcher::getInstance($this->_manxDb);
+        $params = Manx\Searcher::parameterSource($_GET, $_POST);
+        $searcher = Manx\Searcher::getInstance($this->_manxDb);
         print '<div id="Div1"><form action="search.php" method="get" name="f"><div class="field">Company: ';
         $company = (array_key_exists('cp', $params) ? $params['cp'] : 1);
         $keywords = urldecode(array_key_exists('q', $params) ? $params['q'] : '');

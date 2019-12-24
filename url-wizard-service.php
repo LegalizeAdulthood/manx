@@ -1,7 +1,7 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require_once 'pages/Searcher.php';
+
 require_once 'pages/UrlInfoFactory.php';
 require_once 'pages/UrlMetaData.php';
 require_once 'pages/UrlWizardService.php';

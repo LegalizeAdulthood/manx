@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/Searcher.php';
-
 class TestSearcher extends PHPUnit\Framework\TestCase
 {
     public function testRenderCompanies()
@@ -13,7 +11,7 @@ class TestSearcher extends PHPUnit\Framework\TestCase
             array('id' => 1, 'name' => 'DEC'),
             array('id' => 2, 'name' => '3Com'),
             array('id' => 3, 'name' => 'AT&T')));
-        $searcher = Searcher::getInstance($db);
+        $searcher = Manx\Searcher::getInstance($db);
 
         $searcher->renderCompanies(1);
 
@@ -28,7 +26,7 @@ class TestSearcher extends PHPUnit\Framework\TestCase
     {
         $get = array('cp' => 1);
         $post = array();
-        $source = Searcher::parameterSource($get, $post);
+        $source = Manx\Searcher::parameterSource($get, $post);
         $this->assertEquals($get, $source);
         $this->assertTrue(array_key_exists('cp', $source));
     }
@@ -37,7 +35,7 @@ class TestSearcher extends PHPUnit\Framework\TestCase
     {
         $get = array();
         $post = array('cp' => 1);
-        $source = Searcher::parameterSource($get, $post);
+        $source = Manx\Searcher::parameterSource($get, $post);
         $this->assertEquals($post, $source);
         $this->assertTrue(array_key_exists('cp', $source));
     }
@@ -46,21 +44,21 @@ class TestSearcher extends PHPUnit\Framework\TestCase
     {
         $get = array('q' => 'terminal');
         $post = array();
-        $source = Searcher::parameterSource($get, $post);
+        $source = Manx\Searcher::parameterSource($get, $post);
         $this->assertEquals($get, $source);
         $this->assertTrue(array_key_exists('q', $source));
     }
 
     public function testFilterSearchKeywordsIgnored()
     {
-        $this->assertEquals(array(), Searcher::filterSearchKeywords("a an it on in at", $ignoredWords));
+        $this->assertEquals(array(), Manx\Searcher::filterSearchKeywords("a an it on in at", $ignoredWords));
         $this->assertEquals(array('a', 'an', 'it', 'on', 'in', 'at'), $ignoredWords);
     }
 
     public function testFilterSearchKeywordsAcceptable()
     {
         $ignoredWords = array();
-        $this->assertEquals(array('one', 'two'), Searcher::filterSearchKeywords("one two", $ignoredWords));
+        $this->assertEquals(array('one', 'two'), Manx\Searcher::filterSearchKeywords("one two", $ignoredWords));
         $this->assertEquals(array(), $ignoredWords);
     }
 
@@ -100,7 +98,7 @@ class TestSearcher extends PHPUnit\Framework\TestCase
         $rowArgs[0]['tags'] = $tags;
         $formatter->expects($this->once())->method('renderResultsPage')
             ->with($rowArgs, 0, 0);
-        $searcher = Searcher::getInstance($db);
+        $searcher = Manx\Searcher::getInstance($db);
 
         $searcher->renderSearchResults($formatter, $company, $keywords, true);
     }

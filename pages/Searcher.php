@@ -1,19 +1,21 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
-class Searcher implements Manx\ISearcher
+class Searcher implements ISearcher
 {
     private $_searchWords;
     private $_ignoredWords;
     private $_manxDb;
 
-    public static function getInstance(Manx\IManxDatabase $manxDb)
+    public static function getInstance(IManxDatabase $manxDb)
     {
         return new Searcher($manxDb);
     }
 
-    private function __construct(Manx\IManxDatabase $manxDb)
+    private function __construct(IManxDatabase $manxDb)
     {
         $this->_manxDb = $manxDb;
     }
@@ -63,12 +65,12 @@ class Searcher implements Manx\ISearcher
         return $searchWords;
     }
 
-    public function renderSearchResults(Manx\IFormatter $formatter, $company, $keywords, $online)
+    public function renderSearchResults(IFormatter $formatter, $company, $keywords, $online)
     {
-        $params = Searcher::parameterSource($_GET, $_POST);
+        $params = self::parameterSource($_GET, $_POST);
         $stmt = '';
         $rows = array();
-        $this->_searchWords = Searcher::filterSearchKeywords($keywords, $this->_ignoredWords);
+        $this->_searchWords = self::filterSearchKeywords($keywords, $this->_ignoredWords);
         $rows = $this->_manxDb->searchForPublications($company, $this->_searchWords, $online);
         $total = count($rows);
         if (array_key_exists('start', $params))

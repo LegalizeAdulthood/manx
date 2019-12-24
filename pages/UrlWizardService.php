@@ -19,7 +19,8 @@
 
 */
 
-require_once 'Searcher.php';
+require_once 'vendor/autoload.php';
+
 require_once 'ServicePageBase.php';
 require_once 'UrlMetaData.php';
 
@@ -87,11 +88,11 @@ class UrlWizardService extends ServicePageBase
     {
         $company = $this->param('company');
         $ignoredWords = array();
-        $keywords = Searcher::filterSearchKeywords($this->param('keywords'), $ignoredWords);
+        $keywords = Manx\Searcher::filterSearchKeywords($this->param('keywords'), $ignoredWords);
         if (count($keywords))
         {
             $data = $this->findPublicationsForKeywords($company, $keywords);
-            $filtered = Searcher::filterSearchKeywords($keywords[0], $ignoredWords);
+            $filtered = Manx\Searcher::filterSearchKeywords($keywords[0], $ignoredWords);
             if (count($filtered))
             {
                 $data = $this->mergePubs($data, $this->findPublicationsForKeywords($company, $filtered));
