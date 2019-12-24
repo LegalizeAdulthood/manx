@@ -5,7 +5,6 @@ require_once 'vendor/autoload.php';
 require_once 'IDateTimeProvider.php';
 require_once 'ManxDatabase.php';
 require_once 'User.php';
-require_once 'Cookie.php';
 
 class Manx implements Manx\IManx
 {
@@ -47,8 +46,8 @@ class Manx implements Manx\IManx
 
     function logout()
     {
-        $this->_manxDb->deleteUserSession(Cookie::get());
-        Cookie::delete();
+        $this->_manxDb->deleteUserSession(Manx\Cookie::get());
+        Manx\Cookie::delete();
     }
 
     function loginUser($user, $password)
@@ -60,7 +59,7 @@ class Manx implements Manx\IManx
             $remoteHost = gethostbyaddr($_SERVER['REMOTE_ADDR']);
             $userAgent = $_SERVER['HTTP_USER_AGENT'];
             $this->_manxDb->createSessionForUser($userId, $sessionId, $remoteHost, $userAgent);
-            Cookie::set($sessionId);
+            Manx\Cookie::set($sessionId);
             return true;
         }
         return false;

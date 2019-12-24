@@ -90,7 +90,7 @@ EOH;
         $this->_cookieFailed = false;
         if (array_key_exists('check', $_GET))
         {
-            if (Cookie::get() != 'OUT')
+            if (Manx\Cookie::get() != 'OUT')
             {
                 $this->redirect($this->getRedirect());
                 exit;

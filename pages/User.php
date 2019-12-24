@@ -4,7 +4,6 @@ require_once 'vendor/autoload.php';
 
 require_once 'IDateTimeProvider.php';
 require_once 'IManxDatabase.php';
-require_once 'Cookie.php';
 
 class User implements Manx\IUser
 {
@@ -17,14 +16,14 @@ class User implements Manx\IUser
 
     public static function getInstanceFromSession(IManxDatabase $manxDb)
     {
-        $row = $manxDb->getUserFromSessionId(Cookie::get());
+        $row = $manxDb->getUserFromSessionId(Manx\Cookie::get());
         if (array_key_exists('user_id', $row))
         {
             date_default_timezone_set(Manx\TIME_ZONE);
             if (time() - strtotime($row['last_impression']) > 30*60)
             {
-                $manxDb->deleteUserSession(Cookie::get());
-                Cookie::delete();
+                $manxDb->deleteUserSession(Manx\Cookie::get());
+                Manx\Cookie::delete();
             }
         }
         else
