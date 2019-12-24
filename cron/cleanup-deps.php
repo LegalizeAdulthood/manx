@@ -5,7 +5,6 @@ require_once 'vendor/autoload.php';
 require_once 'cron/ExclusiveLock.php';
 require_once 'cron/Logger.php';
 require_once 'cron/WhatsNewProcessor.php';
-require_once 'pages/Manx.php';
 require_once 'pages/UrlInfoFactory.php';
 require_once 'pages/UrlMetaData.php';
 require_once 'pages/WhatsNewIndex.php';
@@ -18,7 +17,7 @@ class CleanupConfig
     public static function getConfig()
     {
         $config = new Container();
-        $manx = Manx::getInstance();
+        $manx = Manx\Manx::getInstance();
         $config['manx'] = $manx;
         $config['db'] = $manx->getDatabase();
         $config['whatsNewPageFactory'] = new WhatsNewPageFactory();

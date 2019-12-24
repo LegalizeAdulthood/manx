@@ -1,24 +1,28 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
+
+// For TIME_ZONE constant
 require_once 'pages/IDateTimeProvider.php';
 
-class Manx implements Manx\IManx
+class Manx implements IManx
 {
     private $_manxDb;
 
     public static function getInstance()
     {
-        $db = Manx\PDODatabaseAdapter::getInstance();
-        /** @var $manxDb Manx\IManxDatabase */
-        $manxDb = Manx\ManxDatabase::getInstanceForDatabase($db);
+        $db = PDODatabaseAdapter::getInstance();
+        /** @var $manxDb IManxDatabase */
+        $manxDb = ManxDatabase::getInstanceForDatabase($db);
         return Manx::getInstanceForDatabase($manxDb);
     }
-    public static function getInstanceForDatabase(Manx\IManxDatabase $db)
+    public static function getInstanceForDatabase(IManxDatabase $db)
     {
         return new Manx($db);
     }
-    protected function __construct(Manx\IManxDatabase $manxDb)
+    protected function __construct(IManxDatabase $manxDb)
     {
         $this->_manxDb = $manxDb;
     }
@@ -35,7 +39,7 @@ class Manx implements Manx\IManx
 
     private function generateSessionId()
     {
-        date_default_timezone_set(Manx\TIME_ZONE);
+        date_default_timezone_set(TIME_ZONE);
         return sprintf("%s.%06d",
             strftime("%Y%m%d%H%M%S", time()),
             rand(0, 1000000));
@@ -43,8 +47,8 @@ class Manx implements Manx\IManx
 
     function logout()
     {
-        $this->_manxDb->deleteUserSession(Manx\Cookie::get());
-        Manx\Cookie::delete();
+        $this->_manxDb->deleteUserSession(Cookie::get());
+        Cookie::delete();
     }
 
     function loginUser($user, $password)
@@ -56,7 +60,7 @@ class Manx implements Manx\IManx
             $remoteHost = gethostbyaddr($_SERVER['REMOTE_ADDR']);
             $userAgent = $_SERVER['HTTP_USER_AGENT'];
             $this->_manxDb->createSessionForUser($userId, $sessionId, $remoteHost, $userAgent);
-            Manx\Cookie::set($sessionId);
+            Cookie::set($sessionId);
             return true;
         }
         return false;
@@ -64,7 +68,7 @@ class Manx implements Manx\IManx
 
     function getUserFromSession()
     {
-        return Manx\User::getInstanceFromSession($this->_manxDb);
+        return User::getInstanceFromSession($this->_manxDb);
     }
 
     public function addPublication($user, $company, $part, $pubDate, $title,

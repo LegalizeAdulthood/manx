@@ -2,19 +2,17 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/Manx.php';
-
 class TestManx extends PHPUnit\Framework\TestCase
 {
     /** @var Manx\IManxDatabase */
     private $_db;
-    /** @var Manx */
+    /** @var Manx\Manx */
     private $_manx;
 
     protected function setUp()
     {
         $this->_db = $this->createMock(Manx\IManxDatabase::class);
-        $this->_manx = Manx::getInstanceForDatabase($this->_db);
+        $this->_manx = Manx\Manx::getInstanceForDatabase($this->_db);
     }
 
     public function testConstruct()

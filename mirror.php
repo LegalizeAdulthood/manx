@@ -1,7 +1,6 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require_once 'pages/Manx.php';
 
 use Pimple\Container;
 
@@ -32,7 +31,7 @@ class MirrorPage extends Manx\AdminPageBase
 }
 
 $config = new Container();
-$config['manx'] = Manx::getInstance();
+$config['manx'] = Manx\Manx::getInstance();
 $config['vars'] = ($_SERVER['REQUEST_METHOD'] == 'POST') ? $_POST : $_GET;
 $page = new MirrorPage($config);
 $page->renderPage();
