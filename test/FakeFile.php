@@ -1,8 +1,8 @@
 <?php
 
-require_once 'pages/IFile.php';
+require_once 'vendor/autoload.php';
 
-class FakeFile implements IFile
+class FakeFile implements Manx\IFile
 {
     private $_line;
 

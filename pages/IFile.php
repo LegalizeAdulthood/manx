@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 interface IFile
 {
     function eof();

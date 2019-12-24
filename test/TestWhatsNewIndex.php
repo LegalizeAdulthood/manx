@@ -17,7 +17,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
     private $_db;
     /** @var IManx */
     private $_manx;
-    /** @var IFileSystem */
+    /** @var Manx\IFileSystem */
     private $_fileSystem;
     /** @var Manx\IWhatsNewPageFactory */
     private $_factory;
@@ -38,7 +38,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
         $this->_db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->method('getDatabase')->willReturn($this->_db);
-        $this->_fileSystem = $this->createMock(IFileSystem::class);
+        $this->_fileSystem = $this->createMock(Manx\IFileSystem::class);
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
@@ -114,7 +114,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
 
     public function testParseIndex()
     {
-        $file = $this->createMock(IFile::class);
+        $file = $this->createMock(Manx\IFile::class);
         $this->_fileSystem->expects($this->once())->method('openFile')->with(PRIVATE_DIR . $this->_indexFile, 'r')->willReturn($file);
         $file->expects($this->exactly(3))->method('eof')->willReturn(false, false, true);
         $file->expects($this->exactly(2))->method('getString')->willReturn(
@@ -130,7 +130,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
 
     public function testParseIndexSkipsBlankLines()
     {
-        $file = $this->createMock(IFile::class);
+        $file = $this->createMock(Manx\IFile::class);
         $this->_fileSystem->expects($this->once())->method('openFile')->with(PRIVATE_DIR . $this->_indexFile, 'r')->willReturn($file);
         $file->expects($this->exactly(4))->method('eof')->willReturn(false, false, false, true);
         $file->expects($this->exactly(3))->method('getString')->willReturn(

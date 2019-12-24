@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/UrlTransfer.php';
 require_once 'pages/Config.php';
 
@@ -8,7 +10,7 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->_curlApi = $this->createMock(ICurlApi::class);
-        $this->_fileSystem = $this->createMock(IFileSystem::class);
+        $this->_fileSystem = $this->createMock(Manx\IFileSystem::class);
     }
 
     private function createInstance($url)
@@ -28,7 +30,7 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     public function testGetFailure()
     {
         $url = 'http://bitsavers.org/Whatsnew.txt';
-        $file = $this->createMock(IFile::class);
+        $file = $this->createMock(Manx\IFile::class);
         $stream = 10;
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
         $tempDestination = $destination . '.tmp';
@@ -50,7 +52,7 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     public function testGetSuccessNoOverwrite()
     {
         $url = 'http://bitsavers.org/Whatsnew.txt';
-        $file = $this->createMock(IFile::class);
+        $file = $this->createMock(Manx\IFile::class);
         $stream = 10;
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
         $tempDestination = $destination . '.tmp';
@@ -76,7 +78,7 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
     public function testGetSuccessWithOverwrite()
     {
         $url = 'http://bitsavers.org/Whatsnew.txt';
-        $file = $this->createMock(IFile::class);
+        $file = $this->createMock(Manx\IFile::class);
         $stream = 10;
         $destination = PRIVATE_DIR . 'Whatsnew.txt';
         $tempDestination = $destination . '.tmp';

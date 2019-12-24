@@ -1,8 +1,8 @@
 <?php
 
-require_once 'IFile.php';
+require_once 'vendor/autoload.php';
 
-class File implements IFile
+class File implements Manx\IFile
 {
     public function __construct($path, $mode)
     {
@@ -51,7 +51,7 @@ class File implements IFile
     private $_file;
 }
 
-class FileSystem implements IFileSystem
+class FileSystem implements Manx\IFileSystem
 {
     public function openFile($path, $mode)
     {

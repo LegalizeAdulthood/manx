@@ -3,7 +3,6 @@
 require_once 'vendor/autoload.php';
 
 require_once 'cron/BitSaversCleaner.php';
-require_once 'pages/IFile.php';
 require_once 'pages/IManx.php';
 require_once 'pages/IManxDatabase.php';
 
@@ -48,7 +47,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $config['logger'] = $this->_logger;
         $config['whatsNewPageFactory'] = $this->_factory;
         $config['whatsNewIndex'] = $this->_whatsNewIndex;
-        $config['fileSystem'] = $this->createMock(IFileSystem::class);
+        $config['fileSystem'] = $this->createMock(Manx\IFileSystem::class);
         $config['urlMetaData'] = $this->_urlMetaData;
         $config['user'] = $this->_user;
         $this->_config = $config;
