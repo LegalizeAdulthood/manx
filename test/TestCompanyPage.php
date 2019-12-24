@@ -52,7 +52,7 @@ class TestCompanyPage extends PHPUnit\Framework\TestCase
     private $_factory;
     /** @var Manx\IUrlInfo */
     private $_info;
-    /** @var IUrlTransfer */
+    /** @var Manx\IUrlTransfer */
     private $_transfer;
     /** @var CompanyPageTester */
     private $_page;
@@ -67,7 +67,7 @@ class TestCompanyPage extends PHPUnit\Framework\TestCase
         $this->_fileSystem = $this->createMock(Manx\IFileSystem::class);
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(Manx\IUrlInfo::class);
-        $this->_transfer = $this->createMock(IUrlTransfer::class);
+        $this->_transfer = $this->createMock(Manx\IUrlTransfer::class);
         $this->_file = new FakeFile();
         $config = new Container();
         $config['manx'] = $this->_manx;

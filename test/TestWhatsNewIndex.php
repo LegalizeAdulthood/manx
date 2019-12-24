@@ -21,7 +21,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
     private $_fileSystem;
     /** @var Manx\IWhatsNewPageFactory */
     private $_factory;
-    /** @var IUrlTransfer */
+    /** @var Manx\IUrlTransfer */
     private $_transfer;
     /** @var BitSaversPageTester */
     private $_page;
@@ -40,7 +40,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
         $this->_manx->method('getDatabase')->willReturn($this->_db);
         $this->_fileSystem = $this->createMock(Manx\IFileSystem::class);
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
-        $this->_transfer = $this->createMock(IUrlTransfer::class);
+        $this->_transfer = $this->createMock(Manx\IUrlTransfer::class);
         $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
