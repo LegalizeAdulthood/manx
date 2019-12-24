@@ -5,7 +5,7 @@ require_once 'IWhatsNewIndex.php';
 
 use Pimple\Container;
 
-class WhatsNewIndex implements IWhatsNewIndex
+class WhatsNewIndex implements Manx\IWhatsNewIndex
 {
     public function __construct(Container $config)
     {

@@ -1,9 +1,11 @@
 <?php
 
-use Pimple\Container;
+require_once 'vendor/autoload.php';
 
 require_once 'pages/BitSaversPage.php';
 require_once 'test/DatabaseTester.php';
+
+use Pimple\Container;
 
 class BitSaversPageTester extends BitSaversPage
 {
@@ -48,7 +50,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     private $_transfer;
     /** @var BitSaversPageTester */
     private $_page;
-    /** @var IWhatsNewIndex */
+    /** @var Manx\IWhatsNewIndex */
     private $_whatsNewIndex;
 
     private function createPage($vars = array())
@@ -72,7 +74,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
-        $this->_whatsNewIndex = $this->createMock(IWhatsNewIndex::class);
+        $this->_whatsNewIndex = $this->createMock(Manx\IWhatsNewIndex::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
         $config['fileSystem'] = $this->_fileSystem;

@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 interface IWhatsNewIndex
 {
     function needIndexByDateFile();

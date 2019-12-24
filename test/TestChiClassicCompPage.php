@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/ChiClassicCompPage.php';
 require_once 'test/DatabaseTester.php';
 
@@ -46,7 +48,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
     private $_transfer;
     /** @var ChiClassicCompPageTester */
     private $_page;
-    /** @var IWhatsNewIndex */
+    /** @var Manx\IWhatsNewIndex */
     private $_whatsNewIndex;
 
     private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
@@ -72,7 +74,7 @@ class TestChiClassicCompPage extends PHPUnit\Framework\TestCase
         $this->_factory = $this->createMock(IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(IUrlInfo::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
-        $this->_whatsNewIndex = $this->createMock(IWhatsNewIndex::class);
+        $this->_whatsNewIndex = $this->createMock(Manx\IWhatsNewIndex::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
         $config['fileSystem'] = $this->_fileSystem;

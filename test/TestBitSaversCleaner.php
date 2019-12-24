@@ -6,7 +6,6 @@ require_once 'cron/BitSaversCleaner.php';
 require_once 'pages/IFile.php';
 require_once 'pages/IManx.php';
 require_once 'pages/IManxDatabase.php';
-require_once 'pages/IWhatsNewIndex.php';
 
 use Pimple\Container;
 
@@ -29,7 +28,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     private $_user;
     /** @var BitSaversCleaner */
     private $_cleaner;
-    /** @var IWhatsNewIndex */
+    /** @var Manx\IWhatsNewIndex */
     private $_whatsNewIndex;
 
     protected function setUp()
@@ -41,7 +40,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db = $this->createMock(IManxDatabase::class);
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
-        $this->_whatsNewIndex = $this->createMock(IWhatsNewIndex::class);
+        $this->_whatsNewIndex = $this->createMock(Manx\IWhatsNewIndex::class);
         $this->_urlMetaData = $this->createMock(IUrlMetaData::class);
         $this->_user = $this->createMock(Manx\IUser::class);
         $config = new Container();
