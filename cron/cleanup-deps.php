@@ -2,7 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'cron/ExclusiveLock.php';
 require_once 'cron/WhatsNewProcessor.php';
 
 use Pimple\Container;
@@ -16,7 +15,7 @@ class CleanupConfig
         $config['manx'] = $manx;
         $config['db'] = $manx->getDatabase();
         $config['whatsNewPageFactory'] = new Manx\WhatsNewPageFactory();
-        $config['locker'] = new ExclusiveLock();
+        $config['locker'] = new Manx\Cron\ExclusiveLock();
         $config['logger'] = new Manx\Cron\Logger();
         $config['fileSystem'] = new Manx\FileSystem();
         $config['user'] = function($c)
