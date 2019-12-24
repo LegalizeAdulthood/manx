@@ -2,12 +2,11 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/BitSaversPage.php';
 require_once 'test/DatabaseTester.php';
 
 use Pimple\Container;
 
-class BitSaversPageTester extends BitSaversPage
+class BitSaversPageTester extends Manx\BitSaversPage
 {
     // lift visibility of some functions for testing
     public function getMenuType()
@@ -337,13 +336,13 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     public function testPoundSignEscaped()
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia_%2350_Nov89.pdf",
-            BitSaversPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
+            Manx\BitSaversPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
     }
 
     public function testSpaceEscaped()
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia%2050_Nov89.pdf",
-            BitSaversPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
+            Manx\BitSaversPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
     }
 
     public function testRenderPageSelectionBarManyPagesByPath()
@@ -452,7 +451,7 @@ EOH;
         $n = $idStart;
         foreach ($paths as $path)
         {
-            $urlPath = BitSaversPage::escapeSpecialChars($path);
+            $urlPath = Manx\BitSaversPage::escapeSpecialChars($path);
             $checked = $checks[0];
             $checks = array_slice($checks, 1);
             $item = <<<EOH
