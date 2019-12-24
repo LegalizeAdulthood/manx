@@ -1,8 +1,8 @@
 <?php
 
-require_once 'cron/ILogger.php';
+require_once 'vendor/autoload.php';
 
-class Logger implements ILogger
+class Logger implements Manx\Cron\ILogger
 {
     function log($line)
     {

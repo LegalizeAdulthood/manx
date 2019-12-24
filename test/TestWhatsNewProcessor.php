@@ -3,7 +3,6 @@
 require_once 'vendor/autoload.php';
 
 require_once 'cron/WhatsNewProcessor.php';
-require_once 'cron/ILogger.php';
 
 use Pimple\Container;
 
@@ -13,7 +12,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
     {
         $this->_locker = $this->createMock(Manx\Cron\IExclusiveLock::class);
         $this->_cleaner = $this->createMock(IWhatsNewCleaner::class);
-        $this->_logger = $this->createMock(ILogger::class);
+        $this->_logger = $this->createMock(Manx\Cron\ILogger::class);
         $config = new Container();
         $config['whatsNewCleaner'] = $this->_cleaner;
         $config['logger'] = $this->_logger;

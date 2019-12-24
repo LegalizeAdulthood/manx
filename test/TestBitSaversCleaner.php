@@ -19,7 +19,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     private $_urlInfo;
     /** @var Manx\IWhatsNewPageFactory */
     private $_factory;
-    /** @var ILogger */
+    /** @var Manx\Cron\ILogger */
     private $_logger;
     /** @var Manx\IUser */
     private $_user;
@@ -32,7 +32,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     {
         $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
-        $this->_logger = $this->createMock(ILogger::class);
+        $this->_logger = $this->createMock(Manx\Cron\ILogger::class);
 
         $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx = $this->createMock(Manx\IManx::class);
