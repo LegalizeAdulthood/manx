@@ -1,10 +1,10 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
-require_once 'UrlInfo.php';
-
-class UrlInfoFactory implements Manx\IUrlInfoFactory
+class UrlInfoFactory implements IUrlInfoFactory
 {
     function createUrlInfo($url)
     {

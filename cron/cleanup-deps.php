@@ -5,7 +5,6 @@ require_once 'vendor/autoload.php';
 require_once 'cron/ExclusiveLock.php';
 require_once 'cron/Logger.php';
 require_once 'cron/WhatsNewProcessor.php';
-require_once 'pages/UrlInfoFactory.php';
 require_once 'pages/UrlMetaData.php';
 require_once 'pages/WhatsNewIndex.php';
 require_once 'pages/WhatsNewPageFactory.php';
@@ -36,7 +35,7 @@ class CleanupConfig
         {
             return new UrlMetaData($c);
         };
-        $config['urlInfoFactory'] = new UrlInfoFactory();
+        $config['urlInfoFactory'] = new Manx\UrlInfoFactory();
         return $config;
     }
 }
