@@ -2,11 +2,9 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/RssPage.php';
-
 use Pimple\Container;
 
-class RssPageTester extends RssPage
+class RssPageTester extends Manx\RssPage
 {
     public function renderBody()
     {

@@ -1,10 +1,12 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
-class RssPage extends Manx\PageBase
+class RssPage extends PageBase
 {
     private $_rss;
 
@@ -13,7 +15,7 @@ class RssPage extends Manx\PageBase
         parent::__construct($config);
         $manx = $config['manx'];
         $dateTimeProvider = $config['dateTimeProvider'];
-        $this->_rss = new Manx\RssWriter($dateTimeProvider);
+        $this->_rss = new RssWriter($dateTimeProvider);
         $this->_rss->beginChannel('New Documents on Manx', 'http://manx-docs.org',
                 'A list of the most recently created documents in the Manx database.')
             ->language('en-us');
@@ -22,10 +24,10 @@ class RssPage extends Manx\PageBase
             $pubId = $pub['ph_pub'];
             $link = sprintf('http://manx-docs.org/details.php/%d,%d', $pub['ph_company'], $pubId);
             $description = $this->getItemDescription($pub);
-            $pubDate = new DateTime($pub['ph_created'], new DateTimeZone('UTC'));
+            $pubDate = new \DateTime($pub['ph_created'], new \DateTimeZone('UTC'));
             $this->_rss->item($pub['ph_title'], $link, $description,
                 array(
-                    'pubDate' => $pubDate->format(DateTime::RFC1123),
+                    'pubDate' => $pubDate->format(\DateTime::RFC1123),
                     'category' => $pub['company_short_name']
                 ));
         }
