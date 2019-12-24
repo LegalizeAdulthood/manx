@@ -1,13 +1,14 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/IManxDatabase.php';
 require_once 'pages/IUrlInfoFactory.php';
-require_once 'pages/IUrlMetaData.php';
 require_once 'pages/Site.php';
 
 use Pimple\Container;
 
-class UrlMetaData implements IUrlMetaData
+class UrlMetaData implements Manx\IUrlMetaData
 {
     /** @var IManxDatabase */
     private $_db;

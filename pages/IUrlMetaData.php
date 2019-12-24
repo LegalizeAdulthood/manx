@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 interface IUrlMetaData
 {
     function determineData($url);

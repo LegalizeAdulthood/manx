@@ -41,7 +41,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_manx = $this->createMock(IManx::class);
         $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
         $this->_whatsNewIndex = $this->createMock(Manx\IWhatsNewIndex::class);
-        $this->_urlMetaData = $this->createMock(IUrlMetaData::class);
+        $this->_urlMetaData = $this->createMock(Manx\IUrlMetaData::class);
         $this->_user = $this->createMock(Manx\IUser::class);
         $config = new Container();
         $config['manx'] = $this->_manx;

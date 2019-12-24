@@ -52,7 +52,7 @@ class TestUrlWizardService extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->once())->method('getUserFromSession')->willReturn($user);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $this->_meta = $this->createMock(IUrlMetaData::class);
+        $this->_meta = $this->createMock(Manx\IUrlMetaData::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
         $config['urlMetaData'] = $this->_meta;
