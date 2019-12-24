@@ -1,10 +1,12 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
-class LoginPage extends Manx\PageBase
+class LoginPage extends PageBase
 {
     private $_loginFailed;
     private $_cookieFailed;
@@ -90,7 +92,7 @@ EOH;
         $this->_cookieFailed = false;
         if (array_key_exists('check', $_GET))
         {
-            if (Manx\Cookie::get() != 'OUT')
+            if (Cookie::get() != 'OUT')
             {
                 $this->redirect($this->getRedirect());
                 exit;
