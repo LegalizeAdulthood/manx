@@ -1,9 +1,10 @@
 <?php
 
-require_once 'CurlApi.php';
-require_once 'IUrlInfo.php';
+require_once 'vendor/autoload.php';
 
-class UrlInfo implements IUrlInfo
+require_once 'CurlApi.php';
+
+class UrlInfo implements Manx\IUrlInfo
 {
     private $_api;
     private $_url;

@@ -6,7 +6,6 @@ require_once 'cron/SiteChecker.php';
 require_once 'cron/ILogger.php';
 require_once 'pages/IManx.php';
 require_once 'pages/IManxDatabase.php';
-require_once 'pages/IUrlInfo.php';
 require_once 'pages/IUrlInfoFactory.php';
 
 use Pimple\Container;
@@ -20,7 +19,7 @@ class TestSiteChecker extends PHPUnit\Framework\TestCase
     private $_db;
     /** @var IManx */
     private $_manx;
-    /** @var IUrlInfo */
+    /** @var Manx\IUrlInfo */
     private $_urlInfo;
     /** @var IUrlInfoFactory */
     private $_factory;
@@ -33,7 +32,7 @@ class TestSiteChecker extends PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $this->_urlInfo = $this->createMock(IUrlInfo::class);
+        $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
         $this->_factory = $this->createMock(IUrlInfoFactory::class);
         $this->_logger = $this->createMock(ILogger::class);
         $this->_db = $this->createMock(IManxDatabase::class);
@@ -54,7 +53,7 @@ class TestSiteChecker extends PHPUnit\Framework\TestCase
     {
         $siteUrl = 'http://bitsavers.org/pdf';
         $docUrl = 'http://bitsavers.org/pdf/dec/jumbotron.pdf';
-        $docUrlInfo = $this->createMock(IUrlInfo::class);
+        $docUrlInfo = $this->createMock(Manx\IUrlInfo::class);
         $this->_factory->expects($this->exactly(2))->method('createUrlInfo')->withConsecutive([$siteUrl], [$docUrl])->willReturn($this->_urlInfo, $docUrlInfo);
         $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
         $this->_urlInfo->method('url')->willReturn($siteUrl);

@@ -44,7 +44,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     private $_fileSystem;
     /** @var Manx\IWhatsNewPageFactory */
     private $_factory;
-    /** @var IUrlInfo */
+    /** @var Manx\IUrlInfo */
     private $_info;
     /** @var IUrlTransfer */
     private $_transfer;
@@ -72,7 +72,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $this->_manx->method('getDatabase')->willReturn($this->_db);
         $this->_fileSystem = $this->createMock(IFileSystem::class);
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
-        $this->_info = $this->createMock(IUrlInfo::class);
+        $this->_info = $this->createMock(Manx\IUrlInfo::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
         $this->_whatsNewIndex = $this->createMock(Manx\IWhatsNewIndex::class);
         $config = new Container();

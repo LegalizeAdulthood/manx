@@ -21,8 +21,6 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
     private $_fileSystem;
     /** @var Manx\IWhatsNewPageFactory */
     private $_factory;
-    /** @var IUrlInfo */
-    private $_info;
     /** @var IUrlTransfer */
     private $_transfer;
     /** @var BitSaversPageTester */
@@ -32,7 +30,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
     private $_indexUrl;
     private $_indexFile;
     private $_property;
-    /** @var IUrlInfo */
+    /** @var Manx\IUrlInfo */
     private $_urlInfo;
 
     protected function setUp()
@@ -43,7 +41,7 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
         $this->_fileSystem = $this->createMock(IFileSystem::class);
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
         $this->_transfer = $this->createMock(IUrlTransfer::class);
-        $this->_urlInfo = $this->createMock(IUrlInfo::class);
+        $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
         $config['fileSystem'] = $this->_fileSystem;

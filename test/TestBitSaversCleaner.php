@@ -18,7 +18,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     private $_db;
     /** @var IManx */
     private $_manx;
-    /** @var IUrlInfo */
+    /** @var Manx\IUrlInfo */
     private $_urlInfo;
     /** @var Manx\IWhatsNewPageFactory */
     private $_factory;
@@ -33,7 +33,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $this->_urlInfo = $this->createMock(IUrlInfo::class);
+        $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
         $this->_logger = $this->createMock(ILogger::class);
 
