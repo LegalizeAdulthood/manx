@@ -1,18 +1,20 @@
 <?php
 
-require_once 'IManx.php';
+namespace Manx;
+
+require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
 abstract class ServicePageBase
 {
-    /** @var \IManx */
+    /** @var IManx */
     protected $_manx;
     protected $_topDir;
-    /** @var \IUser */
+    /** @var IUser */
     protected $_user;
     protected $_vars;
-    /** @var \IManxDatabase */
+    /** @var IManxDatabase */
     protected $_db;
 
     public function __construct(Container $config)

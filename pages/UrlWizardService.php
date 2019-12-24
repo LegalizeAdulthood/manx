@@ -21,12 +21,11 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'ServicePageBase.php';
 require_once 'UrlMetaData.php';
 
 use Pimple\Container;
 
-class UrlWizardService extends ServicePageBase
+class UrlWizardService extends Manx\ServicePageBase
 {
     /** @var IUrlMetaData */
     private $_meta;
