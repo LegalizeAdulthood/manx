@@ -1,6 +1,7 @@
 <?php
 
-require_once('IDatabase.php');
+require_once 'vendor/autoload.php';
+
 require_once('IManxDatabase.php');
 
 class Company
@@ -20,14 +21,14 @@ class Company
 class ManxDatabase implements IManxDatabase
 {
     /**
-     * @param IDatabase $db
+     * @param Manx\IDatabase $db
      * @return IManxDatabase
      */
-    public static function getInstanceForDatabase(IDatabase $db)
+    public static function getInstanceForDatabase(Manx\IDatabase $db)
     {
         return new ManxDatabase($db);
     }
-    private function __construct(IDatabase $db)
+    private function __construct(Manx\IDatabase $db)
     {
         $this->_db = $db;
     }
@@ -35,6 +36,7 @@ class ManxDatabase implements IManxDatabase
     {
         $this->_db = null;
     }
+    /** @var Manx\IDatabase */
     private $_db;
 
     private function beginTransaction()

@@ -1,9 +1,10 @@
 <?php
 
-require_once 'Config.php';
-require_once 'IDatabase.php';
+require_once 'vendor/autoload.php';
 
-class PDODatabaseAdapter implements IDatabase
+require_once 'Config.php';
+
+class PDODatabaseAdapter implements Manx\IDatabase
 {
     public static function getInstance()
     {

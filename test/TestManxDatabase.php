@@ -1,11 +1,13 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/ManxDatabase.php';
 require_once 'test/DatabaseTester.php';
 
 class TestManxDatabase extends PHPUnit\Framework\TestCase
 {
-    /** @var IDatabase */
+    /** @var Manx\IDatabase */
     private $_db;
     /** @var ManxDatabase */
     private $_manxDb;
@@ -15,7 +17,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->_statement = $this->createMock(PDOStatement::class);
-        $this->_db = $this->createMock(IDatabase::class);
+        $this->_db = $this->createMock(Manx\IDatabase::class);
         $this->_manxDb = ManxDatabase::getInstanceForDatabase($this->_db);
     }
 
