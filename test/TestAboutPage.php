@@ -1,7 +1,7 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require_once 'pages/AboutPage.php';
+
 require_once 'test/DatabaseTester.php';
 
 use Pimple\Container;
@@ -16,7 +16,7 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->any())->method('getDatabase')->willReturn($this->_db);
         $config = new Container();
         $config['manx'] = $this->_manx;
-        $this->_page = new AboutPage($config);
+        $this->_page = new Manx\AboutPage($config);
     }
 
     public function testRenderDocumentSummary()
