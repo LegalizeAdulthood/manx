@@ -1,8 +1,8 @@
 <?php
 
-require_once 'IFormatter.php';
+require_once 'vendor/autoload.php';
 
-class HtmlFormatter implements IFormatter
+class HtmlFormatter implements Manx\IFormatter
 {
     public static function getInstance()
     {

@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'pages/Searcher.php';
 
 class TestSearcher extends PHPUnit\Framework\TestCase
@@ -89,7 +91,7 @@ class TestSearcher extends PHPUnit\Framework\TestCase
         $db->expects($this->once())->method('getOSTagsForPub')
             ->with($pubId)
             ->willReturn($tags);
-        $formatter = $this->createMock(IFormatter::class);
+        $formatter = $this->createMock(Manx\IFormatter::class);
         $formatter->expects($this->once())->method('renderResultsBar')
             ->with(array(), array('graphics', 'terminal'), 0, 0, 1);
         $formatter->expects($this->exactly(2))->method('renderPageSelectionBar')

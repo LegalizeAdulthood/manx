@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 define("DEFAULT_ROWS_PER_PAGE", 10);
 
 interface IFormatter

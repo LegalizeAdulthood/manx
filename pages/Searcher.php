@@ -1,7 +1,8 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 require_once 'ISearcher.php';
-require_once 'IFormatter.php';
 require_once 'IManxDatabase.php';
 
 class Searcher implements ISearcher
@@ -65,7 +66,7 @@ class Searcher implements ISearcher
         return $searchWords;
     }
 
-    public function renderSearchResults(IFormatter $formatter, $company, $keywords, $online)
+    public function renderSearchResults(Manx\IFormatter $formatter, $company, $keywords, $online)
     {
         $params = Searcher::parameterSource($_GET, $_POST);
         $stmt = '';
