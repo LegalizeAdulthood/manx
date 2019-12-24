@@ -1,12 +1,14 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
-class NewsPage extends Manx\PageBase
+class NewsPage extends PageBase
 {
     protected function getMenuType()
     {
-        return Manx\MenuType::News;
+        return MenuType::News;
     }
 
     protected function renderBodyContent()
