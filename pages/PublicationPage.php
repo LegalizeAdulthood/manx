@@ -1,16 +1,16 @@
 <?php
 
-require_once 'vendor/autoload.php';
+namespace Manx;
 
-require_once 'IManx.php';
+require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
-class PublicationPage extends Manx\AdminPageBase
+class PublicationPage extends AdminPageBase
 {
     protected function getMenuType()
     {
-        return Manx\MenuType::Publication;
+        return MenuType::Publication;
     }
 
     protected function renderHeaderContent()

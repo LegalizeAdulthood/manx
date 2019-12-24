@@ -4,11 +4,10 @@ require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
-require_once 'pages/PublicationPage.php';
 require_once 'test/DatabaseTester.php';
 require_once 'test/FakeFile.php';
 
-class PublicationPageTester extends PublicationPage
+class PublicationPageTester extends Manx\PublicationPage
 {
     public function __construct($config)
     {
