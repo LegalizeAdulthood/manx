@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 require_once 'vendor/autoload.php';
 
 use Pimple\Container;
@@ -14,7 +16,7 @@ class ChiClassicCompConfig
         $config['indexByDateUrl'] = 'http://chiclassiccomp.org/docs/content/IndexByDate.txt';
         $config['baseCheckUrl'] = 'http://chiclassiccomp.org/docs/content';
         $config['baseUrl'] = 'http://chiclassiccomp.org/docs/content';
-        $config['menuType'] = Manx\MenuType::ChiClassicComp;
+        $config['menuType'] = MenuType::ChiClassicComp;
         $config['page'] = 'chiclassiccomp.php';
         $config['title'] = 'ChiClassicComp';
     }

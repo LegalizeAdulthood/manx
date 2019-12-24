@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'pages/ChiClassicCompConfig.php';
-
 use Pimple\Container;
 
 class TestChiClassicCompConfig extends PHPUnit\Framework\TestCase
@@ -11,7 +9,7 @@ class TestChiClassicCompConfig extends PHPUnit\Framework\TestCase
     public function setUp()
     {
         $this->_config = new Container();
-        ChiClassicCompConfig::configure($this->_config);
+        Manx\ChiClassicCompConfig::configure($this->_config);
     }
 
     public function testSiteName()
