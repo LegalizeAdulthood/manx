@@ -1,8 +1,10 @@
 <?php
 
+namespace Manx\Cron;
+
 require_once 'vendor/autoload.php';
 
-class Logger implements Manx\Cron\ILogger
+class Logger implements ILogger
 {
     function log($line)
     {
