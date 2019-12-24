@@ -10,7 +10,7 @@ class UrlInfo implements Manx\IUrlInfo
     private $_url;
     private $_session;
 
-    public function __construct($url, ICurlApi $api = null)
+    public function __construct($url, Manx\ICurlApi $api = null)
     {
         $this->_url = $url;
         $this->_api = is_null($api) ? CurlApi::getInstance() : $api;

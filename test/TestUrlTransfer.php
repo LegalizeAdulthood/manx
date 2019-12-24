@@ -9,7 +9,7 @@ class TestUrlTransfer extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {
-        $this->_curlApi = $this->createMock(ICurlApi::class);
+        $this->_curlApi = $this->createMock(Manx\ICurlApi::class);
         $this->_fileSystem = $this->createMock(Manx\IFileSystem::class);
     }
 

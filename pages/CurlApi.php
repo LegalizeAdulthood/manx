@@ -1,8 +1,8 @@
 <?php
 
-require_once 'ICurlApi.php';
+require_once 'vendor/autoload.php';
 
-class CurlApi implements ICurlApi
+class CurlApi implements Manx\ICurlApi
 {
     public static function getInstance()
     {

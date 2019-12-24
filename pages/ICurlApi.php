@@ -1,5 +1,7 @@
 <?php
 
+namespace Manx;
+
 interface ICurlApi
 {
     public function init($url);
