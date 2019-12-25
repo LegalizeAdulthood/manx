@@ -2,12 +2,10 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'cron/ChiClassicCompCleaner.php';
-
 $config = Manx\Cron\CleanupConfig::getConfig();
 $config['whatsNewCleaner'] = function($c)
 {
-    return new ChiClassicCompCleaner($c);
+    return new Manx\Cron\ChiClassicCompCleaner($c);
 };
 $processor = new WhatsNewProcessor($config);
 
