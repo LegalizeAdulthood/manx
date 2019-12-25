@@ -2,12 +2,11 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'cron/WhatsNewCleaner.php';
 require_once 'pages/WhatsNewIndex.php';
 
 use Pimple\Container;
 
-class BitSaversCleaner extends WhatsNewCleaner
+class BitSaversCleaner extends Manx\Cron\WhatsNewCleaner
 {
     public function __construct(Container $config)
     {
