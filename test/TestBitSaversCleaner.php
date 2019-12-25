@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'cron/BitSaversCleaner.php';
-
 use Pimple\Container;
 
 class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
@@ -23,7 +21,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
     private $_logger;
     /** @var Manx\IUser */
     private $_user;
-    /** @var BitSaversCleaner */
+    /** @var Manx\Cron\BitSaversCleaner */
     private $_cleaner;
     /** @var Manx\IWhatsNewIndex */
     private $_whatsNewIndex;
@@ -49,7 +47,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $config['urlMetaData'] = $this->_urlMetaData;
         $config['user'] = $this->_user;
         $this->_config = $config;
-        $this->_cleaner = new BitSaversCleaner($this->_config);
+        $this->_cleaner = new Manx\Cron\BitSaversCleaner($this->_config);
     }
 
     public function testNonExistentPathsAreRemoved()
