@@ -134,7 +134,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             $siteId = $row['site_id'];
             $companyId = $row['company_id'];
             $url = $row['url'];
-            $this->log(sprintf("Scanned:     %d.%d %s %s", $siteId, $companyId, $row['directory'], $url));
+            $this->log(sprintf("Scanned:     %d.%d %s", $siteId, $companyId, $url));
 
             // Don't need to re-extract data[url] because we're working from the site's base copy URL.
             // The url argument to determineData will never be a mirror URL.
@@ -210,7 +210,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                     $title, $pubType, $altPart, $revision,
                     $keywords, $notes, $abstract, $languages);
                 $data['pub_id'] = $pubId;
-                $this->log(sprintf('Publication: %d.%d %s %s "%s" (%s)', $siteId, $pubId, $row['directory'], $pubDate, $title, $part));
+                $this->log(sprintf('Publication: %d.%d %s "%s" (%s)', $siteId, $pubId, $pubDate, $title, $part));
                 $pubIds[] = $pubId;
 
                 $this->addCopy($data, $row);
@@ -234,7 +234,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $amendSerial = '';
         $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url,
             $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
-        $this->log(sprintf('Copy:        %d.%d %s %s "%s" (%s)', $siteId, $copyId, $row['directory'], $data['pub_date'], $data['title'], $data['part']));
+        $this->log(sprintf('Copy:        %d.%d %s "%s" (%s)', $siteId, $copyId, $data['pub_date'], $data['title'], $data['part']));
     }
 
     private static function escapeSpecialChars($url)
