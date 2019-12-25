@@ -7,7 +7,7 @@ $config['whatsNewCleaner'] = function($c)
 {
     return new Manx\Cron\BitSaversCleaner($c);
 };
-$processor = new WhatsNewProcessor($config);
+$processor = new Manx\Cron\WhatsNewProcessor($config);
 
 if (count($argv) > 1)
 {

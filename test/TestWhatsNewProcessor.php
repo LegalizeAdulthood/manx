@@ -2,8 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-require_once 'cron/WhatsNewProcessor.php';
-
 use Pimple\Container;
 
 class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
@@ -17,7 +15,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
         $config['whatsNewCleaner'] = $this->_cleaner;
         $config['logger'] = $this->_logger;
         $config['locker'] = $this->_locker;
-        $this->_processor = new WhatsNewProcessor($config);
+        $this->_processor = new Manx\Cron\WhatsNewProcessor($config);
     }
 
     public function testMD5()

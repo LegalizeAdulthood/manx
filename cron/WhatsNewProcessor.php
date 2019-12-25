@@ -1,6 +1,8 @@
 <?php
 
-require_once 'cron/IWhatsNewCleaner.php';
+namespace Manx\Cron;
+
+require_once 'vendor/autoload.php';
 
 use Pimple\Container;
 
@@ -67,4 +69,11 @@ class WhatsNewProcessor
     {
         $this->_lock = $this->_locker->lock($name . '.lock');
     }
+
+    /** @var IWhatsNewCleaner */
+    private $_cleaner;
+    /** @var ILogger */
+    private $_logger;
+    /** @var IExclusiveLock */
+    private $_locker;
 }
