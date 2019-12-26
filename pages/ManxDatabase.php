@@ -723,10 +723,13 @@ class ManxDatabase implements IManxDatabase
         foreach ($paths as $path)
         {
             $values[] = $siteId;
-            $values[] = $path;
-            $params[] = '(?, ?)';
+            $values[] = pathinfo($path, PATHINFO_BASENAME);
+            $dir = pathinfo($path, PATHINFO_DIRNAME);
+            $this->execute("CALL `manx_unknown_directory_insert`(?, ?)", [$siteId, $dir]);
+            $values[] = $this->execute("SELECT `id` FROM `site_unknown_dir` WHERE `site_id` = ? AND `path` = ?", [$siteId, $dir])[0]['id'];
+            $params[] = '(?, ?, ?)';
         }
-        $this->execute("INSERT INTO `site_unknown`(`site_id`, `path`) VALUES " . implode(', ', $params) . " ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)", $values);
+        $this->execute("INSERT INTO `site_unknown`(`site_id`, `path`, `dir_id`) VALUES " . implode(', ', $params) . " ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)", $values);
         $this->commit();
     }
 

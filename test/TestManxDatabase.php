@@ -574,20 +574,33 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     public function testAddSiteUnknownPaths()
     {
         $this->_db->expects($this->once())->method('beginTransaction');
-        $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
-        $update = "INSERT INTO `site_unknown`(`site_id`, `path`) VALUES (?, ?), (?, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
-        $this->_db->expects($this->exactly(2))->method('execute')
+        $selectSite = "SELECT `site_id` FROM `site` WHERE `name`=?";
+        $siteId = 3;
+        $insertSUD = "CALL `manx_unknown_directory_insert`(?, ?)";
+        $selectSUD = "SELECT `id` FROM `site_unknown_dir` WHERE `site_id` = ? AND `path` = ?";
+        $dirId1 = 10;
+        $dirId2 = 12;
+        $insertSU = "INSERT INTO `site_unknown`(`site_id`, `path`, `dir_id`) VALUES (?, ?, ?), (?, ?, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
+        $this->_db->expects($this->exactly(6))->method('execute')
             ->withConsecutive(
-                [$select, ['bitsavers']],
-                [$update, [3, 'foo/frob.jpg', 3, 'bar/bar.pdf']]
+                [$selectSite, ['bitsavers']],
+                [$insertSUD, [$siteId, 'foo/DEC']],
+                [$selectSUD, [$siteId, 'foo/DEC']],
+                [$insertSUD, [$siteId, 'bar']],
+                [$selectSUD, [$siteId, 'bar']],
+                [$insertSU, [$siteId, 'frob.jpg', $dirId1, $siteId, 'bar.pdf', $dirId2]]
             )
             ->willReturn(
-                DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
+                DatabaseTester::createResultRowsForColumns(['site_id'], [[3]]),
+                null,
+                DatabaseTester::createResultRowsForColumns(['id'], [[$dirId1]]),
+                null,
+                DatabaseTester::createResultRowsForColumns(['id'], [[$dirId2]]),
                 null
             );
         $this->_db->expects($this->once())->method('commit');
 
-        $this->_manxDb->addSiteUnknownPaths('bitsavers', ['foo/frob.jpg', 'bar/bar.pdf']);
+        $this->_manxDb->addSiteUnknownPaths('bitsavers', ['foo/DEC/frob.jpg', 'bar/bar.pdf']);
     }
 
     public function testIgnoreSitePath()
