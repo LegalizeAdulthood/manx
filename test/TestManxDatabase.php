@@ -605,19 +605,16 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testIgnoreSitePath()
     {
-        $this->_db->expects($this->once())->method('beginTransaction');
-        $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
-        $update = "UPDATE `site_unknown` SET `ignored`=1 WHERE `site_id`=? AND `path`=?";
-        $this->_db->expects($this->exactly(2))->method('execute')
-            ->withConsecutive(
-                [ $select, array('bitsavers') ],
-                [ $update, array(3, 'foo/frob.jpg') ]
-            )
-            ->willReturn(
-                DatabaseTester::createResultRowsForColumns(array('site_id'), array(array(3))),
-                null
-            );
-        $this->_db->expects($this->once())->method('commit');
+        // name, path, path
+        $update = "UPDATE `site_unknown` `su`, `site` `s`, `site_unknown_dir` `sud` "
+            . "SET `su`.`ignored` = 1 "
+            . "WHERE `s`.`name` = ? "
+                . "AND `s`.`site_id` = `su`.`site_id` "
+                . "AND `s`.`site_id` = `sud`.`site_id` "
+                . "AND `su`.`path` = SUBSTRING_INDEX(?, '/', -1) "
+                . "AND `su`.`dir_id` = `sud`.`id` "
+                . "AND `sud`.`path` = manx_parent_dir(?)";
+        $this->_db->expects($this->exactly(1))->method('execute')->with($update)->willReturn(null);
 
         $this->_manxDb->ignoreSitePath('bitsavers', 'foo/frob.jpg');
     }
