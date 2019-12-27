@@ -45,6 +45,7 @@ class WhatsNewProcessor
         {
             $this->lock($args[1]);
             $this->_cleaner->updateWhatsNewIndex();
+            $this->_cleaner->removeUnknownPathsWithCopy();
         }
         else if ($args[1] == 'unknown-copies')
         {

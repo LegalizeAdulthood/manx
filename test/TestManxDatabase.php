@@ -679,22 +679,16 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testgetSiteUnknownPathCount()
     {
-        $selectSite = "SELECT `site_id`,`copy_base` FROM `site` WHERE `name`=?";
-        $deleteExisting = "DELETE FROM `site_unknown` INNER JOIN `copy` ON `url` = CONCAT(?, `path`) WHERE `site` = ?";
-        $select = "SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `ignored` = 0";
         $siteName = 'bitsavers';
-        $siteId = 3;
-        $copyBase = 'http://bitsavers.org/pdf/';
+        $select = "SELECT COUNT(`su`.`id`) AS `count` "
+            . "FROM `site_unknown` `su`, `site` `s` "
+            . "WHERE `s`.`name` = ? "
+                . "AND `s`.`site_id` = `su`.`site_id` "
+                . "AND `su`.`ignored` = 0";
         $count = 10;
-        $this->_db->expects($this->exactly(3))->method('execute')
-            ->withConsecutive(
-                [$selectSite, [$siteName]],
-                [$deleteExisting, [$copyBase, $siteId]],
-                [$select, [$siteId]])
-            ->willReturn(
-                [['site_id' => $siteId, 'copy_base' => $copyBase]],
-                null,
-                [['count' => $count]]);
+        $this->_db->expects($this->once())->method('execute')
+            ->with($select, [$siteName])
+            ->willReturn([['count' => $count]]);
 
         $results = $this->_manxDb->getSiteUnknownPathCount($siteName);
 

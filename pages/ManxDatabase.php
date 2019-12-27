@@ -748,13 +748,11 @@ class ManxDatabase implements IManxDatabase
 
     public function getSiteUnknownPathCount($siteName)
     {
-        $siteInfo = $this->execute("SELECT `site_id`,`copy_base` FROM `site` WHERE `name`=?", array($siteName));
-        $siteId = $siteInfo[0]['site_id'];
-        $copyBase = $siteInfo[0]['copy_base'];
-        $count = $this->execute("DELETE FROM `site_unknown` "
-            . "INNER JOIN `copy` ON `url` = CONCAT(?, `path`) "
-            . "WHERE `site` = ?", array($copyBase, $siteId));
-        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `ignored` = 0", array($siteId));
+        $rows = $this->execute("SELECT COUNT(`su`.`id`) AS `count` "
+            . "FROM `site_unknown` `su`, `site` `s` "
+            . "WHERE `s`.`name` = ? "
+                . "AND `s`.`site_id` = `su`.`site_id` "
+                . "AND `su`.`ignored` = 0", [$siteName]);
         return $rows[0]['count'];
     }
 
