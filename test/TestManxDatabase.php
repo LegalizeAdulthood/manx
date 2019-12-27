@@ -677,6 +677,30 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             $paths);
     }
 
+    public function testgetSiteUnknownPathCount()
+    {
+        $selectSite = "SELECT `site_id`,`copy_base` FROM `site` WHERE `name`=?";
+        $deleteExisting = "DELETE FROM `site_unknown` INNER JOIN `copy` ON `url` = CONCAT(?, `path`) WHERE `site` = ?";
+        $select = "SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `ignored` = 0";
+        $siteName = 'bitsavers';
+        $siteId = 3;
+        $copyBase = 'http://bitsavers.org/pdf/';
+        $count = 10;
+        $this->_db->expects($this->exactly(3))->method('execute')
+            ->withConsecutive(
+                [$selectSite, [$siteName]],
+                [$deleteExisting, [$copyBase, $siteId]],
+                [$select, [$siteId]])
+            ->willReturn(
+                [['site_id' => $siteId, 'copy_base' => $copyBase]],
+                null,
+                [['count' => $count]]);
+
+        $results = $this->_manxDb->getSiteUnknownPathCount($siteName);
+
+        $this->assertEquals($count, $results);
+    }
+
     public function testSiteIgnoredPathTrue()
     {
         $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
