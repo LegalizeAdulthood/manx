@@ -875,6 +875,18 @@ class ManxDatabase implements IManxDatabase
             [$siteName, $parentDirId]);
     }
 
+    public function getSiteUnknownPaths($siteName, $parentDirId)
+    {
+        return $this->execute("SELECT `su`.* "
+            . "FROM `site_unknown` `su`, `site_unknown_dir` `sud`, `site` `s` "
+            . "WHERE `s`.`name` = ? "
+            . "AND `s`.`site_id` = `su`.`site_id` "
+            . "AND `s`.`site_id` = `sud`.`site_id` "
+            . "AND `su`.`dir_id` = `sud`.`id` "
+            . "AND `su`.`dir_id` = ?",
+            [$siteName, $parentDirId]);
+    }
+
     public function getIngestionRobotUser()
     {
         $rows = $this->fetch("SELECT `id` FROM `user` WHERE `first_name` = 'Ingestion' AND `last_name` = 'Robot'");

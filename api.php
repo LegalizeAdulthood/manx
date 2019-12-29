@@ -17,12 +17,19 @@ $container['manx'] = function($config) {
 $container['db'] = function($config) {
     return $config['manx']->getDatabase();
 };
+
 $container['siteUnknownDirs'] = function($config) {
     return new \Manx\Api\SiteUnknownDirs($config);
 };
-
 $app->get('/siteUnknownDirs/{siteName}/{parentDirId}', function(Request $request, Response $response, array $args) {
     return $this->siteUnknownDirs->get($request, $response, $args);
+});
+
+$container['siteUnknownPaths'] = function($config) {
+    return new \Manx\Api\SiteUnknownPaths($config);
+};
+$app->get('/siteUnknownPaths/{siteName}/{parentDirId}', function(Request $request, Response $response, array $args) {
+    return $this->siteUnknownPaths->get($request, $response, $args);
 });
 
 $app->run();

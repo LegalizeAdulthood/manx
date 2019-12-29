@@ -3,6 +3,7 @@
 require_once __DIR__ . '/TestAboutPage.php';
 require_once __DIR__ . '/TestAdminPageBase.php';
 require_once __DIR__ . '/TestApiSiteUnknownDirs.php';
+require_once __DIR__ . '/TestApiSiteUnknownPaths.php';
 require_once __DIR__ . '/TestBitSaversPage.php';
 require_once __DIR__ . '/TestBitSaversCleaner.php';
 require_once __DIR__ . '/TestBitSaversConfig.php';
@@ -38,6 +39,7 @@ class AllTests
                 'TestAboutPage',
                 'TestAdminPageBase',
                 'TestApiSiteUnknownDirs',
+                'TestApiSiteUnknownPaths',
                 'TestBitSaversCleaner',
                 'TestBitSaversConfig',
                 'TestBitSaversPage',

@@ -71,4 +71,5 @@ interface IManxDatabase
     function setSiteLive($siteId, $liveNotDead);
     function getSampleCopiesForSite($siteId);
     function getSiteUnknownDirectories($siteName, $parentDirId);
+    function getSiteUnknownPaths($siteName, $parentDirId);
 }
