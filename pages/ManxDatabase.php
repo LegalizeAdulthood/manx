@@ -818,10 +818,11 @@ class ManxDatabase implements IManxDatabase
 
     public function removeUnknownPathsWithCopy()
     {
-        $this->execute("DELETE FROM `site_unknown` USING `site_unknown` "
-            . "INNER JOIN `copy` ON `copy`.`site` = `site_unknown`.`site_id` "
-            . "INNER JOIN `site` ON `site`.`site_id` = `site_unknown`.`site_id` "
-            . "WHERE `copy`.`url` = CONCAT(`site`.`copy_base`, `site_unknown`.`path`)", []);
+        $this->execute("DELETE FROM `su` USING `site_unknown` `su` "
+            . "INNER JOIN `copy` `c` ON `c`.`site` = `su`.`site_id` "
+            . "INNER JOIN `site` `s` ON `s`.`site_id` = `su`.`site_id` "
+            . "INNER JOIN `site_unknown_dir` `sud` ON `su`.`dir_id` = `sud`.`id` "
+            . "WHERE `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`)", []);
     }
 
     public function getUnknownPathsForCompanies($siteName)
