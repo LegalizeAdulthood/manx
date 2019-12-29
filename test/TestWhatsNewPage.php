@@ -8,7 +8,7 @@ require_once __DIR__ . '/DatabaseTester.php';
 
 use Pimple\Container;
 
-class BitSaversPageTester extends Manx\BitSaversPage
+class WhatsNewPageTester extends Manx\WhatsNewPage
 {
     // lift visibility of some functions for testing
     public function getMenuType()
@@ -32,7 +32,7 @@ class BitSaversPageTester extends Manx\BitSaversPage
     }
 }
 
-class TestBitSaversPage extends PHPUnit\Framework\TestCase
+class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;
@@ -49,7 +49,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     private $_info;
     /** @var Manx\IUrlTransfer */
     private $_transfer;
-    /** @var BitSaversPageTester */
+    /** @var WhatsNewPageTester */
     private $_page;
     /** @var Manx\IWhatsNewIndex */
     private $_whatsNewIndex;
@@ -58,7 +58,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
     {
         $_SERVER['PATH_INFO'] = '';
         $this->_config['vars'] = $vars;
-        $this->_page = new BitSaversPageTester($this->_config);
+        $this->_page = new WhatsNewPageTester($this->_config);
     }
 
     private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
@@ -81,6 +81,7 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         $config['fileSystem'] = $this->_fileSystem;
         $config['whatsNewIndex'] = $this->_whatsNewIndex;
         $config['whatsNewPageFactory'] = $this->_factory;
+        Manx\BitSaversConfig::configure($config);
         $this->_config = $config;
     }
 
@@ -222,17 +223,17 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
         $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=20">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=30">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=40">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=50">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=60">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=70">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=80">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=90">10</a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=10"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1000"><b>&gt;</b></a>'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=20">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=30">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=40">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=50">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=60">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=70">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=80">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=90">10</a>&nbsp;&nbsp;'
+                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1000"><b>&gt;</b></a>'
                 . '</div>' . "\n");
     }
 
@@ -244,18 +245,18 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
         $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=20">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=30">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=40">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=50">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=60">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=70">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=80">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=90">10</a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=10"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1000"><b>&gt;</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10000"><b>&gt;&gt;</b></a>'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=20">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=30">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=40">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=50">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=60">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=70">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=80">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=90">10</a>&nbsp;&nbsp;'
+                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1000"><b>&gt;</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10000"><b>&gt;&gt;</b></a>'
                 . '</div>' . "\n");
     }
 
@@ -267,19 +268,19 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
         $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=100"><b>&lt;</b></a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=1090"><b>Previous</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=100"><b>&lt;</b></a>&nbsp;&nbsp;'
+                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=1090"><b>Previous</b></a>&nbsp;&nbsp;'
                 . '<b class="currpage">111</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1110">112</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1120">113</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1130">114</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1140">115</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1150">116</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1160">117</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1170">118</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1180">119</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1190">120</a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=1110"><b>Next</b></a>'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1110">112</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1120">113</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1130">114</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1140">115</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1150">116</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1160">117</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1170">118</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1180">119</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1190">120</a>&nbsp;&nbsp;'
+                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=1110"><b>Next</b></a>'
                 . '</div>' . "\n");
     }
 
@@ -291,21 +292,21 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
         $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=0"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=9000"><b>&lt;</b></a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=9990"><b>Previous</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=0"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=9000"><b>&lt;</b></a>&nbsp;&nbsp;'
+                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=9990"><b>Previous</b></a>&nbsp;&nbsp;'
                 . '<b class="currpage">1001</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10010">1002</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10020">1003</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10030">1004</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10040">1005</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10050">1006</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10060">1007</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10070">1008</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10080">1009</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10090">1010</a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=10010"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=11000"><b>&gt;</b></a>'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10010">1002</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10020">1003</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10030">1004</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10040">1005</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10050">1006</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10060">1007</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10070">1008</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10080">1009</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10090">1010</a>&nbsp;&nbsp;'
+                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10010"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11000"><b>&gt;</b></a>'
                 . '</div>' . "\n");
     }
 
@@ -317,34 +318,34 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
         $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1000"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10000"><b>&lt;</b></a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=10990"><b>Previous</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1000"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10000"><b>&lt;</b></a>&nbsp;&nbsp;'
+                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10990"><b>Previous</b></a>&nbsp;&nbsp;'
                 . '<b class="currpage">1101</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=11010">1102</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=11020">1103</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=11030">1104</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=11040">1105</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=11050">1106</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=11060">1107</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=11070">1108</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=11080">1109</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=11090">1110</a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=11010"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=12000"><b>&gt;</b></a>'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11010">1102</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11020">1103</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11030">1104</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11040">1105</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11050">1106</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11060">1107</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11070">1108</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11080">1109</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11090">1110</a>&nbsp;&nbsp;'
+                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=11010"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=12000"><b>&gt;</b></a>'
                 . '</div>' . "\n");
     }
 
     public function testPoundSignEscaped()
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia_%2350_Nov89.pdf",
-            Manx\BitSaversPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
+            Manx\WhatsNewPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
     }
 
     public function testSpaceEscaped()
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia%2050_Nov89.pdf",
-            Manx\BitSaversPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
+            Manx\WhatsNewPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
     }
 
     public function testRenderPageSelectionBarManyPagesByPath()
@@ -355,17 +356,17 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
         $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10&sort=bypath">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=20&sort=bypath">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=30&sort=bypath">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=40&sort=bypath">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=50&sort=bypath">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=60&sort=bypath">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=70&sort=bypath">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=80&sort=bypath">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=90&sort=bypath">10</a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=10&sort=bypath"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1000&sort=bypath"><b>&gt;</b></a>'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10&sort=bypath">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=20&sort=bypath">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=30&sort=bypath">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=40&sort=bypath">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=50&sort=bypath">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=60&sort=bypath">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=70&sort=bypath">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=80&sort=bypath">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=90&sort=bypath">10</a>&nbsp;&nbsp;'
+                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10&sort=bypath"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1000&sort=bypath"><b>&gt;</b></a>'
                 . '</div>' . "\n");
     }
 
@@ -377,17 +378,17 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
 
         $this->expectOutputString(
             '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=10&sort=bypathdesc">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=20&sort=bypathdesc">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=30&sort=bypathdesc">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=40&sort=bypathdesc">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=50&sort=bypathdesc">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=60&sort=bypathdesc">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=70&sort=bypathdesc">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=80&sort=bypathdesc">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=90&sort=bypathdesc">10</a>&nbsp;&nbsp;'
-                . '<a href="bitsavers.php?start=10&sort=bypathdesc"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="bitsavers.php?start=1000&sort=bypathdesc"><b>&gt;</b></a>'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10&sort=bypathdesc">2</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=20&sort=bypathdesc">3</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=30&sort=bypathdesc">4</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=40&sort=bypathdesc">5</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=50&sort=bypathdesc">6</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=60&sort=bypathdesc">7</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=70&sort=bypathdesc">8</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=80&sort=bypathdesc">9</a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=90&sort=bypathdesc">10</a>&nbsp;&nbsp;'
+                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10&sort=bypathdesc"><b>Next</b></a>&nbsp;&nbsp;'
+                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1000&sort=bypathdesc"><b>&gt;</b></a>'
                 . '</div>' . "\n");
     }
 
@@ -427,22 +428,22 @@ class TestBitSaversPage extends PHPUnit\Framework\TestCase
         {
             $sortValue = $ascending ? 'byid' : 'byiddesc';
             $nextSortValue = $ascending ? 'byiddesc' : 'byid';
-            $expectedIdHeader = sprintf('<a href="bitsavers.php?sort=%1$s">Id</a>', $nextSortValue);
-            $expectedPathHeader = '<a href="bitsavers.php?sort=bypath">Path</a>';
+            $expectedIdHeader = sprintf('<a href="whatsnew.php?site=bitsavers&parentDir=-1&sort=%1$s">Id</a>', $nextSortValue);
+            $expectedPathHeader = '<a href="whatsnew.php?site=bitsavers&parentDir=-1&sort=bypath">Path</a>';
         }
         else
         {
             $sortValue = $ascending ? 'bypath' : 'bypathdesc';
             $nextSortValue = $ascending ? 'bypathdesc' : 'bypath';
-            $expectedIdHeader = '<a href="bitsavers.php?sort=byid">Id</a>';
-            $expectedPathHeader = sprintf('<a href="bitsavers.php?sort=%1$s">Path</a>', $nextSortValue);
+            $expectedIdHeader = '<a href="whatsnew.php?site=bitsavers&parentDir=-1&sort=byid">Id</a>';
+            $expectedPathHeader = sprintf('<a href="whatsnew.php?site=bitsavers&parentDir=-1&sort=%1$s">Path</a>', $nextSortValue);
         }
 
         $expected = <<<EOH
 <h1>New BitSavers Publications</h1>
 
 <div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>
-<form action="bitsavers.php" method="POST">
+<form action="whatsnew.php?site=bitsavers&parentDir=-1" method="POST">
 <input type="hidden" name="start" value="0" />
 <input type="hidden" name="sort" value="$sortValue" />
 <table>
@@ -453,7 +454,7 @@ EOH;
         $n = $idStart;
         foreach ($paths as $path)
         {
-            $urlPath = Manx\BitSaversPage::escapeSpecialChars($path);
+            $urlPath = Manx\WhatsNewPage::escapeSpecialChars($path);
             $checked = $checks[0];
             $checks = array_slice($checks, 1);
             $item = <<<EOH

@@ -116,8 +116,8 @@ EOH;
             // Administrative tasks menu
             print "<div class=\"menu\">\n";
             $this->renderFirstMenuItem($menu == MenuType::UrlWizard, "url-wizard.php", "URL Wizard");
-            $this->renderMenuItem($menu == MenuType::BitSavers, "bitsavers.php", "BitSavers");
-            $this->renderMenuItem($menu == MenuType::ChiClassicComp, "chiclassiccomp.php", "ChiClassicComp");
+            $this->renderMenuItem($menu == MenuType::BitSavers, "whatsnew.php?site=bitsavers&parentDir=-1", "BitSavers");
+            $this->renderMenuItem($menu == MenuType::ChiClassicComp, "whatsnew.php?site=chiclassiccomp&parentDir=-1", "ChiClassicComp");
             $this->renderMenuItem($menu == MenuType::SizeReport, "size-report.php", "Size Report");
             $this->renderMenuItem($menu == MenuType::MD5Report, "md5-report.php", "MD5 Report");
             print "</div>\n";

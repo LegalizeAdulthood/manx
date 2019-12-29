@@ -9,7 +9,7 @@ require_once __DIR__ . '/UnknownPathDefs.php';
 
 use Pimple\Container;
 
-class WhatsNewPageBase extends AdminPageBase
+class WhatsNewPage extends AdminPageBase
 {
     /** @var IWhatsNewPageFactory */
     private $_factory;
@@ -104,8 +104,8 @@ EOH;
             $idSortParam = SORT_ORDER_BY_ID;
             $pathSortParam = ($sortOrder == SORT_ORDER_BY_PATH) ? SORT_ORDER_BY_PATH_DESCENDING : SORT_ORDER_BY_PATH;
         }
-        $idHeader = sprintf('<a href="' . $this->_page . '?%1$s%2$s">Id</a>', $startParam, 'sort=' . $idSortParam);
-        $pathHeader = sprintf('<a href="' . $this->_page . '?%1$s%2$s">Path</a>', $startParam, 'sort=' . $pathSortParam);
+        $idHeader = sprintf('<a href="' . $this->_page . '&%1$s%2$s">Id</a>', $startParam, 'sort=' . $idSortParam);
+        $pathHeader = sprintf('<a href="' . $this->_page . '&%1$s%2$s">Path</a>', $startParam, 'sort=' . $pathSortParam);
         $page = $this->_page;
 
         print <<<EOH
@@ -151,17 +151,17 @@ EOH;
         $rowsPerPage = 10;
         if ($start - 10000 >= 0)
         {
-            print sprintf('<a class="navpage" href="' . $this->_page . '?start=%1$d%2$s"><b>&lt;&lt;</b></a>&nbsp;&nbsp;',
+            print sprintf('<a class="navpage" href="' . $this->_page . '&start=%1$d%2$s"><b>&lt;&lt;</b></a>&nbsp;&nbsp;',
                 $start - 10000, $sortParam);
         }
         if ($start - 1000 >= 0)
         {
-            print sprintf('<a class="navpage" href="' . $this->_page . '?start=%1$d%2$s"><b>&lt;</b></a>&nbsp;&nbsp;',
+            print sprintf('<a class="navpage" href="' . $this->_page . '&start=%1$d%2$s"><b>&lt;</b></a>&nbsp;&nbsp;',
                 $start - 1000, $sortParam);
         }
         if ($start != 0)
         {
-            printf('<a href="' . $this->_page . '?start=%1$d%2$s"><b>Previous</b></a>&nbsp;&nbsp;',
+            printf('<a href="' . $this->_page . '&start=%1$d%2$s"><b>Previous</b></a>&nbsp;&nbsp;',
                 max(0, $start - $rowsPerPage), $sortParam);
         }
 
@@ -180,7 +180,7 @@ EOH;
             }
             else
             {
-                print sprintf('<a class="navpage" href="' . $this->_page . '?start=%1$d%3$s">%2$d</a>&nbsp;&nbsp;',
+                print sprintf('<a class="navpage" href="' . $this->_page . '&start=%1$d%3$s">%2$d</a>&nbsp;&nbsp;',
                     $currPageStart, $currPageNum, $sortParam);
             }
             ++$currPageNum;
@@ -192,16 +192,16 @@ EOH;
         }
         if ($start != $lastPageStart)
         {
-            printf('<a href="' . $this->_page . '?start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $sortParam);
+            printf('<a href="' . $this->_page . '&start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $sortParam);
         }
         if ($start + 1000 < $total)
         {
-            print sprintf('&nbsp;&nbsp;<a class="navpage" href="' . $this->_page . '?start=%1$d%2$s"><b>&gt;</b></a>',
+            print sprintf('&nbsp;&nbsp;<a class="navpage" href="' . $this->_page . '&start=%1$d%2$s"><b>&gt;</b></a>',
                 $start + 1000, $sortParam);
         }
         if ($start + 10000 < $total)
         {
-            print sprintf('&nbsp;&nbsp;<a class="navpage" href="' . $this->_page . '?start=%1$d%2$s"><b>&gt;&gt;</b></a>',
+            print sprintf('&nbsp;&nbsp;<a class="navpage" href="' . $this->_page . '&start=%1$d%2$s"><b>&gt;&gt;</b></a>',
                 $start + 10000, $sortParam);
         }
         print "</div>\n";
