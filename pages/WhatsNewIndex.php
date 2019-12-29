@@ -60,13 +60,6 @@ class WhatsNewIndex implements IWhatsNewIndex
         $this->_manxDb->addSiteUnknownPaths($this->_siteName, $paths);
     }
 
-    private function pathUnknown($line)
-    {
-        $url = $this->_baseUrl . '/' . self::escapeSpecialChars($line);
-        return $this->_manxDb->copyExistsForUrl($url) === false
-            && $this->_manxDb->siteIgnoredPath($this->_siteName, $line) === false;
-    }
-
     private static function escapeSpecialChars($path)
     {
         return str_replace("#", urlencode("#"), $path);

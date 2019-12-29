@@ -692,48 +692,6 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals($count, $results);
     }
 
-    public function testSiteIgnoredPathTrue()
-    {
-        $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
-        $query = "SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `path`=? AND `ignored`=1";
-        $this->_db->expects($this->exactly(2))->method('execute')
-            ->withConsecutive(
-                [ $select, array('bitsavers') ],
-                [ $query, array(3, 'foo/bar.jpg') ]
-            )
-            ->willReturn(
-                DatabaseTester::createResultRowsForColumns(
-                    array('site_id'), array(array(3))),
-                DatabaseTester::createResultRowsForColumns(
-                    array('count'), array(array(1)))
-            );
-
-        $ignored = $this->_manxDb->siteIgnoredPath('bitsavers', 'foo/bar.jpg');
-
-        $this->assertTrue($ignored);
-    }
-
-    public function testSiteIgnoredPathFalse()
-    {
-        $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
-        $query = 'SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `path`=? AND `ignored`=1';
-        $this->_db->expects($this->exactly(2))->method('execute')
-            ->withConsecutive(
-                [ $select, array('bitsavers') ],
-                [ $query, array(3, 'foo/bar.jpg') ]
-            )
-            ->willReturn(
-                DatabaseTester::createResultRowsForColumns(
-                    array('site_id'), array(array(3))),
-                DatabaseTester::createResultRowsForColumns(
-                    array('count'), array(array(0)))
-            );
-
-        $ignored = $this->_manxDb->siteIgnoredPath('bitsavers', 'foo/bar.jpg');
-
-        $this->assertFalse($ignored);
-    }
-
     public function testAddPubHistory()
     {
         $user = 2;

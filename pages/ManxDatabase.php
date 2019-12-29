@@ -777,13 +777,6 @@ class ManxDatabase implements IManxDatabase
             array($this->siteIdForName($siteName)));
     }
 
-    public function siteIgnoredPath($siteName, $path)
-    {
-        $rows = $this->execute("SELECT COUNT(*) AS `count` FROM `site_unknown` WHERE `site_id`=? AND `path`=? AND `ignored`=1",
-            array($this->siteIdForName($siteName), $path));
-        return ($rows[0]['count'] > 0);
-    }
-
     public function getAllSiteUnknownPaths($siteName)
     {
         return $this->execute("SELECT `id`,`path` FROM `site_unknown` WHERE `site_id`=? ORDER BY `id`",
