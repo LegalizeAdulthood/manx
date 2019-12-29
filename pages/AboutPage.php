@@ -17,8 +17,8 @@ class AboutPage extends PageBase
 <h1>About Manx</h1>
 
 <p>Manx is a catalog of manuals for old computers.
-Manx is an <a href="http://manx.codeplex.com">open source project</a> hosted
-on <a href="http://www.codeplex.com">CodePlex</a>.</p>
+Manx is an <a href="https://github.com/LegalizeAdulthood/manx">open source project</a> hosted
+on <a href="https://github.com">GitHub</a>.</p>
 
 <p>Many of these manuals can't be found by search engines because the
 manuals have been scanned but haven't been converted to text.  Google
@@ -46,8 +46,8 @@ EOH;
 <p>The list below shows the websites included in Manx. As Manx is
 still being built, you will find that not all of the holdings of
 these websites have been catalogued. If you know of manuals on other
-sites, please <a href="http://manx.codeplex.com/WorkItem/Create">create
-a work item</a> for the Data component. Even if a site only contains
+sites, please <a href="http://github.com/LegalizeAdulthood/manx/issues/new">create
+an issue</a> with the "data" label. Even if a site only contains
 one manual, it is worth including. This list is ordered by date of
 inclusion in Manx.</p>
 EOH;
