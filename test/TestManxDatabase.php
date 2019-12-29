@@ -838,6 +838,28 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_manxDb->markUnknownPathScanned($unknownId);
     }
 
+    public function testGetAllSiteUnknownPaths()
+    {
+        $siteName = 'bitsavers';
+        $select = "SELECT `su`.`id`, CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path` "
+        . "FROM `site_unknown` `su`, `site_unknown_dir` `sud`, `site` `s` "
+        . "WHERE `s`.`name` = ? "
+        . "AND `s`.`site_id` = `su`.`site_id` "
+        . "AND `s`.`site_id` = `sud`.`site_id` " 
+        . "AND `su`.`dir_id` = `sud`.`id` "
+        . "ORDER BY `id`";
+        $rows = DatabaseTester::createResultRowsForColumns(
+            ['id', 'path'],
+            [
+                [1, 'foo/bar.pdf']
+            ]);
+        $this->_db->expects($this->once())->method('execute')->with($select, [$siteName])->willReturn($rows);
+
+        $results = $this->_manxDb->getAllSiteUnknownPaths($siteName);
+
+        $this->assertEquals($rows, $results);
+    }
+
     public function testGetIngestionRobotUser()
     {
         $select = "SELECT `id` FROM `user` WHERE `first_name` = 'Ingestion' AND `last_name` = 'Robot'";

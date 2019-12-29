@@ -780,8 +780,14 @@ class ManxDatabase implements IManxDatabase
 
     public function getAllSiteUnknownPaths($siteName)
     {
-        return $this->execute("SELECT `id`,`path` FROM `site_unknown` WHERE `site_id`=? ORDER BY `id`",
-            array($this->siteIdForName($siteName)));
+        return $this->execute("SELECT `su`.`id`, CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path` "
+            . "FROM `site_unknown` `su`, `site_unknown_dir` `sud`, `site` `s` "
+            . "WHERE `s`.`name` = ? "
+            . "AND `s`.`site_id` = `su`.`site_id` "
+            . "AND `s`.`site_id` = `sud`.`site_id` "
+            . "AND `su`.`dir_id` = `sud`.`id` "
+            . "ORDER BY `id`",
+            [$siteName]);
     }
 
     public function removeSiteUnknownPathById($siteName, $siteUnknownId)
