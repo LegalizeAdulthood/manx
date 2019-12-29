@@ -1,6 +1,6 @@
 <?php
 
-require_once 'pages/ManxDatabase.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 class TestManxDatabaseUtils extends PHPUnit\Framework\TestCase
 {

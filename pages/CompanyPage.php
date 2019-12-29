@@ -2,9 +2,7 @@
 
 namespace Manx;
 
-require_once 'vendor/autoload.php';
-
-require_once 'Manx.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 class CompanyPage extends AdminPageBase
 {

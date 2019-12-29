@@ -1,9 +1,9 @@
 <?php
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once 'test/DatabaseTester.php';
-require_once 'test/FakeFile.php';
+require_once __DIR__ . '/DatabaseTester.php';
+require_once __DIR__ . '/FakeFile.php';
 
 use Pimple\Container;
 

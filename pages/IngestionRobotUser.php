@@ -2,7 +2,7 @@
 
 namespace Manx;
 
-require_once 'pages/User.php';
+require_once __DIR__ . '/User.php';
 
 use Pimple\Container;
 

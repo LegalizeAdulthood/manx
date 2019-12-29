@@ -1,11 +1,11 @@
 <?php
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Pimple\Container;
 
-require_once 'test/DatabaseTester.php';
-require_once 'test/FakeFile.php';
+require_once __DIR__ . '/DatabaseTester.php';
+require_once __DIR__ . '/FakeFile.php';
 
 class PublicationPageTester extends Manx\PublicationPage
 {

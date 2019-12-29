@@ -3,7 +3,7 @@
 namespace Manx;
 
 // For PRIVATE_DIR
-require_once 'pages/Config.php';
+require_once __DIR__ . '/Config.php';
 
 use Pimple\Container;
 

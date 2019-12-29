@@ -2,10 +2,10 @@
 
 namespace Manx;
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once 'pages/Config.php';
-require_once 'pages/UnknownPathDefs.php';
+// For SORT_ORDER_xxx
+require_once __DIR__ . '/UnknownPathDefs.php';
 
 use Pimple\Container;
 

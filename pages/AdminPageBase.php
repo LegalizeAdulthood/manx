@@ -2,7 +2,7 @@
 
 namespace Manx;
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 abstract class AdminPageBase extends PageBase
 {

@@ -2,7 +2,7 @@
 
 use Pimple\Container;
 
-require_once 'pages/UrlWizardPage.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 class UrlWizardPageTester extends Manx\UrlWizardPage
 {

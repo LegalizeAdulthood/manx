@@ -2,9 +2,7 @@
 
 namespace Manx\Cron;
 
-require_once 'vendor/autoload.php';
-
-require_once 'cron/WhatsNewProcessor.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Pimple\Container;
 

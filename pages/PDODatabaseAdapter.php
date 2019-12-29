@@ -2,9 +2,10 @@
 
 namespace Manx;
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once 'pages/Config.php';
+// For PRIVATE_DIR
+require_once __DIR__ . '/Config.php';
 
 class PDODatabaseAdapter implements IDatabase
 {

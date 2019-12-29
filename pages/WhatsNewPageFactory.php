@@ -2,10 +2,10 @@
 
 namespace Manx;
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // For TIME_ZONE
-require_once 'IDateTimeProvider.php';
+require_once __DIR__ . '/IDateTimeProvider.php';
 
 class WhatsNewPageFactory implements IWhatsNewPageFactory
 {
