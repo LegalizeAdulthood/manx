@@ -621,33 +621,30 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testGetSiteUnknownPathsOrderedById()
     {
-        $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
-        $query = "SELECT `path`,`id` FROM `site_unknown` WHERE `site_id`=? AND `ignored`=0 ORDER BY `id` ASC LIMIT 0, 10";
+        $siteName = 'bitsavers';
+        $query = "SELECT `su`.`id`, CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path` "
+            . "FROM `site_unknown` `su`, `site_unknown_dir` `sud`, `site` `s` "
+            . "WHERE `s`.`name` = ? "
+            . "AND `s`.`site_id` = `su`.`site_id` "
+            . "AND `s`.`site_id` = `sud`.`site_id` "
+            . "AND `su`.`ignored` = 0 "
+            . "ORDER BY `id` ASC "
+            . "LIMIT 0, 10";
         $path1 = 'foo/bar.jpg';
         $path2 = 'foo/foo.jpg';
-        $this->_db->expects($this->exactly(2))->method('execute')
-            ->withConsecutive(
-                [ $select, array('bitsavers') ],
-                [ $query, array(3) ]
-            )
-            ->willReturn(
-                DatabaseTester::createResultRowsForColumns(
-                    array('site_id'),
-                    array(array(3))
-                ),
-                DatabaseTester::createResultRowsForColumns(
-                    array('path', 'id', 'site_id'),
-                    array(
-                        array($path1, '1', '3'), array($path2, '2', '3')
-                    )
-                )
-            );
+        $this->_db->expects($this->exactly(1))->method('execute')
+            ->with($query, [$siteName])
+            ->willReturn(DatabaseTester::createResultRowsForColumns(
+                    ['id', 'path'],
+                    [['1', $path1], ['2', $path2]]
+                ));
 
-        $paths = $this->_manxDb->getSiteUnknownPathsOrderedById('bitsavers', 0, true);
+        $paths = $this->_manxDb->getSiteUnknownPathsOrderedById($siteName, 0, true);
 
-        $this->assertEquals( array(
-                array('path' => $path1, 'site_id' => '3', 'id' => '1'),
-                array('path' => $path2, 'id' => '2', 'site_id' => '3')),
+        $this->assertEquals([
+                ['id' => '1', 'path' => $path1],
+                ['id' => '2', 'path' => $path2]
+            ],
             $paths);
     }
 
