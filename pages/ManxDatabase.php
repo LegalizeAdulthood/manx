@@ -740,8 +740,8 @@ class ManxDatabase implements IManxDatabase
             . "WHERE `s`.`name` = ? "
                 . "AND `s`.`site_id` = `su`.`site_id` "
                 . "AND `s`.`site_id` = `sud`.`site_id` "
-                . "AND `su`.`path` = SUBSTRING_INDEX(?, '/', -1) "
                 . "AND `su`.`dir_id` = `sud`.`id` "
+                . "AND `su`.`path` = SUBSTRING_INDEX(?, '/', -1) "
                 . "AND `sud`.`path` = manx_parent_dir(?)",
             [$siteName, $path, $path]);
     }
@@ -764,6 +764,7 @@ class ManxDatabase implements IManxDatabase
             . "WHERE `s`.`name` = ? "
                 . "AND `s`.`site_id` = `su`.`site_id` "
                 . "AND `s`.`site_id` = `sud`.`site_id` "
+                . "AND `su`.`dir_id` = `sud`.`id` "
                 . "AND `su`.`ignored` = 0 "
             . "ORDER BY `id` $order "
             . "LIMIT $start, 10",

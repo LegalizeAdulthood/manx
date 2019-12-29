@@ -605,18 +605,19 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testIgnoreSitePath()
     {
-        // name, path, path
+        $siteName = 'bitsavers';
+        $path = 'foo/frob.jpg';
         $update = "UPDATE `site_unknown` `su`, `site` `s`, `site_unknown_dir` `sud` "
             . "SET `su`.`ignored` = 1 "
             . "WHERE `s`.`name` = ? "
                 . "AND `s`.`site_id` = `su`.`site_id` "
                 . "AND `s`.`site_id` = `sud`.`site_id` "
-                . "AND `su`.`path` = SUBSTRING_INDEX(?, '/', -1) "
                 . "AND `su`.`dir_id` = `sud`.`id` "
+                . "AND `su`.`path` = SUBSTRING_INDEX(?, '/', -1) "
                 . "AND `sud`.`path` = manx_parent_dir(?)";
-        $this->_db->expects($this->exactly(1))->method('execute')->with($update)->willReturn(null);
+        $this->_db->expects($this->exactly(1))->method('execute')->with($update, [$siteName, $path, $path])->willReturn(null);
 
-        $this->_manxDb->ignoreSitePath('bitsavers', 'foo/frob.jpg');
+        $this->_manxDb->ignoreSitePath($siteName, $path);
     }
 
     public function testGetSiteUnknownPathsOrderedById()
@@ -627,6 +628,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `su`.`site_id` "
             . "AND `s`.`site_id` = `sud`.`site_id` "
+            . "AND `su`.`dir_id` = `sud`.`id` "
             . "AND `su`.`ignored` = 0 "
             . "ORDER BY `id` ASC "
             . "LIMIT 0, 10";
