@@ -70,4 +70,5 @@ interface IManxDatabase
     function getIngestionRobotUser();
     function setSiteLive($siteId, $liveNotDead);
     function getSampleCopiesForSite($siteId);
+    function getSiteUnknownDirectories($siteName, $parentDirId);
 }

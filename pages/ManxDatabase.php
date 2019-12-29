@@ -865,6 +865,16 @@ class ManxDatabase implements IManxDatabase
         $this->execute("UPDATE `site_unknown` SET `scanned` = 1 WHERE `id` = ?", [$unknownId]);
     }
 
+    public function getSiteUnknownDirectories($siteName, $parentDirId)
+    {
+        return $this->execute("SELECT `sud`.* "
+            . "FROM `site_unknown_dir` `sud`, `site` `s` "
+            . "WHERE `s`.`name` = ? "
+            . "AND `s`.`site_id` = `sud`.`site_id` "
+            . "AND `sud`.`parent_dir_id` = ?",
+            [$siteName, $parentDirId]);
+    }
+
     public function getIngestionRobotUser()
     {
         $rows = $this->fetch("SELECT `id` FROM `user` WHERE `first_name` = 'Ingestion' AND `last_name` = 'Robot'");
