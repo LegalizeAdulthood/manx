@@ -102,7 +102,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
                     'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'md5' => $md5]
             ]);
         $this->_db->expects($this->once())->method('siteFileMoved')
-            ->with('bitsavers', 10, 16, 'http://bitsavers.org/pdf/hp/newDir/foo.pdf');
+            ->with(16, 10, 'http://bitsavers.org/pdf/hp/newDir/foo.pdf');
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with('http://bitsavers.trailing-edge.com/pdf/hp/newDir/foo.pdf')
             ->willReturn($this->_urlInfo);

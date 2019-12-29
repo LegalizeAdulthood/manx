@@ -808,11 +808,12 @@ class ManxDatabase implements IManxDatabase
             [$siteName]);
     }
 
-    public function siteFileMoved($siteName, $copyId, $pathId, $url)
+    public function siteFileMoved($pathId, $copyId, $url)
     {
-        $siteId = $this->siteIdForName($siteName);
-        $this->execute("DELETE FROM site_unknown WHERE site_id=? AND id=?", array($siteId, $pathId));
-        $this->execute("UPDATE copy SET url=? WHERE copy_id=?", array($url, $copyId));
+        $this->beginTransaction();
+        $this->execute("DELETE FROM site_unknown WHERE id = ?", [$pathId]);
+        $this->execute("UPDATE copy SET url = ? WHERE copy_id = ?", [$url, $copyId]);
+        $this->commit();
     }
 
     public function removeUnknownPathsWithCopy()

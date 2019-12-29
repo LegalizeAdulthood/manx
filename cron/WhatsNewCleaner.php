@@ -76,7 +76,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             {
                 if ($urlInfo->md5() == $row['md5'])
                 {
-                    $this->_db->siteFileMoved($this->_siteName, $row['copy_id'], $row['path_id'], $this->_baseUrl . $path);
+                    $this->_db->siteFileMoved($row['path_id'], $row['copy_id'], $this->_baseUrl . $path);
                     $this->log('Path: ' . $path);
                 }
             }

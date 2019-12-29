@@ -63,7 +63,7 @@ interface IManxDatabase
     function getAllSiteUnknownPaths($siteName);
     function removeSiteUnknownPathById($siteUnknownId);
     function getPossiblyMovedSiteUnknownPaths($siteName);
-    function siteFileMoved($siteName, $copyId, $pathId, $url);
+    function siteFileMoved($pathId, $copyId, $url);
     function removeUnknownPathsWithCopy();
     function getUnknownPathsForCompanies($siteName);
     function markUnknownPathScanned($unknownId);

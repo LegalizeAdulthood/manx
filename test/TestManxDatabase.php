@@ -891,6 +891,24 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals($results, $rows);
     }
 
+    public function testSiteFileMoved()
+    {
+        $copyId = 66;
+        $pathId = 77;
+        $url = 'http://bitsavers.org/pdf/new/path/to/file.pdf';
+        $this->_db->expects($this->once())->method('beginTransaction');
+        $deleteId = "DELETE FROM site_unknown WHERE id = ?";
+        $updateUrl = "UPDATE copy SET url = ? WHERE copy_id = ?";
+        $this->_db->expects($this->exactly(2))->method('execute')
+            ->withConsecutive(
+                [$deleteId, [$pathId]],
+                [$updateUrl, [$url, $copyId]]);
+        $this->_db->expects($this->once())->method('commit');
+
+
+        $this->_manxDb->siteFileMoved($pathId, $copyId, $url);
+    }
+
     public function testGetIngestionRobotUser()
     {
         $select = "SELECT `id` FROM `user` WHERE `first_name` = 'Ingestion' AND `last_name` = 'Robot'";
