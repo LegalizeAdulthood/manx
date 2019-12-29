@@ -59,7 +59,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             $urlInfo = $this->_factory->createUrlInfo($url);
             if (!$urlInfo->exists())
             {
-                $this->_db->removeSiteUnknownPathById($this->_siteName, $row['id']);
+                $this->_db->removeSiteUnknownPathById($row['id']);
                 $this->log('Path: ' . $path);
             }
         }

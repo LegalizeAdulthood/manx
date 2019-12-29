@@ -55,8 +55,7 @@ class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getAllSiteUnknownPaths')
             ->with('bitsavers')
             ->willReturn( array( array('id' => 1, 'path' => 'foo/path.pdf') ) );
-        $this->_db->expects($this->once())->method('removeSiteUnknownPathById')
-            ->with('bitsavers', 1);
+        $this->_db->expects($this->once())->method('removeSiteUnknownPathById')->with(1);
         $this->_urlInfo->expects($this->once())->method('exists')->willReturn(false);
         $this->_factory->expects($this->once())->method('createUrlInfo')
             ->with('http://bitsavers.trailing-edge.com/pdf/foo/path.pdf')

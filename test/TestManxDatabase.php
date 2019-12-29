@@ -860,6 +860,15 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals($rows, $results);
     }
 
+    public function testRemoveSiteUnknownPathById()
+    {
+        $id = 10;
+        $delete = "DELETE FROM `site_unknown` WHERE `id` = ?";
+        $this->_db->expects($this->once())->method('execute')->with($delete, [$id]);
+
+        $this->_manxDb->removeSiteUnknownPathById($id);
+    }
+
     public function testGetIngestionRobotUser()
     {
         $select = "SELECT `id` FROM `user` WHERE `first_name` = 'Ingestion' AND `last_name` = 'Robot'";
