@@ -869,6 +869,28 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_manxDb->removeSiteUnknownPathById($id);
     }
 
+    public function testGetPossiblyMovedSiteUnknownPaths()
+    {
+        $siteName = 'bitsavers';
+        $select = "SELECT CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path`, `su`.`id` AS `path_id`, `c`.`url`, `c`.`copy_id`, `c`.`md5` "
+            . "FROM `copy` `c`, `site` `s`, `site_unknown` `su`, `site_unknown_dir` `sud` "
+            . "WHERE `s`.`name` = ? "
+            . "AND `s`.`site_id` = `c`.`site` "
+            . "AND `s`.`site_id` = `su`.`site_id` "
+            . "AND `s`.`site_id` = `sud`.`site_id` "
+            . "AND `su`.`dir_id` = `sud`.`id` "
+            . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`";
+        $rows = DatabaseTester::createResultRowsForColumns(['path', 'path_id', 'url', 'copy_id', 'md5'],
+            [
+                ['foo/bar/foo.pdf', 11, 'http://bitsavers.org/pdf/foo/bar/foo.pdf', 22, 'd131dd02c5e6eec4']
+            ]);
+        $this->_db->expects($this->once())->method('execute')->with($select, [$siteName])->willReturn($rows);
+
+        $results = $this->_manxDb->getPossiblyMovedSiteUnknownPaths($siteName);
+
+        $this->assertEquals($results, $rows);
+    }
+
     public function testGetIngestionRobotUser()
     {
         $select = "SELECT `id` FROM `user` WHERE `first_name` = 'Ingestion' AND `last_name` = 'Robot'";
