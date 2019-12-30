@@ -891,6 +891,22 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->assertEquals($results, $rows);
     }
 
+    public function testGetSiteUnknownDir()
+    {
+        $dirId = 133;
+        $select = "SELECT * FROM `site_unknown_dir` WHERE `id` = ?";
+        $rows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+            [
+                [133, 3, 'dec', -1, '']
+            ]);
+
+        $this->_db->expects($this->once())->method('execute')->with($select, [$dirId])->willReturn($rows);
+
+        $results = $this->_manxDb->getSiteUnknownDir($dirId);
+
+        $this->assertEquals($results, $rows[0]);
+    }
+
     public function testGetSiteUnknownDirectories()
     {
         $siteName = 'bitsavers';

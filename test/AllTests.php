@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/TestAboutPage.php';
 require_once __DIR__ . '/TestAdminPageBase.php';
+require_once __DIR__ . '/TestApiSiteUnknownDir.php';
 require_once __DIR__ . '/TestApiSiteUnknownDirs.php';
 require_once __DIR__ . '/TestApiSiteUnknownPaths.php';
 require_once __DIR__ . '/TestBitSaversCleaner.php';
@@ -37,6 +38,7 @@ class AllTests
         foreach ([
                 'TestAboutPage',
                 'TestAdminPageBase',
+                'TestApiSiteUnknownDir',
                 'TestApiSiteUnknownDirs',
                 'TestApiSiteUnknownPaths',
                 'TestBitSaversCleaner',

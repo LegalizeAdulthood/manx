@@ -18,6 +18,13 @@ $container['db'] = function($config) {
     return $config['manx']->getDatabase();
 };
 
+$container['siteUnknownDir'] = function($config) {
+    return new \Manx\Api\SiteUnknownDir($config);
+};
+$app->get('/siteUnknownDir/{dirId}', function(Request $request, Response $response, array $args) {
+    return $this->siteUnknownDir->get($request, $response, $args);
+});
+
 $container['siteUnknownDirs'] = function($config) {
     return new \Manx\Api\SiteUnknownDirs($config);
 };

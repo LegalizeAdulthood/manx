@@ -875,6 +875,12 @@ class ManxDatabase implements IManxDatabase
             [$siteName, $parentDirId]);
     }
 
+    public function getSiteUnknownDir($dirId)
+    {
+        $select = "SELECT * FROM `site_unknown_dir` WHERE `id` = ?";
+        return $this->execute($select, [$dirId])[0];
+    }
+
     public function getSiteUnknownPaths($siteName, $parentDirId)
     {
         return $this->execute("SELECT `su`.* "
