@@ -54,16 +54,11 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
     /** @var Manx\IWhatsNewIndex */
     private $_whatsNewIndex;
 
-    private function createPage($vars = array())
+    private function createPage($vars = array('sort' => SORT_ORDER_BY_ID))
     {
         $_SERVER['PATH_INFO'] = '';
         $this->_config['vars'] = $vars;
         $this->_page = new WhatsNewPageTester($this->_config);
-    }
-
-    private function createPageWithoutFetchingIndexByDateFile($vars = array('sort' => SORT_ORDER_BY_ID))
-    {
-        return $this->createPage($vars);
     }
 
     protected function setUp()
@@ -97,16 +92,9 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
         $this->assertFalse(is_null($this->_page));
     }
 
-    public function testMenuTypeIsBitSaversPage()
-    {
-        $this->createPage();
-
-        $this->assertEquals(Manx\MenuType::BitSavers, $this->_page->getMenuType());
-    }
-
     public function testRenderBodyContentWithPlentyOfPaths()
     {
-        $this->createPageWithoutFetchingIndexByDateFile();
+        $this->createPage();
         $this->_db->expects($this->once())->method('getSiteUnknownPathCount')
             ->with('bitsavers')
             ->willReturn(10);
@@ -125,7 +113,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderBodyContentWithIgnoredPaths()
     {
-        $this->createPageWithoutFetchingIndexByDateFile();
+        $this->createPage();
         $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
         $paths = array('dec/1.bin', 'dec/2.zip', 'dec/3.dat', 'dec/4.u6', 'dec/5.tar',
             'dec/6.gz', 'dec/7.jpg', 'dec/8.gif', 'dec/9.tif', 'dec/A#A.png');
@@ -147,7 +135,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
     {
-        $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH));
+        $this->createPage(array('sort' => SORT_ORDER_BY_PATH));
         $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
         $paths = array('dec/Q.pdf', 'dec/R.pdf', 'dec/S.pdf', 'dec/T.pdf', 'dec/U.pdf',
             'dec/V.pdf', 'dec/W.pdf', 'dec/X.pdf', 'dec/Y.pdf', 'dec/Z.pdf');
@@ -164,7 +152,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderBodyContentWithPlentyOfPathsOrderedByPathDescending()
     {
-        $this->createPageWithoutFetchingIndexByDateFile(array('sort' => SORT_ORDER_BY_PATH_DESCENDING));
+        $this->createPage(array('sort' => SORT_ORDER_BY_PATH_DESCENDING));
         $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
         $paths = array('dec/Z.pdf', 'dec/Y.pdf', 'dec/X.pdf', 'dec/W.pdf', 'dec/V.pdf',
             'dec/U.pdf', 'dec/T.pdf', 'dec/S.pdf', 'dec/R.pdf', 'dec/Q.pdf');
@@ -181,7 +169,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderBodyContentGetsNewPaths()
     {
-        $this->createPageWithoutFetchingIndexByDateFile();
+        $this->createPage();
         $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
             'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
         $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(count($paths));
@@ -199,7 +187,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
     public function testIgnorePaths()
     {
         $ignoredPath = 'dec/1.pdf';
-        $this->createPageWithoutFetchingIndexByDateFile(array('ignore0' => $ignoredPath));
+        $this->createPage(array('ignore0' => $ignoredPath));
         $this->_db->expects($this->once())->method('ignoreSitePath')->with('bitsavers', $ignoredPath);
 
         $this->_page->ignorePaths();
@@ -207,7 +195,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarOnePage()
     {
-        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPage(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
 
         $this->_page->renderPageSelectionBar(0, 10);
 
@@ -217,7 +205,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarManyPages()
     {
-        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPage(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
 
         $this->_page->renderPageSelectionBar(0, 1234);
 
@@ -239,7 +227,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarManyManyPages()
     {
-        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPage(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
 
         $this->_page->renderPageSelectionBar(0, 12340, true);
 
@@ -262,7 +250,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarManyPreviousPages()
     {
-        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 1100, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPage(array('start' => 1100, 'sort' => SORT_ORDER_BY_ID));
 
         $this->_page->renderPageSelectionBar(1100, 1234, true);
 
@@ -286,7 +274,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBar10KPreviousPages()
     {
-        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 10000, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPage(array('start' => 10000, 'sort' => SORT_ORDER_BY_ID));
 
         $this->_page->renderPageSelectionBar(10000, 12340, true);
 
@@ -312,7 +300,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarManyManyPreviousPages()
     {
-        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 11000, 'sort' => SORT_ORDER_BY_ID));
+        $this->createPage(array('start' => 11000, 'sort' => SORT_ORDER_BY_ID));
 
         $this->_page->renderPageSelectionBar(11000, 12340);
 
@@ -350,7 +338,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarManyPagesByPath()
     {
-        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH));
+        $this->createPage(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH));
 
         $this->_page->renderPageSelectionBar(0, 1234);
 
@@ -372,7 +360,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderPageSelectionBarManyPagesByPathDescending()
     {
-        $this->createPageWithoutFetchingIndexByDateFile(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH_DESCENDING));
+        $this->createPage(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH_DESCENDING));
 
         $this->_page->renderPageSelectionBar(0, 1234);
 
@@ -394,7 +382,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
 
     public function testRenderBodyContentNoDocuments()
     {
-        $this->createPageWithoutFetchingIndexByDateFile();
+        $this->createPage();
         $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->with('bitsavers')->willReturn(0);
 
         $this->_page->renderBodyContent();
