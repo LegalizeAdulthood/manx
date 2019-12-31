@@ -49,7 +49,7 @@ class TestChiClassicCompConfig extends PHPUnit\Framework\TestCase
 
     public function testPage()
     {
-        $this->assertEquals('whatsnew.php?site=chiclassiccomp&parentDir=-1', $this->_config['page']);
+        $this->assertEquals('whatsnew.php?site=chiclassiccomp', $this->_config['page']);
     }
 
     public function testTitle()

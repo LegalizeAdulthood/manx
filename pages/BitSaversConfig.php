@@ -17,7 +17,7 @@ class BitSaversConfig
         $config['baseCheckUrl'] = 'http://bitsavers.trailing-edge.com/pdf';
         $config['baseUrl'] = 'http://bitsavers.org/pdf';
         $config['menuType'] = MenuType::BitSavers;
-        $config['page'] = 'whatsnew.php?site=bitsavers&parentDir=-1';
+        $config['page'] = 'whatsnew.php?site=bitsavers';
         $config['title'] = 'BitSavers';
     }
 }
