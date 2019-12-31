@@ -899,7 +899,6 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             [
                 [133, 3, 'dec', -1, '']
             ]);
-
         $this->_db->expects($this->once())->method('execute')->with($select, [$dirId])->willReturn($rows);
 
         $results = $this->_manxDb->getSiteUnknownDir($dirId);
