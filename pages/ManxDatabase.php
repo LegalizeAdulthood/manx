@@ -881,6 +881,7 @@ class ManxDatabase implements IManxDatabase
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `su`.`site_id` "
             . "AND `s`.`site_id` = `sud`.`site_id` "
+            . "AND `su`.`ignored` = 0 "
             . "AND `su`.`dir_id` = `sud`.`id` "
             . "AND `su`.`dir_id` = ?",
             [$siteName, $parentDirId]);

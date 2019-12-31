@@ -926,12 +926,13 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `su`.`site_id` "
             . "AND `s`.`site_id` = `sud`.`site_id` "
+            . "AND `su`.`ignored` = 0 "
             . "AND `su`.`dir_id` = `sud`.`id` "
             . "AND `su`.`dir_id` = ?";
         $rows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
             [
                 [5005, 3, 'foo.pdf', 0, 0, -1],
-                [5005, 3, 'foo.jpg', 1, 0, -1]
+                [5005, 3, 'foo.jpg', 0, 1, -1]
             ]);
         $this->_db->expects($this->once())->method('execute')->with($select, [$siteName, -1])->willReturn($rows);
 
