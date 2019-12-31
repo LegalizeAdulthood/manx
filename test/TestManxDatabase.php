@@ -605,19 +605,11 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
 
     public function testIgnoreSitePath()
     {
-        $siteName = 'bitsavers';
-        $path = 'foo/frob.jpg';
-        $update = "UPDATE `site_unknown` `su`, `site` `s`, `site_unknown_dir` `sud` "
-            . "SET `su`.`ignored` = 1 "
-            . "WHERE `s`.`name` = ? "
-                . "AND `s`.`site_id` = `su`.`site_id` "
-                . "AND `s`.`site_id` = `sud`.`site_id` "
-                . "AND `su`.`dir_id` = `sud`.`id` "
-                . "AND `su`.`path` = SUBSTRING_INDEX(?, '/', -1) "
-                . "AND `sud`.`path` = manx_parent_dir(?)";
-        $this->_db->expects($this->exactly(1))->method('execute')->with($update, [$siteName, $path, $path])->willReturn(null);
+        $ignoredIds = [56, 111];
+        $update = "UPDATE `site_unknown` `su` SET `su`.`ignored` = 1 WHERE `su`.`id` in (?, ?)";
+        $this->_db->expects($this->exactly(1))->method('execute')->with($update, $ignoredIds);
 
-        $this->_manxDb->ignoreSitePath($siteName, $path);
+        $this->_manxDb->ignoreSitePaths($ignoredIds);
     }
 
     public function testGetSiteUnknownPathsOrderedById()

@@ -56,7 +56,7 @@ interface IManxDatabase
     function getProperty($name);
     function setProperty($name, $value);
     function addSiteUnknownPaths($siteName, array $paths);
-    function ignoreSitePath($siteName, $path);
+    function ignoreSitePaths(array $ignoredIds);
     function getSiteUnknownPathCount($siteName);
     function getSiteUnknownPathsOrderedById($siteName, $start, $ascending);
     function getSiteUnknownPathsOrderedByPath($siteName, $start, $ascending);

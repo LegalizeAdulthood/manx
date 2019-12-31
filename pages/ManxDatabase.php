@@ -733,17 +733,10 @@ class ManxDatabase implements IManxDatabase
         $this->commit();
     }
 
-    public function ignoreSitePath($siteName, $path)
+    public function ignoreSitePaths(array $ignoredIds)
     {
-        $this->execute("UPDATE `site_unknown` `su`, `site` `s`, `site_unknown_dir` `sud` "
-            . "SET `su`.`ignored` = 1 "
-            . "WHERE `s`.`name` = ? "
-                . "AND `s`.`site_id` = `su`.`site_id` "
-                . "AND `s`.`site_id` = `sud`.`site_id` "
-                . "AND `su`.`dir_id` = `sud`.`id` "
-                . "AND `su`.`path` = SUBSTRING_INDEX(?, '/', -1) "
-                . "AND `sud`.`path` = manx_parent_dir(?)",
-            [$siteName, $path, $path]);
+        $params = array_fill(0, count($ignoredIds), '?');
+        $this->execute("UPDATE `site_unknown` `su` SET `su`.`ignored` = 1 WHERE `su`.`id` in (" . implode(', ', $params) . ")", $ignoredIds);
     }
 
     public function getSiteUnknownPathCount($siteName)

@@ -25,11 +25,6 @@ class WhatsNewPageTester extends Manx\WhatsNewPage
     {
         parent::ignorePaths();
     }
-
-    public function renderPageSelectionBar($start, $total)
-    {
-        parent::renderPageSelectionBar($start, $total);
-    }
 }
 
 class TestWhatsNewPage extends PHPUnit\Framework\TestCase
@@ -92,236 +87,118 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
         $this->assertFalse(is_null($this->_page));
     }
 
-    public function testRenderBodyContentWithPlentyOfPaths()
+    public function testRenderBodyContentNoRootPaths()
     {
-        $this->createPage();
-        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')
-            ->with('bitsavers')
-            ->willReturn(10);
-        $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->willReturn('PDF');
-        $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
-            'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A#A.pdf');
-        $idStart = 110;
-        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
-            ->with('bitsavers')
-            ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
+        $siteName = 'bitsavers';
+        $parentDirId = -1;
+        $this->createPage(['siteName' => $siteName, 'parentDir' => $parentDirId]);
+        $this->_db->expects($this->never())->method('getSiteUnknownDir');
+        $this->_db->expects($this->once())->method('getSiteUnknownDirectories')->with($siteName, $parentDirId)->willReturn([]);
+        $this->_db->expects($this->once())->method('getSiteUnknownPaths')->with($siteName, $parentDirId)->willReturn([]);
 
         $this->_page->renderBodyContent();
 
-        $this->expectOutputString(self::expectedOutputForPaths($paths, $idStart));
+        $this->expectOutputString("<h1>No New BitSavers Publications Found</h1>\n");
     }
 
-    public function testRenderBodyContentWithIgnoredPaths()
+    public function testRenderBodyContentNoDocumentsForDir()
     {
-        $this->createPage();
-        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
-        $paths = array('dec/1.bin', 'dec/2.zip', 'dec/3.dat', 'dec/4.u6', 'dec/5.tar',
-            'dec/6.gz', 'dec/7.jpg', 'dec/8.gif', 'dec/9.tif', 'dec/A#A.png');
-        $idStart = 110;
-        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
-            ->with('bitsavers', 0, true)
-            ->wilLReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
-        $this->_db->expects($this->exactly(10))->method('getFormatForExtension')
-            ->withConsecutive([ 'bin' ], [ 'zip' ], [ 'dat' ], [ 'u6' ], ['tar' ],
-                [ 'gz' ], [ 'jpg' ], [ 'gif' ], [ 'tif' ], [ 'png' ])
-            ->willReturn('', '', '', '', '', '', 'JPEG', 'GIF', 'TIFF', 'PNG');
-        $checks = array('checked', 'checked', 'checked', 'checked', 'checked',
-            'checked', 'checked', 'checked', 'checked', 'checked');
+        $siteName = 'bitsavers';
+        $parentDirId = 1339;
+        $this->createPage(['siteName' => $siteName, 'parentDir' => $parentDirId]);
+        $thisDirRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+            [
+                [100, 3, 'dec/pdp11', 150, '']
+            ]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDir')->with($parentDirId)->willReturn($thisDirRows[0]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDirectories')->with($siteName, $parentDirId)->willReturn([]);
+        $this->_db->expects($this->once())->method('getSiteUnknownPaths')->with($siteName, $parentDirId)->willReturn([]);
 
         $this->_page->renderBodyContent();
 
-        $this->expectOutputString(self::expectedOutputForCheckedPaths($paths, $checks, $idStart));
+        $expected = <<<EOH
+<h1>No New BitSavers dec/pdp11 Publications Found</h1>
+
+<ul>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=150">(parent)</a></li>
+</ul>
+
+EOH;
+        $this->expectOutputString($expected);
     }
 
-    public function testRenderBodyContentWithPlentyOfPathsOrderedByPath()
+    public function testRenderBodyContent()
     {
-        $this->createPage(array('sort' => SORT_ORDER_BY_PATH));
-        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
-        $paths = array('dec/Q.pdf', 'dec/R.pdf', 'dec/S.pdf', 'dec/T.pdf', 'dec/U.pdf',
-            'dec/V.pdf', 'dec/W.pdf', 'dec/X.pdf', 'dec/Y.pdf', 'dec/Z.pdf');
-        $idStart = 110;
-        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedByPath')
-            ->with('bitsavers', 0, true)
-            ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
-        $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $siteName = 'bitsavers';
+        $parentDirId = 1339;
+        $this->createPage(['siteName' => $siteName, 'parentDir' => $parentDirId]);
+        $thisDirRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+            [
+                [100, 3, 'dec/pdp11', 150, '']
+            ]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDir')->with($parentDirId)->willReturn($thisDirRows[0]);
+        $dirRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+            [
+                [111, 3, 'dec/pdp11/1103', 1339, ''],
+                [112, 3, 'dec/pdp11/1104', 1339, ''],
+                [113, 3, 'dec/pdp11/1105', 1339, ''],
+            ]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDirectories')
+            ->with($siteName, $parentDirId)
+            ->willReturn($dirRows);
+        $fileRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+            [
+                [222, 3, 'KM11_Maintenance_Panel_May70.pdf', 0, 0, 1339],
+                [223, 3, 'EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf', 0, 0, 1339],
+                [224, 3, 'LSI-11_Systems_Service_Manual_Aug81.pdf', 0, 0, 1339],
+                [225, 3, 'firmware.zip', 1, 0, 1339]
+            ]);
+        $this->_db->expects($this->once())->method('getSiteUnknownPaths')
+            ->with($siteName, $parentDirId)
+            ->willReturn($fileRows);
+        $this->_db->expects($this->exactly(3))->method('getFormatForExtension')
+            ->withConsecutive(['pdf'], ['pdf'], ['pdf'])
+            ->willReturn('PDF', 'PDF', 'PDF');
 
         $this->_page->renderBodyContent();
 
-        $this->expectOutputString(self::expectedOutputForPaths($paths, $idStart, false));
-    }
+        $expected = <<<EOH
+<h1>New BitSavers dec/pdp11 Publications</h1>
 
-    public function testRenderBodyContentWithPlentyOfPathsOrderedByPathDescending()
-    {
-        $this->createPage(array('sort' => SORT_ORDER_BY_PATH_DESCENDING));
-        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(10);
-        $paths = array('dec/Z.pdf', 'dec/Y.pdf', 'dec/X.pdf', 'dec/W.pdf', 'dec/V.pdf',
-            'dec/U.pdf', 'dec/T.pdf', 'dec/S.pdf', 'dec/R.pdf', 'dec/Q.pdf');
-        $idStart = 110;
-        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedByPath')
-            ->with('bitsavers', 0, false)
-            ->willReturn(self::createResultRowsForUnknownPaths($paths, $idStart));
-        $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+<ul>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=150">(parent)</a></li>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=111">dec/pdp11/1103</a></li>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=112">dec/pdp11/1104</a></li>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=113">dec/pdp11/1105</a></li>
+</ul>
+<form action="whatsnew.php" method="POST">
+<input type="hidden" name="site" value="bitsavers" />
+<input type="hidden" name="parentDir" value="1339" />
+<table>
+<tr><th>Ignored?</th><th>File</th></tr>
+<tr><td><input type="checkbox" id="ignore0" name="ignore0" value="222"/></td>
+<td><a href="url-wizard.php?url=http://bitsavers.org/pdf/dec/pdp11/KM11_Maintenance_Panel_May70.pdf">KM11_Maintenance_Panel_May70.pdf</a></td></tr>
+<tr><td><input type="checkbox" id="ignore1" name="ignore1" value="223"/></td>
+<td><a href="url-wizard.php?url=http://bitsavers.org/pdf/dec/pdp11/EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf">EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf</a></td></tr>
+<tr><td><input type="checkbox" id="ignore2" name="ignore2" value="224"/></td>
+<td><a href="url-wizard.php?url=http://bitsavers.org/pdf/dec/pdp11/LSI-11_Systems_Service_Manual_Aug81.pdf">LSI-11_Systems_Service_Manual_Aug81.pdf</a></td></tr>
+<tr><td><input type="checkbox" id="ignore3" name="ignore3" value="225" checked/></td>
+<td><a href="url-wizard.php?url=http://bitsavers.org/pdf/dec/pdp11/firmware.zip">firmware.zip</a></td></tr>
+</table>
+<input type="submit" value="Ignore" />
+</form>
 
-        $this->_page->renderBodyContent();
-
-        $this->expectOutputString(self::expectedOutputForPaths($paths, $idStart, false, false));
-    }
-
-    public function testRenderBodyContentGetsNewPaths()
-    {
-        $this->createPage();
-        $paths = array('dec/1.pdf', 'dec/2.pdf', 'dec/3.pdf', 'dec/4.pdf', 'dec/5.pdf',
-            'dec/6.pdf', 'dec/7.pdf', 'dec/8.pdf', 'dec/9.pdf', 'dec/A.pdf');
-        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->willReturn(count($paths));
-        $this->_db->expects($this->never())->method('copyExistsForUrl');
-        $this->_db->expects($this->once())->method('getSiteUnknownPathsOrderedById')
-            ->with('bitsavers', 0, true)
-            ->willReturn(self::createResultRowsForUnknownPaths($paths));
-        $this->_db->expects($this->exactly(10))->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
-
-        $this->_page->renderBodyContent();
-
-        $this->expectOutputString(self::expectedOutputForPaths($paths));
+EOH;
+        $this->expectOutputString($expected);
     }
 
     public function testIgnorePaths()
     {
-        $ignoredPath = 'dec/1.pdf';
-        $this->createPage(array('ignore0' => $ignoredPath));
-        $this->_db->expects($this->once())->method('ignoreSitePath')->with('bitsavers', $ignoredPath);
+        $ignoredId = 111;
+        $this->createPage(array('ignore0' => $ignoredId));
+        $this->_db->expects($this->once())->method('ignoreSitePaths')->with([$ignoredId]);
 
         $this->_page->ignorePaths();
-    }
-
-    public function testRenderPageSelectionBarOnePage()
-    {
-        $this->createPage(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
-
-        $this->_page->renderPageSelectionBar(0, 10);
-
-        $this->expectOutputString(
-            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>' . "\n");
-    }
-
-    public function testRenderPageSelectionBarManyPages()
-    {
-        $this->createPage(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
-
-        $this->_page->renderPageSelectionBar(0, 1234);
-
-        $this->expectOutputString(
-            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=20">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=30">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=40">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=50">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=60">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=70">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=80">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=90">10</a>&nbsp;&nbsp;'
-                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1000"><b>&gt;</b></a>'
-                . '</div>' . "\n");
-    }
-
-    public function testRenderPageSelectionBarManyManyPages()
-    {
-        $this->createPage(array('start' => 0, 'sort' => SORT_ORDER_BY_ID));
-
-        $this->_page->renderPageSelectionBar(0, 12340, true);
-
-        $this->expectOutputString(
-            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=20">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=30">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=40">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=50">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=60">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=70">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=80">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=90">10</a>&nbsp;&nbsp;'
-                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1000"><b>&gt;</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10000"><b>&gt;&gt;</b></a>'
-                . '</div>' . "\n");
-    }
-
-    public function testRenderPageSelectionBarManyPreviousPages()
-    {
-        $this->createPage(array('start' => 1100, 'sort' => SORT_ORDER_BY_ID));
-
-        $this->_page->renderPageSelectionBar(1100, 1234, true);
-
-        $this->expectOutputString(
-            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=100"><b>&lt;</b></a>&nbsp;&nbsp;'
-                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=1090"><b>Previous</b></a>&nbsp;&nbsp;'
-                . '<b class="currpage">111</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1110">112</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1120">113</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1130">114</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1140">115</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1150">116</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1160">117</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1170">118</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1180">119</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1190">120</a>&nbsp;&nbsp;'
-                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=1110"><b>Next</b></a>'
-                . '</div>' . "\n");
-    }
-
-    public function testRenderPageSelectionBar10KPreviousPages()
-    {
-        $this->createPage(array('start' => 10000, 'sort' => SORT_ORDER_BY_ID));
-
-        $this->_page->renderPageSelectionBar(10000, 12340, true);
-
-        $this->expectOutputString(
-            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=0"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=9000"><b>&lt;</b></a>&nbsp;&nbsp;'
-                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=9990"><b>Previous</b></a>&nbsp;&nbsp;'
-                . '<b class="currpage">1001</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10010">1002</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10020">1003</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10030">1004</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10040">1005</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10050">1006</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10060">1007</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10070">1008</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10080">1009</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10090">1010</a>&nbsp;&nbsp;'
-                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10010"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11000"><b>&gt;</b></a>'
-                . '</div>' . "\n");
-    }
-
-    public function testRenderPageSelectionBarManyManyPreviousPages()
-    {
-        $this->createPage(array('start' => 11000, 'sort' => SORT_ORDER_BY_ID));
-
-        $this->_page->renderPageSelectionBar(11000, 12340);
-
-        $this->expectOutputString(
-            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1000"><b>&lt;&lt;</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10000"><b>&lt;</b></a>&nbsp;&nbsp;'
-                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10990"><b>Previous</b></a>&nbsp;&nbsp;'
-                . '<b class="currpage">1101</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11010">1102</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11020">1103</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11030">1104</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11040">1105</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11050">1106</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11060">1107</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11070">1108</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11080">1109</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=11090">1110</a>&nbsp;&nbsp;'
-                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=11010"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=12000"><b>&gt;</b></a>'
-                . '</div>' . "\n");
     }
 
     public function testPoundSignEscaped()
@@ -335,133 +212,4 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
         $this->assertEquals("microCornucopia/Micro_Cornucopia%2050_Nov89.pdf",
             Manx\WhatsNewPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
     }
-
-    public function testRenderPageSelectionBarManyPagesByPath()
-    {
-        $this->createPage(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH));
-
-        $this->_page->renderPageSelectionBar(0, 1234);
-
-        $this->expectOutputString(
-            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10&sort=bypath">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=20&sort=bypath">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=30&sort=bypath">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=40&sort=bypath">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=50&sort=bypath">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=60&sort=bypath">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=70&sort=bypath">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=80&sort=bypath">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=90&sort=bypath">10</a>&nbsp;&nbsp;'
-                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10&sort=bypath"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1000&sort=bypath"><b>&gt;</b></a>'
-                . '</div>' . "\n");
-    }
-
-    public function testRenderPageSelectionBarManyPagesByPathDescending()
-    {
-        $this->createPage(array('start' => 0, 'sort' => SORT_ORDER_BY_PATH_DESCENDING));
-
-        $this->_page->renderPageSelectionBar(0, 1234);
-
-        $this->expectOutputString(
-            '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=10&sort=bypathdesc">2</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=20&sort=bypathdesc">3</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=30&sort=bypathdesc">4</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=40&sort=bypathdesc">5</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=50&sort=bypathdesc">6</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=60&sort=bypathdesc">7</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=70&sort=bypathdesc">8</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=80&sort=bypathdesc">9</a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=90&sort=bypathdesc">10</a>&nbsp;&nbsp;'
-                . '<a href="whatsnew.php?site=bitsavers&parentDir=-1&start=10&sort=bypathdesc"><b>Next</b></a>&nbsp;&nbsp;'
-                . '<a class="navpage" href="whatsnew.php?site=bitsavers&parentDir=-1&start=1000&sort=bypathdesc"><b>&gt;</b></a>'
-                . '</div>' . "\n");
-    }
-
-    public function testRenderBodyContentNoDocuments()
-    {
-        $this->createPage();
-        $this->_db->expects($this->once())->method('getSiteUnknownPathCount')->with('bitsavers')->willReturn(0);
-
-        $this->_page->renderBodyContent();
-
-        $this->expectOutputString("<h1>No New BitSavers Publications Found</h1>\n");
-    }
-
-    private static function createResultRowsForUnknownPaths($items, $idStart = 1)
-    {
-        $id = $idStart;
-        for ($i = 0; $i < count($items); ++$i)
-        {
-            $items[$i] = array($id++, $items[$i]);
-        }
-        return DatabaseTester::createResultRowsForColumns(array('id', 'path'), $items);
-    }
-
-    private static function expectedOutputForPaths($paths, $idStart = 1, $sortById = true, $ascending = true)
-    {
-        $checks = array();
-        foreach ($paths as $path)
-        {
-            $checks[] = '';
-        }
-        return self::expectedOutputForCheckedPaths($paths, $checks, $idStart, $sortById, $ascending);
-    }
-
-    private static function expectedOutputForCheckedPaths($paths, $checks, $idStart = 1, $sortById = true, $ascending = true)
-    {
-        if ($sortById)
-        {
-            $sortValue = $ascending ? 'byid' : 'byiddesc';
-            $nextSortValue = $ascending ? 'byiddesc' : 'byid';
-            $expectedIdHeader = sprintf('<a href="whatsnew.php?site=bitsavers&parentDir=-1&sort=%1$s">Id</a>', $nextSortValue);
-            $expectedPathHeader = '<a href="whatsnew.php?site=bitsavers&parentDir=-1&sort=bypath">Path</a>';
-        }
-        else
-        {
-            $sortValue = $ascending ? 'bypath' : 'bypathdesc';
-            $nextSortValue = $ascending ? 'bypathdesc' : 'bypath';
-            $expectedIdHeader = '<a href="whatsnew.php?site=bitsavers&parentDir=-1&sort=byid">Id</a>';
-            $expectedPathHeader = sprintf('<a href="whatsnew.php?site=bitsavers&parentDir=-1&sort=%1$s">Path</a>', $nextSortValue);
-        }
-
-        $expected = <<<EOH
-<h1>New BitSavers Publications</h1>
-
-<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;<b class="currpage">1</b>&nbsp;&nbsp;</div>
-<form action="whatsnew.php?site=bitsavers&parentDir=-1" method="POST">
-<input type="hidden" name="start" value="0" />
-<input type="hidden" name="sort" value="$sortValue" />
-<table>
-<tr><th>$expectedIdHeader</th><th>$expectedPathHeader</th></tr>
-
-EOH;
-        $i = 0;
-        $n = $idStart;
-        foreach ($paths as $path)
-        {
-            $urlPath = Manx\WhatsNewPage::escapeSpecialChars($path);
-            $checked = $checks[0];
-            $checks = array_slice($checks, 1);
-            $item = <<<EOH
-<tr><td>$n.</td><td><input type="checkbox" id="ignore$i" name="ignore$i" value="$path" $checked/>
-<a href="url-wizard.php?url=http://bitsavers.org/pdf/$urlPath">$path</a></td></tr>
-
-EOH;
-            $expected = $expected . $item;
-            ++$i;
-            ++$n;
-        }
-        $trailer = <<<EOH
-</table>
-<input type="submit" value="Ignore" />
-</form>
-
-EOH;
-        $expected = $expected . $trailer;
-        return $expected;
-    }
-
 }

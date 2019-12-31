@@ -35,6 +35,8 @@ class WhatsNewPage extends AdminPageBase
         $this->_title = $config['title'];
         $this->_fileSystem = $config['fileSystem'];
         $this->_factory = $config['whatsNewPageFactory'];
+        $vars = $config['vars'];
+        $this->_parentDirId = array_key_exists('parentDir', $vars) ? $vars['parentDir'] : -1;
     }
 
     protected function getMenuType()
@@ -50,89 +52,107 @@ class WhatsNewPage extends AdminPageBase
 
     protected function ignorePaths()
     {
-        $ignored = array();
+        $ignoredIds = [];
         for ($i = 0; $i < 10; ++$i)
         {
             $key = sprintf('ignore%1$d', $i);
             if (array_key_exists($key, $this->_vars))
             {
-                array_push($ignored, $this->_vars[$key]);
+                $ignoredIds[] = $this->_vars[$key];
             }
         }
-        if (count($ignored))
+        if (count($ignoredIds))
         {
-            foreach ($ignored as $path)
-            {
-                $this->_manxDb->ignoreSitePath($this->_siteName, $path);
-            }
+            $this->_manxDb->ignoreSitePaths($ignoredIds);
         }
     }
 
     protected function renderBodyContent()
     {
-        $total = $this->_manxDb->getSiteUnknownPathCount($this->_siteName);
-        $title = $this->_title;
-        if ($total == 0)
+        if ($this->_parentDirId != -1)
         {
-            print <<<EOH
+            $thisDir = $this->_manxDb->getSiteUnknownDir($this->_parentDirId);
+        }
+        else
+        {
+            $thisDir = ['id' => -1, 'path' => '', 'parent_dir_id' => -1, 'part_regex' => ''];
+        }
+        $currentDir = $thisDir['path'];
+        $dirs = $this->_manxDb->getSiteUnknownDirectories($this->_siteName, $this->_parentDirId);
+        $files = $this->_manxDb->getSiteUnknownPaths($this->_siteName, $this->_parentDirId);
+        $title = $this->_title;
+        if (count($dirs) + count($files) == 0)
+        {
+            if ($this->_parentDirId == -1)
+            {
+                print <<<EOH
 <h1>No New $title Publications Found</h1>
 
 EOH;
+            }
+            else
+            {
+                print <<<EOH
+<h1>No New $title $currentDir Publications Found</h1>
+
+
+EOH;
+                printf("<ul>\n<li><a href=\"%s&parentDir=%d\">(parent)</a></li>\n</ul>\n", $this->_page, $thisDir['parent_dir_id']);
+            }
             return;
         }
 
         print <<<EOH
-<h1>New $title Publications</h1>
+<h1>New $title $currentDir Publications</h1>
 
 
 EOH;
-        $start = array_key_exists('start', $this->_vars) ? $this->_vars['start'] : 0;
-        $sortOrder = array_key_exists('sort', $this->_vars) ? $this->_vars['sort'] : SORT_ORDER_BY_ID;
-        $sortById = ($sortOrder == SORT_ORDER_BY_ID) || ($sortOrder == SORT_ORDER_BY_ID_DESCENDING);
-        $unknownPaths = $sortById ?
-            $this->_manxDb->getSiteUnknownPathsOrderedById($this->_siteName, $start, $sortOrder == SORT_ORDER_BY_ID)
-            : $this->_manxDb->getSiteUnknownPathsOrderedByPath($this->_siteName, $start, $sortOrder == SORT_ORDER_BY_PATH);
-        $this->renderPageSelectionBar($start, $total);
-        $startParam = $start > 0 ? sprintf('start=%1$d&', $start) : '';
-        if ($sortById)
-        {
-            $idSortParam = ($sortOrder == SORT_ORDER_BY_ID) ? SORT_ORDER_BY_ID_DESCENDING : SORT_ORDER_BY_ID;
-            $pathSortParam = SORT_ORDER_BY_PATH;
-        }
-        else
-        {
-            $idSortParam = SORT_ORDER_BY_ID;
-            $pathSortParam = ($sortOrder == SORT_ORDER_BY_PATH) ? SORT_ORDER_BY_PATH_DESCENDING : SORT_ORDER_BY_PATH;
-        }
-        $idHeader = sprintf('<a href="' . $this->_page . '&parentDir=-1&%1$s%2$s">Id</a>', $startParam, 'sort=' . $idSortParam);
-        $pathHeader = sprintf('<a href="' . $this->_page . '&parentDir=-1&%1$s%2$s">Path</a>', $startParam, 'sort=' . $pathSortParam);
-        $page = $this->_page . "&parentDir=-1";
 
-        print <<<EOH
-<form action="$page" method="POST">
-<input type="hidden" name="start" value="$start" />
-<input type="hidden" name="sort" value="$sortOrder" />
+        if ($this->_parentDirId != -1)
+        {
+            array_unshift($dirs, ['id' => $thisDir['parent_dir_id'], 'path' => '(parent)', 'parent_dir_id' => -1, 'part_regex' => '']);
+        }
+        if (count($dirs) > 0)
+        {
+            printf("<ul>\n");
+            foreach ($dirs as $dir)
+            {
+                printf('<li><a href="%s&parentDir=%d">%s</a></li>' . "\n", $this->_page, $dir['id'], $dir['path']);
+            }
+            printf("</ul>\n");
+        }
+
+        if (count($files) > 0)
+        {
+            $siteName = $this->_siteName;
+            $parentDirId = $this->_parentDirId;
+            $page = $this->_page;
+            print <<<EOH
+<form action="whatsnew.php" method="POST">
+<input type="hidden" name="site" value="$siteName" />
+<input type="hidden" name="parentDir" value="$parentDirId" />
 <table>
-<tr><th>$idHeader</th><th>$pathHeader</th></tr>
+<tr><th>Ignored?</th><th>File</th></tr>
 
 EOH;
-        $num = min(10, count($unknownPaths));
-        for ($i = 0; $i < $num; ++$i)
-        {
-            $path = $unknownPaths[$i]['path'];
-            $extension = pathinfo($path, PATHINFO_EXTENSION);
-            $urlPath = self::escapeSpecialChars(trim($path));
-            $checked = self::ignoreExtension($this->_manxDb, $extension) ? 'checked' : '';
-            printf('<tr><td>%1$d.</td><td><input type="checkbox" id="ignore%2$d" name="ignore%2$d" value="%3$s" %5$s/>' . "\n" .
-                '<a href="url-wizard.php?url=' . $this->_baseUrl . '/%4$s">%3$s</a></td></tr>' . "\n",
-                $unknownPaths[$i]['id'], $i, $path, $urlPath, $checked);
-        }
-        print <<<EOH
+            for ($i = 0; $i < count($files); ++$i)
+            {
+                $file = $files[$i];
+                $path = $file['path'];
+                $extension = pathinfo($path, PATHINFO_EXTENSION);
+                $urlPath = self::escapeSpecialChars(trim($path));
+                $checked = $file['ignored'] == 1 || self::ignoreExtension($this->_manxDb, $extension) ? ' checked' : '';
+                printf('<tr><td><input type="checkbox" id="ignore%1$d" name="ignore%1$d" value="%2$s"%5$s/></td>' . "\n"
+                    .  '<td><a href="url-wizard.php?url=' . $this->_baseUrl . '/%3$s/%4$s">%4$s</a></td></tr>' . "\n",
+                    $i, $file['id'], $thisDir['path'], $path, $checked);
+            }
+            print <<<EOH
 </table>
 <input type="submit" value="Ignore" />
 </form>
 
 EOH;
+        }
     }
 
     public static function ignoreExtension(IManxDatabase $manxDb, $extension)
@@ -140,71 +160,6 @@ EOH;
         $format = $manxDb->getFormatForExtension($extension);
         $imageFormats = array('TIFF' => 1, 'PNG' => 1, 'JPEG' => 1, 'GIF' => 1);
         return strlen($format) == 0 || array_key_exists($format, $imageFormats);
-    }
-
-    protected function renderPageSelectionBar($start, $total)
-    {
-        $sortOrder = array_key_exists('sort', $this->_vars) ?
-            $this->_vars['sort'] : SORT_ORDER_BY_ID;
-        $sortParam = ($sortOrder == SORT_ORDER_BY_ID) ? '' : '&sort=' . $sortOrder;
-        print '<div class="pagesel">Page:&nbsp;&nbsp;&nbsp;&nbsp;';
-        $rowsPerPage = 10;
-        if ($start - 10000 >= 0)
-        {
-            print sprintf('<a class="navpage" href="' . $this->_page . '&parentDir=-1&start=%1$d%2$s"><b>&lt;&lt;</b></a>&nbsp;&nbsp;',
-                $start - 10000, $sortParam);
-        }
-        if ($start - 1000 >= 0)
-        {
-            print sprintf('<a class="navpage" href="' . $this->_page . '&parentDir=-1&start=%1$d%2$s"><b>&lt;</b></a>&nbsp;&nbsp;',
-                $start - 1000, $sortParam);
-        }
-        if ($start != 0)
-        {
-            printf('<a href="' . $this->_page . '&parentDir=-1&start=%1$d%2$s"><b>Previous</b></a>&nbsp;&nbsp;',
-                max(0, $start - $rowsPerPage), $sortParam);
-        }
-
-        $firstPage = intval($start / (10 * $rowsPerPage)) * 10 + 1;
-        $lastPageNum = intval(($total + $rowsPerPage - 1) / $rowsPerPage);
-        $lastPageStart = ($lastPageNum - 1) * $rowsPerPage;
-        $currPageNum = $firstPage;
-        $currPageStart = ($currPageNum - 1) * $rowsPerPage;
-
-        $numIndices = 0;
-        while ($numIndices++ < 10)
-        {
-            if ($start == $currPageStart)
-            {
-                print '<b class="currpage">' . $currPageNum . '</b>&nbsp;&nbsp;';
-            }
-            else
-            {
-                print sprintf('<a class="navpage" href="' . $this->_page . '&parentDir=-1&start=%1$d%3$s">%2$d</a>&nbsp;&nbsp;',
-                    $currPageStart, $currPageNum, $sortParam);
-            }
-            ++$currPageNum;
-            $currPageStart += $rowsPerPage;
-            if ($currPageStart > $lastPageStart)
-            {
-                break;
-            }
-        }
-        if ($start != $lastPageStart)
-        {
-            printf('<a href="' . $this->_page . '&parentDir=-1&start=%1$d%2$s"><b>Next</b></a>', $start + $rowsPerPage, $sortParam);
-        }
-        if ($start + 1000 < $total)
-        {
-            print sprintf('&nbsp;&nbsp;<a class="navpage" href="' . $this->_page . '&parentDir=-1&start=%1$d%2$s"><b>&gt;</b></a>',
-                $start + 1000, $sortParam);
-        }
-        if ($start + 10000 < $total)
-        {
-            print sprintf('&nbsp;&nbsp;<a class="navpage" href="' . $this->_page . '&parentDir=-1&start=%1$d%2$s"><b>&gt;&gt;</b></a>',
-                $start + 10000, $sortParam);
-        }
-        print "</div>\n";
     }
 
     public static function escapeSpecialChars($path)
