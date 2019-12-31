@@ -31,6 +31,7 @@ class TestApiSiteUnknownDir extends PHPUnit\Framework\TestCase
         $this->_user->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $dirId = 128;
         $args = ['dirId' => $dirId];
+        $this->_db->expects($this->never())->method('getSiteUnknownDir');
         $this->_response->expects($this->once())->method('withJson')
             ->with((object) [], 200, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
             ->willReturn($this->_newResponse);
