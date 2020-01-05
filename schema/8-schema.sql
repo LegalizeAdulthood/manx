@@ -18,6 +18,7 @@ CREATE TABLE site_unknown_dir (
   `path` VARCHAR(255) NOT NULL,
   `parent_dir_id` INT(11) NOT NULL DEFAULT -1,
   `part_regex` VARCHAR(255) NOT NULL DEFAULT '',
+  `ignored` INT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE (`site_id`, `path`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -159,6 +160,97 @@ BEGIN
         SELECT `parent_dir_id` FROM `site_unknown_dir`
             WHERE `site_id` = `new_site_id` AND `path` = `new_path`
             INTO @parent_id;
+    END WHILE;
+END//
+DELIMITER ;
+
+--
+-- `manx_purge_unused_unknown_directories`
+--
+DROP PROCEDURE IF EXISTS `manx_purge_unused_unknown_directories`;
+DELIMITER //
+CREATE PROCEDURE `manx_purge_unused_unknown_directories`()
+BEGIN
+    DROP TABLE IF EXISTS `tmp_dir_ids`;
+    CREATE TEMPORARY TABLE `tmp_dir_ids`(`id` INT(11) NOT NULL);
+
+    INSERT INTO `tmp_dir_ids`
+        SELECT `id` FROM `site_unknown_dir`
+        WHERE NOT (`id` IN (SELECT DISTINCT `dir_id` FROM `site_unknown`)
+            OR `id` IN (SELECT DISTINCT `parent_dir_id` FROM `site_unknown_dir`));
+
+    WHILE (SELECT COUNT(*) FROM `tmp_dir_ids` LIMIT 1) > 0 DO
+        DELETE FROM `site_unknown_dir` WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids`);
+
+        INSERT INTO `tmp_dir_ids`
+            SELECT `id` FROM `site_unknown_dir`
+            WHERE NOT (`id` IN (SELECT DISTINCT `dir_id` FROM `site_unknown`)
+                OR `id` IN (SELECT DISTINCT `parent_dir_id` FROM `site_unknown_dir`));
+    END WHILE;
+END//
+DELIMITER ;
+
+--
+-- `manx_update_unknown_dir_ignored`
+--
+-- Propagate ignore status up the directory tree to avoid displaying
+-- directories with no unignored documents in the user interface.
+--
+DROP PROCEDURE IF EXISTS `manx_update_unknown_dir_ignored`;
+DELIMITER //
+CREATE PROCEDURE `manx_update_unknown_dir_ignored`() 
+BEGIN
+    -- Set all directories to not ignored
+    UPDATE `site_unknown_dir` SET `ignored` = 0;
+
+    -- Create table of all dir ids containing at least one unignored path
+    DROP TABLE IF EXISTS `tmp_dir_ids_not_ignored`;
+    CREATE TEMPORARY TABLE `tmp_dir_ids_not_ignored`(`id` INT(11) NOT NULL);
+    INSERT INTO `tmp_dir_ids_not_ignored`
+        SELECT DISTINCT `dir_id` FROM `site_unknown` WHERE `ignored` = 0;
+
+    -- Create table of all leaf dir ids
+    DROP TABLE IF EXISTS `tmp_dir_ids`;
+    CREATE TEMPORARY TABLE `tmp_dir_ids`(`id` INT(11) NOT NULL);
+    INSERT INTO `tmp_dir_ids`
+        SELECT `id` FROM `site_unknown_dir`
+        WHERE NOT (`id` IN (SELECT DISTINCT `parent_dir_id` FROM `site_unknown_dir`));
+
+    DROP TABLE IF EXISTS `tmp_dir_ids2`;
+    CREATE TEMPORARY TABLE `tmp_dir_ids2`(`id` INT(11) NOT NULL);
+
+    -- Propagate ignored status up the directory hierarchy
+    WHILE (SELECT COUNT(*) FROM `tmp_dir_ids` LIMIT 1) > 0 DO
+
+        SELECT CONCAT((SELECT COUNT(*) FROM `tmp_dir_ids`), ' directories') AS `count`;
+
+        -- Drop dir ids with unignored paths
+        DELETE FROM `tmp_dir_ids` WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids_not_ignored`);
+
+        -- Get all dir ids with at least one child dir that is not ignored
+        DELETE FROM `tmp_dir_ids2`;
+        INSERT INTO `tmp_dir_ids2` 
+            SELECT `tdi`.`id` FROM `tmp_dir_ids` `tdi`, `site_unknown_dir` `sud`
+                WHERE `sud`.`parent_dir_id` = `tdi`.`id`
+                AND `sud`.`ignored` = 0;
+
+        -- Drop parent dir ids with unignored child dirs
+        DELETE FROM `tmp_dir_ids` WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids2`);
+
+        -- Mark all remaining dir ids as ignored
+        UPDATE `site_unknown_dir`
+            SET `ignored` = 1
+            WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids`);
+
+        -- Get all parent dir ids
+        DELETE FROM `tmp_dir_ids2`;
+        INSERT INTO `tmp_dir_ids2`
+            SELECT DISTINCT `sud`.`parent_dir_id` AS `id` FROM `site_unknown_dir` `sud`, `tmp_dir_ids` `tdi`
+                WHERE `tdi`.`id` = `sud`.`id`;
+
+        -- Replace tmp_dir_ids with tmp_dir_ids2
+        DELETE FROM `tmp_dir_ids`;
+        INSERT INTO `tmp_dir_ids` SELECT `id` FROM `tmp_dir_ids2`;
     END WHILE;
 END//
 DELIMITER ;
