@@ -116,6 +116,12 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         }
     }
 
+    public function updateIgnoredUnknownDirs()
+    {
+        $this->log("Updating ignored unknown directories");
+        $this->_db->updateIgnoredUnknownDirs();
+    }
+
     public function ingest()
     {
         $this->log("Ingesting unknown paths for sites with IndexByDate.txt");

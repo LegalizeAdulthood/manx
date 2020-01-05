@@ -47,6 +47,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
         $this->_locker->expects($this->once())->method('lock')->with('index.lock');
         $this->_cleaner->expects($this->once())->method('updateWhatsNewIndex');
         $this->_cleaner->expects($this->once())->method('removeUnknownPathsWithCopy');
+        $this->_cleaner->expects($this->once())->method('updateIgnoredUnknownDirs');
 
         $this->_processor->process(['cleaner.php', 'index']);
     }

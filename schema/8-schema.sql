@@ -105,66 +105,6 @@ END//
 DELIMITER ;
 
 --
--- `manx_unknown_directory_insert`
---
--- Given a directory, inserts the entire directory hierarchy into the
--- site_unknown_directory table and patches up the parent_dir_id columns
--- for any newly inserted rows.
--- 
-DROP PROCEDURE IF EXISTS `manx_unknown_directory_insert`;
-DELIMITER //
-CREATE PROCEDURE `manx_unknown_directory_insert`(`new_site_id` INT(11), `new_path` VARCHAR(255))
-BEGIN
-    DECLARE `parent_id` INT(11);
-    DECLARE `parent_path` VARCHAR(255);
-
-    -- Insert `new_path` into `site_unknown_dir`
-    INSERT INTO `site_unknown_dir`(`site_id`, `path`)
-        VALUES (`new_site_id`, `new_path`)
-        ON DUPLICATE KEY UPDATE
-            `site_unknown_dir`.`site_id` = `site_unknown_dir`.`site_id`;
-
-    -- Get parent directory id
-    -- If this row is freshly inserted and it's not a root dir,
-    -- then the parent_id = -1.
-    SELECT `parent_dir_id` FROM `site_unknown_dir`
-        WHERE `site_id` = `new_site_id` AND `path` = `new_path`
-        INTO @`parent_id`;
-
-    -- Update ids and insert parent directories up to the root
-    WHILE INSTR(`new_path`, '/') > 0 AND @parent_id = -1 DO
-        SET @parent_path = manx_parent_dir(`new_path`);
-
-        -- Insert parent directory from existing directory
-        INSERT INTO `site_unknown_dir`(`site_id`, `path`)
-            VALUES (`new_site_id`, @parent_path)
-            ON DUPLICATE KEY UPDATE
-                `site_unknown_dir`.`site_id` = `site_unknown_dir`.`site_id`;
-
-        -- Update parent directory id
-        UPDATE
-            `site_unknown_dir` `sud`,
-            `site_unknown_dir` `sud2`
-        SET
-            `sud`.`parent_dir_id` = `sud2`.`id`
-        WHERE
-            `sud`.`site_id` = `new_site_id`
-            AND `sud`.`path` = `new_path`
-            AND `sud`.`parent_dir_id` = -1
-            AND `sud2`.`path` = @parent_path;
-
-        -- Walk up a level in the directory hierarchy
-        SET `new_path` = @parent_path;
-
-        -- Update directory id
-        SELECT `parent_dir_id` FROM `site_unknown_dir`
-            WHERE `site_id` = `new_site_id` AND `path` = `new_path`
-            INTO @parent_id;
-    END WHILE;
-END//
-DELIMITER ;
-
---
 -- `manx_purge_unused_unknown_directories`
 --
 DROP PROCEDURE IF EXISTS `manx_purge_unused_unknown_directories`;
@@ -221,9 +161,6 @@ BEGIN
 
     -- Propagate ignored status up the directory hierarchy
     WHILE (SELECT COUNT(*) FROM `tmp_dir_ids` LIMIT 1) > 0 DO
-
-        SELECT CONCAT((SELECT COUNT(*) FROM `tmp_dir_ids`), ' directories') AS `count`;
-
         -- Drop dir ids with unignored paths
         DELETE FROM `tmp_dir_ids` WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids_not_ignored`);
 

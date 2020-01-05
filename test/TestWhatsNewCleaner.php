@@ -396,4 +396,12 @@ class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
 
         $this->_cleaner->updateWhatsNewIndex();
     }
+
+    public function testUpdateIgnoredUnknownDirs()
+    {
+        $this->_db->expects($this->once())->method('updateIgnoredUnknownDirs');
+        $this->_logger->expects($this->once())->method('log');
+
+        $this->_cleaner->updateIgnoredUnknownDirs();
+    }
 }

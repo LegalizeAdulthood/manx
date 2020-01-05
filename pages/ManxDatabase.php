@@ -716,20 +716,62 @@ class ManxDatabase implements IManxDatabase
 
     public function addSiteUnknownPaths($siteName, array $paths)
     {
-        $this->beginTransaction();
         $siteId = $this->siteIdForName($siteName);
-        $values = [];
-        $params = [];
+
+        // Break up paths into directories and filenames
+        $unknownDirs = [];
+        $unknownPaths = [];
         foreach ($paths as $path)
         {
-            $values[] = $siteId;
-            $values[] = pathinfo($path, PATHINFO_BASENAME);
             $dir = pathinfo($path, PATHINFO_DIRNAME);
-            $this->execute("CALL `manx_unknown_directory_insert`(?, ?)", [$siteId, $dir]);
-            $values[] = $this->execute("SELECT `id` FROM `site_unknown_dir` WHERE `site_id` = ? AND `path` = ?", [$siteId, $dir])[0]['id'];
-            $params[] = '(?, ?, ?)';
+            $path = pathinfo($path, PATHINFO_BASENAME);
+            $unknownDirs[$dir] = 1;
+            $unknownPaths[] = [$dir, $path];
+            while (strpos($dir, '/') !== false)
+            {
+                $dir = pathinfo($dir, PATHINFO_DIRNAME);
+                $unknownDirs[$dir] = 1;
+            }
+            $unknownDirs[$dir] = 1;
         }
-        $this->execute("INSERT INTO `site_unknown`(`site_id`, `path`, `dir_id`) VALUES " . implode(', ', $params) . " ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)", $values);
+
+        $this->beginTransaction();
+
+        // Insert all possible site unknown directories
+        $dirValues = [];
+        $dirParams = [];
+        foreach (array_keys($unknownDirs) as $dir)
+        {
+            $dirValues[] = "(" . $siteId . ", ?)";
+            $dirParams[] = $dir;
+        }
+        $this->execute("INSERT INTO `site_unknown_dir`(`site_id`, `path`) VALUES " . implode(', ', $dirValues) . " ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)", $dirParams);
+
+        // Fetch all necessary site unknown directory ids
+        $dirValues = [];
+        $dirParams = [$siteId];
+        foreach (array_keys($unknownDirs) as $dir)
+        {
+            $dirValues[] = "?";
+            $dirParams[] = $dir;
+        }
+        $dirRows = $this->execute("SELECT `id`, `path` FROM `site_unknown_dir` WHERE `site_id` = ? AND `path` IN (" . implode(', ', $dirValues) . ")", $dirParams);
+        foreach ($dirRows as $row)
+        {
+            $unknownDirs[$row['path']] = $row['id'];
+        }
+
+        // Insert all paths
+        $pathValues = [];
+        $pathParams = [];
+        foreach ($unknownPaths as $path)
+        {
+            $pathValues[] = $siteId . ", ?, ?";
+            $pathParams[] = $path[1];
+            $pathParams[] = $unknownDirs[$path[0]];
+        }
+        $this->execute("INSERT INTO `site_unknown`(`site_id`, `path`, `dir_id`) VALUES (" . implode("), (", $pathValues) . ") ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)", $pathParams);
+
         $this->commit();
     }
 

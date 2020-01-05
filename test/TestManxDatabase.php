@@ -576,26 +576,28 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('beginTransaction');
         $selectSite = "SELECT `site_id` FROM `site` WHERE `name`=?";
         $siteId = 3;
-        $insertSUD = "CALL `manx_unknown_directory_insert`(?, ?)";
-        $selectSUD = "SELECT `id` FROM `site_unknown_dir` WHERE `site_id` = ? AND `path` = ?";
+        $insertSUD = "INSERT INTO `site_unknown_dir`(`site_id`, `path`) VALUES (3, ?), (3, ?), (3, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
+        $selectSUD = "SELECT `id`, `path` FROM `site_unknown_dir` WHERE `site_id` = ? AND `path` IN (?, ?, ?)";
         $dirId1 = 10;
         $dirId2 = 12;
-        $insertSU = "INSERT INTO `site_unknown`(`site_id`, `path`, `dir_id`) VALUES (?, ?, ?), (?, ?, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
-        $this->_db->expects($this->exactly(6))->method('execute')
+        $dirId3 = 14;
+        $insertSU = "INSERT INTO `site_unknown`(`site_id`, `path`, `dir_id`) VALUES (3, ?, ?), (3, ?, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
+        $this->_db->expects($this->exactly(4))->method('execute')
             ->withConsecutive(
                 [$selectSite, ['bitsavers']],
-                [$insertSUD, [$siteId, 'foo/DEC']],
-                [$selectSUD, [$siteId, 'foo/DEC']],
-                [$insertSUD, [$siteId, 'bar']],
-                [$selectSUD, [$siteId, 'bar']],
-                [$insertSU, [$siteId, 'frob.jpg', $dirId1, $siteId, 'bar.pdf', $dirId2]]
+                [$insertSUD, ['foo/DEC', 'foo', 'bar']],
+                [$selectSUD, [$siteId, 'foo/DEC', 'foo', 'bar']],
+                [$insertSU, ['frob.jpg', $dirId1, 'bar.pdf', $dirId3]]
             )
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(['site_id'], [[3]]),
                 null,
-                DatabaseTester::createResultRowsForColumns(['id'], [[$dirId1]]),
-                null,
-                DatabaseTester::createResultRowsForColumns(['id'], [[$dirId2]]),
+                DatabaseTester::createResultRowsForColumns(['id', 'path'],
+                    [
+                    [$dirId1, 'foo/DEC'],
+                    [$dirId2, 'foo'],
+                    [$dirId3, 'bar']
+                    ]),
                 null
             );
         $this->_db->expects($this->once())->method('commit');
