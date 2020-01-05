@@ -5,7 +5,6 @@ require_once __DIR__ . '/TestAdminPageBase.php';
 require_once __DIR__ . '/TestApiSiteUnknownDir.php';
 require_once __DIR__ . '/TestApiSiteUnknownDirs.php';
 require_once __DIR__ . '/TestApiSiteUnknownPaths.php';
-require_once __DIR__ . '/TestBitSaversCleaner.php';
 require_once __DIR__ . '/TestBitSaversConfig.php';
 require_once __DIR__ . '/TestChiClassicCompConfig.php';
 require_once __DIR__ . '/TestCompanyPage.php';
@@ -26,6 +25,7 @@ require_once __DIR__ . '/TestUrlMetaData.php';
 require_once __DIR__ . '/TestUrlTransfer.php';
 require_once __DIR__ . '/TestUrlWizardPage.php';
 require_once __DIR__ . '/TestUrlWizardService.php';
+require_once __DIR__ . '/TestWhatsNewCleaner.php';
 require_once __DIR__ . '/TestWhatsNewIndex.php';
 require_once __DIR__ . '/TestWhatsNewPage.php';
 require_once __DIR__ . '/TestWhatsNewProcessor.php';
@@ -41,7 +41,6 @@ class AllTests
                 'TestApiSiteUnknownDir',
                 'TestApiSiteUnknownDirs',
                 'TestApiSiteUnknownPaths',
-                'TestBitSaversCleaner',
                 'TestBitSaversConfig',
                 'TestChiClassicCompConfig',
                 'TestCompanyPage',
@@ -62,6 +61,7 @@ class AllTests
                 'TestUrlTransfer',
                 'TestUrlWizardPage',
                 'TestUrlWizardService',
+                'TestWhatsNewCleaner',
                 'TestWhatsNewIndex',
                 'TestWhatsNewPage',
                 'TestWhatsNewProcessor'

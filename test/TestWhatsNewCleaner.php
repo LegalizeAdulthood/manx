@@ -4,7 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Pimple\Container;
 
-class TestBitSaversCleaner extends PHPUnit\Framework\TestCase
+class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;
