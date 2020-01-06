@@ -132,16 +132,17 @@ EOH;
         $siteName = 'bitsavers';
         $parentDirId = 1339;
         $this->createPage(['siteName' => $siteName, 'parentDir' => $parentDirId]);
-        $thisDirRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+        $thisDirRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
             [
-                [100, 3, 'dec/pdp11', 150, '']
+                [100, 3, 'dec/pdp11', 150, '', 0]
             ]);
         $this->_db->expects($this->once())->method('getSiteUnknownDir')->with($parentDirId)->willReturn($thisDirRows[0]);
-        $dirRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+        $dirRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
             [
-                [111, 3, 'dec/pdp11/1103', 1339, ''],
-                [112, 3, 'dec/pdp11/1104', 1339, ''],
-                [113, 3, 'dec/pdp11/1105', 1339, ''],
+                [111, 3, 'dec/pdp11/1103', 1339, '', 0],
+                [112, 3, 'dec/pdp11/1104', 1339, '', 0],
+                [113, 3, 'dec/pdp11/1105', 1339, '', 0],
+                [114, 3, 'dec/pdp11/photos', 1339, '', 1],
             ]);
         $this->_db->expects($this->once())->method('getSiteUnknownDirectories')
             ->with($siteName, $parentDirId)

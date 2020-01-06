@@ -75,10 +75,17 @@ class WhatsNewPage extends AdminPageBase
         }
         else
         {
-            $thisDir = ['id' => -1, 'path' => '', 'parent_dir_id' => -1, 'part_regex' => ''];
+            $thisDir = ['id' => -1, 'path' => '', 'parent_dir_id' => -1, 'part_regex' => '', 'ignored' => 0];
         }
         $currentDir = $thisDir['path'];
-        $dirs = $this->_manxDb->getSiteUnknownDirectories($this->_siteName, $this->_parentDirId);
+        $dirs = [];
+        foreach ($this->_manxDb->getSiteUnknownDirectories($this->_siteName, $this->_parentDirId) as $dir)
+        {
+            if ($dir['ignored'] == 0)
+            {
+                $dirs[] = $dir;
+            }
+        }
         $files = $this->_manxDb->getSiteUnknownPaths($this->_siteName, $this->_parentDirId);
         $title = $this->_title;
         if (count($dirs) + count($files) == 0)
