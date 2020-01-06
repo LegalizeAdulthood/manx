@@ -404,4 +404,12 @@ class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
 
         $this->_cleaner->updateIgnoredUnknownDirs();
     }
+
+    public function testUpdateCopySudIds()
+    {
+        $this->_db->expects($this->once())->method('updateCopySiteUnknownDirIds');
+        $this->_logger->expects($this->once())->method('log');
+
+        $this->_cleaner->updateCopySiteUnknownDirIds();
+    }
 }

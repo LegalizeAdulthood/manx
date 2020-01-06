@@ -46,6 +46,7 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
     {
         $this->_locker->expects($this->once())->method('lock')->with('index.lock');
         $this->_cleaner->expects($this->once())->method('updateWhatsNewIndex');
+        $this->_cleaner->expects($this->once())->method('updateCopySiteUnknownDirIds');
         $this->_cleaner->expects($this->once())->method('removeUnknownPathsWithCopy');
         $this->_cleaner->expects($this->once())->method('updateIgnoredUnknownDirs');
 
@@ -71,15 +72,24 @@ class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
         $this->_processor->process(['cleaner.php', 'ingest']);
     }
 
+    public function testUpdateCopySudIds()
+    {
+        $this->_locker->expects($this->once())->method('lock')->with('copy-sud-ids.lock');
+        $this->_cleaner->expects($this->once())->method('updateCopySiteUnknownDirIds');
+
+        $this->_processor->process(['cleaner.php', 'copy-sud-ids']);
+    }
+
     public function testHelp()
     {
-        $this->_logger->expects($this->exactly(6))->method('log')->withConsecutive(
+        $this->_logger->expects($this->exactly(7))->method('log')->withConsecutive(
             [ "existence:      remove non-existent unknown paths" ],
             [ "moved           update moved files" ],
             [ "index           fetch IndexByDate.txt" ],
             [ "unknown-copies  remove unknown paths with existing copy" ],
             [ "ingest          ingest copies from guessable unknown paths" ],
-            [ "md5             compute MD5 hashes for copies" ]
+            [ "md5             compute MD5 hashes for copies" ],
+            [ "copy-sud-ids    update site unknown directory ids for copies" ]
         );
 
         $this->_processor->process(['cleaner.php', 'help']);

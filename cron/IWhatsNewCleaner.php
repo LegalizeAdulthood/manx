@@ -11,4 +11,5 @@ interface IWhatsNewCleaner
     function ingest();
     function computeMissingMD5();
     function updateIgnoredUnknownDirs();
+    function updateCopySiteUnknownDirIds();
 }

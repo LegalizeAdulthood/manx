@@ -30,6 +30,7 @@ class WhatsNewProcessor
             $this->log("unknown-copies  remove unknown paths with existing copy");
             $this->log("ingest          ingest copies from guessable unknown paths");
             $this->log("md5             compute MD5 hashes for copies");
+            $this->log("copy-sud-ids    update site unknown directory ids for copies");
         }
         else if ($args[1] == 'existence')
         {
@@ -45,6 +46,7 @@ class WhatsNewProcessor
         {
             $this->lock($args[1]);
             $this->_cleaner->updateWhatsNewIndex();
+            $this->_cleaner->updateCopySiteUnknownDirIds();
             $this->_cleaner->removeUnknownPathsWithCopy();
             $this->_cleaner->updateIgnoredUnknownDirs();
         }
@@ -64,6 +66,11 @@ class WhatsNewProcessor
         {
             $this->lock($args[1]);
             $this->_cleaner->computeMissingMD5();
+        }
+        else if ($args[1] == "copy-sud-ids")
+        {
+            $this->lock($args[1]);
+            $this->_cleaner->updateCopySiteUnknownDirIds();
         }
     }
 

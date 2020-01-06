@@ -854,11 +854,7 @@ class ManxDatabase implements IManxDatabase
     public function removeUnknownPathsWithCopy()
     {
         $this->beginTransaction();
-        $this->execute("DELETE FROM `su` USING `site_unknown` `su` "
-            . "INNER JOIN `copy` `c` ON `c`.`site` = `su`.`site_id` "
-            . "INNER JOIN `site` `s` ON `s`.`site_id` = `su`.`site_id` "
-            . "INNER JOIN `site_unknown_dir` `sud` ON `su`.`dir_id` = `sud`.`id` "
-            . "WHERE `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`)", []);
+        $this->execute("CALL `manx_purge_su_copies`()", []);
         $this->execute("CALL `manx_purge_unused_unknown_directories`()", []);
         $this->commit();
     }
@@ -951,5 +947,10 @@ class ManxDatabase implements IManxDatabase
     public function updateIgnoredUnknownDirs()
     {
         $this->execute("CALL `manx_update_unknown_dir_ignored`()", []);
+    }
+
+    public function updateCopySiteUnknownDirIds()
+    {
+        $this->execute("CALL `manx_update_copy_sud_ids`()", []);
     }
 }

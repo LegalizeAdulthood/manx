@@ -771,14 +771,10 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     public function testRemoveUnknownPathsWithCopy()
     {
         $this->_db->expects($this->once())->method('beginTransaction');
-        $delete = "DELETE FROM `su` USING `site_unknown` `su` "
-            . "INNER JOIN `copy` `c` ON `c`.`site` = `su`.`site_id` "
-            . "INNER JOIN `site` `s` ON `s`.`site_id` = `su`.`site_id` "
-            . "INNER JOIN `site_unknown_dir` `sud` ON `su`.`dir_id` = `sud`.`id` "
-            . "WHERE `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`)";
+        $purgeSuCopies = "CALL `manx_purge_su_copies`()";
         $purgeDirs = "CALL `manx_purge_unused_unknown_directories`()";
         $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
-            [$delete, []],
+            [$purgeSuCopies, []],
             [$purgeDirs, []]);
         $this->_db->expects($this->once())->method('commit');
 
@@ -1067,6 +1063,14 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('execute')->with($call, []);
 
         $this->_manxDb->updateIgnoredUnknownDirs();
+    }
+
+
+    public function testUpdateCopySiteUnknownDirIds()
+    {
+        $this->_db->expects($this->once())->method('execute')->with("CALL `manx_update_copy_sud_ids`()", []);
+
+        $this->_manxDb->updateCopySiteUnknownDirIds();
     }
 
     private function assertColumnValuesForRows($rows, $column, $values)
