@@ -714,8 +714,22 @@ class ManxDatabase implements IManxDatabase
             array($name, $value, $value));
     }
 
+    private static function getAllDirs($dir)
+    {
+        $allDirs = [];
+        while ($dir !== '.')
+        {
+            $allDirs[] = $dir;
+            $dir = pathinfo($dir, PATHINFO_DIRNAME);
+        }
+        return $allDirs;
+
+    }
+
     public function addSiteUnknownPaths($siteName, array $paths)
     {
+        $this->beginTransaction();
+
         $siteId = $this->siteIdForName($siteName);
 
         // Break up paths into directories and filenames
@@ -725,40 +739,50 @@ class ManxDatabase implements IManxDatabase
         {
             $dir = pathinfo($path, PATHINFO_DIRNAME);
             $path = pathinfo($path, PATHINFO_BASENAME);
-            $unknownDirs[$dir] = 1;
             $unknownPaths[] = [$dir, $path];
-            while (strpos($dir, '/') !== false)
+            foreach (self::getAllDirs($dir) as $dir)
             {
-                $dir = pathinfo($dir, PATHINFO_DIRNAME);
-                $unknownDirs[$dir] = 1;
+                $unknownDirs[$dir] = -1;
             }
-            $unknownDirs[$dir] = 1;
         }
-
-        $this->beginTransaction();
 
         // Insert all possible site unknown directories
-        $dirValues = [];
-        $dirParams = [];
+        $sudValues = [];
+        $sudParams = [];
         foreach (array_keys($unknownDirs) as $dir)
         {
-            $dirValues[] = "(" . $siteId . ", ?)";
-            $dirParams[] = $dir;
+            $sudValues[] = "(" . $siteId . ", ?)";
+            $sudParams[] = $dir;
         }
-        $this->execute("INSERT INTO `site_unknown_dir`(`site_id`, `path`) VALUES " . implode(', ', $dirValues) . " ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)", $dirParams);
+        $this->execute("INSERT INTO `site_unknown_dir`(`site_id`, `path`) VALUES " . implode(', ', $sudValues) . " ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)", $sudParams);
 
         // Fetch all necessary site unknown directory ids
-        $dirValues = [];
-        $dirParams = [$siteId];
+        $sudValues = [];
+        $sudParams = [];
         foreach (array_keys($unknownDirs) as $dir)
         {
-            $dirValues[] = "?";
-            $dirParams[] = $dir;
+            $sudValues[] = "?";
+            $sudParams[] = $dir;
         }
-        $dirRows = $this->execute("SELECT `id`, `path` FROM `site_unknown_dir` WHERE `site_id` = ? AND `path` IN (" . implode(', ', $dirValues) . ")", $dirParams);
-        foreach ($dirRows as $row)
+        $sudRows = $this->execute("SELECT `id`, `path`, `parent_dir_id` FROM `site_unknown_dir` WHERE `site_id` = " . $siteId . " AND `path` IN (" . implode(', ', $sudValues) . ")", $sudParams);
+
+        // Populate all parent directory id fields of newly inserted rows
+        $parentDirIds = [];
+        $unknownParentDirs = [];
+        foreach ($sudRows as $row)
         {
-            $unknownDirs[$row['path']] = $row['id'];
+            $dirPath = $row['path'];
+            $unknownDirs[$dirPath] = $row['id'];
+            $parentDirIds[$row['path']] = $row['parent_dir_id'];
+            if ($row['parent_dir_id'] == -1 and strpos($dirPath, '/') > 0)
+            {
+                $unknownParentDirs[] = $dirPath;
+            }
+        }
+        foreach ($unknownParentDirs as $path)
+        {
+            $parentDir = pathinfo($path, PATHINFO_DIRNAME);
+            $this->execute("UPDATE `site_unknown_dir` SET `parent_dir_id` = ? WHERE `id` = ?", [$unknownDirs[$parentDir], $unknownDirs[$path]]);
         }
 
         // Insert all paths

@@ -577,27 +577,30 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $selectSite = "SELECT `site_id` FROM `site` WHERE `name`=?";
         $siteId = 3;
         $insertSUD = "INSERT INTO `site_unknown_dir`(`site_id`, `path`) VALUES (3, ?), (3, ?), (3, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
-        $selectSUD = "SELECT `id`, `path` FROM `site_unknown_dir` WHERE `site_id` = ? AND `path` IN (?, ?, ?)";
+        $selectSUD = "SELECT `id`, `path`, `parent_dir_id` FROM `site_unknown_dir` WHERE `site_id` = 3 AND `path` IN (?, ?, ?)";
+        $updateSUD = "UPDATE `site_unknown_dir` SET `parent_dir_id` = ? WHERE `id` = ?";
         $dirId1 = 10;
         $dirId2 = 12;
         $dirId3 = 14;
         $insertSU = "INSERT INTO `site_unknown`(`site_id`, `path`, `dir_id`) VALUES (3, ?, ?), (3, ?, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
-        $this->_db->expects($this->exactly(4))->method('execute')
+        $this->_db->expects($this->exactly(5))->method('execute')
             ->withConsecutive(
                 [$selectSite, ['bitsavers']],
                 [$insertSUD, ['foo/DEC', 'foo', 'bar']],
-                [$selectSUD, [$siteId, 'foo/DEC', 'foo', 'bar']],
+                [$selectSUD, ['foo/DEC', 'foo', 'bar']],
+                [$updateSUD, [$dirId2, $dirId1]],
                 [$insertSU, ['frob.jpg', $dirId1, 'bar.pdf', $dirId3]]
             )
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(['site_id'], [[3]]),
                 null,
-                DatabaseTester::createResultRowsForColumns(['id', 'path'],
+                DatabaseTester::createResultRowsForColumns(['id', 'path', 'parent_dir_id'],
                     [
-                    [$dirId1, 'foo/DEC'],
-                    [$dirId2, 'foo'],
-                    [$dirId3, 'bar']
+                    [$dirId1, 'foo/DEC', -1],
+                    [$dirId2, 'foo', -1],
+                    [$dirId3, 'bar', -1]
                     ]),
+                null,
                 null
             );
         $this->_db->expects($this->once())->method('commit');
