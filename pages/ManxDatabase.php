@@ -841,11 +841,11 @@ class ManxDatabase implements IManxDatabase
     {
         return $this->execute("SELECT `su`.`id`, CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path` "
             . "FROM `site_unknown` `su`, `site_unknown_dir` `sud`, `site` `s` "
-            . "WHERE `s`.`name` = ? "
-            . "AND `s`.`site_id` = `su`.`site_id` "
-            . "AND `s`.`site_id` = `sud`.`site_id` "
-            . "AND `su`.`dir_id` = `sud`.`id` "
-            . "ORDER BY `id`",
+                . "WHERE `s`.`name` = ? "
+                    . "AND `s`.`site_id` = `su`.`site_id` "
+                    . "AND `s`.`site_id` = `sud`.`site_id` "
+                    . "AND `su`.`dir_id` = `sud`.`id` "
+                . "ORDER BY `su`.`id`",
             [$siteName]);
     }
 
