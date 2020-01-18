@@ -145,7 +145,7 @@ EOH;
 EOH;
         if (array_key_exists('url', $this->_vars))
         {
-            $url = BitSaversPage::escapeSpecialChars($this->_vars['url']);
+            $url = WhatsNewPage::escapeSpecialChars($this->_vars['url']);
             print <<<EOH
 <script type="text/javascript">
 $(function()

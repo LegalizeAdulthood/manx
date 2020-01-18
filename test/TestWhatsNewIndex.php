@@ -23,8 +23,6 @@ class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
     private $_factory;
     /** @var Manx\IUrlTransfer */
     private $_transfer;
-    /** @var BitSaversPageTester */
-    private $_page;
     /** @var FakeFile */
     private $_file;
     private $_indexUrl;
