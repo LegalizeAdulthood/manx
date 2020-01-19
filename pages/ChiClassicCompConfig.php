@@ -17,7 +17,7 @@ class ChiClassicCompConfig
         $config['baseCheckUrl'] = 'http://chiclassiccomp.org/docs/content';
         $config['baseUrl'] = 'http://chiclassiccomp.org/docs/content';
         $config['menuType'] = MenuType::ChiClassicComp;
-        $config['page'] = 'whatsnew.php?site=chiclassiccomp';
+        $config['page'] = 'whatsnew.php?site=ChiClassicComp';
         $config['title'] = 'ChiClassicComp';
     }
 }

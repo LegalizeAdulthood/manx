@@ -17,7 +17,7 @@ if ($siteName === 'bitsavers')
 {
     Manx\BitSaversConfig::configure($config);
 }
-else if ($siteName === 'chiclassiccomp')
+else if ($siteName === 'ChiClassicComp')
 {
     Manx\ChiClassicCompConfig::configure($config);
 }
