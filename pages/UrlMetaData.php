@@ -165,6 +165,31 @@ class UrlMetaData implements IUrlMetaData
             $sep = ' ';
             $parts = explode($sep, $fileBase);
         }
+        if (count($parts) == 1)
+        {
+            if (preg_match('/^(.*[^0-9])([0-9][0-9]|[0-9]|)([A-Z][a-z]+)([0-9][0-9]|[0-9][0-9][0-9][0-9])$/', $parts[0], $matches) == 1)
+            {
+                $day = $matches[2];
+                $month = self::matchMonth($matches[3]);
+                $year = $matches[4];
+                if ($month != '')
+                {
+                    if ($year < 1900)
+                    {
+                        $year += 1900;
+                    }
+                    if ($day != '')
+                    {
+                        $pubDate = sprintf("%d-%02d-%02d", $year, $month, $day);
+                    }
+                    else
+                    {
+                        $pubDate = sprintf("%d-%02d", $year, $month);
+                    }
+                    $fileBase = $matches[1];
+                }
+            }
+        }
         if (count($parts) > 1)
         {
             $lastPart = count($parts)-1;

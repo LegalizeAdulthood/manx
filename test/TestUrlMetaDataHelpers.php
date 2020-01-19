@@ -70,6 +70,70 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
         $this->assertTrue(Manx\UrlMetaData::urlComponentsMatch(parse_url($url), parse_url($site)));
     }
 
+    public function testExtractPubDateNoSeparatorSuffixTwoDigitYear()
+    {
+        list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foobarJun85');
+
+        $this->assertEquals('1985-06', $pubDate);
+        $this->assertEquals('foobar', $newFileBase);
+    }
+
+    public function testExtractPubDateNoSeparatorSuffixDayTwoDigitYear()
+    {
+        list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foobar10Jun85');
+
+        $this->assertEquals('1985-06-10', $pubDate);
+        $this->assertEquals('foobar', $newFileBase);
+    }
+
+    public function testExtractPubDateNoSeparatorSuffixFourDigitYear()
+    {
+        list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foobarJun1985');
+
+        $this->assertEquals('1985-06', $pubDate);
+        $this->assertEquals('foobar', $newFileBase);
+    }
+
+    public function testExtractPubDateNoSeparatorSuffixDayFourDigitYear()
+    {
+        list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foobar10Jun1985');
+
+        $this->assertEquals('1985-06-10', $pubDate);
+        $this->assertEquals('foobar', $newFileBase);
+    }
+
+    public function testExtractPubDateNoSeparatorSuffixFullMonthTwoDigitYear()
+    {
+        list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foobarOctober85');
+
+        $this->assertEquals('1985-10', $pubDate);
+        $this->assertEquals('foobar', $newFileBase);
+    }
+
+    public function testExtractPubDateNoSeparatorSuffixDayFullMonthTwoDigitYear()
+    {
+        list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foobar7October85');
+
+        $this->assertEquals('1985-10-07', $pubDate);
+        $this->assertEquals('foobar', $newFileBase);
+    }
+
+    public function testExtractPubDateNoSeparatorSuffixFullMonthFourDigitYear()
+    {
+        list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foobarOctober1985');
+
+        $this->assertEquals('1985-10', $pubDate);
+        $this->assertEquals('foobar', $newFileBase);
+    }
+
+    public function testExtractPubDateNoSeparatorSuffixDayFullMonthFourDigitYear()
+    {
+        list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foobar07October1985');
+
+        $this->assertEquals('1985-10-07', $pubDate);
+        $this->assertEquals('foobar', $newFileBase);
+    }
+
     public function testExtractPubDateSpaceSeparator()
     {
         list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foo bar March 15 1975');
