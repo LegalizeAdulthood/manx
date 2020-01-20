@@ -582,14 +582,14 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $dirId1 = 10;
         $dirId2 = 12;
         $dirId3 = 14;
-        $insertSU = "INSERT INTO `site_unknown`(`site_id`, `path`, `dir_id`) VALUES (3, ?, ?), (3, ?, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
+        $insertSU = "INSERT INTO `site_unknown`(`site_id`, `path`, `dir_id`) VALUES (3, ?, ?), (3, ?, ?), (3, ?, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
         $this->_db->expects($this->exactly(5))->method('execute')
             ->withConsecutive(
                 [$selectSite, ['bitsavers']],
                 [$insertSUD, ['foo/DEC', 'foo', 'bar']],
                 [$selectSUD, ['foo/DEC', 'foo', 'bar']],
                 [$updateSUD, [$dirId2, $dirId1]],
-                [$insertSU, ['frob.jpg', $dirId1, 'bar.pdf', $dirId3]]
+                [$insertSU, ['IndexByDate.txt', -1, 'frob.jpg', $dirId1, 'bar.pdf', $dirId3]]
             )
             ->willReturn(
                 DatabaseTester::createResultRowsForColumns(['site_id'], [[3]]),
@@ -605,7 +605,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             );
         $this->_db->expects($this->once())->method('commit');
 
-        $this->_manxDb->addSiteUnknownPaths('bitsavers', ['foo/DEC/frob.jpg', 'bar/bar.pdf']);
+        $this->_manxDb->addSiteUnknownPaths('bitsavers', ['IndexByDate.txt', 'foo/DEC/frob.jpg', 'bar/bar.pdf']);
     }
 
     public function testIgnoreSitePath()

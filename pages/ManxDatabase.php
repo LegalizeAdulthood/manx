@@ -740,6 +740,10 @@ class ManxDatabase implements IManxDatabase
             $dir = pathinfo($path, PATHINFO_DIRNAME);
             $path = pathinfo($path, PATHINFO_BASENAME);
             $unknownPaths[] = [$dir, $path];
+            if ($dir == '.')
+            {
+                continue;
+            }
             foreach (self::getAllDirs($dir) as $dir)
             {
                 $unknownDirs[$dir] = -1;
@@ -767,13 +771,11 @@ class ManxDatabase implements IManxDatabase
         $sudRows = $this->execute("SELECT `id`, `path`, `parent_dir_id` FROM `site_unknown_dir` WHERE `site_id` = " . $siteId . " AND `path` IN (" . implode(', ', $sudValues) . ")", $sudParams);
 
         // Populate all parent directory id fields of newly inserted rows
-        $parentDirIds = [];
         $unknownParentDirs = [];
         foreach ($sudRows as $row)
         {
             $dirPath = $row['path'];
             $unknownDirs[$dirPath] = $row['id'];
-            $parentDirIds[$row['path']] = $row['parent_dir_id'];
             if ($row['parent_dir_id'] == -1 and strpos($dirPath, '/') > 0)
             {
                 $unknownParentDirs[] = $dirPath;
@@ -788,6 +790,7 @@ class ManxDatabase implements IManxDatabase
         // Insert all paths
         $pathValues = [];
         $pathParams = [];
+        $unknownDirs['.'] = -1;
         foreach ($unknownPaths as $path)
         {
             $pathValues[] = $siteId . ", ?, ?";
