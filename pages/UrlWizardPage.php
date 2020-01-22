@@ -176,6 +176,22 @@ EOH;
 <div id="form_container">
 <form id="wizard" action="url-wizard.php" method="POST" name="f">
 
+
+EOH;
+
+        if (array_key_exists('id', $this->_vars))
+        {
+            $sudId = $this->_vars['id'];
+            print <<<EOH
+<fieldset id="site_unknown_field" class="hidden">
+<input type="hidden" id="site_unknown_id" name="site_unknown_id" value="$sudId" />
+</fieldset>
+
+
+EOH;
+        }
+
+        print <<<EOH
 <fieldset id="copy_fields">
 <legend id="copy_legend"><a id="copy_link" class="hidden">Copy</a><span id="copy_text">Copy</span></legend>
 <ul>
