@@ -142,7 +142,7 @@ EOH;
         $this->renderMenuItem(($menu == MenuType::News), "news.php", "News");
         $this->renderMenuItem(($menu == MenuType::About), "about.php", "About");
         $this->renderMenuItem(($menu == MenuType::Help), "help.php", "Help");
-        print '<a href="rss.php"><img style="vertical-align: middle" src="assets/rss.png"></a>';
+        printf('<a href="rss.php"><img style="vertical-align: middle" src="%sassets/rss.png"></a>', self::getRelativePrefixFromPathInfo());
         print "</div>\n";
         $this->renderAdminMenu($menu);
     }
@@ -215,7 +215,7 @@ EOH;
         }
         else
         {
-            $prefix = PageBase::getAbsolutePrefixFromScriptName($server);
+            $prefix = self::getAbsolutePrefixFromScriptName($server);
             $redirect = sprintf("/%slogin.php?redirect=%s", $prefix, urlencode($self));
         }
         printf('<a href="https://%s%s">Login</a>', $server['SERVER_NAME'], $redirect);
@@ -223,8 +223,8 @@ EOH;
 
     private function renderLogoutLink($server)
     {
-        $prefix = PageBase::getRelativePrefixFromPathInfo();
-        $absolutePrefix = PageBase::getAbsolutePrefixFromScriptName($server);
+        $prefix = self::getRelativePrefixFromPathInfo();
+        $absolutePrefix = self::getAbsolutePrefixFromScriptName($server);
         printf('<a href="https://%s/%slogin.php?LOGO=1&redirect=%ssearch.php">Logout</a>',
             $server['SERVER_NAME'], $absolutePrefix, $prefix);
     }
