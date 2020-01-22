@@ -150,7 +150,7 @@ EOH;
                 $urlPath = self::escapeSpecialChars(trim($path));
                 $checked = $file['ignored'] == 1 || self::ignoreExtension($this->_manxDb, $extension) ? ' checked' : '';
                 printf('<tr><td><input type="checkbox" id="ignore%1$d" name="ignore%1$d" value="%2$s"%5$s/></td>' . "\n"
-                    .  '<td><a href="url-wizard.php?url=' . $this->_baseUrl . '/%3$s/%4$s">%4$s</a></td></tr>' . "\n",
+                    .  '<td><a href="url-wizard.php?id=%2$d&url=' . $this->_baseUrl . '/%3$s/%4$s">%4$s</a></td></tr>' . "\n",
                     $i, $file['id'], $thisDir['path'], $path, $checked);
             }
             print <<<EOH

@@ -178,13 +178,13 @@ EOH;
 <table>
 <tr><th>Ignored?</th><th>File</th></tr>
 <tr><td><input type="checkbox" id="ignore0" name="ignore0" value="222"/></td>
-<td><a href="url-wizard.php?url=http://bitsavers.org/pdf/dec/pdp11/KM11_Maintenance_Panel_May70.pdf">KM11_Maintenance_Panel_May70.pdf</a></td></tr>
+<td><a href="url-wizard.php?id=222&url=http://bitsavers.org/pdf/dec/pdp11/KM11_Maintenance_Panel_May70.pdf">KM11_Maintenance_Panel_May70.pdf</a></td></tr>
 <tr><td><input type="checkbox" id="ignore1" name="ignore1" value="223"/></td>
-<td><a href="url-wizard.php?url=http://bitsavers.org/pdf/dec/pdp11/EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf">EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf</a></td></tr>
+<td><a href="url-wizard.php?id=223&url=http://bitsavers.org/pdf/dec/pdp11/EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf">EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf</a></td></tr>
 <tr><td><input type="checkbox" id="ignore2" name="ignore2" value="224"/></td>
-<td><a href="url-wizard.php?url=http://bitsavers.org/pdf/dec/pdp11/LSI-11_Systems_Service_Manual_Aug81.pdf">LSI-11_Systems_Service_Manual_Aug81.pdf</a></td></tr>
+<td><a href="url-wizard.php?id=224&url=http://bitsavers.org/pdf/dec/pdp11/LSI-11_Systems_Service_Manual_Aug81.pdf">LSI-11_Systems_Service_Manual_Aug81.pdf</a></td></tr>
 <tr><td><input type="checkbox" id="ignore3" name="ignore3" value="225" checked/></td>
-<td><a href="url-wizard.php?url=http://bitsavers.org/pdf/dec/pdp11/firmware.zip">firmware.zip</a></td></tr>
+<td><a href="url-wizard.php?id=225&url=http://bitsavers.org/pdf/dec/pdp11/firmware.zip">firmware.zip</a></td></tr>
 </table>
 <input type="submit" value="Ignore" />
 </form>
