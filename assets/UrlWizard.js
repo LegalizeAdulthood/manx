@@ -573,4 +573,11 @@ $(function()
                 help_shown[id] = !help_shown[id];
             });
         });
+
+    if ($("#site_unknown_id").val() !== '')
+    {
+        $("#copy_url").prop('disabled', true);
+        $("#copy_site").prop('disabled', true);
+        $("#mirror_url").prop('disabled', true);
+    }
 });
