@@ -66,46 +66,19 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $title = '4010 and 4010-1 Maintenance Manual';
         $keywords = 'terminal graphics';
         $abstract = 'This is the maintenance manual for Tektronix 4010 terminals.';
-        $vars = [
-            'site_directory' => '',
-            'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
-            'copy_format' => 'PDF',
-            'copy_site' => '3',
-            'copy_notes' => '',
-            'copy_size' => '',
-            'copy_md5' => '',
-            'copy_credits' => '',
-            'copy_amend_serial' => '',
-            'site_name' => '',
-            'site_url' => '',
-            'site_description' => '',
-            'site_copy_base' => '',
-            'company_id' => '5',
-            'company_name' => '',
-            'company_short_name' => '',
-            'company_sort_name' => '',
-            'company_notes' => '',
-            'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
-            'pub_pub_id' => '-1',
-            'pub_history_ph_title' => $title,
-            'pub_history_ph_revision' => 'B',
-            'pub_history_ph_pub_type' => 'D',
-            'pub_history_ph_pub_date' => '1976-04',
-            'pub_history_ph_abstract' => $abstract,
-            'pub_history_ph_part' => $part,
-            'pub_history_ph_match_part' => '',
-            'pub_history_ph_sort_part' => '',
-            'pub_history_ph_alt_part' => '',
-            'pub_history_ph_match_alt_part' => '',
-            'pub_history_ph_keywords' => $keywords,
-            'pub_history_ph_notes' => '',
-            'pub_history_ph_class' => '',
-            'pub_history_ph_amend_pub' => '',
-            'pub_history_ph_amend_serial' => '',
-            'supersession_search_keywords' => '4010 Maintenance Manual',
-            'supersession_old_pub' => '5634',
-            'next' => 'Next+%3E'
-        ];
+        $vars = array_merge(
+            self::copyData('http://bitsavers.org/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf', 'PDF', '3'),
+            self::siteData(),
+            self::companyData('5'),
+            self::pubHistoryData($title, 'D', '1976-04', 'B', $abstract, $part, $keywords),
+            [
+                'site_company_directory' => '',
+                'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
+                'pub_pub_id' => '-1',
+                'supersession_search_keywords' => '4010 Maintenance Manual',
+                'supersession_old_pub' => '5634',
+                'next' => 'Next+%3E'
+            ]);
         $this->_config['vars'] = $vars;
         $this->_manx->expects($this->once())->method('addPublication')
             ->with($this->anything(), $this->anything(), $part, $this->anything(), $title,
@@ -136,46 +109,19 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $title = '4010 and 4010-1 Maintenance Manual';
         $keywords = 'terminal graphics';
         $abstract = 'This is the maintenance manual for Tektronix 4010 terminals.';
-        $vars = [
-            'site_directory' => '',
-            'copy_url' => 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Ftektronix%2F401x%2F070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf',
-            'copy_format' => 'PDF',
-            'copy_site' => '3',
-            'copy_notes' => '',
-            'copy_size' => '',
-            'copy_md5' => '',
-            'copy_credits' => '',
-            'copy_amend_serial' => '',
-            'site_name' => '',
-            'site_url' => '',
-            'site_description' => '',
-            'site_copy_base' => '',
-            'company_id' => '5',
-            'company_name' => '',
-            'company_short_name' => '',
-            'company_sort_name' => '',
-            'company_notes' => '',
-            'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
-            'pub_pub_id' => '-1',
-            'pub_history_ph_title' => $title,
-            'pub_history_ph_revision' => 'B',
-            'pub_history_ph_pub_type' => 'D',
-            'pub_history_ph_pub_date' => '1976-04',
-            'pub_history_ph_abstract' => $abstract,
-            'pub_history_ph_part' => $part,
-            'pub_history_ph_match_part' => '',
-            'pub_history_ph_sort_part' => '',
-            'pub_history_ph_alt_part' => '',
-            'pub_history_ph_match_alt_part' => '',
-            'pub_history_ph_keywords' => $keywords,
-            'pub_history_ph_notes' => '',
-            'pub_history_ph_class' => '',
-            'pub_history_ph_amend_pub' => '',
-            'pub_history_ph_amend_serial' => '',
-            'supersession_search_keywords' => '4010 Maintenance Manual',
-            'supersession_old_pub' => '5634',
-            'next' => 'Next+%3E'
-            ];
+        $vars = array_merge(
+            self::copyData('http://bitsavers.org/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf', 'PDF', '3'),
+            self::siteData(),
+            self::companyData('5'),
+            self::pubHistoryData($title, 'D', '1976-04', 'B', $abstract, $part, $keywords),
+            [
+                'site_company_directory' => '',
+                'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
+                'pub_pub_id' => '-1',
+                'supersession_search_keywords' => '4010 Maintenance Manual',
+                'supersession_old_pub' => '5634',
+                'next' => 'Next+%3E'
+            ]);
         $this->_config['vars'] = $vars;
         $this->_manx->expects($this->once())->method('addPublication')
             ->with($this->anything(), $this->anything(), $part, $this->anything(), $title,
@@ -203,47 +149,20 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $vars = [
-            'site_company_directory' => 'DEC',
-            'copy_url' => 'http%3A%2F%2Fchiclassiccomp.org%2Fdocs%2Fcontent%2Fcomputing%2FDEC%2FChicagoDECStore1.jpg',
-            'copy_format' => 'JPEG',
-            'copy_site' => '58',
-            'copy_notes' => '',
-            'copy_size' => '',
-            'copy_md5' => '',
-            'copy_credits' => '',
-            'copy_amend_serial' => '',
-            'site_name' => 'ChiClassicComp',
-            'site_url' => '',
-            'site_description' => '',
-            'site_copy_base' => '',
-            'company_id' => '5',
-            'company_name' => '',
-            'company_short_name' => '',
-            'company_sort_name' => '',
-            'company_notes' => '',
-            'pub_search_keywords' => 'Chicago DEC Store1',
-            'pub_pub_id' => '-1',
-            'pub_history_ph_title' => 'Accessories & Supplies Center Chicago Brochure',
-            'pub_history_ph_revision' => '',
-            'pub_history_ph_pub_type' => 'D',
-            'pub_history_ph_pub_date' => '1979',
-            'pub_history_ph_abstract' => '',
-            'pub_history_ph_part' => '',
-            'pub_history_ph_match_part' => '',
-            'pub_history_ph_sort_part' => '',
-            'pub_history_ph_alt_part' => '',
-            'pub_history_ph_match_alt_part' => '',
-            'pub_history_ph_keywords' => '',
-            'pub_history_ph_notes' => '',
-            'pub_history_ph_class' => '',
-            'pub_history_ph_amend_pub' => '',
-            'pub_history_ph_amend_serial' => '',
-            'supersession_search_keywords' => 'Chicago DEC Store1',
-            'supersession_old_pub' => '-1',
-            'supersession_new_pub' => '-1',
-            'next' => 'Next+%3E'
-        ];
+        $vars = array_merge(
+            self::copyData('http://chiclassiccomp.org/docs/content/computing/DEC/ChicagoDECStore1.jpg', 'JPEG', '58'),
+            self::siteData('ChiClassicComp'),
+            self::companyData('5'),
+            self::pubHistoryData('Accessories & Supplies Center Chicago Brochure', 'D', '1979'),
+            [
+                'site_company_directory' => 'DEC',
+                'pub_search_keywords' => 'Chicago DEC Store1',
+                'pub_pub_id' => '-1',
+                'supersession_search_keywords' => 'Chicago DEC Store1',
+                'supersession_old_pub' => '-1',
+                'supersession_new_pub' => '-1',
+                'next' => 'Next+%3E'
+            ]);
         $this->_config['vars'] = $vars;
         $page = new UrlWizardPageTester($this->_config);
         $this->_db->expects($this->once())->method('addSiteDirectory')
@@ -922,5 +841,61 @@ EOH;
 
 EOH;
         $this->expectOutputString($expected);
+    }
+
+    private static function copyData($url, $format, $site)
+    {
+        return [
+            'copy_url' => urlencode($url),
+            'copy_format' => $format,
+            'copy_site' => $site,
+            'copy_notes' => '',
+            'copy_size' => '',
+            'copy_md5' => '',
+            'copy_credits' => '',
+            'copy_amend_serial' => ''
+        ];
+    }
+
+    private static function siteData($name = '', $url = '', $description = '', $copyBase = '')
+    {
+        return [
+            'site_name' => $name,
+            'site_url' => $url,
+            'site_description' => $description,
+            'site_copy_base' => $copyBase
+        ];
+    }
+
+    private static function companyData($id, $name = '', $shortName = '', $sortName = '', $notes = '')
+    {
+        return [
+            'company_id' => $id,
+            'company_name' => $name,
+            'company_short_name' => $shortName,
+            'company_sort_name' => $sortName,
+            'company_notes' => $notes
+        ];
+    }
+
+    private static function pubHistoryData($title, $pubType, $pubDate = '', $revision = '', $abstract = '', $part = '', $keywords = '')
+    {
+        return [
+            'pub_history_ph_title' => $title,
+            'pub_history_ph_revision' => $revision,
+            'pub_history_ph_pub_type' => $pubType,
+            'pub_history_ph_pub_date' => $pubDate,
+            'pub_history_ph_abstract' => $abstract,
+            'pub_history_ph_part' => $part,
+            'pub_history_ph_match_part' => '',
+            'pub_history_ph_sort_part' => '',
+            'pub_history_ph_alt_part' => '',
+            'pub_history_ph_match_alt_part' => '',
+            'pub_history_ph_keywords' => $keywords,
+            'pub_history_ph_notes' => '',
+            'pub_history_ph_class' => '',
+            'pub_history_ph_amend_pub' => '',
+            'pub_history_ph_amend_serial' => ''
+        ];
     }
 }
