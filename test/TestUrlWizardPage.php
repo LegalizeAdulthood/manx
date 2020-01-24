@@ -30,6 +30,8 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
     private $_config;
     /** @var Manx\IManx */
     private $_manx;
+    /** @var Manx\IManxDatabase */
+    private $_db;
 
     protected function setUp()
     {
@@ -40,6 +42,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
         $this->_manx = $manx;
         $this->_config = $config;
+        $this->_db = $this->createMock(Manx\IManxDatabase::class);
     }
 
     public function testConstruct()
@@ -56,8 +59,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testDocumentAdded()
     {
-        $db = $this->createMock(Manx\IManxDatabase::class);
-        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $part = '070-1183-01';
@@ -111,10 +113,10 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
                 $abstract, $this->anything())
             ->willReturn(19690);
         $page = new UrlWizardPageTester($this->_config);
-        $db->expects($this->never())->method('addCompany');
-        $db->expects($this->once())->method('addSupersession')->with(5634, 19690);
-        $db->expects($this->never())->method('addSite');
-        $db->expects($this->once())->method('addCopy')
+        $this->_db->expects($this->never())->method('addCompany');
+        $this->_db->expects($this->once())->method('addSupersession')->with(5634, 19690);
+        $this->_db->expects($this->never())->method('addSite');
+        $this->_db->expects($this->once())->method('addCopy')
             ->with(
                 19690, $vars['copy_format'], $vars['copy_site'], rawurldecode($vars['copy_url']),
                 $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
@@ -127,8 +129,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testNewBitSaversDirectoryAdded()
     {
-        $db = $this->createMock(Manx\IManxDatabase::class);
-        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $part = '070-1183-01';
@@ -182,9 +183,9 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
                 $abstract, $this->anything())
             ->willReturn(19690);
         $page = new UrlWizardPageTester($this->_config);
-        $db->expects($this->never())->method('addCompany');
-        $db->expects($this->once())->method('addSupersession')->with(5634, 19690);
-        $db->expects($this->once())->method('addCopy')
+        $this->_db->expects($this->never())->method('addCompany');
+        $this->_db->expects($this->once())->method('addSupersession')->with(5634, 19690);
+        $this->_db->expects($this->once())->method('addCopy')
             ->with(
                 19690, $vars['copy_format'], $vars['copy_site'], rawurldecode($vars['copy_url']),
                 $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
@@ -198,8 +199,8 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
 
     public function testNewChiClassicCompDirectoryAdded()
     {
-        $db = $this->createMock(Manx\IManxDatabase::class);
-        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
+        $this->_db = $this->createMock(Manx\IManxDatabase::class);
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $vars = [
@@ -245,7 +246,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         ];
         $this->_config['vars'] = $vars;
         $page = new UrlWizardPageTester($this->_config);
-        $db->expects($this->once())->method('addSiteDirectory')
+        $this->_db->expects($this->once())->method('addSiteDirectory')
             ->with('ChiClassicComp', '5', 'DEC');
 
         $page->postPage();
@@ -255,10 +256,9 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
     {
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $db = $this->createMock(Manx\IManxDatabase::class);
-        $db->expects($this->once())->method('getSites')->willReturn([]);
-        $db->expects($this->once())->method('getCompanyList')->willReturn([]);
-        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
+        $this->_db->expects($this->once())->method('getSites')->willReturn([]);
+        $this->_db->expects($this->once())->method('getCompanyList')->willReturn([]);
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
         $vars = [];
         $this->_config['vars'] = $vars;
         $page = new UrlWizardPageTester($this->_config);
@@ -590,10 +590,9 @@ EOH;
     {
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $db = $this->createMock(Manx\IManxDatabase::class);
-        $db->expects($this->once())->method('getSites')->willReturn([]);
-        $db->expects($this->once())->method('getCompanyList')->willReturn([]);
-        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($db);
+        $this->_db->expects($this->once())->method('getSites')->willReturn([]);
+        $this->_db->expects($this->once())->method('getCompanyList')->willReturn([]);
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
         $vars = ['id' => 5522, 'url' => 'http://chiclassiccomp.org/docs/content/computing/3M/3M_DisketteHotline.pdf'];
         $this->_config['vars'] = $vars;
         $page = new UrlWizardPageTester($this->_config);
