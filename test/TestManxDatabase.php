@@ -1068,12 +1068,25 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_manxDb->updateIgnoredUnknownDirs();
     }
 
-
     public function testUpdateCopySiteUnknownDirIds()
     {
         $this->_db->expects($this->once())->method('execute')->with("CALL `manx_update_copy_sud_ids`()", []);
 
         $this->_manxDb->updateCopySiteUnknownDirIds();
+    }
+
+    public function testSetCopySiteUnknownDirId()
+    {
+        $copyId = 2066;
+        $siteUnknownId = 509;
+        $update = "UPDATE `copy` AS `c` "
+            . "INNER JOIN `site_unknown` AS `su` "
+            . "SET `c`.`sud_id` = `su`.`dir_id` "
+            . "WHERE `c`.`copy_id` = ? "
+            . "AND `su`.`id` = ?";
+        $this->_db->expects($this->once())->method('execute')->with($update, [$copyId, $siteUnknownId]);
+
+        $this->_manxDb->setCopySiteUnknownDirId($copyId, $siteUnknownId);
     }
 
     private function assertColumnValuesForRows($rows, $column, $values)

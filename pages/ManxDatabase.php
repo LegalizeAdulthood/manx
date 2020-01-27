@@ -980,4 +980,11 @@ class ManxDatabase implements IManxDatabase
     {
         $this->execute("CALL `manx_update_copy_sud_ids`()", []);
     }
+
+    public function setCopySiteUnknownDirId($copyId, $siteUnknownId)
+    {
+        $this->execute("UPDATE `copy` AS `c` INNER JOIN `site_unknown` AS `su` "
+            . "SET `c`.`sud_id` = `su`.`dir_id` "
+            . "WHERE `c`.`copy_id` = ? AND `su`.`id` = ?", [$copyId, $siteUnknownId]);
+    }
 }

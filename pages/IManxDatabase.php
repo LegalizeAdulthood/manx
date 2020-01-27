@@ -75,4 +75,5 @@ interface IManxDatabase
     function getSiteUnknownDir($dirId);
     function updateIgnoredUnknownDirs();
     function updateCopySiteUnknownDirIds();
+    function setCopySiteUnknownDirId($copyId, $siteUnknownId);
 }
