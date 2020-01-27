@@ -66,12 +66,15 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
         $title = '4010 and 4010-1 Maintenance Manual';
         $keywords = 'terminal graphics';
         $abstract = 'This is the maintenance manual for Tektronix 4010 terminals.';
+        $copyId = 6066;
+        $siteUnknownId = 7077;
         $vars = array_merge(
             self::copyData('http://bitsavers.org/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf', 'PDF', '3'),
             self::siteData(),
             self::companyData('5'),
             self::pubHistoryData($title, 'D', '1976-04', 'B', $abstract, $part, $keywords),
             [
+                'site_unknown_id' => $siteUnknownId,
                 'site_company_directory' => '',
                 'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
                 'pub_pub_id' => '-1',
@@ -93,7 +96,9 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             ->with(
                 19690, $vars['copy_format'], $vars['copy_site'], rawurldecode($vars['copy_url']),
                 $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
-                $vars['copy_amend_serial']);
+                $vars['copy_amend_serial'])
+            ->willReturn($copyId);
+        $this->_db->expects($this->once())->method('setCopySiteUnknownDirId', $copyId, $siteUnknownId);
 
         $page->postPage();
 

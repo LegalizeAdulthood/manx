@@ -30,7 +30,12 @@ class UrlWizardPage extends AdminPageBase
         $pubId = $this->addPublication($companyId);
         $this->addSupersession($pubId);
         $siteId = $this->addSite();
-        $this->addCopy($pubId, $siteId);
+        $copyId = $this->addCopy($pubId, $siteId);
+        if (array_key_exists('site_unknown_id', $this->_vars))
+        {
+            $siteUnknownId = $this->_vars['site_unknown_id'];
+            $this->_db->setCopySiteUnknownDirId($copyId, $siteUnknownId);
+        }
         $this->redirect(sprintf("details.php/%s,%s", $companyId, $pubId));
     }
 
@@ -118,7 +123,7 @@ class UrlWizardPage extends AdminPageBase
 
     private function addCopy($pubId, $siteId)
     {
-        $this->_db->addCopy($pubId, $this->param('copy_format'),
+        return $this->_db->addCopy($pubId, $this->param('copy_format'),
             $siteId, $this->param('copy_url'), $this->param('copy_notes'),
             $this->param('copy_size'), '' /* MD5 */,
             $this->param('copy_credits'), $this->param('copy_amend_serial'));
