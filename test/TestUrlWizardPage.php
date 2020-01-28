@@ -98,7 +98,8 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
                 $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
                 $vars['copy_amend_serial'])
             ->willReturn($copyId);
-        $this->_db->expects($this->once())->method('setCopySiteUnknownDirId', $copyId, $siteUnknownId);
+        $this->_db->expects($this->once())->method('setCopySiteUnknownDirId')->with($copyId, $siteUnknownId);
+        $this->_db->expects($this->once())->method('removeSiteUnknownPathById')->with($siteUnknownId);
 
         $page->postPage();
 
