@@ -1089,6 +1089,15 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_manxDb->setCopySiteUnknownDirId($copyId, $siteUnknownId);
     }
 
+    public function testupdateIgnoredUnknownSingleDir()
+    {
+        $dirId = 6066;
+        $call = "CALL `manx_update_unknown_single_dir_ignored`(" . $dirId . ")";
+        $this->_db->expects($this->once())->method('execute')->with($call, []);
+
+        $this->_manxDb->updateIgnoredUnknownSingleDir($dirId);
+    }
+
     private function assertColumnValuesForRows($rows, $column, $values)
     {
         $this->assertEquals(count($rows), count($values), "different number of expected values from the number of rows");

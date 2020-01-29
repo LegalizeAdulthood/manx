@@ -80,7 +80,7 @@ BEGIN
         WHERE INSTR(`path`, '/') > 0;
 
     -- Populate directory tree
-    SELECT COUNT(*) FROM `site_unknown_dir` WHERE INSTR(`path`, '/') > 0 AND `parent_dir_id` = -1 LIMIT 1 INTO `dir_count`;
+    SELECT COUNT(*) FROM `site_unknown_dir` WHERE INSTR(`path`, '/') > 0 AND `parent_dir_id` = -1 INTO `dir_count`;
     WHILE `dir_count` > 0 DO
         -- Insert parent directories from existing directories
         INSERT INTO `site_unknown_dir`(`site_id`, `path`)
@@ -212,9 +212,36 @@ BEGIN
 END//
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `build_copy_ids`;
+--
+-- `manx_update_unknown_single_dir_ignored`
+--
+-- Propagate ignore status up the directory tree for a single directory.
+--
+DROP PROCEDURE IF EXISTS `manx_update_unknown_single_dir_ignored`;
 DELIMITER //
-CREATE PROCEDURE `build_copy_ids`()
+CREATE PROCEDURE `manx_update_unknown_single_dir_ignored`(`sud_id` INT(11)) 
+BEGIN
+    BEGIN TRANSACTION;
+    WHILE (SELECT COUNT(*) FROM `site_unknown` WHERE `dir_id` = `sud_id` AND `ignored` = 0 LIMIT 1) = 0
+            AND (SELECT COUNT(*) FROM `site_unknown_dir` WHERE `parent_dir_id` = `sud_id` AND `ignored` = 0 LIMIT 1) = 0
+            AND `sud_id` <> -1
+            DO
+        UPDATE `site_unknown_dir` SET `ignored` = 1 WHERE `id` = `sud_id`;
+        SELECT `parent_dir_id` FROM `site_unknown_dir` WHERE `id` = `sud_id` INTO `sud_id`;
+    END WHILE;
+    COMMIT;
+END//
+DELIMITER ;
+
+--
+-- `manx_build_copy_ids`
+--
+-- Populate `tmp_copy_ids` with id and filename path of every document copy on a site
+-- in `site_unknown_dir`.
+--
+DROP PROCEDURE IF EXISTS `manx_build_copy_ids`;
+DELIMITER //
+CREATE PROCEDURE `manx_build_copy_ids`()
 BEGIN
     DROP TABLE IF EXISTS `tmp_copy_ids`;
     CREATE TEMPORARY TABLE `tmp_copy_ids`(
@@ -241,7 +268,7 @@ DROP PROCEDURE IF EXISTS `manx_update_copy_sud_ids`;
 DELIMITER //
 CREATE PROCEDURE `manx_update_copy_sud_ids`()
 BEGIN
-    CALL `build_copy_ids`();
+    CALL `manx_build_copy_ids`();
 
     UPDATE `copy`,
         (SELECT `c`.`copy_id`, `sud`.`id` AS `sud_id`
@@ -267,7 +294,7 @@ DROP PROCEDURE IF EXISTS `manx_purge_su_copies`;
 DELIMITER //
 CREATE PROCEDURE `manx_purge_su_copies`()
 BEGIN
-    CALL `build_copy_ids`();
+    CALL `manx_build_copy_ids`();
 
     DROP TABLE IF EXISTS `tmp_su_ids`;
     CREATE TEMPORARY TABLE `tmp_su_ids`(`id` INT(11) NOT NULL);

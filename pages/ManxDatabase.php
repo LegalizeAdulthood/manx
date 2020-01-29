@@ -987,4 +987,9 @@ class ManxDatabase implements IManxDatabase
             . "SET `c`.`sud_id` = `su`.`dir_id` "
             . "WHERE `c`.`copy_id` = ? AND `su`.`id` = ?", [$copyId, $siteUnknownId]);
     }
+
+    public function updateIgnoredUnknownSingleDir($dirId)
+    {
+        $this->execute(sprintf('CALL `manx_update_unknown_single_dir_ignored`(%1$d)', $dirId), []);
+    }
 }
