@@ -219,11 +219,13 @@ DELIMITER ;
 --
 DROP PROCEDURE IF EXISTS `manx_update_unknown_single_dir_ignored`;
 DELIMITER //
-CREATE PROCEDURE `manx_update_unknown_single_dir_ignored`(`sud_id` INT(11)) 
+CREATE PROCEDURE `manx_update_unknown_single_dir_ignored`(`su_id` INT(11)) 
 BEGIN
-    BEGIN TRANSACTION;
-    WHILE (SELECT COUNT(*) FROM `site_unknown` WHERE `dir_id` = `sud_id` AND `ignored` = 0 LIMIT 1) = 0
-            AND (SELECT COUNT(*) FROM `site_unknown_dir` WHERE `parent_dir_id` = `sud_id` AND `ignored` = 0 LIMIT 1) = 0
+    DECLARE `sud_id` INT(11);
+    START TRANSACTION;
+    SELECT `dir_id` FROM `site_unknown` WHERE `id` = `su_id` INTO `sud_id`;
+    WHILE (SELECT COUNT(*) FROM `site_unknown` WHERE `dir_id` = `sud_id` AND `ignored` = 0) = 0
+            AND (SELECT COUNT(*) FROM `site_unknown_dir` WHERE `parent_dir_id` = `sud_id` AND `ignored` = 0) = 0
             AND `sud_id` <> -1
             DO
         UPDATE `site_unknown_dir` SET `ignored` = 1 WHERE `id` = `sud_id`;
