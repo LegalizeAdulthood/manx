@@ -107,7 +107,7 @@ BEGIN
             AND `sud2`.`path` = manx_parent_dir(`sud`.`path`);
 
         -- Update count of subdirectories with no parent directory id
-        SELECT COUNT(*) FROM `site_unknown_dir` WHERE INSTR(`path`, '/') > 0 AND `parent_dir_id` = -1 LIMIT 1 INTO `dir_count`;
+        SELECT COUNT(*) FROM `site_unknown_dir` WHERE INSTR(`path`, '/') > 0 AND `parent_dir_id` = -1 INTO `dir_count`;
     END WHILE;
 
     -- Replace directory prefix with directory id in site unknown paths
@@ -137,7 +137,7 @@ BEGIN
             AND NOT `id` IN (SELECT DISTINCT `parent_dir_id` FROM `site_unknown_dir`)
             AND NOT `id` IN (SELECT DISTINCT `sud_id` FROM `copy` WHERE `sud_id` <> -1);
 
-    WHILE (SELECT COUNT(*) FROM `tmp_dir_ids` LIMIT 1) > 0 DO
+    WHILE (SELECT COUNT(*) FROM `tmp_dir_ids`) > 0 DO
         DELETE FROM `site_unknown_dir` WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids`);
 
         DELETE FROM `tmp_dir_ids`;
@@ -180,7 +180,7 @@ BEGIN
     CREATE TEMPORARY TABLE `tmp_dir_ids2`(`id` INT(11) NOT NULL);
 
     -- Propagate ignored status up the directory hierarchy
-    WHILE (SELECT COUNT(*) FROM `tmp_dir_ids` LIMIT 1) > 0 DO
+    WHILE (SELECT COUNT(*) FROM `tmp_dir_ids`) > 0 DO
         -- Drop dir ids with unignored paths
         DELETE FROM `tmp_dir_ids` WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids_not_ignored`);
 
