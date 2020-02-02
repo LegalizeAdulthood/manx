@@ -182,13 +182,8 @@ $(function()
     function set_company(data)
     {
         var elem = $('#company_id');
-        var initial_data = elem.data();
         show("company_fields");
         elem.val(data.company);
-        if ('initial' in initial_data)
-        {
-            elem.val(initial_data['initial']);
-        }
         show_hide_company_fields();
     }
 
@@ -215,24 +210,6 @@ $(function()
             && validate_field_non_empty_lower_case("company_sort_name");
     }
 
-    function set_publication_initial_field(key)
-    {
-        var elem = $('#pub_history_ph_' + key);
-        var data = elem.data();
-        if ('initial' in data)
-        {
-            elem.val(data['initial']);
-        }
-    }
-
-    function set_publication_initial_data()
-    {
-        set_publication_initial_field('title');
-        set_publication_initial_field('pub_date');
-        set_publication_initial_field('part');
-        set_publication_initial_field('abstract');
-    }
-
     function set_publication(data)
     {
         var keywords = (data.part + ' ' + data.title).trim();
@@ -240,7 +217,6 @@ $(function()
         $("#pub_history_ph_title").val(data.title);
         $("#pub_history_ph_pub_date").val(data.pub_date);
         $("#pub_history_ph_part").val(data.part);
-        set_publication_initial_data();
 
         $("#pub_search_keywords").val(keywords);
         search_for_publications();
@@ -573,11 +549,4 @@ $(function()
                 help_shown[id] = !help_shown[id];
             });
         });
-
-    if ($("#site_unknown_id").val() !== '')
-    {
-        $("#copy_url").prop('disabled', true);
-        $("#copy_site").prop('disabled', true);
-        $("#mirror_url").prop('disabled', true);
-    }
 });
