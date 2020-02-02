@@ -144,6 +144,17 @@ class UrlWizardPage extends AdminPageBase
 EOH;
     }
 
+    private static function pubOptions($pubs)
+    {
+        $options = [];
+        foreach ($pubs as $pub)
+        {
+            $options[] = sprintf('<option value="%1$d">%2$s  %3$s</option>', $pub['pub_id'], $pub['ph_part'], $pub['ph_title']);
+        }
+        $options[] = '';
+        return implode("\n", $options);
+    }
+
     protected function renderBodyContent()
     {
         $idPresent = array_key_exists('id', $this->_vars);
@@ -333,12 +344,13 @@ EOH;
         $this->renderTextInput('Search Keywords', 'pub_search_keywords', [
             'size' => 40, 'working' => true, 'value' => $keywords,
             'help' => 'Search keywords to locate a known publication.']);
+        $publications = $urlPresent ? self::pubOptions($metaData['pubs']) : '';
         print <<<EOH
 <li id="pub_pub_id_field">
 <label for="pub_pub_id"><span id="pub_pub_id_label">Publication</span><a id="pub_pub_id_link" class="hidden">Publication</a></label>
 <select id="pub_pub_id" name="pub_pub_id">
 <option value="-1">(New Publication)</option>
-</select>
+$publications</select>
 </li>
 
 
@@ -393,7 +405,7 @@ EOH;
 <label for="supersession_old_pub"><span id="supersession_old_pub_label">Supersedes</span><a id="supersession_old_pub_link" class="hidden">Supersedes</a></label>
 <select id="supersession_old_pub" name="supersession_old_pub">
 <option value="-1">(None)</option>
-</select>
+$publications</select>
 </li>
 
 
@@ -403,7 +415,7 @@ EOH;
 <label for="supersession_new_pub"><span id="supersession_new_pub_label">Superseded by</span><a id="supersession_new_pub_link" class="hidden">Superseded by</a></label>
 <select id="supersession_new_pub" name="supersession_new_pub">
 <option value="-1">(None)</option>
-</select>
+$publications</select>
 </li>
 
 </ul>

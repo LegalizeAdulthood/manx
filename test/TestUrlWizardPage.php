@@ -243,6 +243,15 @@ EOH;
                 [ 22, 'DEC' ],
                 [ 23, 'IBM' ]
             ]);
+        $pubs = DatabaseTester::createResultRowsForColumns([
+                'pub_id', 'ph_part', 'ph_title', 'pub_has_online_copies',
+                'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pub_date',
+                'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pub_type'
+            ],
+            [
+                [ 2211, 'TK-001', "DIBOL User's Guide", 1, '', 0, 0, '1978-01', '', 22, '', 'D' ],
+                [ 2212, 'TK-002', "DIBOL Programmer's Guide", 1, '', 0, 0, '1978-01', '', 22, '', 'D' ],
+            ]);
         $this->_db->expects($this->once())->method('getCompanyList')->willReturn($companies);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
         $siteUnknownId = 5522;
@@ -267,7 +276,7 @@ EOH;
             'format' => 'PDF',
             'site_company_directory' => 'dec',
             'site_company_parent_directory' => '',
-            'pubs' => [],
+            'pubs' => $pubs,
             'keywords' => $part . ' ' . $title
         ];
         $this->_urlMeta->expects($this->once())->method('determineData')->with($url)->willReturn($metaData);
@@ -296,6 +305,17 @@ EOH;
         {
             $options = $options . sprintf('<option value="%1$d"%2$s>%3$s</option>',
                 $company['id'], $company['id'] == $vars['company'] ? ' selected="selected"' : '', $company['name']) . "\n";
+        }
+        return $options;
+    }
+
+    private static function expectedPublicationOptions($vars)
+    {
+        $options = '';
+        foreach ($vars['pubs'] as $pub)
+        {
+            $options = $options . sprintf('<option value="%1$d">%2$s  %3$s</option>',
+                $pub['pub_id'], $pub['ph_part'], $pub['ph_title']) . "\n";
         }
         return $options;
     }
@@ -332,6 +352,7 @@ EOH;
         $pubClass = array_key_exists('url', $vars) ? '' : 'hidden';
         $supersedeClass = array_key_exists('url', $vars) ? '' : 'hidden';
         $keywords = array_key_exists('keywords', $vars) ? $vars['keywords'] : '';
+        $publications = array_key_exists('pubs', $vars) ? self::expectedPublicationOptions($vars) : '';
 
         return <<<EOH
 <h1>URL Wizard</h1>
@@ -523,7 +544,7 @@ $companies</select>
 <label for="pub_pub_id"><span id="pub_pub_id_label">Publication</span><a id="pub_pub_id_link" class="hidden">Publication</a></label>
 <select id="pub_pub_id" name="pub_pub_id">
 <option value="-1">(New Publication)</option>
-</select>
+$publications</select>
 </li>
 
 <li id="pub_history_ph_title_field">
@@ -634,14 +655,14 @@ $companies</select>
 <label for="supersession_old_pub"><span id="supersession_old_pub_label">Supersedes</span><a id="supersession_old_pub_link" class="hidden">Supersedes</a></label>
 <select id="supersession_old_pub" name="supersession_old_pub">
 <option value="-1">(None)</option>
-</select>
+$publications</select>
 </li>
 
 <li id="supersession_new_pub_field">
 <label for="supersession_new_pub"><span id="supersession_new_pub_label">Superseded by</span><a id="supersession_new_pub_link" class="hidden">Superseded by</a></label>
 <select id="supersession_new_pub" name="supersession_new_pub">
 <option value="-1">(None)</option>
-</select>
+$publications</select>
 </li>
 
 </ul>
