@@ -354,26 +354,31 @@ EOH;
 
     private static function expectedBodyContent($vars)
     {
-        $copyReadOnly = array_key_exists('url', $vars) ? ' readonly="readonly"' : '';
+        $idPresent = array_key_exists('id', $vars);
+        $urlPresent = array_key_exists('url', $vars);
+        $copyReadOnly = $urlPresent ? ' readonly="readonly"' : '';
         $copyUrl = self::param($vars, 'url');
         $copySize = array_key_exists('size', $vars) ? $vars['size'] : '0';
         $copyFormat = self::param($vars, 'format');
         $copyFormatClass = strlen($copyFormat) == 0 ? 'hidden' : '';
-        $copySiteDisabled = array_key_exists('id', $vars) ? ' disabled="disabled"' : '';
+        $copySiteDisabled = $idPresent ? ' disabled="disabled"' : '';
         $copySites = array_key_exists('sites', $vars) ? self::expectedSiteOptions($vars) : '';
         $copySiteClass = strlen($copySites) == 0 ? 'hidden' : '';
-        $siteUnknown = array_key_exists('id', $vars) ? self::expectedSiteUnknown($vars) : '';
+        $siteUnknown = $idPresent ? self::expectedSiteUnknown($vars) : '';
         $pubDate = self::param($vars, 'pub_date');
         $part = self::param($vars, 'part');
         $mirrorUrl = self::param($vars, 'mirror_url');
         $mirrorClass = strlen($mirrorUrl) == 0 ? 'hidden' : '';
         $companies = array_key_exists('companies', $vars) ? self::expectedCompanyOptions($vars) : '';
         $companyClass = strlen($companies) == 0 ? 'hidden' : '';
-        $pubClass = array_key_exists('url', $vars) ? '' : 'hidden';
-        $supersedeClass = array_key_exists('url', $vars) ? '' : 'hidden';
+        $pubClass = $urlPresent ? '' : 'hidden';
+        $supersedeClass = $urlPresent ? '' : 'hidden';
         $keywords = self::param($vars, 'keywords');
         $publications = array_key_exists('pubs', $vars) ? self::expectedPublicationOptions($vars) : '';
         $title = self::param($vars, 'title');
+        $copyLink = $urlPresent ? sprintf(' href="%s"', $vars['url']) : '';
+        $copyLinkClass = $urlPresent ? '' : 'hidden';
+        $copyTextClass = $urlPresent ? 'hidden' : '';
 
         return <<<EOH
 <h1>URL Wizard</h1>
@@ -382,7 +387,7 @@ EOH;
 <form id="wizard" action="url-wizard.php" method="POST" name="f">
 $siteUnknown
 <fieldset id="copy_fields">
-<legend id="copy_legend"><a id="copy_link" class="hidden">Copy</a><span id="copy_text">Copy</span></legend>
+<legend id="copy_legend"><a id="copy_link"$copyLink class="$copyLinkClass">Copy</a><span id="copy_text" class="$copyTextClass">Copy</span></legend>
 <ul>
 
 <li id="copy_url_field">

@@ -198,9 +198,12 @@ EOH;
 EOH;
         }
 
+        $copyLink = $urlPresent ? sprintf(' href="%s"', $url) : '';
+        $copyLinkClass = $urlPresent ? '' : 'hidden';
+        $copyTextClass = $urlPresent ? 'hidden' : '';
         print <<<EOH
 <fieldset id="copy_fields">
-<legend id="copy_legend"><a id="copy_link" class="hidden">Copy</a><span id="copy_text">Copy</span></legend>
+<legend id="copy_legend"><a id="copy_link"$copyLink class="$copyLinkClass">Copy</a><span id="copy_text" class="$copyTextClass">Copy</span></legend>
 <ul>
 
 
