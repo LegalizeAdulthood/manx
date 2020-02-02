@@ -310,6 +310,16 @@ EOH;
         return implode("\n", $options);
     }
 
+    private static function expectHidden($id, $val)
+    {
+        return "<input type=\"hidden\" id=\"$id\" name=\"$id\" value=\"$val\" />\n";
+    }
+
+    private static function expectedSiteHidden($vars)
+    {
+        return self::expectHidden('copy_site', $vars['site']['site_id']);
+    }
+
     private static function expectedCompanyOptions($vars)
     {
         $options = [];
@@ -362,7 +372,8 @@ EOH;
         $copyFormat = self::param($vars, 'format');
         $copyFormatClass = strlen($copyFormat) == 0 ? 'hidden' : '';
         $copySiteDisabled = $idPresent ? ' disabled="disabled"' : '';
-        $copySites = array_key_exists('sites', $vars) ? self::expectedSiteOptions($vars) : '';
+        list($copySites, $copySiteHidden) = array_key_exists('sites', $vars) ?
+            [self::expectedSiteOptions($vars), self::expectedSiteHidden($vars)] : ['', ''];
         $copySiteClass = strlen($copySites) == 0 ? 'hidden' : '';
         $siteUnknown = $idPresent ? self::expectedSiteUnknown($vars) : '';
         $pubDate = self::param($vars, 'pub_date');
@@ -420,7 +431,7 @@ $siteUnknown
 <select id="copy_site" name="copy_site"$copySiteDisabled>
 <option value="-1">(New Site)</option>
 $copySites</select>
-</li>
+$copySiteHidden</li>
 
 <li id="copy_notes_field">
 <label for="copy_notes">Notes</label>

@@ -221,24 +221,26 @@ EOH;
         $this->renderTextInput('Format', 'copy_format', [
             'class' => strlen($copyFormat) == 0 ? 'hidden' : '', 'size' => 10, 'maxlength' => 10, 'value' => $copyFormat,
             'help' => 'The format of the document at the URL, i.e. PDF.']);
-        $siteDisabled = $idPresent ? ' disabled="disabled"' : '';
-        $siteClass = $idPresent ? '' : 'hidden';
+        $copySiteDisabled = $idPresent ? ' disabled="disabled"' : '';
+        $copySiteClass = $idPresent ? '' : 'hidden';
+        $siteId = $metaData['site']['site_id'];
+        $copySiteHidden = $idPresent ? "<input type=\"hidden\" id=\"copy_site\" name=\"copy_site\" value=\"$siteId\" />\n" : '';
         print <<<EOH
-<li id="copy_site_field" class="$siteClass">
+<li id="copy_site_field" class="$copySiteClass">
 <label for="copy_site">Site</label>
-<select id="copy_site" name="copy_site"$siteDisabled>
+<select id="copy_site" name="copy_site"$copySiteDisabled>
 <option value="-1">(New Site)</option>
 
 EOH;
 
         foreach ($this->_db->getSites() as $site)
         {
-            $selected = $metaData['site']['site_id'] == $site['site_id'] ? ' selected="selected"' : '';
+            $selected = $siteId == $site['site_id'] ? ' selected="selected"' : '';
             printf("<option value=\"%d\"%s>%s</option>\n", $site['site_id'], $selected, $site['url']);
         }
         print <<<EOH
 </select>
-</li>
+$copySiteHidden</li>
 
 
 EOH;
