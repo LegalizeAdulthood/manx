@@ -332,27 +332,33 @@ EOH;
 EOH;
     }
 
+    private static function param($vars, $id)
+    {
+        return array_key_exists($id, $vars) ? $vars[$id] : '';
+    }
+
     private static function expectedBodyContent($vars)
     {
         $copyReadOnly = array_key_exists('url', $vars) ? ' readonly="readonly"' : '';
-        $copyUrl = array_key_exists('url', $vars) ? $vars['url'] : '';
+        $copyUrl = self::param($vars, 'url');
         $copySize = array_key_exists('size', $vars) ? $vars['size'] : '0';
-        $copyFormat = array_key_exists('format', $vars) ? $vars['format'] : '';
+        $copyFormat = self::param($vars, 'format');
         $copyFormatClass = strlen($copyFormat) == 0 ? 'hidden' : '';
         $copySiteDisabled = array_key_exists('id', $vars) ? ' disabled="disabled"' : '';
         $copySite = array_key_exists('sites', $vars) ? self::expectedSiteOptions($vars) : '';
         $copySiteClass = strlen($copySite) == 0 ? 'hidden' : '';
         $siteUnknown = array_key_exists('id', $vars) ? self::expectedSiteUnknown($vars) : '';
-        $pubDate = array_key_exists('pub_date', $vars) ? $vars['pub_date'] : '';
-        $part = array_key_exists('part', $vars) ? $vars['part'] : '';
-        $mirrorUrl = array_key_exists('mirror_url', $vars) ? $vars['mirror_url'] : '';
+        $pubDate = self::param($vars, 'pub_date');
+        $part = self::param($vars, 'part');
+        $mirrorUrl = self::param($vars, 'mirror_url');
         $mirrorClass = strlen($mirrorUrl) == 0 ? 'hidden' : '';
         $companies = array_key_exists('companies', $vars) ? self::expectedCompanyOptions($vars) : '';
         $companyClass = strlen($companies) == 0 ? 'hidden' : '';
         $pubClass = array_key_exists('url', $vars) ? '' : 'hidden';
         $supersedeClass = array_key_exists('url', $vars) ? '' : 'hidden';
-        $keywords = array_key_exists('keywords', $vars) ? $vars['keywords'] : '';
+        $keywords = self::param($vars, 'keywords');
         $publications = array_key_exists('pubs', $vars) ? self::expectedPublicationOptions($vars) : '';
+        $title = self::param($vars, 'title');
 
         return <<<EOH
 <h1>URL Wizard</h1>
@@ -549,7 +555,7 @@ $publications</select>
 
 <li id="pub_history_ph_title_field">
 <label for="pub_history_ph_title">Title</label>
-<input type="text" id="pub_history_ph_title" name="pub_history_ph_title" size="60" maxlength="255" value="" />
+<input type="text" id="pub_history_ph_title" name="pub_history_ph_title" size="60" maxlength="255" value="$title" />
 <img id="pub_history_ph_title_help_button" src="assets/help.png" width="16" height="16" />
 <div id="pub_history_ph_title_help" class="hidden">The title of this document; exclude part numbers and publication dates.</div>
 <div id="pub_history_ph_title_error" class="error hidden"></div>

@@ -170,7 +170,8 @@ EOH;
                 'url' => $url,
                 'mirror_url' => '',
                 'company' => -1,
-                'keywords' => ''
+                'keywords' => '',
+                'title' => ''
             ];
         $url = $metaData['url'];
         $mirrorUrl = $metaData['mirror_url'];
@@ -356,7 +357,8 @@ $publications</select>
 
 EOH;
         $this->renderTextInputMaxSize('Title', 'pub_history_ph_title', 60, 255,
-            'The title of this document; exclude part numbers and publication dates.');
+            'The title of this document; exclude part numbers and publication dates.',
+            ['value' => $metaData['title']]);
         $this->renderTextInputMaxSize('Revision', 'pub_history_ph_revision', 20, 20,
             'The revision number or letter of this publication, i.e. B');
         print <<<EOH
