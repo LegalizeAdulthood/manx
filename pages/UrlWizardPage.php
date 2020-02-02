@@ -8,14 +8,17 @@ use Pimple\Container;
 
 class UrlWizardPage extends AdminPageBase
 {
-    /** @var \IManxDatabase */
+    /** @var IManxDatabase */
     private $_db;
+    /** @var IUrlMetaData */
+    private $_urlMeta;
 
     public function __construct(Container $config)
     {
         parent::__construct($config);
         $manx = $config['manx'];
         $this->_db = $manx->getDatabase();
+        $this->_urlMeta = $config['urlMetaData'];
     }
 
     protected function getMenuType()
@@ -131,52 +134,35 @@ class UrlWizardPage extends AdminPageBase
             $this->param('copy_credits'), $this->param('copy_amend_serial'));
     }
 
-    private function renderInitialData($id, $var)
-    {
-        if (array_key_exists($var, $this->_vars))
-        {
-            $val = str_replace('"', '\"', $this->_vars[$var]);
-            print <<<EOH
-    $('#$id').data('initial', "$val");
-
-EOH;
-        }
-    }
-
     protected function renderHeaderContent()
     {
         $this->renderLink("stylesheet", "text/css", "assets/UrlWizard.css");
         print <<<EOH
 <script type="text/javascript" src="assets/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="assets/UrlWizard.js"></script>
-EOH;
-        if (array_key_exists('url', $this->_vars))
-        {
-            $url = WhatsNewPage::escapeSpecialChars($this->_vars['url']);
-            print <<<EOH
-<script type="text/javascript">
-$(function()
-{
-    var copy_url = $("#copy_url");
 
 EOH;
-            $this->renderInitialData('company_id', 'cp');
-            $this->renderInitialData('pub_history_ph_title', 'title');
-            $this->renderInitialData('pub_history_ph_part', 'partNumber');
-            $this->renderInitialData('pub_history_ph_pub_date', 'pubDate');
-            $this->renderInitialData('pub_history_ph_abstract', 'abstract');
-            print <<<EOH
-    copy_url.val("${url}");
-    copy_url.change();
-});
-</script>
-
-EOH;
-        }
     }
 
     protected function renderBodyContent()
     {
+        $idPresent = array_key_exists('id', $this->_vars);
+        $urlPresent = array_key_exists('url', $this->_vars);
+        $url = $urlPresent ? $this->_vars['url'] : '';
+        $metaData = $urlPresent ? $this->_urlMeta->determineData($url)
+            : [
+                'format' => '',
+                'site' => -1,
+                'size' => 0,
+                'pub_date' => '',
+                'part' => '',
+                'url' => $url,
+                'mirror_url' => '',
+                'company' => -1
+            ];
+        $url = $metaData['url'];
+        $mirrorUrl = $metaData['mirror_url'];
+
         print <<<EOH
 <h1>URL Wizard</h1>
 
@@ -186,12 +172,12 @@ EOH;
 
 EOH;
 
-        if (array_key_exists('id', $this->_vars))
+        if ($idPresent)
         {
-            $sudId = $this->_vars['id'];
+            $suId = $this->_vars['id'];
             print <<<EOH
 <fieldset id="site_unknown_field" class="hidden">
-<input type="hidden" id="site_unknown_id" name="site_unknown_id" value="$sudId" />
+<input type="hidden" id="site_unknown_id" name="site_unknown_id" value="$suId" />
 </fieldset>
 
 
@@ -205,26 +191,33 @@ EOH;
 
 
 EOH;
-        $this->renderTextInput('Document URL', 'copy_url',
-            array('size' => 60, 'maxlength' => 255, 'working' => true,
-                'help' => 'The complete URL for the document.'));
-        $this->renderTextInput('Mirror Document URL', 'copy_mirror_url',
-            array('class' => 'hidden', 'size' => 60, 'maxlength' => 255,
-                'readonly' => true,
-                'help' => 'Read-only.  The URL of a mirrored document as originally entered.'));
-        $this->renderTextInput('Format', 'copy_format',
-            array('class' => 'hidden', 'size' => 10, 'maxlength' => 10,
-                'help' => 'The format of the document at the URL, i.e. PDF.'));
+        $this->renderTextInput('Document URL', 'copy_url', [
+            'size' => 60, 'maxlength' => 255, 'working' => true,
+            'help' => 'The complete URL for the document.',
+            'readonly' => $urlPresent, 'value' => $url
+            ]);
+        $this->renderTextInput('Mirror Document URL', 'copy_mirror_url', [
+            'class' => strlen($mirrorUrl) == 0 ? 'hidden' : '', 'size' => 60, 'maxlength' => 255,
+            'readonly' => true, 'value' => $mirrorUrl,
+            'help' => 'Read-only.  The URL of a mirrored document as originally entered.']);
+        $copyFormat = $metaData['format'];
+        $this->renderTextInput('Format', 'copy_format', [
+            'class' => strlen($copyFormat) == 0 ? 'hidden' : '', 'size' => 10, 'maxlength' => 10, 'value' => $copyFormat,
+            'help' => 'The format of the document at the URL, i.e. PDF.']);
+        $siteDisabled = $idPresent ? ' disabled="disabled"' : '';
+        $siteClass = $idPresent ? '' : 'hidden';
         print <<<EOH
-<li id="copy_site_field" class="hidden">
+<li id="copy_site_field" class="$siteClass">
 <label for="copy_site">Site</label>
-<select id="copy_site" name="copy_site">
+<select id="copy_site" name="copy_site"$siteDisabled>
 <option value="-1">(New Site)</option>
+
 EOH;
 
         foreach ($this->_db->getSites() as $site)
         {
-            printf("<option value=\"%d\">%s</option>\n", $site['site_id'], $site['url']);
+            $selected = $metaData['site'] == $site['site_id'] ? ' selected="selected"' : '';
+            printf("<option value=\"%d\"%s>%s</option>\n", $site['site_id'], $selected, $site['url']);
         }
         print <<<EOH
 </select>
@@ -234,8 +227,9 @@ EOH;
 EOH;
         $this->renderTextInputMaxSize('Notes', 'copy_notes', 60, 200,
             'Notes about this copy of the publication.');
+        $copySize = $metaData['size'];
         print <<<EOH
-<input type="hidden" id="copy_size" name="copy_size" value="0" />
+<input type="hidden" id="copy_size" name="copy_size" value="$copySize" />
 
 <input type="hidden" id="copy_md5" name="copy_md5" value="" />
 
@@ -269,6 +263,7 @@ EOH;
         $this->renderTextInputMaxSize('Copy Base', 'site_copy_base', 60, 200,
             'The base URL for documents on the site, which may be different'
                 . ' from the site URL.');
+        $companyClass = $idPresent ? '' : 'hidden';
         print <<<EOH
 <li id="site_low_field">
 <label for="site_low">Low Bandwidth?</label>
@@ -289,7 +284,7 @@ EOH;
 </ul>
 </fieldset>
 
-<fieldset id="company_fields" class="hidden">
+<fieldset id="company_fields" class="$companyClass">
 <legend id="company_legend">Company</legend>
 <ul>
 
@@ -301,7 +296,8 @@ EOH;
 EOH;
         foreach ($this->_db->getCompanyList() as $company)
         {
-            printf("<option value=\"%d\">%s</option>\n", $company['id'], $company['name']);
+            $selected = $metaData['company'] == $company['id'] ? ' selected="selected"' : '';
+            printf("<option value=\"%d\"%s>%s</option>\n", $company['id'], $selected, $company['name']);
         }
         print <<<EOH
 </select>
@@ -310,30 +306,30 @@ EOH;
 
 EOH;
         $this->renderTextInput('Name', 'company_name',
-            array('class' => 'hidden', 'size' => 50, 'maxlength' => 50,
-            'help' => 'The full name of the company, i.e. Digital Equipment Corporation.  It will be used on the About page and in the company dropdown list on the search page.'));
+            ['class' => 'hidden', 'size' => 50, 'maxlength' => 50,
+            'help' => 'The full name of the company, i.e. Digital Equipment Corporation.  It will be used on the About page and in the company dropdown list on the search page.']);
         $this->renderTextInput('Short Name', 'company_short_name',
-            array('class' => 'hidden', 'size' => 50, 'maxlength' => 50,
-            'help' => 'A short name for the company, i.e. DEC.'));
+            ['class' => 'hidden', 'size' => 50, 'maxlength' => 50,
+            'help' => 'A short name for the company, i.e. DEC.']);
         $this->renderTextInput('Sort Name', 'company_sort_name',
-            array('class' => 'hidden', 'size' => 50, 'maxlength' => 50,
-            'help' => 'A lower case sort key for the company, i.e. dec.'));
+            ['class' => 'hidden', 'size' => 50, 'maxlength' => 50,
+            'help' => 'A lower case sort key for the company, i.e. dec.']);
         $this->renderTextInput('Notes', 'company_notes',
-            array('class' => 'hidden', 'size' => 60, 'maxlength' => 255,
-            'help' => 'Notes for the company, i.e. terminal manufacturer'));
+            ['class' => 'hidden', 'size' => 60, 'maxlength' => 255,
+            'help' => 'Notes for the company, i.e. terminal manufacturer']);
+        $pubClass = $urlPresent ? '' : 'hidden';
         print <<<EOH
 </ul>
 </fieldset>
 
-<fieldset id="publication_fields" class="hidden">
+<fieldset id="publication_fields" class="$pubClass">
 <legend id="publication_legend">Publication</legend>
 <ul>
 
 
 EOH;
         $this->renderTextInput('Search Keywords', 'pub_search_keywords',
-            array('size' => 40, 'working' => true,
-                'help' => 'Search keywords to locate a known publication.'));
+            ['size' => 40, 'working' => true, 'help' => 'Search keywords to locate a known publication.']);
         print <<<EOH
 <li id="pub_pub_id_field">
 <label for="pub_pub_id"><span id="pub_pub_id_label">Publication</span><a id="pub_pub_id_link" class="hidden">Publication</a></label>
@@ -360,34 +356,35 @@ EOH;
 
 EOH;
         $this->renderTextInputMaxSize('Publication Date', 'pub_history_ph_pub_date', 10, 10,
-            'The date of publication, if any, i.e. 1979-02.');
+            'The date of publication, if any, i.e. 1979-02.', ['value' => $metaData['pub_date']]);
         $this->renderTextInputMaxSize('Abstract', 'pub_history_ph_abstract', 60, 2048,
             'The abstract for the publication, if any.');
         $this->renderTextInput('Part #', 'pub_history_ph_part',
-            array('maxlength' => 50, 'help' => 'The part number for this publication, if any.'));
+            ['maxlength' => 50, 'value' => $metaData['part'], 'help' => 'The part number for this publication, if any.']);
         $this->renderTextInput('Alternative Part #', 'pub_history_ph_alt_part',
-            array('maxlength' => 50, 'help' => 'An alternate part number for the publication, if any.'));
+            ['maxlength' => 50, 'help' => 'An alternate part number for the publication, if any.']);
         $this->renderTextInput('Keywords', 'pub_history_ph_keywords',
-            array('maxlength' => 100, 'help' => 'A space separated list of keywords for this publication, i.e. terminal graphics.'));
+            ['maxlength' => 100, 'help' => 'A space separated list of keywords for this publication, i.e. terminal graphics.']);
         $this->renderTextInput('Notes', 'pub_history_ph_notes',
-            array('maxlength' => 255, 'help' => 'Additional notes for this revision of the publication.'));
+            ['maxlength' => 255, 'help' => 'Additional notes for this revision of the publication.']);
         $this->renderTextInput('Amends Publication', 'pub_history_ph_amend_pub',
-            array('class' => 'hidden', 'maxlength' => 10, 'help' => 'Publication amended by this publication.'));
+            ['class' => 'hidden', 'maxlength' => 10, 'help' => 'Publication amended by this publication.']);
         $this->renderTextInput('Amendment Serial No.', 'pub_history_ph_amend_serial',
-            array('class' => 'hidden', 'maxlength' => 10, 'help' => 'Serial number of this amendment.'));
+            ['class' => 'hidden', 'maxlength' => 10, 'help' => 'Serial number of this amendment.']);
+        $supersedeClass = $urlPresent ? '' : 'hidden';
         print <<<EOH
 </ul>
 </fieldset>
 
-<fieldset id="supersession_fields" class="hidden">
+<fieldset id="supersession_fields" class="$supersedeClass">
 <legend id="supersession_legend">Supersession</legend>
 <ul>
 
 
 EOH;
         $this->renderTextInput('Search keywords', 'supersession_search_keywords',
-            array('size' => 40, 'working' => true,
-                'help' => 'Search keywords to locate publications superseded by or superseding this publication.'));
+            ['size' => 40, 'working' => true,
+            'help' => 'Search keywords to locate publications superseded by or superseding this publication.']);
         print <<<EOH
 <li id="supersession_old_pub_field">
 <label for="supersession_old_pub"><span id="supersession_old_pub_label">Supersedes</span><a id="supersession_old_pub_link" class="hidden">Supersedes</a></label>
