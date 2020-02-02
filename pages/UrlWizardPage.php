@@ -283,6 +283,9 @@ EOH;
             'The base URL for documents on the site, which may be different'
                 . ' from the site URL.');
         $companyClass = $idPresent ? '' : 'hidden';
+        $companyId = $metaData['company'];
+        list($companyDisabled, $companyHidden) = array_key_exists('site_company_directory', $metaData) && strlen($metaData['site_company_directory']) > 0 ?
+            [' disabled="disabled"', "<input type=\"hidden\" id=\"company_id\" name=\"company_id\" value=\"$companyId\" />\n"] : ['', ''];
         print <<<EOH
 <li id="site_low_field">
 <label for="site_low">Low Bandwidth?</label>
@@ -309,7 +312,7 @@ EOH;
 
 <li id="company_id_field">
 <label for="company_id">Company</label>
-<select id="company_id" name="company_id">
+<select id="company_id" name="company_id"$companyDisabled>
 <option value="-1">(New Company)</option>
 
 EOH;
@@ -320,7 +323,7 @@ EOH;
         }
         print <<<EOH
 </select>
-</li>
+$companyHidden</li>
 
 
 EOH;

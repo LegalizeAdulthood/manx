@@ -95,6 +95,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             [
                 'site_unknown_id' => $siteUnknownId,
                 'site_company_directory' => '',
+                'site_company_parent_directory' => '',
                 'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
                 'pub_pub_id' => '-1',
                 'supersession_search_keywords' => '4010 Maintenance Manual',
@@ -141,6 +142,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             self::pubHistoryData($title, 'D', '1976-04', 'B', $abstract, $part, $keywords),
             [
                 'site_company_directory' => '',
+                'site_company_parent_directory' => '',
                 'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
                 'pub_pub_id' => '-1',
                 'supersession_search_keywords' => '4010 Maintenance Manual',
@@ -181,6 +183,7 @@ class TestUrlWizardPage extends PHPUnit\Framework\TestCase
             self::pubHistoryData('Accessories & Supplies Center Chicago Brochure', 'D', '1979'),
             [
                 'site_company_directory' => 'DEC',
+                'site_company_parent_directory' => '',
                 'pub_search_keywords' => 'Chicago DEC Store1',
                 'pub_pub_id' => '-1',
                 'supersession_search_keywords' => 'Chicago DEC Store1',
@@ -297,6 +300,75 @@ EOH;
         $this->expectOutputString(self::expectedBodyContent(array_merge($vars, $metaData, ['sites' => $sites, 'companies' => $companies])));
     }
 
+    public function testRenderPageParamsNoSiteCompanyDir()
+    {
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $siteId = 3;
+        $sites = DatabaseTester::createResultRowsForColumns([ 'site_id', 'name', 'url', 'description', 'copy_base', 'low', 'live', 'display_order' ],
+            [
+                [ $siteId, 'bitsavers', 'http://bitsavers.org', '', 'http://bitsavers.org/pdf/', 'N', 'Y', 0 ],
+                [ 58, 'ChiClassicComp', 'http://chiclassiccomp.org', '', 'http://chiclassiccomp.org/docs/content/', 'N', 'Y', 0 ]
+            ]);
+        $this->_db->expects($this->once())->method('getSites')->willReturn($sites);
+        $companyId = 22;
+        $companies = DatabaseTester::createResultRowsForColumns([ 'id', 'name' ],
+            [
+                [ $companyId, 'DEC' ],
+                [ 23, 'IBM' ]
+            ]);
+        $pubs = DatabaseTester::createResultRowsForColumns([
+                'pub_id', 'ph_part', 'ph_title', 'pub_has_online_copies',
+                'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pub_date',
+                'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pub_type'
+            ],
+            [
+                [ 2211, 'TK-001', "DIBOL User's Guide", 1, '', 0, 0, '1978-01', '', $companyId, '', 'D' ],
+                [ 2212, 'TK-002', "DIBOL Programmer's Guide", 1, '', 0, 0, '1978-01', '', $companyId, '', 'D' ],
+            ]);
+        $this->_db->expects($this->once())->method('getCompanyList')->willReturn($companies);
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
+        $siteUnknownId = 5522;
+        $url = 'http://bitsavers.trailing-edge.com/pdf/dec/dibol/AA-BI77A-TK_DIBOL_for_Beginners_Apr1984.pdf';
+        $vars = ['id' => $siteUnknownId, 'url' => $url];
+        $this->_config['vars'] = $vars;
+        $size = 10204;
+        $part = 'AA-BI77A-TK';
+        $title = 'DIBOL for Beginners';
+        $pubDate = '1984-04';
+        $metaData = [
+            'url' => 'http://bitsavers.org/pdf/dec/dibol/AA-BI77A-TK_DIBOL_for_Beginners_Apr1984.pdf',
+            'mirror_url' => $url,
+            'size' => $size,
+            'valid' => true,
+            'site' => [
+                'site_id' => $siteId,
+                'name' => 'bitsavers',
+                'url' => 'http://bitsavers.org',
+                'description' => '',
+                'copy_base' => 'http://bitsavers.org/pdf/',
+                'low' => 'N',
+                'live' => 'Y',
+                'display_order' => 1
+            ],
+            'company' => $companyId,
+            'part' => $part,
+            'pub_date' => $pubDate,
+            'title' => $title,
+            'format' => 'PDF',
+            'site_company_directory' => '',
+            'site_company_parent_directory' => '',
+            'pubs' => $pubs,
+            'keywords' => $part . ' ' . $title
+        ];
+        $this->_urlMeta->expects($this->once())->method('determineData')->with($url)->willReturn($metaData);
+        $page = new UrlWizardPageTester($this->_config);
+
+        $page->renderBodyContent();
+
+        $this->expectOutputString(self::expectedBodyContent(array_merge($vars, $metaData, ['sites' => $sites, 'companies' => $companies])));
+    }
+
     private static function expectedSiteOptions($vars)
     {
         $options = [];
@@ -318,6 +390,11 @@ EOH;
     private static function expectedSiteHidden($vars)
     {
         return self::expectHidden('copy_site', $vars['site']['site_id']);
+    }
+
+    private static function expectedCompanyHidden($vars)
+    {
+        return self::expectHidden('company_id', $vars['company']);
     }
 
     private static function expectedCompanyOptions($vars)
@@ -382,6 +459,8 @@ EOH;
         $mirrorClass = strlen($mirrorUrl) == 0 ? 'hidden' : '';
         $companies = array_key_exists('companies', $vars) ? self::expectedCompanyOptions($vars) : '';
         $companyClass = strlen($companies) == 0 ? 'hidden' : '';
+        list($companyDisabled, $companyHidden) = array_key_exists('site_company_directory', $vars) && strlen($vars['site_company_directory']) > 0 ?
+            [' disabled="disabled"', self::expectedCompanyHidden($vars)] : ['', ''];
         $pubClass = $urlPresent ? '' : 'hidden';
         $supersedeClass = $urlPresent ? '' : 'hidden';
         $keywords = self::param($vars, 'keywords');
@@ -524,10 +603,10 @@ $copySiteHidden</li>
 
 <li id="company_id_field">
 <label for="company_id">Company</label>
-<select id="company_id" name="company_id">
+<select id="company_id" name="company_id"$companyDisabled>
 <option value="-1">(New Company)</option>
 $companies</select>
-</li>
+$companyHidden</li>
 
 <li id="company_name_field" class="hidden">
 <label for="company_name">Name</label>
