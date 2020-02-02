@@ -230,7 +230,7 @@ EOH;
 
         foreach ($this->_db->getSites() as $site)
         {
-            $selected = $metaData['site'] == $site['site_id'] ? ' selected="selected"' : '';
+            $selected = $metaData['site']['site_id'] == $site['site_id'] ? ' selected="selected"' : '';
             printf("<option value=\"%d\"%s>%s</option>\n", $site['site_id'], $selected, $site['url']);
         }
         print <<<EOH

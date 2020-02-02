@@ -232,15 +232,17 @@ EOH;
     {
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
+        $siteId = 3;
         $sites = DatabaseTester::createResultRowsForColumns([ 'site_id', 'name', 'url', 'description', 'copy_base', 'low', 'live', 'display_order' ],
             [
-                [ 3, 'bitsavers', 'http://bitsavers.org', '', 'http://bitsavers.org/pdf/', 'N', 'Y', 0 ],
+                [ $siteId, 'bitsavers', 'http://bitsavers.org', '', 'http://bitsavers.org/pdf/', 'N', 'Y', 0 ],
                 [ 58, 'ChiClassicComp', 'http://chiclassiccomp.org', '', 'http://chiclassiccomp.org/docs/content/', 'N', 'Y', 0 ]
             ]);
         $this->_db->expects($this->once())->method('getSites')->willReturn($sites);
+        $companyId = 22;
         $companies = DatabaseTester::createResultRowsForColumns([ 'id', 'name' ],
             [
-                [ 22, 'DEC' ],
+                [ $companyId, 'DEC' ],
                 [ 23, 'IBM' ]
             ]);
         $pubs = DatabaseTester::createResultRowsForColumns([
@@ -249,8 +251,8 @@ EOH;
                 'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pub_type'
             ],
             [
-                [ 2211, 'TK-001', "DIBOL User's Guide", 1, '', 0, 0, '1978-01', '', 22, '', 'D' ],
-                [ 2212, 'TK-002', "DIBOL Programmer's Guide", 1, '', 0, 0, '1978-01', '', 22, '', 'D' ],
+                [ 2211, 'TK-001', "DIBOL User's Guide", 1, '', 0, 0, '1978-01', '', $companyId, '', 'D' ],
+                [ 2212, 'TK-002', "DIBOL Programmer's Guide", 1, '', 0, 0, '1978-01', '', $companyId, '', 'D' ],
             ]);
         $this->_db->expects($this->once())->method('getCompanyList')->willReturn($companies);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
@@ -258,7 +260,6 @@ EOH;
         $url = 'http://bitsavers.trailing-edge.com/pdf/dec/dibol/AA-BI77A-TK_DIBOL_for_Beginners_Apr1984.pdf';
         $vars = ['id' => $siteUnknownId, 'url' => $url];
         $this->_config['vars'] = $vars;
-        $siteId = 3;
         $size = 10204;
         $part = 'AA-BI77A-TK';
         $title = 'DIBOL for Beginners';
@@ -268,8 +269,17 @@ EOH;
             'mirror_url' => $url,
             'size' => $size,
             'valid' => true,
-            'site' => $siteId,
-            'company' => 22,
+            'site' => [
+                'site_id' => $siteId,
+                'name' => 'bitsavers',
+                'url' => 'http://bitsavers.org',
+                'description' => '',
+                'copy_base' => 'http://bitsavers.org/pdf/',
+                'low' => 'N',
+                'live' => 'Y',
+                'display_order' => 1
+            ],
+            'company' => $companyId,
             'part' => $part,
             'pub_date' => $pubDate,
             'title' => $title,
@@ -289,35 +299,40 @@ EOH;
 
     private static function expectedSiteOptions($vars)
     {
-        $options = '';
+        $options = [];
         foreach ($vars['sites'] as $site)
         {
-            $options = $options . sprintf('<option value="%1$d"%2$s>%3$s</option>',
-                $site['site_id'], $site['site_id'] == $vars['site'] ? ' selected="selected"' : '', $site['url']) . "\n";
+            $selected = $site['site_id'] == $vars['site']['site_id'] ? ' selected="selected"' : '';
+            $options[] = sprintf('<option value="%1$d"%2$s>%3$s</option>',
+                $site['site_id'], $selected, $site['url']);
         }
-        return $options;
+        $options[] = '';
+        return implode("\n", $options);
     }
 
     private static function expectedCompanyOptions($vars)
     {
-        $options = '';
+        $options = [];
         foreach ($vars['companies'] as $company)
         {
-            $options = $options . sprintf('<option value="%1$d"%2$s>%3$s</option>',
-                $company['id'], $company['id'] == $vars['company'] ? ' selected="selected"' : '', $company['name']) . "\n";
+            $selected = $company['id'] == $vars['company'] ? ' selected="selected"' : '';
+            $options[] = sprintf('<option value="%1$d"%2$s>%3$s</option>',
+                $company['id'], $selected, $company['name']);
         }
-        return $options;
+        $options[] = '';
+        return implode("\n", $options);
     }
 
     private static function expectedPublicationOptions($vars)
     {
-        $options = '';
+        $options = [];
         foreach ($vars['pubs'] as $pub)
         {
-            $options = $options . sprintf('<option value="%1$d">%2$s  %3$s</option>',
-                $pub['pub_id'], $pub['ph_part'], $pub['ph_title']) . "\n";
+            $options[] = sprintf('<option value="%1$d">%2$s  %3$s</option>',
+                $pub['pub_id'], $pub['ph_part'], $pub['ph_title']);
         }
-        return $options;
+        $options[] = '';
+        return implode("\n", $options);
     }
 
     private static function expectedSiteUnknown($vars)
@@ -345,8 +360,8 @@ EOH;
         $copyFormat = self::param($vars, 'format');
         $copyFormatClass = strlen($copyFormat) == 0 ? 'hidden' : '';
         $copySiteDisabled = array_key_exists('id', $vars) ? ' disabled="disabled"' : '';
-        $copySite = array_key_exists('sites', $vars) ? self::expectedSiteOptions($vars) : '';
-        $copySiteClass = strlen($copySite) == 0 ? 'hidden' : '';
+        $copySites = array_key_exists('sites', $vars) ? self::expectedSiteOptions($vars) : '';
+        $copySiteClass = strlen($copySites) == 0 ? 'hidden' : '';
         $siteUnknown = array_key_exists('id', $vars) ? self::expectedSiteUnknown($vars) : '';
         $pubDate = self::param($vars, 'pub_date');
         $part = self::param($vars, 'part');
@@ -399,7 +414,7 @@ $siteUnknown
 <label for="copy_site">Site</label>
 <select id="copy_site" name="copy_site"$copySiteDisabled>
 <option value="-1">(New Site)</option>
-$copySite</select>
+$copySites</select>
 </li>
 
 <li id="copy_notes_field">
