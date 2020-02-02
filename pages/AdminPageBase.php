@@ -70,12 +70,13 @@ abstract class AdminPageBase extends PageBase
         $className = $this->getAttribute('class', $options);
         $width = $this->getAttribute('size', $options);
         $maxLength = $this->getAttribute('maxlength', $options);
-        $readOnly = array_key_exists('readonly', $options) ?
+        $readOnly = array_key_exists('readonly', $options) && $options['readonly'] ?
             ' readonly="readonly"' : '';
+        $value = array_key_exists('value', $options) ? $options['value'] : '';
         print <<<EOH
 <li id="${id}_field"$className>
 <label for="$id">$label</label>
-<input type="text" id="$id" name="$id"$width$maxLength$readOnly value="" />
+<input type="text" id="$id" name="$id"$width$maxLength$readOnly value="$value" />
 
 EOH;
         $hasHelp = array_key_exists('help', $options);
@@ -109,11 +110,11 @@ EOH;
 EOH;
     }
 
-    protected function renderTextInputMaxSize($label, $id, $size, $maxLength, $help)
+    protected function renderTextInputMaxSize($label, $id, $size, $maxLength, $help, $options = [])
     {
         $this->renderTextInput($label, $id,
-            array('size' => $size, 'maxlength' => $maxLength,
-            'help' => $help));
+            array_merge(['size' => $size, 'maxlength' => $maxLength,
+            'help' => $help], $options));
     }
 
     protected abstract function postPage();
