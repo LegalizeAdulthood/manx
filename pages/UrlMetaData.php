@@ -107,6 +107,7 @@ class UrlMetaData implements IUrlMetaData
             $this->determineUrlData($data);
         }
         $this->determineUrlExists($data);
+        $data['keywords'] = trim($data['part'] . ' ' . $data['title']);
         return $data;
     }
 

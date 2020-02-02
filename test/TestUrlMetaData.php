@@ -116,7 +116,8 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'format' => 'PDF',
             'site_company_directory' => 'sandersAssociates',
             'site_company_parent_directory' => '',
-            'pubs' => []
+            'pubs' => [],
+            'keywords' => 'Graphic 7 Monitor Preliminary Users Guide'
         ];
         $this->assertEquals($expectedData, $data);
     }
@@ -159,7 +160,8 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'format' => 'PDF',
             'site_company_directory' => 'tektronix',
             'site_company_parent_directory' => '',
-            'pubs' => []
+            'pubs' => [],
+            'keywords' => '070-1183-01 Rev B 4010 Maintenance Manual'
         ];
         $this->assertEquals($data, $expected);
     }
@@ -194,7 +196,8 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'format' => 'PDF',
             'site_company_directory' => 'univac',
             'site_company_parent_directory' => '',
-            'pubs' => []
+            'pubs' => [],
+            'keywords' => 'UE-637 1108exec UG'
         ];
         $this->assertEquals($expected, $data);
     }
@@ -225,7 +228,8 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'format' => 'PDF',
             'site_company_directory' => 'Motorola',
             'site_company_parent_directory' => 'computing',
-            'pubs' => []
+            'pubs' => [],
+            'keywords' => '6064A-5M-668 MDR-1000Brochure'
         ];
         $this->assertEquals($data, $expected);
     }
@@ -259,7 +263,8 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'format' => 'PDF',
             'site_company_directory' => 'Sun',
             'site_company_parent_directory' => 'computing',
-            'pubs' => []
+            'pubs' => [],
+            'keywords' => $part . ' Adaptec ACB 4000 and 5000 Series Disk Controllers OEM Manual (Preliminary)'
         ];
         $this->assertEquals($data, $expected);
     }
@@ -301,7 +306,8 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'site_company_parent_directory' => '',
             'pubs' => [],
             'exists' => true,
-            'pub_id' => $pubId
+            'pub_id' => $pubId,
+            'keywords' => $part . ' ' . $title
             ];
         $this->assertEquals($expectedData, $data);
     }
@@ -340,7 +346,8 @@ class TestUrlMetaData extends PHPUnit\Framework\TestCase
             'site_company_parent_directory' => '',
             'pubs' => [],
             'exists' => true,
-            'pub_id' => null
+            'pub_id' => null,
+            'keywords' => $part
         ];
         $this->assertEquals($expectedData, $data);
     }

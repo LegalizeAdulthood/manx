@@ -212,7 +212,7 @@ $(function()
 
     function set_publication(data)
     {
-        var keywords = (data.part + ' ' + data.title).trim();
+        var keywords = data.keywords;
         show("publication_fields");
         $("#pub_history_ph_title").val(data.title);
         $("#pub_history_ph_pub_date").val(data.pub_date);
