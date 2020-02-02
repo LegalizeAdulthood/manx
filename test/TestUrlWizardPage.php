@@ -267,7 +267,8 @@ EOH;
             'format' => 'PDF',
             'site_company_directory' => 'dec',
             'site_company_parent_directory' => '',
-            'pubs' => []
+            'pubs' => [],
+            'keywords' => $part . ' ' . $title
         ];
         $this->_urlMeta->expects($this->once())->method('determineData')->with($url)->willReturn($metaData);
         $page = new UrlWizardPageTester($this->_config);
@@ -330,6 +331,7 @@ EOH;
         $companyClass = strlen($companies) == 0 ? 'hidden' : '';
         $pubClass = array_key_exists('url', $vars) ? '' : 'hidden';
         $supersedeClass = array_key_exists('url', $vars) ? '' : 'hidden';
+        $keywords = array_key_exists('keywords', $vars) ? $vars['keywords'] : '';
 
         return <<<EOH
 <h1>URL Wizard</h1>
@@ -510,7 +512,7 @@ $companies</select>
 
 <li id="pub_search_keywords_field">
 <label for="pub_search_keywords">Search Keywords</label>
-<input type="text" id="pub_search_keywords" name="pub_search_keywords" size="40" value="" />
+<input type="text" id="pub_search_keywords" name="pub_search_keywords" size="40" value="$keywords" />
 <img id="pub_search_keywords_help_button" src="assets/help.png" width="16" height="16" />
 <span id="pub_search_keywords_working" class="hidden working">Working...</span>
 <div id="pub_search_keywords_help" class="hidden">Search keywords to locate a known publication.</div>
@@ -621,7 +623,7 @@ $companies</select>
 
 <li id="supersession_search_keywords_field">
 <label for="supersession_search_keywords">Search keywords</label>
-<input type="text" id="supersession_search_keywords" name="supersession_search_keywords" size="40" value="" />
+<input type="text" id="supersession_search_keywords" name="supersession_search_keywords" size="40" value="$keywords" />
 <img id="supersession_search_keywords_help_button" src="assets/help.png" width="16" height="16" />
 <span id="supersession_search_keywords_working" class="hidden working">Working...</span>
 <div id="supersession_search_keywords_help" class="hidden">Search keywords to locate publications superseded by or superseding this publication.</div>

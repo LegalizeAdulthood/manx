@@ -158,10 +158,12 @@ EOH;
                 'part' => '',
                 'url' => $url,
                 'mirror_url' => '',
-                'company' => -1
+                'company' => -1,
+                'keywords' => ''
             ];
         $url = $metaData['url'];
         $mirrorUrl = $metaData['mirror_url'];
+        $keywords = $metaData['keywords'];
 
         print <<<EOH
 <h1>URL Wizard</h1>
@@ -328,8 +330,9 @@ EOH;
 
 
 EOH;
-        $this->renderTextInput('Search Keywords', 'pub_search_keywords',
-            ['size' => 40, 'working' => true, 'help' => 'Search keywords to locate a known publication.']);
+        $this->renderTextInput('Search Keywords', 'pub_search_keywords', [
+            'size' => 40, 'working' => true, 'value' => $keywords,
+            'help' => 'Search keywords to locate a known publication.']);
         print <<<EOH
 <li id="pub_pub_id_field">
 <label for="pub_pub_id"><span id="pub_pub_id_label">Publication</span><a id="pub_pub_id_link" class="hidden">Publication</a></label>
@@ -363,8 +366,8 @@ EOH;
             ['maxlength' => 50, 'value' => $metaData['part'], 'help' => 'The part number for this publication, if any.']);
         $this->renderTextInput('Alternative Part #', 'pub_history_ph_alt_part',
             ['maxlength' => 50, 'help' => 'An alternate part number for the publication, if any.']);
-        $this->renderTextInput('Keywords', 'pub_history_ph_keywords',
-            ['maxlength' => 100, 'help' => 'A space separated list of keywords for this publication, i.e. terminal graphics.']);
+        $this->renderTextInput('Keywords', 'pub_history_ph_keywords', [
+            'maxlength' => 100, 'help' => 'A space separated list of keywords for this publication, i.e. terminal graphics.']);
         $this->renderTextInput('Notes', 'pub_history_ph_notes',
             ['maxlength' => 255, 'help' => 'Additional notes for this revision of the publication.']);
         $this->renderTextInput('Amends Publication', 'pub_history_ph_amend_pub',
@@ -382,8 +385,8 @@ EOH;
 
 
 EOH;
-        $this->renderTextInput('Search keywords', 'supersession_search_keywords',
-            ['size' => 40, 'working' => true,
+        $this->renderTextInput('Search keywords', 'supersession_search_keywords', [
+            'size' => 40, 'working' => true, 'value' => $keywords,
             'help' => 'Search keywords to locate publications superseded by or superseding this publication.']);
         print <<<EOH
 <li id="supersession_old_pub_field">
