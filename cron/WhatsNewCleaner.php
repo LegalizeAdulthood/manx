@@ -67,7 +67,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 
     public function updateMovedFiles()
     {
-        $this->log("Updating location of moved files");
+        $this->log("Updating location of moved files for " . $this->_siteName);
         foreach($this->_db->getPossiblyMovedSiteUnknownPaths($this->_siteName) as $row)
         {
             $path = $row['path'];
