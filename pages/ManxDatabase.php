@@ -859,13 +859,15 @@ class ManxDatabase implements IManxDatabase
 
     public function getPossiblyMovedSiteUnknownPaths($siteName)
     {
-        return $this->execute("SELECT CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path`, `su`.`id` AS `path_id`, `c`.`url`, `c`.`copy_id`, `c`.`md5` "
+        return $this->execute("SELECT CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path`, `su`.`id` AS `path_id`, `c`.`url`, `c`.`copy_id`, `c`.`size`, `c`.`md5` "
             . "FROM `copy` `c`, `site` `s`, `site_unknown` `su`, `site_unknown_dir` `sud` "
             . "WHERE `s`.`name` = ? "
                 . "AND `s`.`site_id` = `c`.`site` "
                 . "AND `s`.`site_id` = `su`.`site_id` "
                 . "AND `s`.`site_id` = `sud`.`site_id` "
                 . "AND `su`.`dir_id` = `sud`.`id` "
+                . "AND ((`c`.`sud_id` <> -1 AND `su`.`dir_id` <> `c`.`sud_id`) "
+                    . "OR (`c`.`sud_id` = -1 AND `c`.`url` <> CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))) "
                 . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`",
             [$siteName]);
     }
