@@ -38,8 +38,8 @@ class UrlWizardPage extends AdminPageBase
         {
             $siteUnknownId = $this->_vars['site_unknown_id'];
             $this->_db->setCopySiteUnknownDirId($copyId, $siteUnknownId);
-            $this->_db->updateIgnoredUnknownSingleDir($siteUnknownId);
             $this->_db->removeSiteUnknownPathById($siteUnknownId);
+            $this->_db->updateIgnoredUnknownSingleDir($siteUnknownId);
         }
         $this->redirect(sprintf("details.php/%s,%s", $companyId, $pubId));
     }
