@@ -64,6 +64,7 @@ class WhatsNewPage extends AdminPageBase
         if (count($ignoredIds))
         {
             $this->_manxDb->ignoreSitePaths($ignoredIds);
+            $this->_manxDb->updateIgnoredUnknownSingleDir($ignoredIds[0]);
         }
     }
 
