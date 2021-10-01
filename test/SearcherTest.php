@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-class TestSearcher extends PHPUnit\Framework\TestCase
+class SearcherTest extends PHPUnit\Framework\TestCase
 {
     public function testRenderCompanies()
     {

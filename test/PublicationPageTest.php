@@ -35,7 +35,7 @@ class PublicationPageTester extends Manx\PublicationPage
     public $redirectCalled, $redirectLastUrl;
 }
 
-class TestPublicationPage extends PHPUnit\Framework\TestCase
+class PublicationPageTest extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;

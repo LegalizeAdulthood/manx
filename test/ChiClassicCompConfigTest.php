@@ -4,7 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Pimple\Container;
 
-class TestChiClassicCompConfig extends PHPUnit\Framework\TestCase
+class ChiClassicCompConfigTest extends PHPUnit\Framework\TestCase
 {
     public function setUp()
     {

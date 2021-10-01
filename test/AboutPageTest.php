@@ -4,7 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Pimple\Container;
 
-class TestAboutPage extends PHPUnit\Framework\TestCase
+class AboutPageTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {

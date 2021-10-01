@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-class TestManx extends PHPUnit\Framework\TestCase
+class ManxTest extends PHPUnit\Framework\TestCase
 {
     /** @var Manx\IManxDatabase */
     private $_db;

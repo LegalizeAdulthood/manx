@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-class TestUrlInfo extends PHPUnit\Framework\TestCase
+class UrlInfoTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {

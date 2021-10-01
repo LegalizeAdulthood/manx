@@ -26,7 +26,7 @@ class WhatsNewPageTester extends Manx\WhatsNewPage
     }
 }
 
-class TestWhatsNewPage extends PHPUnit\Framework\TestCase
+class WhatsNewPageTest extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;

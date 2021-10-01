@@ -6,7 +6,7 @@ use Pimple\Container;
 use \Slim\Http\Request as Request;
 use \Slim\Http\Response as Response;
 
-class TestApiSiteUnknownPaths extends PHPUnit\Framework\TestCase
+class ApiSiteUnknownPathsTest extends PHPUnit\Framework\TestCase
 {
     public function setUp()
     {

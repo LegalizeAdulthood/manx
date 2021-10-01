@@ -5,7 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // For PRIVATE_DIR
 require_once __DIR__ . '/../public/pages/Config.php';
 
-class TestUrlTransfer extends PHPUnit\Framework\TestCase
+class UrlTransferTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {

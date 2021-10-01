@@ -4,7 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Pimple\Container;
 
-class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
+class UrlMetaDataHelpersTest extends PHPUnit\Framework\TestCase
 {
     public function testExtractPartNumberLeadingDigitsSpaceSeparators()
     {

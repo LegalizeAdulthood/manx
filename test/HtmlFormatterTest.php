@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-class TestHtmlFormatter extends PHPUnit\Framework\TestCase
+class HtmlFormatterTest extends PHPUnit\Framework\TestCase
 {
     public function testConstruct()
     {

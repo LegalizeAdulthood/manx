@@ -35,7 +35,7 @@ class AdminPageBaseTester extends Manx\AdminPageBase
     public $redirectCalled, $redirectLastUrl;
 }
 
-class TestAdminPageBase extends PHPUnit\Framework\TestCase
+class AdminPageBaseTest extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;

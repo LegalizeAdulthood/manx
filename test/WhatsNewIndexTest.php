@@ -7,7 +7,7 @@ require_once __DIR__ . '/../public/pages/Config.php';
 
 use Pimple\Container;
 
-class TestWhatsNewIndex extends PHPUnit\Framework\TestCase
+class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;

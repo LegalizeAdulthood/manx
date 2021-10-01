@@ -12,7 +12,7 @@ class RssPageTester extends Manx\RssPage
     }
 }
 
-class TestRssPage extends PHPUnit\Framework\TestCase
+class RssPageTest extends PHPUnit\Framework\TestCase
 {
     public function testRenderBody()
     {

@@ -31,7 +31,7 @@ class UrlWizardServiceTester extends Manx\UrlWizardService
     public $headerCalled, $headerLastField;
 }
 
-class TestUrlWizardService extends PHPUnit\Framework\TestCase
+class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;

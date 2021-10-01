@@ -4,7 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Pimple\Container;
 
-class TestWhatsNewProcessor extends PHPUnit\Framework\TestCase
+class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
 {
     public function setUp()
     {

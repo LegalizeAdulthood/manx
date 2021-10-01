@@ -21,7 +21,7 @@ class PageBaseTester extends Manx\PageBase
     }
 }
 
-class TestPageBase extends PHPUnit\Framework\TestCase
+class PageBaseTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {

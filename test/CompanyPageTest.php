@@ -35,7 +35,7 @@ class CompanyPageTester extends Manx\CompanyPage
     public $redirectCalled, $redirectLastUrl;
 }
 
-class TestCompanyPage extends PHPUnit\Framework\TestCase
+class CompanyPageTest extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;

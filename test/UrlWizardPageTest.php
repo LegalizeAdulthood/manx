@@ -29,7 +29,7 @@ class UrlWizardPageTester extends Manx\UrlWizardPage
     }
 }
 
-class TestUrlWizardPage extends PHPUnit\Framework\TestCase
+class UrlWizardPageTest extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
     private $_config;

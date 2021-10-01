@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-class TestManxDatabaseUtils extends PHPUnit\Framework\TestCase
+class ManxDatabaseUtilsTest extends PHPUnit\Framework\TestCase
 {
     public function testNormalizePartNumberNotString()
     {

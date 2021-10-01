@@ -7,7 +7,7 @@ use Psr\Http\Message\UriInterface;
 use \Slim\Http\Request as Request;
 use \Slim\Http\Response as Response;
 
-class TestApiSiteUnknownDir extends PHPUnit\Framework\TestCase
+class ApiSiteUnknownDirTest extends PHPUnit\Framework\TestCase
 {
     public function setUp()
     {
