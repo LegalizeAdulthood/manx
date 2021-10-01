@@ -5,7 +5,7 @@ namespace Manx\Cron;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // For PRIVATE_DIR
-require_once __DIR__ . '/../pages/Config.php';
+require_once __DIR__ . '/../public/pages/Config.php';
 
 class ExclusiveLock implements IExclusiveLock
 {

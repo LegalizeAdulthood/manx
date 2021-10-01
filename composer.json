@@ -1,8 +1,8 @@
 {
     "autoload": {
         "psr-4": {
-            "Manx\\": "pages/",
-            "Manx\\Api\\": "api/",
+            "Manx\\": "public/pages/",
+            "Manx\\Api\\": "public/api/",
             "Manx\\Cron\\": "cron/"
         }
     },
@@ -12,7 +12,7 @@
         "slim/php-view": "^2.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "6",
+        "phpunit/phpunit": "^6.5",
         "php-coveralls/php-coveralls": "2.1.x-dev"
     }
 }
