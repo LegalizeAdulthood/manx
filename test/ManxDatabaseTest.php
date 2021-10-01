@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once __DIR__ . '/DatabaseTester.php';
-
 class TestManxDatabase extends PHPUnit\Framework\TestCase
 {
     /** @var Manx\IDatabase */
@@ -64,7 +62,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $query = "SELECT `url`,`description`,`low` FROM `site` WHERE `live`='Y' ORDER BY `site_id`";
         $this->_statement->expects($this->once())->method('fetchAll')
-            ->willReturn(DatabaseTester::createResultRowsForColumns(
+            ->willReturn(\Manx\Test\RowFactory::createResultRowsForColumns(
                 array('url', 'description', 'low'),
                 array(array('http://www.dec.com', 'DEC', false), array('http://www.hp.com', 'HP', true))));
         $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
@@ -103,7 +101,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     public function testGetOSTagsForPub()
     {
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            DatabaseTester::createResultRowsForColumns(array('tag_text'),
+            \Manx\Test\RowFactory::createResultRowsForColumns(array('tag_text'),
                 array(array('RSX-11M Version 4.0'), array('RSX-11M-PLUS Version 2.0')))
         );
         $query = "SELECT `tag_text` FROM `tag`,`pub_tag` WHERE `tag`.`id`=`pub_tag`.`tag` AND `tag`.`class`='os' AND `pub`=5";
@@ -121,7 +119,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $query = "SELECT `ph_company`,`ph_pub`,`ph_part`,`ph_title`,`ph_pub_date` "
             . "FROM `pub` JOIN `pub_history` ON `pub_id` = `ph_pub` WHERE `ph_amend_pub`=3 ORDER BY `ph_amend_serial`";
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            DatabaseTester::createResultRowsForColumns(
+            \Manx\Test\RowFactory::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pub_date'),
                 array(array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
                     array(1, 3301, 'DEC-15-YWZA-DN3', 'SGEN System Generator Utility Program', '1970-09'))));
@@ -140,7 +138,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         // Uncomment this code when the method really does a search.
         // $query = "SELECT 'html_text' FROM `long_desc` WHERE `pub`=3 ORDER BY `line`";
         // $this->expectStatementFetchAllResults($query, array()
-        //     DatabaseTester::createResultRowsForColumns(array('html_text'),
+        //     \Manx\Test\RowFactory::createResultRowsForColumns(array('html_text'),
         //         array(array('<p>This is paragraph one.</p>'), array('<p>This is paragraph two.</p>'))));
         $this->_db->expects($this->never())->method('query');
 
@@ -157,7 +155,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . ' JOIN `pub` ON (`C`.`pub`=`pub_id` AND `C`.`mentions_pub`=72)'
             . ' JOIN `pub_history` ON `pub`.`pub_history`=`ph_id`';
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            DatabaseTester::createResultRowsForColumns(
+            \Manx\Test\RowFactory::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
                 array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance'))));
         $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
@@ -173,7 +171,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $pubId = 123;
         $query = "SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=123 ORDER BY `line`";
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            DatabaseTester::createResultRowsForColumns(
+            \Manx\Test\RowFactory::createResultRowsForColumns(
                 array('level', 'label', 'name'),
                 array(
                     array(1, 'Chapter 2', 'Configuration'),
@@ -195,7 +193,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $pubId = 123;
         $query = "SELECT `level`,`label`,`name` FROM `toc` WHERE `pub`=123 AND `level` < 2 ORDER BY `line`";
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            DatabaseTester::createResultRowsForColumns(
+            \Manx\Test\RowFactory::createResultRowsForColumns(
                 array('level', 'label', 'name'),
                 array(
                     array(1, 'Chapter 1', 'KA655 CPU and Memory Subsystem'),
@@ -226,7 +224,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             'http://www.textfiles.com/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
             'http://computer-refuge.org/bitsavers/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf',
             'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/dec/vax/655/EK-306A-MG-001_655Mnt_Mar89.pdf');
-        $rows = DatabaseTester::createResultRowsForColumns(array('mirror_url'),
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(array('mirror_url'),
                 array(array($expected[0]), array($expected[1]), array($expected[2]), array($expected[3]), array($expected[4])));
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn($rows);
         $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
@@ -265,7 +263,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . " AND `site`.`live`='Y'"
             . " ORDER BY `site`.`display_order`,`site`.`site_id`";
         $this->_statement->expects($this->once())->method('fetchAll')->willReturn(
-            DatabaseTester::createResultRowsForColumns(
+            \Manx\Test\RowFactory::createResultRowsForColumns(
             array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
             array(
                 array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, 10277)
@@ -290,7 +288,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . 'JOIN `pub_history` ON `pub`.`pub_history`=`ph_id` '
             . 'JOIN `company` ON `ph_company`=`company`.`id` '
             . 'WHERE 1=1 AND `pub_id`=3';
-        $rows = DatabaseTester::createResultRowsForColumns(
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
             array('pub_id', 'name', 'ph_part', 'ph_pub_date', 'ph_title', 'ph_abstract', 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
             array(array(3, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL, '', NULL, 'gigi_regis_handbook.png', '+en', 'VK100')));
         $this->_statement->expects($this->once())->method('fetch')->willReturn($rows[0]);
@@ -422,7 +420,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('execute')
             ->with('SELECT `ph_company`,`ph_pub`,`ph_title` FROM `copy`,`pub_history` WHERE `copy`.`pub`=`pub_history`.`ph_pub` AND `copy`.`url`=?',
                 array($url))
-            ->willReturn(DatabaseTester::createResultRowsForColumns(
+            ->willReturn(\Manx\Test\RowFactory::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_title'),
                 array(array('1', '2', 'IM1 Schematic'))));
 
@@ -451,7 +449,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . " LIMIT 0,10";
         $this->_db->expects($this->once())->method('query')->with($query)->willReturn($this->_statement);
         $this->_statement->expects($this->once())->method('fetchAll')
-            ->willReturn(DatabaseTester::createResultRowsForColumns(
+            ->willReturn(\Manx\Test\RowFactory::createResultRowsForColumns(
                 array('copy_id', 'ph_company', 'ph_pub', 'ph_title'),
                 array(array('66', '1', '2', 'IM1 Schematic'))
             ));
@@ -469,7 +467,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $query = "SELECT `url` FROM `copy` WHERE `copy_id` = ?";
         $url = 'http://www.example.com/foo.pdf';
-        $rows = DatabaseTester::createResultRowsForColumns(
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
             array('url'),
             array(array($url)));
         $copyId = 5;
@@ -517,7 +515,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . " LIMIT 0,10";
         $this->_db->expects($this->once())->method('query')
             ->with($query)->willReturn($this->_statement);
-        $rows = DatabaseTester::createResultRowsForColumns(
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
             ['copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url'],
             [
                 ['66', '1', '2', 'IM1 Schematic', 'http://bitsavers.org/pdf/dec/IM1_Schematic.pdf' ]
@@ -538,7 +536,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "AND `copy`.`format` <> 'HTML'";
         $this->_db->expects($this->once())->method('query')
             ->with($query)->willReturn($this->_statement);
-        $rows = DatabaseTester::createResultRowsForColumns(
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
             ['copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url'],
             [
                 ['66', '1', '2', 'IM1 Schematic', 'http://bitsavers.org/pdf/dec/IM1_Schematic.pdf' ]
@@ -592,9 +590,9 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 [$insertSU, ['IndexByDate.txt', -1, 'frob.jpg', $dirId1, 'bar.pdf', $dirId3]]
             )
             ->willReturn(
-                DatabaseTester::createResultRowsForColumns(['site_id'], [[3]]),
+                \Manx\Test\RowFactory::createResultRowsForColumns(['site_id'], [[3]]),
                 null,
-                DatabaseTester::createResultRowsForColumns(['id', 'path', 'parent_dir_id'],
+                \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'path', 'parent_dir_id'],
                     [
                     [$dirId1, 'foo/DEC', -1],
                     [$dirId2, 'foo', -1],
@@ -633,7 +631,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
         $path2 = 'foo/foo.jpg';
         $this->_db->expects($this->exactly(1))->method('execute')
             ->with($query, [$siteName])
-            ->willReturn(DatabaseTester::createResultRowsForColumns(
+            ->willReturn(\Manx\Test\RowFactory::createResultRowsForColumns(
                     ['id', 'path'],
                     [['1', $path1], ['2', $path2]]
                 ));
@@ -659,9 +657,9 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                 [ $query, array(3) ]
             )
             ->willReturn(
-                DatabaseTester::createResultRowsForColumns(
+                \Manx\Test\RowFactory::createResultRowsForColumns(
                     array('site_id'), array(array(3))),
-                DatabaseTester::createResultRowsForColumns(
+                \Manx\Test\RowFactory::createResultRowsForColumns(
                     array('path', 'id', 'site_id'), array(array($path2, '2', '3'), array($path1, '1', '3')))
             );
 
@@ -815,7 +813,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                     . "(`scd`.`parent_directory` <> '' AND `sud`.`path` LIKE CONCAT(`scd`.`parent_directory`, '/', `scd`.`directory`, '/%'))"
                     . ") "
             . "ORDER BY `su`.`id`";
-        $rows = DatabaseTester::createResultRowsForColumns(
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
             ['id', 'site_id', 'company_id', 'url'],
             [
                 [7766, 3, 13, 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf'],
@@ -846,7 +844,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
                     . "AND `s`.`site_id` = `sud`.`site_id` " 
                     . "AND `su`.`dir_id` = `sud`.`id` "
             . "ORDER BY `su`.`id`";
-        $rows = DatabaseTester::createResultRowsForColumns(
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
             ['id', 'path'],
             [
                 [1, 'foo/bar.pdf']
@@ -880,7 +878,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "AND ((`c`.`sud_id` <> -1 AND `su`.`dir_id` <> `c`.`sud_id`) "
                 . "OR (`c`.`sud_id` = -1 AND `c`.`url` <> CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))) "
             . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`";
-        $rows = DatabaseTester::createResultRowsForColumns(['path', 'path_id', 'url', 'copy_id', 'md5'],
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['path', 'path_id', 'url', 'copy_id', 'md5'],
             [
                 ['foo/bar/foo.pdf', 11, 'http://bitsavers.org/pdf/foo/bar/foo.pdf', 22, 6566, 'd131dd02c5e6eec4']
             ]);
@@ -895,7 +893,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $dirId = 133;
         $select = "SELECT * FROM `site_unknown_dir` WHERE `id` = ?";
-        $rows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
             [
                 [133, 3, 'dec', -1, '']
             ]);
@@ -914,7 +912,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `sud`.`site_id` "
             . "AND `sud`.`parent_dir_id` = ?";
-        $rows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
             [
                 [5005, 3, 'BBS', -1, ''],
                 [5006, 3, 'books', -1, ''],
@@ -937,7 +935,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "AND `su`.`ignored` = 0 "
             . "AND `su`.`dir_id` = `sud`.`id` "
             . "AND `su`.`dir_id` = ?";
-        $rows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
             [
                 [5005, 3, 'foo.pdf', 0, 0, -1],
                 [5005, 3, 'foo.jpg', 0, 1, -1]
@@ -989,7 +987,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . 'AND ph_company = ? '
             . 'ORDER BY ph_sort_part, ph_pub_date '
             . 'LIMIT 10';
-        $rows = DatabaseTester::createResultRowsForColumns(
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
             ['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
             [
                 [7766, 'AA-44422', 'Jumbotron Users Guide', '1977-01'],
@@ -1033,7 +1031,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
             . "AND `scd`.`directory` = ? "
             . "AND `scd`.`parent_directory` = ?";
         $companyId = 38;
-        $rows = DatabaseTester::createResultRowsForColumns([ 'company_id' ], [ [ $companyId ] ]);
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns([ 'company_id' ], [ [ $companyId ] ]);
         $this->_db->expects($this->once())->method('execute')->with($select, [ $siteName, $directory, $parentDirectory ])->willReturn($rows);
 
         $result = $this->_manxDb->getCompanyIdForSiteDirectory($siteName, $directory, $parentDirectory);
@@ -1054,7 +1052,7 @@ class TestManxDatabase extends PHPUnit\Framework\TestCase
     {
         $select = "SELECT `url` FROM `copy` WHERE `site` = ? AND `size` <> 0 AND `md5` <> '' LIMIT 0, 1000";
         $siteId = 3;
-        $rows = DatabaseTester::createResultRowsForColumns([ 'url' ], [ [ 'http://bitsavers.org/pdf/dec/foo.pdf' ] ]);
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns([ 'url' ], [ [ 'http://bitsavers.org/pdf/dec/foo.pdf' ] ]);
         $this->_db->expects($this->once())->method('execute')->with($select, [ $siteId ])->willReturn($rows);
 
         $results = $this->_manxDb->getSampleCopiesForSite($siteId);

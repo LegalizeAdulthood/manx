@@ -4,7 +4,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 // For SORT_ORDER_xxx
 require_once __DIR__ . '/../public/pages/UnknownPathDefs.php';
-require_once __DIR__ . '/DatabaseTester.php';
 
 use Pimple\Container;
 
@@ -106,7 +105,7 @@ class TestWhatsNewPage extends PHPUnit\Framework\TestCase
         $siteName = 'bitsavers';
         $parentDirId = 1339;
         $this->createPage(['siteName' => $siteName, 'parentDir' => $parentDirId]);
-        $thisDirRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+        $thisDirRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
             [
                 [100, 3, 'dec/pdp11', 150, '']
             ]);
@@ -132,12 +131,12 @@ EOH;
         $siteName = 'bitsavers';
         $parentDirId = 1339;
         $this->createPage(['siteName' => $siteName, 'parentDir' => $parentDirId]);
-        $thisDirRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
+        $thisDirRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
             [
                 [100, 3, 'dec/pdp11', 150, '', 0]
             ]);
         $this->_db->expects($this->once())->method('getSiteUnknownDir')->with($parentDirId)->willReturn($thisDirRows[0]);
-        $dirRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
+        $dirRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
             [
                 [111, 3, 'dec/pdp11/1103', 1339, '', 0],
                 [112, 3, 'dec/pdp11/1104', 1339, '', 0],
@@ -147,7 +146,7 @@ EOH;
         $this->_db->expects($this->once())->method('getSiteUnknownDirectories')
             ->with($siteName, $parentDirId)
             ->willReturn($dirRows);
-        $fileRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+        $fileRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
             [
                 [222, 3, 'KM11_Maintenance_Panel_May70.pdf', 0, 0, 1339],
                 [223, 3, 'EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf', 0, 0, 1339],

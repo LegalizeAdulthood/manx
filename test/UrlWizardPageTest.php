@@ -3,7 +3,6 @@
 use Pimple\Container;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/DatabaseTester.php';
 
 class UrlWizardPageTester extends Manx\UrlWizardPage
 {
@@ -236,19 +235,19 @@ EOH;
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $siteId = 3;
-        $sites = DatabaseTester::createResultRowsForColumns([ 'site_id', 'name', 'url', 'description', 'copy_base', 'low', 'live', 'display_order' ],
+        $sites = \Manx\Test\RowFactory::createResultRowsForColumns([ 'site_id', 'name', 'url', 'description', 'copy_base', 'low', 'live', 'display_order' ],
             [
                 [ $siteId, 'bitsavers', 'http://bitsavers.org', '', 'http://bitsavers.org/pdf/', 'N', 'Y', 0 ],
                 [ 58, 'ChiClassicComp', 'http://chiclassiccomp.org', '', 'http://chiclassiccomp.org/docs/content/', 'N', 'Y', 0 ]
             ]);
         $this->_db->expects($this->once())->method('getSites')->willReturn($sites);
         $companyId = 22;
-        $companies = DatabaseTester::createResultRowsForColumns([ 'id', 'name' ],
+        $companies = \Manx\Test\RowFactory::createResultRowsForColumns([ 'id', 'name' ],
             [
                 [ $companyId, 'DEC' ],
                 [ 23, 'IBM' ]
             ]);
-        $pubs = DatabaseTester::createResultRowsForColumns([
+        $pubs = \Manx\Test\RowFactory::createResultRowsForColumns([
                 'pub_id', 'ph_part', 'ph_title', 'pub_has_online_copies',
                 'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pub_date',
                 'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pub_type'
@@ -305,19 +304,19 @@ EOH;
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $siteId = 3;
-        $sites = DatabaseTester::createResultRowsForColumns([ 'site_id', 'name', 'url', 'description', 'copy_base', 'low', 'live', 'display_order' ],
+        $sites = \Manx\Test\RowFactory::createResultRowsForColumns([ 'site_id', 'name', 'url', 'description', 'copy_base', 'low', 'live', 'display_order' ],
             [
                 [ $siteId, 'bitsavers', 'http://bitsavers.org', '', 'http://bitsavers.org/pdf/', 'N', 'Y', 0 ],
                 [ 58, 'ChiClassicComp', 'http://chiclassiccomp.org', '', 'http://chiclassiccomp.org/docs/content/', 'N', 'Y', 0 ]
             ]);
         $this->_db->expects($this->once())->method('getSites')->willReturn($sites);
         $companyId = 22;
-        $companies = DatabaseTester::createResultRowsForColumns([ 'id', 'name' ],
+        $companies = \Manx\Test\RowFactory::createResultRowsForColumns([ 'id', 'name' ],
             [
                 [ $companyId, 'DEC' ],
                 [ 23, 'IBM' ]
             ]);
-        $pubs = DatabaseTester::createResultRowsForColumns([
+        $pubs = \Manx\Test\RowFactory::createResultRowsForColumns([
                 'pub_id', 'ph_part', 'ph_title', 'pub_has_online_copies',
                 'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pub_date',
                 'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pub_type'

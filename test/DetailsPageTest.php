@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once __DIR__ . '/DatabaseTester.php';
-
 use Pimple\Container;
 
 class RenderDetailsTester extends Manx\DetailsPage
@@ -199,7 +197,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getAmendmentsForPub')
             ->with($pubId)
             ->willReturn(
-                DatabaseTester::createResultRowsForColumns(
+                \Manx\Test\RowFactory::createResultRowsForColumns(
                     array('ph_company', 'ph_pub', 'ph_part', 'ph_title', 'ph_pub_date'),
                     array(
                         array(1, 4496, 'DEC-15-YWZA-DN1', 'DDT (Dynamic Debugging Technique) Utility Program', '1970-04'),
@@ -269,7 +267,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $pubId = 72;
         $this->_db->expects($this->once())->method('getCitationsForPub')
             ->with($pubId)
-            ->willReturn(DatabaseTester::createResultRowsForColumns(
+            ->willReturn(\Manx\Test\RowFactory::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_part', 'ph_title'),
                 array(array(1, 123, 'EK-306AA-MG-001', 'KA655 CPU System Maintenance'))
             ));
@@ -288,7 +286,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getTableOfContentsForPub')
             ->with($pubId, true)
             ->willReturn(
-                DatabaseTester::createResultRowsForColumns(
+                \Manx\Test\RowFactory::createResultRowsForColumns(
                     array('level', 'label', 'name'),
                     array(
                         array(1, 'Chapter 1', 'KA655 CPU and Memory Subsystem'),
@@ -602,7 +600,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $pubId = 123;
         $this->_db->expects($this->once())->method('getCopiesForPub')
             ->with($pubId)
-            ->willReturn(DatabaseTester::createResultRowsForColumns(
+            ->willReturn(\Manx\Test\RowFactory::createResultRowsForColumns(
                 array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
                 array(
                     array('PDF', 'http://vt100.net/mirror/hcps/306aamg1.pdf', NULL, 49351262, 'VT100.net', 'http://vt100.net/', "Paul Williams' VT100.net", 'http://vt100.net/', 'N', NULL, NULL, NULL, 7165),
@@ -722,7 +720,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('getCopiesForPub')
             ->with($pubId)
             ->willReturn(
-                DatabaseTester::createResultRowsForColumns(
+                \Manx\Test\RowFactory::createResultRowsForColumns(
                 array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
                 array(
                     array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, $copyId)
@@ -783,7 +781,7 @@ class TestDetailsPage extends PHPUnit\Framework\TestCase
     {
         $_SERVER['PATH_INFO'] = '/1,3';
         $pubId = 3;
-        $rows = DatabaseTester::createResultRowsForColumns(
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
             array('pub_id', 'name', 'ph_part', 'ph_pub_date', 'ph_title', 'ph_abstract',
                 'ph_revision', 'ph_ocr_file', 'ph_cover_image', 'ph_lang', 'ph_keywords'),
             array(array($pubId, 'Digital Equipment Corporation', 'AA-K336A-TK', NULL, 'GIGI/ReGIS Handbook', NULL,

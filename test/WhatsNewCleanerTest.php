@@ -173,7 +173,7 @@ class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
     {
         $url = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron_Users_Manual.pdf';
         $copyId = 5544;
-        $docs = DatabaseTester::createResultRowsForColumns([ 'copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url' ],
+        $docs = \Manx\Test\RowFactory::createResultRowsForColumns([ 'copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url' ],
             [
                 [ $copyId, 23, 100, 'Jumobotron Users Manual', $url ]
             ]);
@@ -193,7 +193,7 @@ class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron Users Manual.pdf';
         $encodedUrl = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron%20Users%20Manual.pdf';
         $copyId = 5544;
-        $docs = DatabaseTester::createResultRowsForColumns([ 'copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url' ],
+        $docs = \Manx\Test\RowFactory::createResultRowsForColumns([ 'copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url' ],
             [
                 [ $copyId, 23, 100, 'Jumobotron Users Manual', $url ]
             ]);
@@ -212,7 +212,7 @@ class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
     {
         $url = 'http://bitsavers.org/pdf/dec/jtron/Jumbotron_Users_Manual.pdf';
         $copyId = 5544;
-        $docs = DatabaseTester::createResultRowsForColumns([ 'copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url' ],
+        $docs = \Manx\Test\RowFactory::createResultRowsForColumns([ 'copy_id', 'ph_company', 'ph_pub', 'ph_title', 'url' ],
             [
                 [ $copyId, 23, 100, 'Jumobotron Users Manual', $url ]
             ]);
@@ -232,7 +232,7 @@ class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
         $siteId = 3;
         $siteName = 'bitsavers';
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
-        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
+        $pathRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
                 [$unknownId, $siteId, $companyId, 'dec', $url]
             ]);
@@ -262,13 +262,13 @@ class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
         $siteId = 3;
         $siteName = 'bitsavers';
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
-        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
+        $pathRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
                 [$unknownId, $siteId, $companyId, 'dec', $url]
             ]);
         $data = $this->bitsaversMetaData($siteId, $companyId, $url);
         $pubId = 23;
-        $data['pubs'] = DatabaseTester::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title'],
+        $data['pubs'] = \Manx\Test\RowFactory::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title'],
             [
                 [$pubId, 'EK-3333-01', 'Jumbotron Users Guide'],
             ]);
@@ -294,13 +294,13 @@ class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
         $siteId = 3;
         $siteName = 'bitsavers';
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
-        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
+        $pathRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
                 [$unknownId, $siteId, $companyId, 'dec', $url]
             ]);
         $data = $this->bitsaversMetaData($siteId, $companyId, $url);
         $pubId = 23;
-        $data['pubs'] = DatabaseTester::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title'],
+        $data['pubs'] = \Manx\Test\RowFactory::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title'],
             [
                 [$pubId, 'EK-3333-02', 'Jumbotron Users Guide'],
             ]);
@@ -324,12 +324,12 @@ class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
         $siteId = 3;
         $siteName = 'bitsavers';
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
-        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
+        $pathRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
                 [$unknownId, $siteId, $companyId, 'dec', $url]
             ]);
         $data = $this->bitsaversMetaData($siteId, $companyId, $url);
-        $data['pubs'] = DatabaseTester::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
+        $data['pubs'] = \Manx\Test\RowFactory::createResultRowsForColumns(['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
             [
                 [44, 'EK-3333-01', 'Some Other Manual', '1977-01'],
                 [45, 'EK-3333-01', 'Another Unrelated Manual', '1982-04']
@@ -355,7 +355,7 @@ class TestWhatsNewCleaner extends PHPUnit\Framework\TestCase
         $siteId = 3;
         $siteName = 'bitsavers';
         $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
-        $pathRows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
+        $pathRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
             [
                 [$unknownId, $siteId, $companyId, 'dec', $url]
             ]);

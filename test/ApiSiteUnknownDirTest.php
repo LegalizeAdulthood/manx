@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once __DIR__ . '/DatabaseTester.php';
-
 use Pimple\Container;
 use Psr\Http\Message\UriInterface;
 use \Slim\Http\Request as Request;
@@ -46,7 +44,7 @@ class TestApiSiteUnknownDir extends PHPUnit\Framework\TestCase
         $this->_user->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $dirId = 33;
         $args = ['dirId' => $dirId];
-        $rows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
             [
                 [33, 3, 'foo/bar', 44, ''],
             ]);

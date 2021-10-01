@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once __DIR__ . '/DatabaseTester.php';
-
 use Pimple\Container;
 
 class TestAboutPage extends PHPUnit\Framework\TestCase
@@ -46,7 +44,7 @@ class TestAboutPage extends PHPUnit\Framework\TestCase
     public function testRenderSiteList()
     {
         $this->_db->expects($this->once())->method('getSiteList')->willReturn(
-            DatabaseTester::createResultRowsForColumns(
+            \Manx\Test\RowFactory::createResultRowsForColumns(
                 array('url', 'description', 'low'),
                 array(
                     array('http://www.dec.com', 'DEC', false),

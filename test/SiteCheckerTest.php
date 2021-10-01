@@ -52,13 +52,13 @@ class TestSiteChecker extends PHPUnit\Framework\TestCase
         $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
         $this->_urlInfo->method('url')->willReturn($siteUrl);
         $siteId = 3;
-        $siteRows = DatabaseTester::createResultRowsForColumns(
+        $siteRows = \Manx\Test\RowFactory::createResultRowsForColumns(
             ['site_id', 'name', 'url', 'description', 'copy_base', 'low', 'live', 'display_order'],
             [
                 [$siteId, 'bitsavers', $siteUrl, '', '', 'N', 'Y', 0]
             ]);
         $this->_db->expects($this->once())->method('getSites')->willReturn($siteRows);
-        $urlRows = DatabaseTester::createResultRowsForColumns([ 'url' ], [ [ $docUrl ] ]);
+        $urlRows = \Manx\Test\RowFactory::createResultRowsForColumns([ 'url' ], [ [ $docUrl ] ]);
         $this->_db->expects($this->once())->method('getSampleCopiesForSite')->with($siteId)->willReturn($urlRows);
         $docUrlInfo->expects($this->once())->method('exists')->willReturn(true);
         $this->_db->expects($this->once())->method('setSiteLive')->with($siteId, true);

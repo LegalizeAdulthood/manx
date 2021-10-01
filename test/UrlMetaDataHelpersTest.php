@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once __DIR__ . '/DatabaseTester.php';
-
 use Pimple\Container;
 
 class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
@@ -269,10 +267,10 @@ class TestUrlMetaDataHelpers extends PHPUnit\Framework\TestCase
     private function createPublicationsForCompare($leftPart, $leftRev, $leftTitle, $rightPart, $rightRev, $rightTitle)
     {
         $columns = array('ph_pub', 'ph_part', 'ph_revision', 'ph_title');
-        $left = DatabaseTester::createResultRowsForColumns($columns,
+        $left = \Manx\Test\RowFactory::createResultRowsForColumns($columns,
             array(array('1', $leftPart, $leftRev, $leftTitle)));
         $left = $left[0];
-        $right = DatabaseTester::createResultRowsForColumns($columns,
+        $right = \Manx\Test\RowFactory::createResultRowsForColumns($columns,
             array(array('2', $rightPart, $rightRev, $rightTitle)));
         $right = $right[0];
         return array($left, $right);

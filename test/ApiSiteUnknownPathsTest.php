@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once __DIR__ . '/DatabaseTester.php';
-
 use Pimple\Container;
 use \Slim\Http\Request as Request;
 use \Slim\Http\Response as Response;
@@ -48,7 +46,7 @@ class TestApiSiteUnknownPaths extends PHPUnit\Framework\TestCase
         $siteName = 'bitsavers';
         $parentDirId = -1;
         $args = ['siteName' => $siteName, 'parentDirId' => $parentDirId];
-        $rows = DatabaseTester::createResultRowsForColumns(['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
             [
                 [1, 3, 'foo.pdf', 0, 0, -1],
                 [1, 3, 'foo.jpg', 1, 0, -1]

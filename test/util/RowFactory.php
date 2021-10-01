@@ -1,8 +1,9 @@
 <?php
 
-class DatabaseTester
-{
+namespace Manx\Test;
 
+class RowFactory
+{
     public static function createResultRowsForColumns($columns, $data)
     {
         $rows = array();

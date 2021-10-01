@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once __DIR__ . '/DatabaseTester.php';
-
 class TestHtmlFormatter extends PHPUnit\Framework\TestCase
 {
     public function testConstruct()
@@ -132,7 +130,7 @@ class TestHtmlFormatter extends PHPUnit\Framework\TestCase
     public function testRenderResultsPage()
     {
         $formatter = Manx\HtmlFormatter::getInstance();
-        $rows = DatabaseTester::createResultRowsForColumns(
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
             array('pub_id', 'ph_part', 'ph_title', 'pub_has_online_copies',
                 'ph_abstract', 'pub_has_toc', 'pub_superseded', 'ph_pub_date',
                 'ph_revision', 'ph_company', 'ph_alt_part', 'ph_pub_type', 'tags'),
