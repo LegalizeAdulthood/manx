@@ -3,7 +3,8 @@
         "psr-4": {
             "Manx\\": "public/pages/",
             "Manx\\Api\\": "public/api/",
-            "Manx\\Cron\\": "cron/"
+            "Manx\\Cron\\": "cron/",
+            "Manx\\Test\\": "test/util/"
         }
     },
     "require": {

@@ -5,7 +5,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Pimple\Container;
 
 require_once __DIR__ . '/DatabaseTester.php';
-require_once __DIR__ . '/FakeFile.php';
 
 class PublicationPageTester extends Manx\PublicationPage
 {

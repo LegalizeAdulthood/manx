@@ -3,7 +3,6 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 require_once __DIR__ . '/DatabaseTester.php';
-require_once __DIR__ . '/FakeFile.php';
 
 use Pimple\Container;
 
@@ -68,7 +67,7 @@ class TestCompanyPage extends PHPUnit\Framework\TestCase
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
         $this->_info = $this->createMock(Manx\IUrlInfo::class);
         $this->_transfer = $this->createMock(Manx\IUrlTransfer::class);
-        $this->_file = new FakeFile();
+        $this->_file = new Manx\Test\FakeFile();
         $config = new Container();
         $config['manx'] = $this->_manx;
         $this->_config = $config;

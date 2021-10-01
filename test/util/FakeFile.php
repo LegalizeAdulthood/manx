@@ -1,8 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+namespace Manx\Test;
 
-class FakeFile implements Manx\IFile
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+class FakeFile implements \Manx\IFile
 {
     private $_line;
 
