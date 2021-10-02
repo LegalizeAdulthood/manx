@@ -98,7 +98,7 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
     public function testGetIndex()
     {
         $this->_factory->expects($this->once())->method('createUrlTransfer')->with($this->_indexUrl)->willReturn($this->_transfer);
-        $this->_transfer->expects($this->once())->method('get')->with(\Manx\Config::configDir() . $this->_indexFile);
+        $this->_transfer->expects($this->once())->method('get')->with(\Manx\Config::configFile($this->_indexFile));
         $now = '50';
         $this->_factory->expects($this->once())->method('getCurrentTime')->willReturn($now);
         $this->_db->expects($this->once())->method('setProperty')->with($this->_property, $now);
@@ -109,7 +109,7 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
     public function testParseIndex()
     {
         $file = $this->createMock(Manx\IFile::class);
-        $this->_fileSystem->expects($this->once())->method('openFile')->with(\Manx\Config::configDir() . $this->_indexFile, 'r')->willReturn($file);
+        $this->_fileSystem->expects($this->once())->method('openFile')->with(\Manx\Config::configFile($this->_indexFile), 'r')->willReturn($file);
         $file->expects($this->exactly(3))->method('eof')->willReturn(false, false, true);
         $file->expects($this->exactly(2))->method('getString')->willReturn(
             '2019-10-27 03:40:42 ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
@@ -125,7 +125,7 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
     public function testParseIndexSkipsBlankLines()
     {
         $file = $this->createMock(Manx\IFile::class);
-        $this->_fileSystem->expects($this->once())->method('openFile')->with(\Manx\Config::configDir() . $this->_indexFile, 'r')->willReturn($file);
+        $this->_fileSystem->expects($this->once())->method('openFile')->with(\Manx\Config::configFile($this->_indexFile), 'r')->willReturn($file);
         $file->expects($this->exactly(4))->method('eof')->willReturn(false, false, false, true);
         $file->expects($this->exactly(3))->method('getString')->willReturn(
             '2019-10-27 03:40:42 ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',

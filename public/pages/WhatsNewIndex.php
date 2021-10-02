@@ -38,13 +38,13 @@ class WhatsNewIndex implements IWhatsNewIndex
     public function getIndexByDateFile()
     {
         $transfer = $this->_factory->createUrlTransfer($this->_indexByDateUrl);
-        $transfer->get(Config::configDir() . $this->_indexByDateFile);
+        $transfer->get(Config::configFile($this->_indexByDateFile));
         $this->_manxDb->setProperty($this->_timeStampProperty, $this->_factory->getCurrentTime());
     }
 
     public function parseIndexByDateFile()
     {
-        $indexByDate = $this->_fileSystem->openFile(Config::configDir() . $this->_indexByDateFile, 'r');
+        $indexByDate = $this->_fileSystem->openFile(Config::configFile($this->_indexByDateFile), 'r');
         $paths = [];
         while (!$indexByDate->eof())
         {

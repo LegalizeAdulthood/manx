@@ -8,7 +8,7 @@ class PDODatabaseAdapter implements IDatabase
 {
     public static function getInstance()
     {
-        $config = explode(" ", trim(file_get_contents(Config::configDir() . "config.txt")));
+        $config = explode(" ", trim(file_get_contents(Config::configFile("config.txt"))));
         $pdo = new \PDO($config[0], $config[1], $config[2]);
         return new PDODatabaseAdapter($pdo);
     }

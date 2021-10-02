@@ -29,7 +29,7 @@ class UrlTransferTest extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $file = $this->createMock(Manx\IFile::class);
         $stream = 10;
-        $destination = Manx\Config::configDir() . 'Whatsnew.txt';
+        $destination = Manx\Config::configFile('Whatsnew.txt');
         $tempDestination = $destination . '.tmp';
         $this->_fileSystem->expects($this->once())->method('openFile')->with($tempDestination)->willReturn($file);
         $file->expects($this->once())->method('getStream')->willReturn($stream);
@@ -51,7 +51,7 @@ class UrlTransferTest extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $file = $this->createMock(Manx\IFile::class);
         $stream = 10;
-        $destination = Manx\Config::configDir() . 'Whatsnew.txt';
+        $destination = Manx\Config::configFile('Whatsnew.txt');
         $tempDestination = $destination . '.tmp';
         $this->_fileSystem->expects($this->once())->method('openFile')->with($tempDestination, 'w')->willReturn($file);
         $file->expects($this->once())->method('getStream')->willReturn($stream);
@@ -77,7 +77,7 @@ class UrlTransferTest extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $file = $this->createMock(Manx\IFile::class);
         $stream = 10;
-        $destination = Manx\Config::configDir() . 'Whatsnew.txt';
+        $destination = Manx\Config::configFile('Whatsnew.txt');
         $tempDestination = $destination . '.tmp';
         $this->_fileSystem->expects($this->once())->method('openFile')->with($tempDestination, 'w')->willReturn($file);
         $file->expects($this->once())->method('getStream')->willReturn($stream);

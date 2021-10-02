@@ -8,6 +8,6 @@ class ExclusiveLock implements IExclusiveLock
 {
     public function lock($name)
     {
-        return flock(fopen(Manx\Config::configDir() . "/" . $name, "w"), LOCK_EX);
+        return flock(fopen(\Manx\Config::configFile($name), "w"), LOCK_EX);
     }
 }
