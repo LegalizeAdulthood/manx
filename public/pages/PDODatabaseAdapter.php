@@ -4,14 +4,11 @@ namespace Manx;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-// For PRIVATE_DIR
-require_once __DIR__ . '/Config.php';
-
 class PDODatabaseAdapter implements IDatabase
 {
     public static function getInstance()
     {
-        $config = explode(" ", trim(file_get_contents(PRIVATE_DIR . "config.txt")));
+        $config = explode(" ", trim(file_get_contents(Config::configDir() . "config.txt")));
         $pdo = new \PDO($config[0], $config[1], $config[2]);
         return new PDODatabaseAdapter($pdo);
     }

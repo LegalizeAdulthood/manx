@@ -2,5 +2,5 @@
 .vs
 .well-known
 *.swp
-public/pages/Config.php
+private
 vendor

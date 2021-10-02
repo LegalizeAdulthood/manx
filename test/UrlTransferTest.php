@@ -2,9 +2,6 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// For PRIVATE_DIR
-require_once __DIR__ . '/../public/pages/Config.php';
-
 class UrlTransferTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
@@ -32,7 +29,7 @@ class UrlTransferTest extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $file = $this->createMock(Manx\IFile::class);
         $stream = 10;
-        $destination = PRIVATE_DIR . 'Whatsnew.txt';
+        $destination = Manx\Config::configDir() . 'Whatsnew.txt';
         $tempDestination = $destination . '.tmp';
         $this->_fileSystem->expects($this->once())->method('openFile')->with($tempDestination)->willReturn($file);
         $file->expects($this->once())->method('getStream')->willReturn($stream);
@@ -54,7 +51,7 @@ class UrlTransferTest extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $file = $this->createMock(Manx\IFile::class);
         $stream = 10;
-        $destination = PRIVATE_DIR . 'Whatsnew.txt';
+        $destination = Manx\Config::configDir() . 'Whatsnew.txt';
         $tempDestination = $destination . '.tmp';
         $this->_fileSystem->expects($this->once())->method('openFile')->with($tempDestination, 'w')->willReturn($file);
         $file->expects($this->once())->method('getStream')->willReturn($stream);
@@ -80,7 +77,7 @@ class UrlTransferTest extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/Whatsnew.txt';
         $file = $this->createMock(Manx\IFile::class);
         $stream = 10;
-        $destination = PRIVATE_DIR . 'Whatsnew.txt';
+        $destination = Manx\Config::configDir() . 'Whatsnew.txt';
         $tempDestination = $destination . '.tmp';
         $this->_fileSystem->expects($this->once())->method('openFile')->with($tempDestination, 'w')->willReturn($file);
         $file->expects($this->once())->method('getStream')->willReturn($stream);
