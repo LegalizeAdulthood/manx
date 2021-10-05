@@ -103,6 +103,7 @@ BEGIN
             `sud`.`parent_dir_id` = `sud2`.`id`
         WHERE
             `sud`.`parent_dir_id` = -1
+            AND `sud`.`site_id` = `sud2`.`site_id`
             AND INSTR(`sud`.`path`, '/') > 0
             AND `sud2`.`path` = manx_parent_dir(`sud`.`path`);
 
@@ -117,7 +118,8 @@ BEGIN
             `su`.`path` = SUBSTRING_INDEX(`su`.`path`, '/', -1)
         WHERE
             `su`.`dir_id` = -1
-            AND `su`.`path` = CONCAT(`sud`.`path`, '/', SUBSTRING_INDEX(`su`.`path`, '/', -1));
+            AND `su`.`site_id` = `sud`.`site_id`
+            AND `sud`.`path` = manx_parent_dir(`su`.`path`);
 END//
 DELIMITER ;
 
