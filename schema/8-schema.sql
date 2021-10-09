@@ -183,6 +183,8 @@ BEGIN
 
     -- Propagate ignored status up the directory hierarchy
     WHILE (SELECT COUNT(*) FROM `tmp_dir_ids`) > 0 DO
+        SELECT COUNT(*) AS `Processing` FROM `tmp_dir_ids`;
+
         -- Drop dir ids with unignored paths
         DELETE FROM `tmp_dir_ids` WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids_not_ignored`);
 
@@ -281,6 +283,7 @@ BEGIN
                 AND `s`.`site_id` = `c`.`site`
                 AND `s`.`site_id` = `sud`.`site_id`
                 AND `s`.`site_id` = `su`.`site_id`
+                AND `su`.`dir_id` = `sud`.`id`
                 AND `su`.`path` = `tci`.`path`
                 AND `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))
             AS `tmp`
@@ -303,17 +306,25 @@ BEGIN
     DROP TABLE IF EXISTS `tmp_su_ids`;
     CREATE TEMPORARY TABLE `tmp_su_ids`(`id` INT(11) NOT NULL);
     INSERT INTO `tmp_su_ids`
-        SELECT `su`.`id` FROM `site` `s`, `copy` `c`, `site_unknown` `su`, `site_unknown_dir` `sud`, `tmp_copy_ids` `tci`
-            WHERE `c`.`copy_id` = `tci`.`id`
-                AND `c`.`site` = `s`.`site_id`
-                AND `c`.`site` = `su`.`site_id`
-                AND `c`.`site` = `sud`.`site_id`
-                AND `su`.`dir_id` = `sud`.`id`
-                AND `su`.`path` = `tci`.`path`
-                AND (
-                    `c`.`sud_id` = `sud`.`id`
-                    OR `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`)
-                );
+        SELECT `su`.`id`
+        FROM `site` `s`, `copy` `c`, `site_unknown` `su`, `site_unknown_dir` `sud`, `tmp_copy_ids` `tci`
+        WHERE `c`.`copy_id` = `tci`.`id`
+        AND `c`.`site` = `s`.`site_id`
+        AND `c`.`site` = `su`.`site_id`
+        AND `c`.`site` = `sud`.`site_id`
+        AND `su`.`dir_id` = `sud`.`id`
+        AND `su`.`path` = `tci`.`path`
+        AND `c`.`sud_id` = `sud`.`id`;
+    INSERT INTO `tmp_su_ids`
+        SELECT `su`.`id`
+        FROM `site` `s`, `copy` `c`, `site_unknown` `su`, `site_unknown_dir` `sud`, `tmp_copy_ids` `tci`
+        WHERE `c`.`copy_id` = `tci`.`id`
+        AND `c`.`site` = `s`.`site_id`
+        AND `c`.`site` = `su`.`site_id`
+        AND `c`.`site` = `sud`.`site_id`
+        AND `su`.`dir_id` = `sud`.`id`
+        AND `su`.`path` = `tci`.`path`
+        AND `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`);
 
     DELETE FROM `site_unknown` WHERE `id` IN (SELECT `id` FROM `tmp_su_ids`);
 END//
