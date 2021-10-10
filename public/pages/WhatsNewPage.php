@@ -105,7 +105,8 @@ EOH;
 
 
 EOH;
-                printf("<ul>\n<li><a href=\"%s&parentDir=%d\">(parent)</a></li>\n</ul>\n", $this->_page, $thisDir['parent_dir_id']);
+                printf("<ul>\n<li><a href=\"%s&parentDir=%d#D%d\">(parent)</a></li>\n</ul>\n",
+                    $this->_page, $thisDir['parent_dir_id'], $thisDir['id']);
             }
             return;
         }
@@ -118,14 +119,27 @@ EOH;
 
         if ($this->_parentDirId != -1)
         {
-            array_unshift($dirs, ['id' => $thisDir['parent_dir_id'], 'path' => '(parent)', 'parent_dir_id' => -1, 'part_regex' => '']);
+            array_unshift($dirs,
+                ['id' => $thisDir['parent_dir_id'],
+                'path' => '(parent)',
+                'parent_dir_id' => -1,
+                'part_regex' => '']);
         }
         if (count($dirs) > 0)
         {
             printf("<ul>\n");
             foreach ($dirs as $dir)
             {
-                printf('<li><a href="%s&parentDir=%d">%s</a></li>' . "\n", $this->_page, $dir['id'], $dir['path']);
+                if ($dir['path'] == '(parent)')
+                {
+                    printf('<li><a href="%s&parentDir=%d#D%d">%s</a></li>' . "\n",
+                        $this->_page, $dir['id'], $thisDir['id'], $dir['path']);
+                }
+                else
+                {
+                    printf('<li><span id="D%d"><a href="%s&parentDir=%d">%s</a></span></li>' . "\n",
+                        $dir['id'], $this->_page, $dir['id'], $dir['path']);
+                }
             }
             printf("</ul>\n");
         }

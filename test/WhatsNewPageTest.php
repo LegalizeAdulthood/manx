@@ -119,7 +119,7 @@ class WhatsNewPageTest extends PHPUnit\Framework\TestCase
 <h1>No New BitSavers dec/pdp11 Publications Found</h1>
 
 <ul>
-<li><a href="whatsnew.php?site=bitsavers&parentDir=150">(parent)</a></li>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
 </ul>
 
 EOH;
@@ -166,10 +166,10 @@ EOH;
 <h1>New BitSavers dec/pdp11 Publications</h1>
 
 <ul>
-<li><a href="whatsnew.php?site=bitsavers&parentDir=150">(parent)</a></li>
-<li><a href="whatsnew.php?site=bitsavers&parentDir=111">dec/pdp11/1103</a></li>
-<li><a href="whatsnew.php?site=bitsavers&parentDir=112">dec/pdp11/1104</a></li>
-<li><a href="whatsnew.php?site=bitsavers&parentDir=113">dec/pdp11/1105</a></li>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
+<li><span id="D111"><a href="whatsnew.php?site=bitsavers&parentDir=111">dec/pdp11/1103</a></span></li>
+<li><span id="D112"><a href="whatsnew.php?site=bitsavers&parentDir=112">dec/pdp11/1104</a></span></li>
+<li><span id="D113"><a href="whatsnew.php?site=bitsavers&parentDir=113">dec/pdp11/1105</a></span></li>
 </ul>
 <form action="whatsnew.php" method="POST">
 <input type="hidden" name="site" value="bitsavers" />
