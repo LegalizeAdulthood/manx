@@ -229,8 +229,15 @@ BEGIN
     START TRANSACTION;
     SELECT `dir_id` FROM `site_unknown` WHERE `id` = `su_id` INTO `sud_id`;
     WHILE (`sud_id` <> -1
-            AND (SELECT COUNT(*) FROM `site_unknown` WHERE `dir_id` = `sud_id` AND `ignored` = 0) = 0
-            AND (SELECT COUNT(*) FROM `site_unknown_dir` WHERE `parent_dir_id` = `sud_id` AND `ignored` = 0) = 0)
+        AND (SELECT COUNT(*)
+            FROM `site_unknown`
+            WHERE `dir_id` = `sud_id`
+            AND `ignored` = 0
+            AND `id` <> `su_id`) = 0
+        AND (SELECT COUNT(*)
+            FROM `site_unknown_dir`
+            WHERE `parent_dir_id` = `sud_id`
+            AND `ignored` = 0) = 0)
     DO
         UPDATE `site_unknown_dir` SET `ignored` = 1 WHERE `id` = `sud_id`;
         SELECT `parent_dir_id` FROM `site_unknown_dir` WHERE `id` = `sud_id` INTO `sud_id`;
