@@ -136,8 +136,8 @@ BEGIN
     INSERT INTO `tmp_dir_ids`
         SELECT `id` FROM `site_unknown_dir`
         WHERE NOT `id` IN (SELECT DISTINCT `dir_id` FROM `site_unknown`)
-            AND NOT `id` IN (SELECT DISTINCT `parent_dir_id` FROM `site_unknown_dir`)
-            AND NOT `id` IN (SELECT DISTINCT `sud_id` FROM `copy` WHERE `sud_id` <> -1);
+        AND NOT `id` IN (SELECT DISTINCT `parent_dir_id` FROM `site_unknown_dir`)
+        AND NOT `id` IN (SELECT DISTINCT `sud_id` FROM `copy` WHERE `sud_id` <> -1);
 
     WHILE (SELECT COUNT(*) FROM `tmp_dir_ids`) > 0 DO
         DELETE FROM `site_unknown_dir` WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids`);
@@ -146,8 +146,8 @@ BEGIN
         INSERT INTO `tmp_dir_ids`
             SELECT `id` FROM `site_unknown_dir`
             WHERE NOT `id` IN (SELECT DISTINCT `dir_id` FROM `site_unknown`)
-                AND NOT `id` IN (SELECT DISTINCT `parent_dir_id` FROM `site_unknown_dir`)
-                AND NOT `id` IN (SELECT DISTINCT `sud_id` FROM `copy` WHERE `sud_id` <> -1);
+            AND NOT `id` IN (SELECT DISTINCT `parent_dir_id` FROM `site_unknown_dir`)
+            AND NOT `id` IN (SELECT DISTINCT `sud_id` FROM `copy` WHERE `sud_id` <> -1);
     END WHILE;
 END//
 DELIMITER ;
@@ -192,8 +192,8 @@ BEGIN
         DELETE FROM `tmp_dir_ids2`;
         INSERT INTO `tmp_dir_ids2` 
             SELECT `tdi`.`id` FROM `tmp_dir_ids` `tdi`, `site_unknown_dir` `sud`
-                WHERE `sud`.`parent_dir_id` = `tdi`.`id`
-                AND `sud`.`ignored` = 0;
+            WHERE `sud`.`parent_dir_id` = `tdi`.`id`
+            AND `sud`.`ignored` = 0;
 
         -- Drop parent dir ids with unignored child dirs
         DELETE FROM `tmp_dir_ids` WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids2`);
@@ -207,7 +207,7 @@ BEGIN
         DELETE FROM `tmp_dir_ids2`;
         INSERT INTO `tmp_dir_ids2`
             SELECT DISTINCT `sud`.`parent_dir_id` AS `id` FROM `site_unknown_dir` `sud`, `tmp_dir_ids` `tdi`
-                WHERE `tdi`.`id` = `sud`.`id`;
+            WHERE `tdi`.`id` = `sud`.`id`;
 
         -- Replace tmp_dir_ids with tmp_dir_ids2
         DELETE FROM `tmp_dir_ids`;
@@ -228,10 +228,10 @@ BEGIN
     DECLARE `sud_id` INT(11);
     START TRANSACTION;
     SELECT `dir_id` FROM `site_unknown` WHERE `id` = `su_id` INTO `sud_id`;
-    WHILE (SELECT COUNT(*) FROM `site_unknown` WHERE `dir_id` = `sud_id` AND `ignored` = 0) = 0
-            AND (SELECT COUNT(*) FROM `site_unknown_dir` WHERE `parent_dir_id` = `sud_id` AND `ignored` = 0) = 0
-            AND `sud_id` <> -1
-            DO
+    WHILE (`sud_id` <> -1
+            AND (SELECT COUNT(*) FROM `site_unknown` WHERE `dir_id` = `sud_id` AND `ignored` = 0) = 0
+            AND (SELECT COUNT(*) FROM `site_unknown_dir` WHERE `parent_dir_id` = `sud_id` AND `ignored` = 0) = 0)
+    DO
         UPDATE `site_unknown_dir` SET `ignored` = 1 WHERE `id` = `sud_id`;
         SELECT `parent_dir_id` FROM `site_unknown_dir` WHERE `id` = `sud_id` INTO `sud_id`;
     END WHILE;
@@ -257,9 +257,9 @@ BEGIN
 
     INSERT INTO `tmp_copy_ids`
         SELECT `c`.`copy_id` AS `id`, SUBSTRING_INDEX(`c`.`url`, '/', -1) AS `path`
-            FROM `copy` `c`
-            WHERE `c`.`sud_id` = -1
-                AND `c`.`site` IN (SELECT DISTINCT `site_id` FROM `site_unknown_dir`);
+        FROM `copy` `c`
+        WHERE `c`.`sud_id` = -1
+        AND `c`.`site` IN (SELECT DISTINCT `site_id` FROM `site_unknown_dir`);
 END//
 DELIMITER ;
 
@@ -280,13 +280,13 @@ BEGIN
         (SELECT `c`.`copy_id`, `sud`.`id` AS `sud_id`
             FROM `site` `s`, `copy` `c`, `site_unknown` `su`, `site_unknown_dir` `sud`, `tmp_copy_ids` `tci`
             WHERE `c`.`copy_id` = `tci`.`id`
-                AND `s`.`site_id` = `c`.`site`
-                AND `s`.`site_id` = `sud`.`site_id`
-                AND `s`.`site_id` = `su`.`site_id`
-                AND `su`.`dir_id` = `sud`.`id`
-                AND `su`.`path` = `tci`.`path`
-                AND `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))
-            AS `tmp`
+            AND `s`.`site_id` = `c`.`site`
+            AND `s`.`site_id` = `sud`.`site_id`
+            AND `s`.`site_id` = `su`.`site_id`
+            AND `su`.`dir_id` = `sud`.`id`
+            AND `su`.`path` = `tci`.`path`
+            AND `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))
+        AS `tmp`
         SET `copy`.`sud_id` = `tmp`.`sud_id`
         WHERE `copy`.`copy_id` = `tmp`.`copy_id`;
 END//
