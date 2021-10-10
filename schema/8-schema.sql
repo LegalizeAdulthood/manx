@@ -265,6 +265,26 @@ BEGIN
 END//
 DELIMITER ;
 
+-- `manx_build_unknown_urls`
+--
+-- Populate `tmp_su_urls` with the ids of unknown paths and their URLs.
+-- This accelerates queries against unknown paths against known copies.
+--
+DROP PROCEDURE IF EXISTS `manx_build_unknown_urls`;
+DELIMITER //
+CREATE PROCEDURE `manx_build_unknown_urls`()
+BEGIN
+    DROP TABLE IF EXISTS `tmp_su_urls`;
+    CREATE TEMPORARY TABLE `tmp_su_urls`(`id` INT(11) NOT NULL, `url` VARCHAR(255));
+    INSERT INTO `tmp_su_urls`
+        SELECT `su`.`id`, CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) AS `url`
+        FROM `site` `s`, `site_unknown` `su`, `site_unknown_dir` `sud`
+        WHERE `s`.`site_id` = `su`.`site_id`
+        AND `s`.`site_id` = `sud`.`site_id`
+        AND `su`.`dir_id` = `sud`.`id`;
+END//
+DELIMITER ;
+
 --
 -- `manx_update_copy_sud_ids`
 --
@@ -304,16 +324,7 @@ DELIMITER //
 CREATE PROCEDURE `manx_purge_su_copies`()
 BEGIN
     CALL `manx_build_copy_ids`();
-
-    -- Build URLs for every unknown path
-    DROP TABLE IF EXISTS `tmp_su_urls`;
-    CREATE TEMPORARY TABLE `tmp_su_urls`(`id` INT(11) NOT NULL, `url` VARCHAR(255));
-    INSERT INTO `tmp_su_urls`
-        SELECT `su`.`id`, CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) AS `url`
-        FROM `site` `s`, `site_unknown` `su`, `site_unknown_dir` `sud`
-        WHERE `s`.`site_id` = `su`.`site_id`
-        AND `s`.`site_id` = `sud`.`site_id`
-        AND `su`.`dir_id` = `sud`.`id`;
+    CALL `manx_build_unknown_urls`();
 
     DROP TABLE IF EXISTS `tmp_su_ids`;
     -- Find unknowns that match copies in a known directory and matching filename.
