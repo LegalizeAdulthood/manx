@@ -243,7 +243,9 @@ DELIMITER ;
 -- `manx_build_copy_ids`
 --
 -- Populate `tmp_copy_ids` with id and filename path of every document copy on a site
--- in `site_unknown_dir`.
+-- in `site_unknown_dir` that isn't associated with a site unknown directory.  These
+-- could be newly added documents, or they could be documents that have moved and their
+-- location in the WhatsNew.txt doesn't match the directory in the copy's URL.
 --
 DROP PROCEDURE IF EXISTS `manx_build_copy_ids`;
 DELIMITER //
@@ -303,7 +305,18 @@ CREATE PROCEDURE `manx_purge_su_copies`()
 BEGIN
     CALL `manx_build_copy_ids`();
 
+    -- Build URLs for every unknown path
+    DROP TABLE IF EXISTS `tmp_su_urls`;
+    CREATE TEMPORARY TABLE `tmp_su_urls`(`id` INT(11) NOT NULL, `url` VARCHAR(255));
+    INSERT INTO `tmp_su_urls`
+        SELECT `su`.`id`, CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) AS `url`
+        FROM `site` `s`, `site_unknown` `su`, `site_unknown_dir` `sud`
+        WHERE `s`.`site_id` = `su`.`site_id`
+        AND `s`.`site_id` = `sud`.`site_id`
+        AND `su`.`dir_id` = `sud`.`id`;
+
     DROP TABLE IF EXISTS `tmp_su_ids`;
+    -- Find unknowns that match copies in a known directory and matching filename.
     CREATE TEMPORARY TABLE `tmp_su_ids`(`id` INT(11) NOT NULL);
     INSERT INTO `tmp_su_ids`
         SELECT `su`.`id`
@@ -315,16 +328,13 @@ BEGIN
         AND `su`.`dir_id` = `sud`.`id`
         AND `su`.`path` = `tci`.`path`
         AND `c`.`sud_id` = `sud`.`id`;
+    -- Find unknowns that match copies by url
     INSERT INTO `tmp_su_ids`
         SELECT `su`.`id`
-        FROM `site` `s`, `copy` `c`, `site_unknown` `su`, `site_unknown_dir` `sud`, `tmp_copy_ids` `tci`
-        WHERE `c`.`copy_id` = `tci`.`id`
-        AND `c`.`site` = `s`.`site_id`
+        FROM `copy` `c`, `site_unknown` `su`, `tmp_su_urls` `tsu`
+        WHERE `su`.`id` = `tsu`.`id`
         AND `c`.`site` = `su`.`site_id`
-        AND `c`.`site` = `sud`.`site_id`
-        AND `su`.`dir_id` = `sud`.`id`
-        AND `su`.`path` = `tci`.`path`
-        AND `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`);
+        AND `c`.`url` = `tsu`.`url`;
 
     DELETE FROM `site_unknown` WHERE `id` IN (SELECT `id` FROM `tmp_su_ids`);
 END//
