@@ -953,7 +953,8 @@ class ManxDatabase implements IManxDatabase
             . "AND `s`.`site_id` = `sud`.`site_id` "
             . "AND `su`.`ignored` = 0 "
             . "AND `su`.`dir_id` = `sud`.`id` "
-            . "AND `su`.`dir_id` = ?",
+            . "AND `su`.`dir_id` = ? "
+            . "ORDER BY `su`.`path`",
             [$siteName, $parentDirId]);
     }
 

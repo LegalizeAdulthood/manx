@@ -934,7 +934,8 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
             . "AND `s`.`site_id` = `sud`.`site_id` "
             . "AND `su`.`ignored` = 0 "
             . "AND `su`.`dir_id` = `sud`.`id` "
-            . "AND `su`.`dir_id` = ?";
+            . "AND `su`.`dir_id` = ? "
+            . "ORDER BY `su`.`path`";
         $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
             [
                 [5005, 3, 'foo.pdf', 0, 0, -1],
