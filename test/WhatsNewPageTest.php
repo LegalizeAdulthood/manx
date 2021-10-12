@@ -10,11 +10,6 @@ use Pimple\Container;
 class WhatsNewPageTester extends Manx\WhatsNewPage
 {
     // lift visibility of some functions for testing
-    public function getMenuType()
-    {
-        return parent::getMenuType();
-    }
-
     public function renderBodyContent()
     {
         parent::renderBodyContent();
