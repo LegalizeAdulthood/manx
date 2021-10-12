@@ -50,13 +50,17 @@ class WhatsNewPage extends AdminPageBase
         PageBase::renderPage();
     }
 
+    private static function startsWith($text, $needle)
+    {
+        return substr($text, 0, strlen($needle)) == $needle;
+    }
+
     protected function ignorePaths()
     {
         $ignoredIds = [];
-        for ($i = 0; $i < 10; ++$i)
+        foreach (array_keys($this->_vars) as $key)
         {
-            $key = sprintf('ignore%1$d', $i);
-            if (array_key_exists($key, $this->_vars))
+            if (self::startsWith($key, 'ignore'))
             {
                 $ignoredIds[] = $this->_vars[$key];
             }

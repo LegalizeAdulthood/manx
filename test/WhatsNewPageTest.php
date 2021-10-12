@@ -196,6 +196,38 @@ EOH;
         $this->_page->ignorePaths();
     }
 
+    public function testIgnoreManyPaths()
+    {
+        $ignoredIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        $ignoreParams = [];
+        $i = 0;
+        foreach ($ignoredIds as $id)
+        {
+            $ignoreParams[sprintf('ignore%d', $i)] = $id;
+            $i++;
+        }
+        $this->createPage($ignoreParams);
+        $this->_db->expects($this->once())->method('ignoreSitePaths')->with($ignoredIds);
+
+        $this->_page->ignorePaths();
+    }
+
+    public function testIgnoreMiddlePaths()
+    {
+        $ignoredIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        $ignoreParams = [];
+        $i = 10;
+        foreach ($ignoredIds as $id)
+        {
+            $ignoreParams[sprintf('ignore%d', $i)] = $id;
+            $i++;
+        }
+        $this->createPage($ignoreParams);
+        $this->_db->expects($this->once())->method('ignoreSitePaths')->with($ignoredIds);
+
+        $this->_page->ignorePaths();
+    }
+
     public function testPoundSignEscaped()
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia_%2350_Nov89.pdf",
