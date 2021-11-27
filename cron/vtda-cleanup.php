@@ -5,7 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $config = Manx\Cron\CleanupConfig::getConfig();
 $config['whatsNewCleaner'] = function($c)
 {
-    return new Manx\Cron\ChiClassicCompCleaner($c);
+    return new Manx\Cron\VtdaCleaner($c);
 };
 $processor = new Manx\Cron\WhatsNewProcessor($config);
 

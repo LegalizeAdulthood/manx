@@ -48,9 +48,9 @@ class UrlMetaData implements IUrlMetaData
         {
             $this->determineIngestBitSaversData($data);
         }
-        else if ($this->siteIsChiClassicComp($data))
+        else if ($this->siteIsVtda($data))
         {
-            $this->determineIngestChiClassicCompData($data);
+            $this->determineIngestVtdaData($data);
         }
         else
         {
@@ -98,9 +98,9 @@ class UrlMetaData implements IUrlMetaData
         {
             $this->determineBitSaversData($data);
         }
-        else if ($this->siteIsChiClassicComp($data))
+        else if ($this->siteIsVtda($data))
         {
-            $this->determineChiClassicCompData($data);
+            $this->determineVtdaData($data);
         }
         else
         {
@@ -128,9 +128,9 @@ class UrlMetaData implements IUrlMetaData
         return $this->siteMatchesId($data, Site::BitSavers);
     }
 
-    private function siteIsChiClassicComp($data)
+    private function siteIsVtda($data)
     {
-        return $this->siteMatchesId($data, Site::ChiClassicComp);
+        return $this->siteMatchesId($data, Site::VTDA);
     }
 
     private function siteMatchesId($data, $siteId)
@@ -461,9 +461,9 @@ class UrlMetaData implements IUrlMetaData
         $this->determineIngestSiteData('bitsavers', 2, $data);
     }
 
-    private function determineIngestChiClassicCompData(&$data)
+    private function determineIngestVtdaData(&$data)
     {
-        $this->determineIngestSiteData('ChiClassicComp', 4, $data);
+        $this->determineIngestSiteData('VTDA', 4, $data);
     }
 
     private function determineSiteData($siteName, $companyComponent, $parentDirComponent, &$data)
@@ -548,9 +548,9 @@ class UrlMetaData implements IUrlMetaData
         $this->determineSiteData('bitsavers', 2, -1, $data);
     }
 
-    private function determineChiClassicCompData(&$data)
+    private function determineVtdaData(&$data)
     {
-        $this->determineSiteData('ChiClassicComp', 4, 3, $data);
+        $this->determineSiteData('VTDA', 3, 2, $data);
     }
 
     public static function titleForFileBase($fileBase)

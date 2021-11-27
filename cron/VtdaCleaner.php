@@ -6,11 +6,11 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Pimple\Container;
 
-class ChiClassicCompCleaner extends WhatsNewCleaner
+class VtdaCleaner extends WhatsNewCleaner
 {
     public function __construct($config)
     {
-        \Manx\ChiClassicCompConfig::configure($config);
+        \Manx\VtdaConfig::configure($config);
         parent::__construct($config);
     }
 }

@@ -111,7 +111,7 @@ EOH;
         $output = <<<EOH
 <div class="menu"><a class="first" href="search.php">Search</a><a href="news.php">News</a><a href="about.php">About</a><a href="help.php">Help</a><a href="rss.php"><img style="vertical-align: middle" src="assets/rss.png"></a></div>
 <div class="menu">
-<a class="first" href="url-wizard.php">URL Wizard</a><a href="whatsnew.php?site=bitsavers&parentDir=-1">BitSavers</a><a href="whatsnew.php?site=ChiClassicComp&parentDir=-1">ChiClassicComp</a><a href="size-report.php">Size Report</a><a href="md5-report.php">MD5 Report</a></div>
+<a class="first" href="url-wizard.php">URL Wizard</a><a href="whatsnew.php?site=bitsavers&parentDir=-1">BitSavers</a><a href="whatsnew.php?site=VTDA&parentDir=-1">VTDA</a><a href="size-report.php">Size Report</a><a href="md5-report.php">MD5 Report</a></div>
 <div class="menu">
 <a class="first" href="site.php">Site</a><a href="mirror.php">Mirror</a></div>
 

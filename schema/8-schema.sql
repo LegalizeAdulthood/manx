@@ -379,6 +379,24 @@ CALL `manx_update_copy_sud_ids`();
 CALL `manx_purge_su_copies`();
 
 --
+-- ChiClassicComp has become Vintage Technology Digital Archive,
+-- and documents have moved around.  With so few copies registered
+-- in the database, just nuke all the stuff.
+--
+DELETE FROM `properties`       WHERE `name`    = 'chiclassiccomp_whats_new_timestamp';
+DELETE FROM `copy`             WHERE `site`    = 58;
+DELETE FROM `site_company_dir` WHERE `site_id` = 58;
+DELETE FROM `site_unknown`     WHERE `site_id` = 58;
+DELETE FROM `site_unknown_dir` WHERE `site_id` = 58;
+UPDATE `site`
+    SET
+        `name` = 'VTDA',
+        `url` = 'http://vtda.org/',
+        `description` = 'The Vintage Technology Digital Archive',
+        `copy_base` = 'http://vtda.org/docs/'
+    WHERE `site_id` = 58;
+
+--
 -- Manx version 2.1.0
 --
 UPDATE `properties`

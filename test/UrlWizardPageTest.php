@@ -169,15 +169,15 @@ class UrlWizardPageTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($page->redirectCalled);
     }
 
-    public function testNewChiClassicCompDirectoryAdded()
+    public function testNewVtdaDirectoryAdded()
     {
         $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $vars = array_merge(
-            self::copyData('http://chiclassiccomp.org/docs/content/computing/DEC/ChicagoDECStore1.jpg', 'JPEG', '58'),
-            self::siteData('ChiClassicComp'),
+            self::copyData('http://vtda.org/docs/computing/DEC/ChicagoDECStore1.jpg', 'JPEG', '58'),
+            self::siteData('VTDA'),
             self::companyData('5'),
             self::pubHistoryData('Accessories & Supplies Center Chicago Brochure', 'D', '1979'),
             [
@@ -193,7 +193,7 @@ class UrlWizardPageTest extends PHPUnit\Framework\TestCase
         $this->_config['vars'] = $vars;
         $page = new UrlWizardPageTester($this->_config);
         $this->_db->expects($this->once())->method('addSiteDirectory')
-            ->with('ChiClassicComp', '5', 'DEC');
+            ->with('VTDA', '5', 'DEC');
 
         $page->postPage();
     }
@@ -238,7 +238,7 @@ EOH;
         $sites = \Manx\Test\RowFactory::createResultRowsForColumns([ 'site_id', 'name', 'url', 'description', 'copy_base', 'low', 'live', 'display_order' ],
             [
                 [ $siteId, 'bitsavers', 'http://bitsavers.org', '', 'http://bitsavers.org/pdf/', 'N', 'Y', 0 ],
-                [ 58, 'ChiClassicComp', 'http://chiclassiccomp.org', '', 'http://chiclassiccomp.org/docs/content/', 'N', 'Y', 0 ]
+                [ 58, 'VTDA', 'http://vtda.org', '', 'http://vtda.org/docs/', 'N', 'Y', 0 ]
             ]);
         $this->_db->expects($this->once())->method('getSites')->willReturn($sites);
         $companyId = 22;
@@ -307,7 +307,7 @@ EOH;
         $sites = \Manx\Test\RowFactory::createResultRowsForColumns([ 'site_id', 'name', 'url', 'description', 'copy_base', 'low', 'live', 'display_order' ],
             [
                 [ $siteId, 'bitsavers', 'http://bitsavers.org', '', 'http://bitsavers.org/pdf/', 'N', 'Y', 0 ],
-                [ 58, 'ChiClassicComp', 'http://chiclassiccomp.org', '', 'http://chiclassiccomp.org/docs/content/', 'N', 'Y', 0 ]
+                [ 58, 'VTDA', 'http://vtda.org', '', 'http://vtda.org/docs/', 'N', 'Y', 0 ]
             ]);
         $this->_db->expects($this->once())->method('getSites')->willReturn($sites);
         $companyId = 22;

@@ -18,5 +18,5 @@ class MenuType
     const MD5Report = 11;
     const BitSavers = 12;
     const News = 13;
-    const ChiClassicComp = 14;
+    const Vtda = 14;
 }

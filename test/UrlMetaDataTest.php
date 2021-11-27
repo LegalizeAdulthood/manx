@@ -200,15 +200,15 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($expected, $data);
     }
 
-    public function testDetermineDataChiClassicComp()
+    public function testDetermineDataVtda()
     {
-        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForChiClassicComp());
-        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('ChiClassicComp', 'Motorola', 'computing')->willReturn('66');
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForVtda());
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('VTDA', 'Motorola', 'computing')->willReturn('66');
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
         $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with('6064A-5M-668', '66')->willReturn(array());
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
-        $urlBase = '/docs/content/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf';
-        $url = 'http://chiclassiccomp.org' . $urlBase;
+        $urlBase = '/docs/computing/Motorola/6064A-5M-668_MDR-1000Brochure.pdf';
+        $url = 'http://vtda.org' . $urlBase;
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->wilLReturn($this->_urlInfo);
 
         $data = $this->_meta->determineData($url);
@@ -218,7 +218,7 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
             'mirror_url' => '',
             'size' => 1266,
             'valid' => true,
-            'site' => self::chiClassicCompSiteRow(),
+            'site' => self::vtdaSiteRow(),
             'company' => '66',
             'part' => '6064A-5M-668',
             'pub_date' => '',
@@ -232,18 +232,18 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($data, $expected);
     }
 
-    public function testDetermineDataChiClassicCompUrlWithSpaces()
+    public function testDetermineDataVtdaUrlWithSpaces()
     {
-        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForChiClassicComp());
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForVtda());
         $companyId = 66;
-        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('ChiClassicComp', 'Sun', 'computing')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('VTDA', 'Sun', 'computing')->willReturn($companyId);
         $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
         $part = '800-1023-01';
         $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with($part, $companyId)->willReturn(array());
         $copySize = 1266;
         $this->_urlInfo->expects($this->once())->method('size')->willReturn($copySize);
-        $urlBase = '/docs/content/computing/Sun/hardware/800-1023-01_Adaptec%20ACB%204000%20and%205000%20Series%20Disk%20Controllers%20OEM%20Manual%20(Preliminary).pdf';
-        $url = 'http://chiclassiccomp.org' . $urlBase;
+        $urlBase = '/docs/computing/Sun/hardware/800-1023-01_Adaptec%20ACB%204000%20and%205000%20Series%20Disk%20Controllers%20OEM%20Manual%20(Preliminary).pdf';
+        $url = 'http://vtda.org' . $urlBase;
         $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->wilLReturn($this->_urlInfo);
 
         $data = $this->_meta->determineData($url);
@@ -253,7 +253,7 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
             'mirror_url' => '',
             'size' => $copySize,
             'valid' => true,
-            'site' => self::chiClassicCompSiteRow(),
+            'site' => self::vtdaSiteRow(),
             'company' => $companyId,
             'part' => $part,
             'pub_date' => '',
@@ -350,19 +350,19 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($expectedData, $data);
     }
 
-    private static function sitesResultsForChiClassicComp()
+    private static function sitesResultsForVtda()
     {
-        return [self::chiClassicCompSiteRow()];
+        return [self::vtdaSiteRow()];
     }
 
-    private static function chiClassicCompSiteRow()
+    private static function vtdaSiteRow()
     {
         return self::databaseRowFromDictionary([
             'site_id' => '58',
-            'name' => 'ChiClassicComp',
-            'url' => 'http://chiclassiccomp.org/',
-            'description' => "Chicago Classic Computing's document archive",
-            'copy_base' => 'http://chiclassiccomp.org/docs/content/',
+            'name' => 'VTDA',
+            'url' => 'http://vtda.org/',
+            'description' => "The Vintage Technology Digital Archive",
+            'copy_base' => 'http://vtda.org/docs/',
             'low' => 'N',
             'live' => 'Y',
             'display_order' => '999'

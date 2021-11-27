@@ -16,6 +16,13 @@ class NewsPage extends PageBase
         print <<<EOH
 <h1>News</h1>
 
+<h2>Version 2.1.0</h2>
+
+<p>Improve the usability of adding new documents for sites with a
+WhatsNew.txt by organizing unknown documents by directory and hiding
+directories with no unknown documents.  Rename the ChiClassicComp
+collection to the Vintage Technology Digital Archive collection.</p>
+
 <h2>Version 2.0.7</h2>
 
 <p>Minor bug fix release with the beginnings of support for automatic

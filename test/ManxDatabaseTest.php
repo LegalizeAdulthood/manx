@@ -1003,7 +1003,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
 
     public function testAddSiteDirectory()
     {
-        $siteName = 'ChiClassicComp';
+        $siteName = 'VTDA';
         $companyId = 44;
         $directory = 'DigitalResearch';
         $parentDirectory = 'computing';
@@ -1023,7 +1023,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
 
     public function testGetCompanyForSiteDirectory()
     {
-        $siteName = 'ChiClassicComp';
+        $siteName = 'VTDA';
         $directory = 'DigitalResearch';
         $parentDirectory = 'computing';
         $select = "SELECT `scd`.`company_id` FROM `site_company_dir` `scd`, `site` `s` "

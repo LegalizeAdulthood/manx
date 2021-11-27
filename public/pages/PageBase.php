@@ -117,7 +117,7 @@ EOH;
             print "<div class=\"menu\">\n";
             $this->renderFirstMenuItem($menu == MenuType::UrlWizard, "url-wizard.php", "URL Wizard");
             $this->renderMenuItem($menu == MenuType::BitSavers, "whatsnew.php?site=bitsavers&parentDir=-1", "BitSavers");
-            $this->renderMenuItem($menu == MenuType::ChiClassicComp, "whatsnew.php?site=ChiClassicComp&parentDir=-1", "ChiClassicComp");
+            $this->renderMenuItem($menu == MenuType::Vtda, "whatsnew.php?site=VTDA&parentDir=-1", "VTDA");
             $this->renderMenuItem($menu == MenuType::SizeReport, "size-report.php", "Size Report");
             $this->renderMenuItem($menu == MenuType::MD5Report, "md5-report.php", "MD5 Report");
             print "</div>\n";
