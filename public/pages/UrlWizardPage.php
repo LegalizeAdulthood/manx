@@ -155,37 +155,8 @@ EOH;
         return implode("\n", $options);
     }
 
-    protected function renderBodyContent()
+    private function renderSiteUnknownFields($idPresent)
     {
-        $idPresent = array_key_exists('id', $this->_vars);
-        $urlPresent = array_key_exists('url', $this->_vars);
-        $url = $urlPresent ? $this->_vars['url'] : '';
-        $metaData = $urlPresent ? $this->_urlMeta->determineData($url)
-            : [
-                'format' => '',
-                'site' => -1,
-                'size' => 0,
-                'pub_date' => '',
-                'part' => '',
-                'url' => $url,
-                'mirror_url' => '',
-                'company' => -1,
-                'keywords' => '',
-                'title' => ''
-            ];
-        $url = $metaData['url'];
-        $mirrorUrl = $metaData['mirror_url'];
-        $keywords = $metaData['keywords'];
-
-        print <<<EOH
-<h1>URL Wizard</h1>
-
-<div id="form_container">
-<form id="wizard" action="url-wizard.php" method="POST" name="f">
-
-
-EOH;
-
         if ($idPresent)
         {
             $suId = $this->_vars['id'];
@@ -197,7 +168,10 @@ EOH;
 
 EOH;
         }
+    }
 
+    private function renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData, $idPresent)
+    {
         $copyLink = $urlPresent ? sprintf(' href="%s"', $url) : '';
         $copyLinkClass = $urlPresent ? '' : 'hidden';
         $copyTextClass = $urlPresent ? 'hidden' : '';
@@ -244,6 +218,7 @@ $copySiteHidden</li>
 
 
 EOH;
+
         $this->renderTextInputMaxSize('Notes', 'copy_notes', 60, 200,
             'Notes about this copy of the publication.');
         $copySize = $metaData['size'];
@@ -262,10 +237,24 @@ EOH;
 </ul>
 </fieldset>
 
+EOH;
+    }
+
+    private function renderSiteCompanyFields()
+    {
+        print <<<EOH
+
 <fieldset id="site_company_field" class="hidden">
 <input type="hidden" id="site_company_directory" name="site_company_directory" value="" />
 <input type="hidden" id="site_company_parent_directory" name="site_company_parent_directory" value="" />
 </fieldset>
+
+EOH;
+    }
+
+    private function renderSiteFields($urlPresent, $idPresent, $metaData)
+    {
+        print <<<EOH
 
 <fieldset id="site_fields" class="hidden">
 <legend id="site_legend">Site</legend>
@@ -344,12 +333,22 @@ EOH;
 </ul>
 </fieldset>
 
+EOH;
+    }
+
+    private function renderPublicationFields($urlPresent, $metaData)
+    {
+        $pubClass = $urlPresent ? '' : 'hidden';
+        print <<<EOH
+
 <fieldset id="publication_fields" class="$pubClass">
 <legend id="publication_legend">Publication</legend>
 <ul>
 
 
 EOH;
+
+        $keywords = $metaData['keywords'];
         $this->renderTextInput('Search Keywords', 'pub_search_keywords', [
             'size' => 40, 'working' => true, 'value' => $keywords,
             'help' => 'Search keywords to locate a known publication.']);
@@ -396,10 +395,17 @@ EOH;
             ['class' => 'hidden', 'maxlength' => 10, 'help' => 'Publication amended by this publication.']);
         $this->renderTextInput('Amendment Serial No.', 'pub_history_ph_amend_serial',
             ['class' => 'hidden', 'maxlength' => 10, 'help' => 'Serial number of this amendment.']);
-        $supersedeClass = $urlPresent ? '' : 'hidden';
         print <<<EOH
 </ul>
 </fieldset>
+
+EOH;
+    }
+
+    private function renderSupersessionFields($urlPresent, $metaData)
+    {
+        $supersedeClass = $urlPresent ? '' : 'hidden';
+        print <<<EOH
 
 <fieldset id="supersession_fields" class="$supersedeClass">
 <legend id="supersession_legend">Supersession</legend>
@@ -407,6 +413,8 @@ EOH;
 
 
 EOH;
+        $publications = $urlPresent ? self::pubOptions($metaData['pubs']) : '';
+        $keywords = $metaData['keywords'];
         $this->renderTextInput('Search keywords', 'supersession_search_keywords', [
             'size' => 40, 'working' => true, 'value' => $keywords,
             'help' => 'Search keywords to locate publications superseded by or superseding this publication.']);
@@ -431,6 +439,49 @@ $publications</select>
 </ul>
 </fieldset>
 
+
+EOH;
+    }
+
+    protected function renderBodyContent()
+    {
+        $idPresent = array_key_exists('id', $this->_vars);
+        $urlPresent = array_key_exists('url', $this->_vars);
+        $url = $urlPresent ? $this->_vars['url'] : '';
+        $metaData = $urlPresent ? $this->_urlMeta->determineData($url)
+            : [
+                'format' => '',
+                'site' => -1,
+                'size' => 0,
+                'pub_date' => '',
+                'part' => '',
+                'url' => $url,
+                'mirror_url' => '',
+                'company' => -1,
+                'keywords' => '',
+                'title' => ''
+            ];
+        $url = $metaData['url'];
+        $mirrorUrl = $metaData['mirror_url'];
+        $keywords = $metaData['keywords'];
+
+        print <<<EOH
+<h1>URL Wizard</h1>
+
+<div id="form_container">
+<form id="wizard" action="url-wizard.php" method="POST" name="f">
+
+
+EOH;
+
+        $this->renderSiteUnknownFields($idPresent);
+        $this->renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData, $idPresent);
+        $this->renderSiteCompanyFields();
+        $this->renderSiteFields($urlPresent, $idPresent, $metaData);
+        $this->renderPublicationFields($urlPresent, $metaData);
+        $this->renderSupersessionFields($urlPresent, $metaData);
+
+        print <<<EOH
 <input type="submit" name="next" value="Next &gt;" />
 </form>
 </div>
