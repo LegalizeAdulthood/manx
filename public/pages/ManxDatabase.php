@@ -877,6 +877,7 @@ class ManxDatabase implements IManxDatabase
         $this->beginTransaction();
         $this->execute("DELETE FROM site_unknown WHERE id = ?", [$pathId]);
         $this->execute("UPDATE copy SET url = ? WHERE copy_id = ?", [$url, $copyId]);
+        $this->execute("UPDATE copy SET sud_id = -1 WHERE copy_id = ?", [$copyId]);
         $this->commit();
     }
 

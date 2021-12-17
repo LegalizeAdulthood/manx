@@ -956,10 +956,12 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('beginTransaction');
         $deleteId = "DELETE FROM site_unknown WHERE id = ?";
         $updateUrl = "UPDATE copy SET url = ? WHERE copy_id = ?";
-        $this->_db->expects($this->exactly(2))->method('execute')
+        $updateSudId = "UPDATE copy SET sud_id = -1 WHERE copy_id = ?";
+        $this->_db->expects($this->exactly(3))->method('execute')
             ->withConsecutive(
                 [$deleteId, [$pathId]],
-                [$updateUrl, [$url, $copyId]]);
+                [$updateUrl, [$url, $copyId]],
+                [$updateSudId, [$copyId]]);
         $this->_db->expects($this->once())->method('commit');
 
 
