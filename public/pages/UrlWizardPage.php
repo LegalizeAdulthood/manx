@@ -271,10 +271,19 @@ EOH;
         $this->renderTextInputMaxSize('Copy Base', 'site_copy_base', 60, 200,
             'The base URL for documents on the site, which may be different'
                 . ' from the site URL.');
-        $companyClass = $idPresent ? '' : 'hidden';
         $companyId = $metaData['company'];
-        list($companyDisabled, $companyHidden) = array_key_exists('site_company_directory', $metaData) && strlen($metaData['site_company_directory']) > 0 ?
-            [' disabled="disabled"', "<input type=\"hidden\" id=\"company_id\" name=\"company_id\" value=\"$companyId\" />\n"] : ['', ''];
+        list($companyDisabled, $companyHidden, $companyClass) = $companyId != -1 ?
+            [ 
+                ' disabled="disabled"',
+                "<input type=\"hidden\" id=\"company_id\" name=\"company_id\" value=\"$companyId\" />\n",
+                'hidden'
+            ]
+            : ['', '', ''];
+        $companyFieldSetClass = $urlPresent ? '' : 'hidden';
+        if (!$urlPresent)
+        {
+            $companyClass = 'hidden';
+        }
         print <<<EOH
 <li id="site_low_field">
 <label for="site_low">Low Bandwidth?</label>
@@ -295,7 +304,7 @@ EOH;
 </ul>
 </fieldset>
 
-<fieldset id="company_fields" class="$companyClass">
+<fieldset id="company_fields" class="$companyFieldSetClass">
 <legend id="company_legend">Company</legend>
 <ul>
 
@@ -317,18 +326,17 @@ $companyHidden</li>
 
 EOH;
         $this->renderTextInput('Name', 'company_name',
-            ['class' => 'hidden', 'size' => 50, 'maxlength' => 50,
+            ['class' => $companyClass, 'size' => 50, 'maxlength' => 50,
             'help' => 'The full name of the company, i.e. Digital Equipment Corporation.  It will be used on the About page and in the company dropdown list on the search page.']);
         $this->renderTextInput('Short Name', 'company_short_name',
-            ['class' => 'hidden', 'size' => 50, 'maxlength' => 50,
+            ['class' => $companyClass, 'size' => 50, 'maxlength' => 50,
             'help' => 'A short name for the company, i.e. DEC.']);
         $this->renderTextInput('Sort Name', 'company_sort_name',
-            ['class' => 'hidden', 'size' => 50, 'maxlength' => 50,
+            ['class' => $companyClass, 'size' => 50, 'maxlength' => 50,
             'help' => 'A lower case sort key for the company, i.e. dec.']);
         $this->renderTextInput('Notes', 'company_notes',
-            ['class' => 'hidden', 'size' => 60, 'maxlength' => 255,
+            ['class' => $companyClass, 'size' => 60, 'maxlength' => 255,
             'help' => 'Notes for the company, i.e. terminal manufacturer']);
-        $pubClass = $urlPresent ? '' : 'hidden';
         print <<<EOH
 </ul>
 </fieldset>

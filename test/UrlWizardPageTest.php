@@ -350,7 +350,7 @@ EOH;
                 'live' => 'Y',
                 'display_order' => 1
             ],
-            'company' => $companyId,
+            'company' => -1,
             'part' => $part,
             'pub_date' => $pubDate,
             'title' => $title,
@@ -457,8 +457,9 @@ EOH;
         $mirrorUrl = self::param($vars, 'mirror_url');
         $mirrorClass = strlen($mirrorUrl) == 0 ? 'hidden' : '';
         $companies = array_key_exists('companies', $vars) ? self::expectedCompanyOptions($vars) : '';
-        $companyClass = strlen($companies) == 0 ? 'hidden' : '';
-        list($companyDisabled, $companyHidden) = array_key_exists('site_company_directory', $vars) && strlen($vars['site_company_directory']) > 0 ?
+        $companyClass = !array_key_exists('company', $vars) || $vars['company'] != -1 ? 'hidden' : '';
+        $companyFieldSetClass = array_key_exists('company', $vars) ? '' : 'hidden';
+        list($companyDisabled, $companyIdHidden) = array_key_exists('site_company_directory', $vars) && strlen($vars['site_company_directory']) > 0 ?
             [' disabled="disabled"', self::expectedCompanyHidden($vars)] : ['', ''];
         $pubClass = $urlPresent ? '' : 'hidden';
         $supersedeClass = $urlPresent ? '' : 'hidden';
@@ -596,7 +597,7 @@ $copySiteHidden</li>
 </ul>
 </fieldset>
 
-<fieldset id="company_fields" class="$companyClass">
+<fieldset id="company_fields" class="$companyFieldSetClass">
 <legend id="company_legend">Company</legend>
 <ul>
 
@@ -605,9 +606,9 @@ $copySiteHidden</li>
 <select id="company_id" name="company_id"$companyDisabled>
 <option value="-1">(New Company)</option>
 $companies</select>
-$companyHidden</li>
+$companyIdHidden</li>
 
-<li id="company_name_field" class="hidden">
+<li id="company_name_field" class="$companyClass">
 <label for="company_name">Name</label>
 <input type="text" id="company_name" name="company_name" size="50" maxlength="50" value="" />
 <img id="company_name_help_button" src="assets/help.png" width="16" height="16" />
@@ -615,7 +616,7 @@ $companyHidden</li>
 <div id="company_name_error" class="error hidden"></div>
 </li>
 
-<li id="company_short_name_field" class="hidden">
+<li id="company_short_name_field" class="$companyClass">
 <label for="company_short_name">Short Name</label>
 <input type="text" id="company_short_name" name="company_short_name" size="50" maxlength="50" value="" />
 <img id="company_short_name_help_button" src="assets/help.png" width="16" height="16" />
@@ -623,7 +624,7 @@ $companyHidden</li>
 <div id="company_short_name_error" class="error hidden"></div>
 </li>
 
-<li id="company_sort_name_field" class="hidden">
+<li id="company_sort_name_field" class="$companyClass">
 <label for="company_sort_name">Sort Name</label>
 <input type="text" id="company_sort_name" name="company_sort_name" size="50" maxlength="50" value="" />
 <img id="company_sort_name_help_button" src="assets/help.png" width="16" height="16" />
@@ -631,7 +632,7 @@ $companyHidden</li>
 <div id="company_sort_name_error" class="error hidden"></div>
 </li>
 
-<li id="company_notes_field" class="hidden">
+<li id="company_notes_field" class="$companyClass">
 <label for="company_notes">Notes</label>
 <input type="text" id="company_notes" name="company_notes" size="60" maxlength="255" value="" />
 <img id="company_notes_help_button" src="assets/help.png" width="16" height="16" />
