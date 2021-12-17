@@ -397,6 +397,12 @@ UPDATE `site`
     WHERE `site_id` = 58;
 
 --
+-- textfiles.com is not an official mirror
+--
+DELETE FROM `mirror` WHERE `copy_stem` = 'http://www.textfiles.com/bitsavers/';
+DELETE FROM `mirror` WHERE `copy_stem` = 'http://www.textfiles.com/bitsavers/www.computer.museum.uq.edu.au/';
+
+--
 -- Manx version 2.1.0
 --
 UPDATE `properties`
