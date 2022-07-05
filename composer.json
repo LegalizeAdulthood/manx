@@ -1,5 +1,5 @@
 {
-    "name": "Manx",
+    "name": "legalize/manx",
     "description": "Vintage computing documentation database",
     "version": "2.1.0",
     "autoload": {
