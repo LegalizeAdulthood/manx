@@ -1,4 +1,7 @@
 {
+    "name": "Manx",
+    "description": "Vintage computing documentation database",
+    "version": "2.1.0",
     "autoload": {
         "psr-4": {
             "Manx\\": "pages/",
