@@ -6,7 +6,7 @@ use Pimple\Container;
 
 class BitSaversConfigTest extends PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->_config = new Container();
         Manx\BitSaversConfig::configure($this->_config);

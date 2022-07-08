@@ -6,7 +6,7 @@ use Pimple\Container;
 
 class UrlMetaDataTest extends PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_db = $this->createMock(Manx\IManxDatabase::class);

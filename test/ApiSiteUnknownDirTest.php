@@ -9,7 +9,7 @@ use \Slim\Http\Response as Response;
 
 class ApiSiteUnknownDirTest extends PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->_config = new Container();
         $manx = $this->createMock(Manx\IManx::class);

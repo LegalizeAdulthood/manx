@@ -27,7 +27,7 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
     /** @var Manx\WhatsNewIndex */
     private $_whatsNew;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx = $this->createMock(Manx\IManx::class);

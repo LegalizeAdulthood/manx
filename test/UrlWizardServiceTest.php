@@ -39,7 +39,7 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
     private $_manx;
     private $_meta;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx = $this->createMock(Manx\IManx::class);

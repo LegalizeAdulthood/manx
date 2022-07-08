@@ -44,7 +44,7 @@ class UrlWizardPageTest extends PHPUnit\Framework\TestCase
     /** @var UrlWizardPage */
     private $_page;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $_SERVER['PATH_INFO'] = '';
         $manx = $this->createMock(Manx\IManx::class);

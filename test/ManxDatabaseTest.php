@@ -11,7 +11,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     /** @var PDOStatement */
     private $_statement;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_statement = $this->createMock(PDOStatement::class);
         $this->_db = $this->createMock(Manx\IDatabase::class);

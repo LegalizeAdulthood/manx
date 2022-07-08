@@ -4,7 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 class UrlTransferTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_curlApi = $this->createMock(Manx\ICurlApi::class);
         $this->_fileSystem = $this->createMock(Manx\IFileSystem::class);

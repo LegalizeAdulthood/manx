@@ -26,7 +26,7 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
     /** @var Manx\IWhatsNewIndex */
     private $_whatsNewIndex;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);

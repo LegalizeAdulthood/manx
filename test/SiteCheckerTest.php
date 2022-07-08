@@ -24,7 +24,7 @@ class SiteCheckerTest extends PHPUnit\Framework\TestCase
     /** @var Manx\Cron\SiteChecker */
     private $_checker;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
         $this->_factory = $this->createMock(Manx\IUrlInfoFactory::class);

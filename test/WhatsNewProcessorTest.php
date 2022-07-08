@@ -6,7 +6,7 @@ use Pimple\Container;
 
 class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->_locker = $this->createMock(Manx\Cron\IExclusiveLock::class);
         $this->_cleaner = $this->createMock(Manx\Cron\IWhatsNewCleaner::class);

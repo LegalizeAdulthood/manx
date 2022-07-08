@@ -9,7 +9,7 @@ class ManxTest extends PHPUnit\Framework\TestCase
     /** @var Manx\Manx */
     private $_manx;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx = Manx\Manx::getInstanceForDatabase($this->_db);

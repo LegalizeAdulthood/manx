@@ -23,7 +23,7 @@ class PageBaseTester extends Manx\PageBase
 
 class PageBaseTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_manx = $this->createMock(Manx\IManx::class);
         $this->_user = $this->createMock(Manx\IUser::class);

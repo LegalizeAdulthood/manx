@@ -91,7 +91,7 @@ class DetailsPageTest extends PHPUnit\Framework\TestCase
     /** @var DetailsPage */
     private $_page;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $_SERVER['PATH_INFO'] = '/1,3';
         $this->_db = $this->createMock(Manx\IManxDatabase::class);

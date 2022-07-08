@@ -42,7 +42,7 @@ class AdminPageBaseTest extends PHPUnit\Framework\TestCase
     /** @var Manx\IUser */
     private $_user;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $manx = $this->createMock(Manx\IManx::class);
         $db = $this->createMock(Manx\IManxDatabase::class);

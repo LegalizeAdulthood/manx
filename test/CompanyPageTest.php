@@ -56,7 +56,7 @@ class CompanyPageTest extends PHPUnit\Framework\TestCase
     /** @var FakeFile */
     private $_file;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx = $this->createMock(Manx\IManx::class);

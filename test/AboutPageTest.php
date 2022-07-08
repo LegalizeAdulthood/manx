@@ -6,7 +6,7 @@ use Pimple\Container;
 
 class AboutPageTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $_SERVER['PATH_INFO'] = '';
         $this->_db = $this->createMock(Manx\IManxDatabase::class);

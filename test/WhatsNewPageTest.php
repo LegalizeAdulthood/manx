@@ -50,7 +50,7 @@ class WhatsNewPageTest extends PHPUnit\Framework\TestCase
         $this->_page = new WhatsNewPageTester($this->_config);
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->_db = $this->createMock(Manx\IManxDatabase::class);
         $this->_manx = $this->createMock(Manx\IManx::class);

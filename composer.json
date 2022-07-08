@@ -16,7 +16,7 @@
         "slim/php-view": "^2.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.5",
+        "phpunit/phpunit": "^9.0",
         "php-coveralls/php-coveralls": "2.5.2"
     }
 }

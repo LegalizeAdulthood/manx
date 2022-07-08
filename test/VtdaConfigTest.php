@@ -6,7 +6,7 @@ use Pimple\Container;
 
 class VtdaConfigTest extends PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->_config = new Container();
         Manx\VtdaConfig::configure($this->_config);
