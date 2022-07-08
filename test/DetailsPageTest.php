@@ -659,9 +659,13 @@ class DetailsPageTest extends PHPUnit\Framework\TestCase
             ->with($pubId)
             ->willReturn(
                 \Manx\Test\RowFactory::createResultRowsForColumns(
-                array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description', 'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
+                array('format', 'url', 'notes', 'size', 'name', 'site_url', 'description',
+                    'copy_base', 'low', 'md5', 'amend_serial', 'credits', 'copy_id'),
                 array(
-                    array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf', NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL, $copyId)
+                    array('PDF', 'http://bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
+                        NULL, 25939827, 'bitsavers', 'http://bitsavers.org/', "Al Kossow's Bitsavers",
+                        'http://bitsavers.org/pdf/', 'N', '0f91ba7f8d99ce7a9b57f9fdb07d3561', 7, NULL,
+                        $copyId)
             )));
         $this->_db->expects($this->once())->method('getMirrorsForCopy')
             ->with($copyId)
@@ -670,10 +674,14 @@ class DetailsPageTest extends PHPUnit\Framework\TestCase
                 'http://www.textfiles.com/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
                 'http://computer-refuge.org/bitsavers/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf',
                 'http://www.mirrorservice.org/sites/www.bitsavers.org/pdf/honeywell/AB81-14_PubsCatalog_May83.pdf'));
+        $amendsPubId = 17971;
         $this->_db->expects($this->once())->method('getAmendedPub')
             ->with($pubId)
-            ->willReturn(array('ph_company' => 57, 'pub_id' => 17971, 'ph_part' => 'AB81-14G',
+            ->willReturn(array('ph_company' => 57, 'pub_id' => $amendsPubId, 'ph_part' => 'AB81-14G',
                 'ph_title' => 'Honeywell Publications Catalog Addendum G', 'ph_pub_date' => '1984-02'));
+        $this->_db->expects($this->once())->method('getOSTagsForPub')
+            ->with($amendsPubId)
+            ->willReturn(array());
 
         $this->_page->renderCopies($pubId);
 

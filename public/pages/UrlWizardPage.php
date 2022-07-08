@@ -459,7 +459,7 @@ EOH;
         $metaData = $urlPresent ? $this->_urlMeta->determineData($url)
             : [
                 'format' => '',
-                'site' => -1,
+                'site' => [ 'site_id' => -1 ],
                 'size' => 0,
                 'pub_date' => '',
                 'part' => '',

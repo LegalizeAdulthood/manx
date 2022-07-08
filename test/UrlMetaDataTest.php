@@ -321,10 +321,17 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
         $url = 'http://bitsavers.org/pdf/microdata/periph/2602_Bisync_Controller/PS20002602_2602_Bisync_Interface_Product_Specification_Mar1977.pdf';
         $companyId = 13;
         $part = 'PS20002602';
-        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->with('bitsavers', 'microdata', '')->willReturn($companyId);
-        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with($part, $companyId)->willReturn([]);
-        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
-        $this->_db->expects($this->once())->method('copyExistsForUrl')->with($url)->willReturn(true);
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')
+            ->with('bitsavers', 'microdata', '')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')
+            ->with($part, $companyId)->willReturn([]);
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $title = '2602 Bisync Interface Product Specification';
+        $pubId = 7434;
+        $copyExistsRow = ['ph_company' => $companyId, 'ph_pub' => $pubId, 'ph_title' => $title ];
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($url)->willReturn($copyExistsRow);
         $this->_db->expects($this->never())->method('getMirrors');
 
         $data = $this->_meta->determineData($url);
@@ -335,17 +342,17 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
             'size' => $copySize,
             'valid' => true,
             'site' => $bitsaversSiteRow,
-            'company' => null,
+            'company' => $companyId,
             'part' => $part,
             'pub_date' => '1977-03',
-            'title' => null,
+            'title' => $title,
             'format' => 'PDF',
             'site_company_directory' => 'microdata',
             'site_company_parent_directory' => '',
             'pubs' => [],
             'exists' => true,
-            'pub_id' => null,
-            'keywords' => $part
+            'pub_id' => $pubId,
+            'keywords' => "$part 2602 Bisync Interface Product Specification"
         ];
         $this->assertEquals($expectedData, $data);
     }
