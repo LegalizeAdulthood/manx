@@ -1,5 +1,6 @@
-pages/Config.php
-.vs
-vendor
-*.swp
 .htaccess
+.vs
+.well-known
+*.swp
+private
+vendor
