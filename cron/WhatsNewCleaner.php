@@ -52,7 +52,11 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     public function removeNonExistentUnknownPaths()
     {
         $this->log("Remove non-existent unknown paths");
-        foreach($this->_db->getAllSiteUnknownPaths($this->_siteName) as $row)
+        $count = 0;
+        $rows = $this->_db->getAllSiteUnknownPaths($this->_siteName);
+        $total = count($rows);
+        $this->log(sprintf('Checking %d paths.', $total));
+        foreach($rows as $row)
         {
             $path = $row['path'];
             $url = $this->_baseCheckUrl . self::escapeSpecialChars($path);
@@ -60,7 +64,11 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             if (!$urlInfo->exists())
             {
                 $this->_db->removeSiteUnknownPathById($row['id']);
-                $this->log('Path: ' . $path);
+                $this->log('    Path: ' . $path);
+            }
+            if(++$count % 100 == 0)
+            {
+                $this->log(sprintf('Progress: %d of %d (%.2f%%)', $count, $total, 100*$count/$total));
             }
         }
     }
