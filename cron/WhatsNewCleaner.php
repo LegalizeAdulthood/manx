@@ -116,8 +116,11 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 
     public function computeMissingMD5()
     {
-        $this->log("Computing missing MD5 hashes for known copies.");
-        foreach ($this->_db->getAllMissingMD5Documents() as $row)
+        $rows = $this->_db->getAllMissingMD5Documents();
+        $count = 0;
+        $total = count($rows);
+        $this->log(sprintf("Computing %d missing MD5 hashes for known copies.", $total));
+        foreach ($rows as $row)
         {
             $url = self::escapeSpecialChars($row['url']);
             $urlInfo = $this->_factory->createUrlInfo($url);
@@ -128,6 +131,10 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             }
             $this->_db->updateMD5ForCopy($row['copy_id'], $md5);
             $this->log(sprintf("%d %s %s", $row['copy_id'], $url, $md5 != '' ? $md5 : '<missing>'));
+            if(++$count % 100 == 0)
+            {
+                $this->log(sprintf('Progress: %d of %d (%.2f%%)', $count, $total, 100*$count/$total));
+            }
         }
     }
 
