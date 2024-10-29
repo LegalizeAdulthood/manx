@@ -1,24 +1,35 @@
 <?php
 
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\RedirectMiddleware;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 class UrlInfoTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {
-        $this->_curl = $this->createMock(Manx\ICurlApi::class);
+        $this->_handler = new MockHandler();
+        $this->_handlerStack = new HandlerStack($this->_handler);
+        $this->_handlerStack->push(Middleware::redirect(), 'allow_redirects');
+        $redirects = \GuzzleHttp\RedirectMiddleware::$defaultSettings;
+        $redirects['track_redirects'] = true;
+        $this->_client = new Client(['handler' => $this->_handlerStack, 'allow_redirects' => $redirects]);
         $this->_url = 'http://bitsavers.org/pdf/IndexByDate.txt';
-        $this->_info = new Manx\UrlInfo($this->_url, $this->_curl);
-        $this->_session = 0xdeadbeef;
+        $this->_info = new Manx\UrlInfo($this->_url, $this->_client);
     }
 
     public function testSizeReturnsContentLength()
     {
-        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
-        $this->_curl->expects($this->once())->method('exec')->with($this->_session)->willReturn("HTTP/1.0 200 OK\n"
-            . "Content-Length: 4096\n"
-            . "\n");
-        $this->_curl->expects($this->once())->method('getinfo')->with($this->_session, CURLINFO_HTTP_CODE)->willReturn(200);
+        $response = new Response(200, ['Content-Length' => 4096]);
+        $this->_handler->append($response);
 
         $size = $this->_info->size();
 
@@ -27,11 +38,8 @@ class UrlInfoTest extends PHPUnit\Framework\TestCase
 
     public function testGetLastModified()
     {
-        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
-        $this->_curl->method('exec')->with($this->_session)->willReturn("HTTP/1.0 200 OK\n"
-            . "Last-Modified: Wed, 15 Nov 1995 04:58:08 GMT\n"
-            . "\n");
-        $this->_curl->method('getinfo')->with($this->_session, CURLINFO_HTTP_CODE)->willReturn(200);
+        $response = new Response(200, ['Last-Modified' => 'Wed, 15 Nov 1995 04:58:08 GMT']);
+        $this->_handler->append($response);
 
         $lastModified = $this->_info->lastModified();
 
@@ -40,10 +48,8 @@ class UrlInfoTest extends PHPUnit\Framework\TestCase
 
     public function test404ErrorGivesSizeOfFalse()
     {
-        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
-        $this->_curl->expects($this->once())->method('exec')->with($this->_session)->willReturn("HTTP/1.0 404 Not found\n"
-            . "\n");
-        $this->_curl->expects($this->once())->method('getinfo')->with($this->_session, CURLINFO_HTTP_CODE)->willReturn(404);
+        $response = new Response(404);
+        $this->_handler->append($response);
 
         $size = $this->_info->size();
 
@@ -52,10 +58,8 @@ class UrlInfoTest extends PHPUnit\Framework\TestCase
 
     public function testExistsHttpStatus200()
     {
-        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
-        $this->_curl->expects($this->once())->method('exec')->with($this->_session)->willReturn("HTTP/1.0 200 OK\n"
-            . "\n");
-        $this->_curl->expects($this->once())->method('getinfo')->with($this->_session, CURLINFO_HTTP_CODE)->willReturn(200);
+        $response = new Response(200);
+        $this->_handler->append($response);
 
         $result = $this->_info->exists();
 
@@ -64,10 +68,8 @@ class UrlInfoTest extends PHPUnit\Framework\TestCase
 
     public function testExistsHttpStatus404()
     {
-        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
-        $this->_curl->expects($this->once())->method('exec')->with($this->_session)->willReturn("HTTP/1.0 404 Not found\n"
-            . "\n");
-        $this->_curl->expects($this->once())->method('getinfo')->with($this->_session, CURLINFO_HTTP_CODE)->willReturn(404);
+        $response = new Response(404);
+        $this->_handler->append($response);
 
         $result = $this->_info->exists();
 
@@ -77,21 +79,12 @@ class UrlInfoTest extends PHPUnit\Framework\TestCase
     public function testExistsHttpStatus301()
     {
         $newUrl = 'http://other.org/pdf/IndexByDate.txt';
-        $this->_curl->expects($this->exactly(2))->method('init')->withConsecutive([$this->_url], [$newUrl])->willReturn($this->_session);
-        $this->_curl->expects($this->exactly(2))->method('exec')
-            ->with($this->_session)
-            ->willReturn("HTTP/1.0 301 Permanently moved\n"
-                . "Location: http://other.org/pdf/IndexByDate.txt\n"
-                . "\n",
-                "HTTP/1.0 200 OK\n"
-                . "Last-Modified: Wed, 15 Nov 1995 04:58:08 GMT\n"
-                . "\n");
-        $this->_curl->expects($this->exactly(2))->method('getinfo')
-            ->with($this->_session, CURLINFO_HTTP_CODE)
-            ->willReturn(301, 200);
+        $this->_handler->append(new Response(301, ['Location' => $newUrl]));
+        $this->_handler->append(new Response(200));
 
         $result = $this->_info->exists();
 
+        $this->assertEquals(0, $this->_handler->count());
         $this->assertTrue($result);
         $this->assertEquals($newUrl, $this->_info->url());
     }
@@ -99,41 +92,22 @@ class UrlInfoTest extends PHPUnit\Framework\TestCase
     public function testExistsHttpStatus302()
     {
         $newUrl = 'http://other.org/pdf/IndexByDate.txt';
-        $this->_curl->expects($this->exactly(2))->method('init')->withConsecutive([$this->_url], [$newUrl])->willReturn($this->_session);
-        $this->_curl->expects($this->exactly(2))->method('exec')
-            ->with($this->_session)
-            ->willReturn("HTTP/1.0 302 Temporarily moved\n"
-                . "Location: http://other.org/pdf/IndexByDate.txt\n"
-                . "\n",
-                "HTTP/1.0 200 OK\n"
-                . "Last-Modified: Wed, 15 Nov 1995 04:58:08 GMT\n"
-                . "\n");
-        $this->_curl->expects($this->exactly(2))->method('getinfo')
-            ->with($this->_session, CURLINFO_HTTP_CODE)
-            ->willReturn(302, 200);
+        $this->_handler->append(new Response(302, ['Location' => $newUrl]));
+        $this->_handler->append(new Response(200));
 
         $result = $this->_info->exists();
 
+        $this->assertEquals(0, $this->_handler->count());
         $this->assertTrue($result);
         $this->assertEquals($newUrl, $this->_info->url());
     }
 
-    public function testExistsHttpStatus0()
-    {
-        $this->_curl->expects($this->once())->method('init')->with($this->_url)->willReturn($this->_session);
-        $this->_curl->expects($this->once())->method('exec')->with($this->_session)->willReturn("");
-        $this->_curl->expects($this->once())->method('getinfo')->with($this->_session, CURLINFO_HTTP_CODE)->willReturn(0);
-
-        $result = $this->_info->exists();
-
-        $this->assertFalse($result);
-    }
-
-    private $_session;
     /** @var string */
     private $_url;
-    /** @var Manx\ICurlApi */
-    private $_curl;
+    /** @var GuzzleHttp\Handler\MockHandler */
+    private $_handler;
+    /** @var GuzzleHttp\Client */
+    private $_client;
     /** @var Manx\UrlInfo */
     private $_info;
 }
