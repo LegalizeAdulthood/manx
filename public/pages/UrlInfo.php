@@ -6,14 +6,17 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 class UrlInfo implements IUrlInfo
 {
-    private $_api;
     private $_url;
-    private $_session;
+    private $_client;
+    private $_response;
 
-    public function __construct($url, ICurlApi $api = null)
+    public function __construct($url, \GuzzleHttp\Client $client = null)
     {
         $this->_url = $url;
-        $this->_api = is_null($api) ? CurlApi::getInstance() : $api;
+        $redirects = [ 'allow_redirects' => \GuzzleHttp\RedirectMiddleware::$defaultSettings ];
+        $redirects['allow_redirects']['track_redirects'] = true;
+        $this->_client = is_null($client) ? new \GuzzleHttp\Client($redirects) : $client;
+        $this->_response = null;
     }
 
     public function url()
@@ -28,97 +31,50 @@ class UrlInfo implements IUrlInfo
 
     public function size()
     {
-        return $this->getValueFromHeadResponse('content-length');
+        $this->head();
+        return $this->getValueFromHeadResponse('Content-Length');
     }
 
     public function lastModified()
     {
-        $lastModified = $this->getValueFromHeadResponse('last-modified');
-        if (is_string($lastModified) && strlen($lastModified))
-        {
-            $lastModified = strtotime($lastModified);
-        }
-        return $lastModified;
+        $this->head();
+        $value = $this->getValueFromHeadResponse('Last-Modified');
+        return $value ? strtotime($value) : $value;
     }
 
     private function getValueFromHeadResponse($header)
     {
-        $result = $this->head();
-        if (!$result)
-        {
-            $this->close();
-            return false;
-        }
 
-        $httpStatus = $this->httpStatus();
-        $this->close();
-
+        $httpStatus = $this->_response->getStatusCode();
         $value = false;
         if ($httpStatus == 200)
         {
-            $value = $this->getHeaderValue($result, $header);
-        }
-        else if ($this->moved($httpStatus))
-        {
-            $url = $this->getHeaderValue($result, 'location');
-            if ($url)
+            $hdr = $this->_response->getHeader($header);
+            if (is_array($hdr) && count($hdr) > 0)
             {
-                $this->_url = $url;
-                return $this->getValueFromHeadResponse($header);
+                $value = $hdr[0];
             }
         }
         return $value;
     }
 
-    private function moved($status)
-    {
-        return $status == 301 || $status == 302;
-    }
-
     public function exists()
     {
-        while (true)
-        {
-            $result = $this->head();
-            $status = $this->httpStatus();
-            $this->close();
-            if ($this->moved($status))
-            {
-                $url = $this->getHeaderValue($result, 'location');
-                if ($url)
-                {
-                    $this->_url = $url;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else if ($status == 200)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
-
-    private function httpStatus()
-    {
-        return $this->_api->getinfo($this->_session, CURLINFO_HTTP_CODE);
+        $this->head();
+        return $this->_response->getStatusCode() == 200;
     }
 
     private function head()
     {
-        $this->_session = $this->_api->init($this->_url);
-        $this->_api->setopt($this->_session, CURLOPT_HEADER, 1);
-        $this->_api->setopt($this->_session, CURLOPT_NOBODY, 1);
-        $this->_api->setopt($this->_session, CURLOPT_RETURNTRANSFER, 1);
-        $this->_api->setopt($this->_session, CURLOPT_FRESH_CONNECT, 1);
-        $result = $this->_api->exec($this->_session);
-        return $result;
+        if (is_null($this->_response))
+        {
+            $this->_response = $this->_client->head($this->_url);
+            $history = $this->_response->getHeader(\GuzzleHttp\RedirectMiddleware::HISTORY_HEADER);
+            if (is_array($history) && count($history) > 0)
+            {
+                $this->_url = end($history);
+            }
+        }
     }
 
     private function getHeaderValue($headers, $name)
@@ -135,10 +91,5 @@ class UrlInfo implements IUrlInfo
             }
         }
         return false;
-    }
-
-    private function close()
-    {
-        $this->_api->close($this->_session);
     }
 }
