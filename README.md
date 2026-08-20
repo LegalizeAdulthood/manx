@@ -1,4 +1,4 @@
-[![Travis Build Status](https://api.travis-ci.org/LegalizeAdulthood/manx.png?branch=master)](https://travis-ci.org/LegalizeAdulthood/manx)
+[![PHP Composer](https://github.com/LegalizeAdulthood/manx/actions/workflows/php.yml/badge.svg)](https://github.com/LegalizeAdulthood/manx/actions/workflows/php.yml)
 [![Coveralls](http://img.shields.io/coveralls/LegalizeAdulthood/manx.svg?style=flat)](https://coveralls.io/r/LegalizeAdulthood/manx)
 
 # manx

@@ -33,4 +33,15 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Run test suite
-      run: composer run-script test
+      run: |
+        mkdir -p build/logs
+        composer run-script test -- --coverage-clover build/logs/clover.xml
+      env:
+        XDEBUG_MODE: coverage
+
+    - name: Upload coverage to Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/logs/clover.xml
+        format: clover

@@ -8,3 +8,5 @@ vendor
 .codegraph
 # phpunit metadata
 .phpunit.result.cache
+# coveralls logs
+build

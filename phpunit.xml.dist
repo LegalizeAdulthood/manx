@@ -5,4 +5,11 @@
             <directory>test</directory>
         </testsuite>
     </testsuites>
+    <coverage>
+        <include>
+            <directory suffix=".php">cron</directory>
+            <directory suffix=".php">public/api</directory>
+            <directory suffix=".php">public/pages</directory>
+        </include>
+    </coverage>
 </phpunit>
