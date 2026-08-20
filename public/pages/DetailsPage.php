@@ -288,7 +288,9 @@ class DetailsPage extends PageBase
                 $copyUrl = $row['copy_base'] . substr($copyUrl, 1);
             }
             printf("<a href=\"%s\">%s</a></td>\n</tr>\n", $copyUrl, $copyUrl);
-            printf("<tr>\n<td>Site:</td>\n<td><a href=\"%s\">%s</a>", htmlspecialchars($row['site_url']), htmlspecialchars($row['description']));
+            printf("<tr>\n<td>Site:</td>\n<td><a href=\"%s\">%s</a>",
+                htmlspecialchars($row['site_url'], ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401),
+                htmlspecialchars($row['description'], ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401));
             if ($row['low'] != 'N')
             {
                 print ' <span class="warning">(Low Bandwidth)</span>';

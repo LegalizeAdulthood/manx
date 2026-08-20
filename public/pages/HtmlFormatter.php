@@ -123,7 +123,9 @@ class HtmlFormatter implements IFormatter
             {
                 print ' class="ss"';
             }
-            printf(' href="details.php/%s,%s">%s</a>', $row['ph_company'], $row['pub_id'], htmlspecialchars($row['ph_title']));
+            printf(' href="details.php/%s,%s">%s</a>',
+                $row['ph_company'], $row['pub_id'],
+                htmlspecialchars($row['ph_title'], ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401));
             if (count($row['tags']) > 0)
             {
                 echo '<br /><small><b>OS:</b> ',
