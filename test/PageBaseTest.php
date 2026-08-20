@@ -102,6 +102,21 @@ EOH;
         $this->expectOutputString('<a href="https://localhost/manx/login.php?redirect=%2Fmanx%2Fabout.php">Login</a>');
     }
 
+    public function testRenderLoginLinkWithQueryString()
+    {
+        $this->createInstance();
+
+        $this->_page->renderLoginLink(['PHP_SELF' => '/manx/whatsnew.php',
+            'QUERY_STRING' => 'site=bitsavers&parentDir=123',
+            'SCRIPT_NAME' => '/manx/whatsnew.php',
+            'SERVER_NAME' => 'localhost']);
+
+        $target = '/manx/whatsnew.php?site=bitsavers&parentDir=123';
+        $expected = '<a href="https://localhost/manx/login.php?redirect='
+            . urlencode($target) . '">Login</a>';
+        $this->expectOutputString($expected);
+    }
+
     public function testRenderLoginLinkFromLoginPage()
     {
         $this->createInstance();

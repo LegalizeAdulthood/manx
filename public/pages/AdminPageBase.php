@@ -36,7 +36,7 @@ abstract class AdminPageBase extends PageBase
         if (!$this->_user->isLoggedIn())
         {
             $host = $_SERVER['SERVER_NAME'];
-            $self = $_SERVER['PHP_SELF'];
+            $self = PageBase::getCurrentRequestTarget($_SERVER);
             if (preg_match('/\/login\.php/', $self))
             {
                 $redirect = $self;

@@ -9,33 +9,9 @@ Ship the outstanding milestone issues:
 - #163 Recognize YYYYMM[DD] dates in bitsavers URLs
 - #121 Perform keyword search on bitsavers IndexByDate.txt
 - #120 Documents are not removed from the WhatsNew list
-- #103 Login from WhatsNew does not preserve query params
 
 Implement one numbered slice at a time.  When a slice is complete, remove
 that slice and leave the remaining numbers unchanged.
-
-## 3. Preserve admin login query strings (#103)
-
-`AdminPageBase::renderPage()` redirects unauthenticated users to
-`login.php` with `PHP_SELF` only.  WhatsNew pages depend on
-`site` and `parentDir`, so session timeout drops the browsing context.
-
-Implementation:
-
-- Add one helper for the current request target, including `PHP_SELF`
-  and `QUERY_STRING`.
-- Use that helper when `AdminPageBase` builds the login redirect.
-- Consider using the same helper in `PageBase::renderLoginLink()` to
-  keep explicit login links and forced login redirects consistent.
-- Preserve `PATH_INFO`, query strings, and the login-page passthrough
-  behavior.
-
-Verification:
-
-- Add `AdminPageBaseTest` coverage for
-  `whatsnew.php?site=bitsavers&parentDir=123`.
-- Add coverage for no query string and for an existing login page target.
-- `composer test`
 
 ## 4. Parse packed Bitsavers dates (#163)
 

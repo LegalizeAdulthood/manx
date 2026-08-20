@@ -204,14 +204,20 @@ EOH;
         return $prefix;
     }
 
-    public function renderLoginLink($server)
+    public static function getCurrentRequestTarget($server)
     {
         $self = $server['PHP_SELF'];
         if (array_key_exists('QUERY_STRING', $server) and strlen($server['QUERY_STRING']) > 0)
         {
             $self = $self . '?' . $server['QUERY_STRING'];
         }
-        if (preg_match('/\/login.php/', $self))
+        return $self;
+    }
+
+    public function renderLoginLink($server)
+    {
+        $self = self::getCurrentRequestTarget($server);
+        if (preg_match('/\/login\.php/', $self))
         {
             $redirect = $self;
         }

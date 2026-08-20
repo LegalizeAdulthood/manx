@@ -53,6 +53,7 @@ class AdminPageBaseTest extends PHPUnit\Framework\TestCase
         $this->_config = new Container();
         $this->_config['db'] = $db;
         $this->_config['manx'] = $manx;
+        unset($_SERVER['QUERY_STRING']);
     }
 
     public function testParamUrlWithoutPlusGivesUrl()
@@ -91,5 +92,41 @@ class AdminPageBaseTest extends PHPUnit\Framework\TestCase
 
         $this->assertTrue($page->redirectCalled);
         $this->assertEquals($url, $page->redirectLastUrl);
+    }
+
+    public function testLoginRedirectPreservesQueryString()
+    {
+        $this->_user->expects($this->once())->method('isLoggedIn')->willReturn(false);
+        $this->_config['vars'] = [];
+        $host = 'test.manx-docs.org';
+        $_SERVER['SERVER_NAME'] = $host;
+        $_SERVER['PHP_SELF'] = '/manx/whatsnew.php';
+        $_SERVER['QUERY_STRING'] = 'site=bitsavers&parentDir=123';
+        $_SERVER['SCRIPT_NAME'] = '/manx/whatsnew.php';
+        $page = new AdminPageBaseTester($this->_config);
+
+        $page->renderPage();
+
+        $target = '/manx/whatsnew.php?site=bitsavers&parentDir=123';
+        $expected = 'https://' . $host . '/manx/login.php?redirect=' . urlencode($target);
+        $this->assertTrue($page->redirectCalled);
+        $this->assertEquals($expected, $page->redirectLastUrl);
+    }
+
+    public function testLoginRedirectWithoutQueryString()
+    {
+        $this->_user->expects($this->once())->method('isLoggedIn')->willReturn(false);
+        $this->_config['vars'] = [];
+        $host = 'test.manx-docs.org';
+        $_SERVER['SERVER_NAME'] = $host;
+        $_SERVER['PHP_SELF'] = '/manx/about.php';
+        $_SERVER['SCRIPT_NAME'] = '/manx/about.php';
+        $page = new AdminPageBaseTester($this->_config);
+
+        $page->renderPage();
+
+        $expected = 'https://' . $host . '/manx/login.php?redirect=%2Fmanx%2Fabout.php';
+        $this->assertTrue($page->redirectCalled);
+        $this->assertEquals($expected, $page->redirectLastUrl);
     }
 }
