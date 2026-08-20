@@ -13,9 +13,12 @@ class UrlInfo implements IUrlInfo
     public function __construct($url, \GuzzleHttp\Client $client = null)
     {
         $this->_url = $url;
-        $redirects = [ 'allow_redirects' => \GuzzleHttp\RedirectMiddleware::$defaultSettings ];
-        $redirects['allow_redirects']['track_redirects'] = true;
-        $this->_client = is_null($client) ? new \GuzzleHttp\Client($redirects) : $client;
+        $options = array(
+            'allow_redirects' => \GuzzleHttp\RedirectMiddleware::$defaultSettings,
+            'http_errors' => false
+        );
+        $options['allow_redirects']['track_redirects'] = true;
+        $this->_client = is_null($client) ? new \GuzzleHttp\Client($options) : $client;
         $this->_response = null;
     }
 
@@ -68,7 +71,7 @@ class UrlInfo implements IUrlInfo
     {
         if (is_null($this->_response))
         {
-            $this->_response = $this->_client->head($this->_url);
+            $this->_response = $this->_client->head($this->_url, array('http_errors' => false));
             $history = $this->_response->getHeader(\GuzzleHttp\RedirectMiddleware::HISTORY_HEADER);
             if (is_array($history) && count($history) > 0)
             {

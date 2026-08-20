@@ -1,14 +1,9 @@
 <?php
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\RedirectMiddleware;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -17,8 +12,7 @@ class UrlInfoTest extends PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->_handler = new MockHandler();
-        $this->_handlerStack = new HandlerStack($this->_handler);
-        $this->_handlerStack->push(Middleware::redirect(), 'allow_redirects');
+        $this->_handlerStack = HandlerStack::create($this->_handler);
         $redirects = \GuzzleHttp\RedirectMiddleware::$defaultSettings;
         $redirects['track_redirects'] = true;
         $this->_client = new Client(['handler' => $this->_handlerStack, 'allow_redirects' => $redirects]);
