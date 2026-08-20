@@ -7,36 +7,9 @@ Generated from the open 2.1.0 milestone issues on 2026-08-20.
 Ship the outstanding milestone issues:
 
 - #121 Perform keyword search on bitsavers IndexByDate.txt
-- #120 Documents are not removed from the WhatsNew list
 
 Implement one numbered slice at a time.  When a slice is complete, remove
 that slice and leave the remaining numbers unchanged.
-
-## 5. Remove processed WhatsNew entries (#120)
-
-`UrlWizardPage::postPage()` has a cleanup branch for `site_unknown_id`,
-but the issue reports that a processed row remains visible.  Treat this
-as a flow bug until a regression test proves the exact fault.
-
-Implementation:
-
-- Reproduce the WhatsNew-to-wizard flow with an `id` query parameter.
-- Verify the hidden `site_unknown_id` field survives the GET-to-POST
-  wizard flow.
-- Ensure successful wizard completion calls `setCopySiteUnknownDirId()`,
-  `updateIgnoredUnknownSingleDir()`, and `removeSiteUnknownPathById()`
-  with the site unknown row id.
-- If cleanup is skipped because the id is missing, fix the form flow.
-- If cleanup runs but the row remains, fix the delete or directory state
-  update path in `ManxDatabase`.
-- Do not remove the WhatsNew row when validation or copy creation fails.
-
-Verification:
-
-- Add `UrlWizardPageTest` coverage for successful cleanup.
-- Add coverage that cleanup is not attempted without `site_unknown_id`.
-- Confirm the parent WhatsNew directory recomputes ignored state.
-- `composer test`
 
 ## 6. Search Bitsavers IndexByDate (#121)
 

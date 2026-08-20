@@ -118,11 +118,59 @@ class UrlWizardPageTest extends Manx\Test\TestCase
                 $vars['copy_amend_serial'])
             ->willReturn($copyId);
         $this->_db->expects($this->once())->method('setCopySiteUnknownDirId')->with($copyId, $siteUnknownId);
+        $this->_db->expects($this->once())->method('updateIgnoredUnknownSingleDir')->with($siteUnknownId);
         $this->_db->expects($this->once())->method('removeSiteUnknownPathById')->with($siteUnknownId);
 
         $page->postPage();
 
         $this->assertTrue($page->redirectCalled);
+    }
+
+    public function testDocumentAddedWithWizardId()
+    {
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $part = '070-1183-01';
+        $title = '4010 and 4010-1 Maintenance Manual';
+        $copyId = 6066;
+        $pubId = '19690';
+        $siteUnknownId = 7077;
+        $vars = array_merge(
+            self::copyData('http://bitsavers.org/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf', 'PDF', '3'),
+            self::siteData(),
+            self::companyData('5'),
+            self::pubHistoryData($title, 'D', '1976-04', 'B', '', $part),
+            [
+                'id' => $siteUnknownId,
+                'site_company_directory' => '',
+                'site_company_parent_directory' => '',
+                'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
+                'pub_pub_id' => $pubId,
+                'supersession_search_keywords' => '4010 Maintenance Manual',
+                'supersession_old_pub' => '-1',
+                'supersession_new_pub' => '-1',
+                'next' => 'Next+%3E'
+            ]);
+        $this->_config['vars'] = $vars;
+        $page = new UrlWizardPageTester($this->_config);
+        $this->_db->expects($this->never())->method('addCompany');
+        $this->_db->expects($this->never())->method('addSupersession');
+        $this->_db->expects($this->never())->method('addSite');
+        $this->_db->expects($this->once())->method('addCopy')
+            ->with(
+                $pubId, $vars['copy_format'], $vars['copy_site'], rawurldecode($vars['copy_url']),
+                $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
+                $vars['copy_amend_serial'])
+            ->willReturn($copyId);
+        $this->_db->expects($this->once())->method('setCopySiteUnknownDirId')->with($copyId, $siteUnknownId);
+        $this->_db->expects($this->once())->method('updateIgnoredUnknownSingleDir')->with($siteUnknownId);
+        $this->_db->expects($this->once())->method('removeSiteUnknownPathById')->with($siteUnknownId);
+
+        $page->postPage();
+
+        $this->assertTrue($page->redirectCalled);
+        $this->assertEquals("details.php/5,$pubId", $page->redirectLastTarget);
     }
 
     public function testNewBitSaversDirectoryAdded()
@@ -163,6 +211,9 @@ class UrlWizardPageTest extends Manx\Test\TestCase
                 $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
                 $vars['copy_amend_serial']
             );
+        $this->_db->expects($this->never())->method('setCopySiteUnknownDirId');
+        $this->_db->expects($this->never())->method('updateIgnoredUnknownSingleDir');
+        $this->_db->expects($this->never())->method('removeSiteUnknownPathById');
 
         $page->postPage();
 

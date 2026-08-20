@@ -34,14 +34,34 @@ class UrlWizardPage extends AdminPageBase
         $this->addSupersession($pubId);
         $siteId = $this->addSite();
         $copyId = $this->addCopy($pubId, $siteId);
-        if (array_key_exists('site_unknown_id', $this->_vars))
-        {
-            $siteUnknownId = $this->_vars['site_unknown_id'];
-            $this->_db->setCopySiteUnknownDirId($copyId, $siteUnknownId);
-            $this->_db->updateIgnoredUnknownSingleDir($siteUnknownId);
-            $this->_db->removeSiteUnknownPathById($siteUnknownId);
-        }
+        $this->removeSiteUnknownPath($copyId);
         $this->redirect(sprintf("details.php/%s,%s", $companyId, $pubId));
+    }
+
+    private function siteUnknownId()
+    {
+        if (array_key_exists('site_unknown_id', $this->_vars)
+            && strlen((string)$this->_vars['site_unknown_id']) > 0)
+        {
+            return $this->_vars['site_unknown_id'];
+        }
+        if (array_key_exists('id', $this->_vars))
+        {
+            return $this->_vars['id'];
+        }
+        return '';
+    }
+
+    private function removeSiteUnknownPath($copyId)
+    {
+        $siteUnknownId = $this->siteUnknownId();
+        if (strlen($siteUnknownId) == 0)
+        {
+            return;
+        }
+        $this->_db->setCopySiteUnknownDirId($copyId, $siteUnknownId);
+        $this->_db->updateIgnoredUnknownSingleDir($siteUnknownId);
+        $this->_db->removeSiteUnknownPathById($siteUnknownId);
     }
 
     private function addCompany()
