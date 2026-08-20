@@ -190,12 +190,29 @@ class UrlMetaData implements IUrlMetaData
                     $fileBase = $matches[1];
                 }
             }
+            if ($pubDate == ''
+                && preg_match('/^(.*[^0-9])([0-9]{6}|[0-9]{8})$/', $parts[0], $matches) == 1)
+            {
+                $packedDate = self::parsePackedPubDate($matches[2]);
+                if ($packedDate != '')
+                {
+                    $pubDate = $packedDate;
+                    $fileBase = $matches[1];
+                }
+            }
         }
         if (count($parts) > 1)
         {
             $lastPart = count($parts)-1;
             $year = strtolower($parts[$lastPart]);
-            if (is_numeric($year) && $year > 9 && $year < 2100)
+            $packedDate = self::parsePackedPubDate($year);
+            if ($packedDate != '')
+            {
+                $pubDate = $packedDate;
+                --$lastPart;
+                $fileBase = implode($sep, array_slice($parts, 0, $lastPart + 1));
+            }
+            else if (is_numeric($year) && $year > 9 && $year < 2100)
             {
                 if ($year < 100)
                 {
@@ -265,6 +282,33 @@ class UrlMetaData implements IUrlMetaData
             }
         }
         return [$pubDate, $fileBase];
+    }
+
+    private static function parsePackedPubDate($text)
+    {
+        if (preg_match('/^([0-9]{4})([0-9]{2})([0-9]{2})?$/', $text, $matches) != 1)
+        {
+            return '';
+        }
+
+        $year = intval($matches[1]);
+        $month = intval($matches[2]);
+        if ($year < 10 || $year >= 2100 || $month < 1 || $month > 12)
+        {
+            return '';
+        }
+
+        if (array_key_exists(3, $matches) && $matches[3] != '')
+        {
+            $day = intval($matches[3]);
+            if (!checkdate($month, $day, $year))
+            {
+                return '';
+            }
+            return sprintf("%04d-%02d-%02d", $year, $month, $day);
+        }
+
+        return sprintf("%04d-%02d", $year, $month);
     }
 
     private static function matchMonth($text)

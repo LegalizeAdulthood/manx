@@ -6,32 +6,11 @@ Generated from the open 2.1.0 milestone issues on 2026-08-20.
 
 Ship the outstanding milestone issues:
 
-- #163 Recognize YYYYMM[DD] dates in bitsavers URLs
 - #121 Perform keyword search on bitsavers IndexByDate.txt
 - #120 Documents are not removed from the WhatsNew list
 
 Implement one numbered slice at a time.  When a slice is complete, remove
 that slice and leave the remaining numbers unchanged.
-
-## 4. Parse packed Bitsavers dates (#163)
-
-`UrlMetaData::extractPubDate()` handles month-name forms, but not packed
-numeric suffixes now used by Bitsavers.
-
-Implementation:
-
-- Extend `UrlMetaData::extractPubDate()` to recognize `YYYYMM` and
-  `YYYYMMDD` suffixes in the filename base.
-- Validate month and day values before accepting a match.
-- Strip the date suffix from the returned title base.
-- Keep existing month-name and separated date behavior unchanged.
-
-Verification:
-
-- Add `UrlMetaDataTest` cases for `Name_202603` and `Name_20260307`.
-- Add rejection cases for invalid months and invalid days.
-- Add at least one full Bitsavers URL metadata test using the new form.
-- `composer test`
 
 ## 5. Remove processed WhatsNew entries (#120)
 

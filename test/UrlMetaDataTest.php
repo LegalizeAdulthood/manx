@@ -38,6 +38,34 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($copyMD5, $md5);
     }
 
+    public function testExtractPubDatePackedYearMonth()
+    {
+        $result = Manx\UrlMetaData::extractPubDate('Name_202603');
+
+        $this->assertEquals(['2026-03', 'Name'], $result);
+    }
+
+    public function testExtractPubDatePackedYearMonthDay()
+    {
+        $result = Manx\UrlMetaData::extractPubDate('Name_20260307');
+
+        $this->assertEquals(['2026-03-07', 'Name'], $result);
+    }
+
+    public function testExtractPubDatePackedInvalidMonth()
+    {
+        $result = Manx\UrlMetaData::extractPubDate('Name_202613');
+
+        $this->assertEquals(['', 'Name_202613'], $result);
+    }
+
+    public function testExtractPubDatePackedInvalidDay()
+    {
+        $result = Manx\UrlMetaData::extractPubDate('Name_20260231');
+
+        $this->assertEquals(['', 'Name_20260231'], $result);
+    }
+
     public function testDetermineIngestDataForBitSaversNoCopy()
     {
         $url = 'http://bitsavers.org/pdf/microdata/periph/2602_Bisync_Controller/PS20002602_2602_Bisync_Interface_Product_Specification_Mar1977.pdf';
@@ -110,6 +138,39 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
             'company' => '-1',
             'part' => '',
             'pub_date' => '1979-05',
+            'title' => 'Graphic 7 Monitor Preliminary Users Guide',
+            'format' => 'PDF',
+            'site_company_directory' => 'sandersAssociates',
+            'site_company_parent_directory' => '',
+            'pubs' => [],
+            'keywords' => 'Graphic 7 Monitor Preliminary Users Guide'
+        ];
+        $this->assertEquals($expectedData, $data);
+    }
+
+    public function testDetermineDataNewBitSaversCompanyWithPackedDate()
+    {
+        $siteId = 3;
+        $this->_db->expects($this->once())->method('getSites')->willReturn(self::sitesResultsForBitSavers($siteId));
+        $this->_db->expects($this->once())->method('getCompanyIdForSiteDirectory')->willReturn('-1');
+        $this->_db->expects($this->once())->method('getFormatForExtension')->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->never())->method('getPublicationsForPartNumber');
+        $this->_db->expects($this->never())->method('searchForPublications');
+        $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_202603.pdf';
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
+
+        $data = $this->_meta->determineData($url);
+
+        $expectedData = [
+            'url' => $url,
+            'mirror_url' => '',
+            'size' => 1266,
+            'valid' => true,
+            'site' => self::bitSaversSiteRow($siteId),
+            'company' => '-1',
+            'part' => '',
+            'pub_date' => '2026-03',
             'title' => 'Graphic 7 Monitor Preliminary Users Guide',
             'format' => 'PDF',
             'site_company_directory' => 'sandersAssociates',
