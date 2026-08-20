@@ -4,3 +4,7 @@
 *.swp
 private
 vendor
+# codegraph metadata
+.codegraph
+# phpunit metadata
+.phpunit.result.cache
