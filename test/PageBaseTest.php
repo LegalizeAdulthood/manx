@@ -10,6 +10,11 @@ class PageBaseTester extends Manx\PageBase
     {
     }
 
+    public function renderHeader()
+    {
+        parent::renderHeader();
+    }
+
     public function renderAuthorization()
     {
         parent::renderAuthorization();
@@ -30,12 +35,58 @@ class PageBaseTest extends Manx\Test\TestCase
         $this->_db = $this->createMock(Manx\IManxDatabase::class);
     }
 
-    private function createInstance()
+    private function createInstance($pathInfo = '')
     {
-        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['PATH_INFO'] = $pathInfo;
         $config = new Container();
         $config['manx'] = $this->_manx;
         $this->_page = new PageBaseTester($config);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testRenderHeader()
+    {
+        $this->createInstance();
+
+        $this->_page->renderHeader();
+
+        $output = <<<EOH
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/tr/html4/strict.dtd">
+<html lang="en">
+<head><title>Manx</title>
+<link rel="stylesheet" type="text/css" href="assets/manx.css" />
+<link rel="shortcut icon" type="image/x-icon" href="assets/manx.ico" />
+<link rel="alternate" type="application/rss+xml" href="rss.php" title="Manx New Documents" />
+</head>
+
+EOH;
+        $this->expectOutputStringIgnoringLineEndings($output);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testRenderHeaderWithPathInfoPrefix()
+    {
+        $this->createInstance('/1,2');
+
+        $this->_page->renderHeader();
+
+        $output = <<<EOH
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/tr/html4/strict.dtd">
+<html lang="en">
+<head><title>Manx</title>
+<link rel="stylesheet" type="text/css" href="../assets/manx.css" />
+<link rel="shortcut icon" type="image/x-icon" href="../assets/manx.ico" />
+<link rel="alternate" type="application/rss+xml" href="../rss.php" title="Manx New Documents" />
+</head>
+
+EOH;
+        $this->expectOutputStringIgnoringLineEndings($output);
     }
 
     public function testRenderLoginLink()
