@@ -85,6 +85,11 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             $urlInfo = $this->_factory->createUrlInfo($this->_baseCheckUrl . $path);
             if ($urlInfo->exists() && $row['md5'] != '')
             {
+                $size = $urlInfo->size();
+                if ($size !== false && $row['size'] !== null && $size != $row['size'])
+                {
+                    continue;
+                }
                 if ($urlInfo->md5() == $row['md5'])
                 {
                     $this->_db->siteFileMoved($row['path_id'], $row['copy_id'], $this->_baseUrl . $path);

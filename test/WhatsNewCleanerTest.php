@@ -99,7 +99,7 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
             ->with('bitsavers')
             ->willReturn( [
                 ['path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
-                    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'md5' => $md5]
+                    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'size' => 1234, 'md5' => $md5]
             ]);
         $this->_db->expects($this->once())->method('siteFileMoved')
             ->with(16, 10, 'http://bitsavers.org/pdf/hp/newDir/foo.pdf');
@@ -107,6 +107,27 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
             ->with('http://bitsavers.trailing-edge.com/pdf/hp/newDir/foo.pdf')
             ->willReturn($this->_urlInfo);
         $this->_urlInfo->expects($this->once())->method('md5')->willReturn($md5);
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1234);
+        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
+
+        $this->_cleaner->updateMovedFiles();
+    }
+
+    public function testMovedFilesWithDifferentSizesAreNotHashed()
+    {
+        $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
+        $this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
+            ->with('bitsavers')
+            ->willReturn( [
+                ['path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
+                    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'size' => 1234, 'md5' => $md5]
+            ]);
+        $this->_db->expects($this->never())->method('siteFileMoved');
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with('http://bitsavers.trailing-edge.com/pdf/hp/newDir/foo.pdf')
+            ->willReturn($this->_urlInfo);
+        $this->_urlInfo->expects($this->never())->method('md5');
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(4321);
         $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
 
         $this->_cleaner->updateMovedFiles();
