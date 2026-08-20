@@ -10,7 +10,7 @@ class UrlInfo implements IUrlInfo
     private $_client;
     private $_response;
 
-    public function __construct($url, \GuzzleHttp\Client $client = null)
+    public function __construct($url, \GuzzleHttp\ClientInterface $client = null)
     {
         $this->_url = $url;
         $options = array(
@@ -71,7 +71,7 @@ class UrlInfo implements IUrlInfo
     {
         if (is_null($this->_response))
         {
-            $this->_response = $this->_client->head($this->_url, array('http_errors' => false));
+            $this->_response = $this->_client->request('HEAD', $this->_url, array('http_errors' => false));
             $history = $this->_response->getHeader(\GuzzleHttp\RedirectMiddleware::HISTORY_HEADER);
             if (is_array($history) && count($history) > 0)
             {
