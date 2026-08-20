@@ -995,7 +995,8 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
             . "FROM `site_unknown_dir` `sud`, `site` `s` "
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `sud`.`site_id` "
-            . "AND `sud`.`parent_dir_id` = ?";
+            . "AND `sud`.`parent_dir_id` = ? "
+            . "ORDER BY `sud`.`path`";
         $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
             [
                 [5005, 3, 'BBS', -1, ''],

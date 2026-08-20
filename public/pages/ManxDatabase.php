@@ -1017,7 +1017,8 @@ class ManxDatabase implements IManxDatabase
             . "FROM `site_unknown_dir` `sud`, `site` `s` "
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `sud`.`site_id` "
-            . "AND `sud`.`parent_dir_id` = ?",
+            . "AND `sud`.`parent_dir_id` = ? "
+            . "ORDER BY `sud`.`path`",
             [$siteName, $parentDirId]);
     }
 
