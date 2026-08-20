@@ -17,6 +17,12 @@ class UrlWizardPageTester extends Manx\UrlWizardPage
         $this->redirectLastTarget = $target;
     }
     public $redirectCalled, $redirectLastTarget;
+    public $headers = [];
+
+    protected function sendHeader($field)
+    {
+        $this->headers[] = $field;
+    }
 
     public function postPage()
     {
@@ -124,6 +130,7 @@ class UrlWizardPageTest extends Manx\Test\TestCase
         $page->postPage();
 
         $this->assertTrue($page->redirectCalled);
+        $this->assertContains('Clear-Site-Data: "cache"', $page->headers);
     }
 
     public function testDocumentAddedWithWizardId()
@@ -171,6 +178,7 @@ class UrlWizardPageTest extends Manx\Test\TestCase
 
         $this->assertTrue($page->redirectCalled);
         $this->assertEquals("details.php/5,$pubId", $page->redirectLastTarget);
+        $this->assertContains('Clear-Site-Data: "cache"', $page->headers);
     }
 
     public function testNewBitSaversDirectoryAdded()
@@ -218,6 +226,7 @@ class UrlWizardPageTest extends Manx\Test\TestCase
         $page->postPage();
 
         $this->assertTrue($page->redirectCalled);
+        $this->assertNotContains('Clear-Site-Data: "cache"', $page->headers);
     }
 
     public function testNewVtdaDirectoryAdded()

@@ -41,6 +41,13 @@ class WhatsNewPage extends AdminPageBase
         $this->_thisDir = null;
     }
 
+    protected function renderCacheControl()
+    {
+        $this->sendHeader("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        $this->sendHeader("Pragma: no-cache");
+        $this->sendHeader("Expires: 0");
+    }
+
     protected function getMenuType()
     {
         return $this->_menuType;

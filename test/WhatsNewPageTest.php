@@ -9,6 +9,18 @@ use Pimple\Container;
 
 class WhatsNewPageTester extends Manx\WhatsNewPage
 {
+    public $headers = [];
+
+    protected function sendHeader($field)
+    {
+        $this->headers[] = $field;
+    }
+
+    public function renderHeader()
+    {
+        parent::renderHeader();
+    }
+
     // lift visibility of some functions for testing
     public function renderBodyContent()
     {
@@ -84,6 +96,20 @@ class WhatsNewPageTest extends Manx\Test\TestCase
 
         $this->assertTrue(is_object($this->_page));
         $this->assertFalse(is_null($this->_page));
+    }
+
+    public function testRenderHeaderPreventsBrowserCaching()
+    {
+        $this->createPage(['parentDir' => -1]);
+
+        ob_start();
+        $this->_page->renderHeader();
+        ob_end_clean();
+
+        $this->assertContains("Cache-Control: no-store, no-cache, must-revalidate, max-age=0",
+            $this->_page->headers);
+        $this->assertContains("Pragma: no-cache", $this->_page->headers);
+        $this->assertContains("Expires: 0", $this->_page->headers);
     }
 
     public function testTitleForRoot()

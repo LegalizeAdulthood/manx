@@ -38,6 +38,15 @@ abstract class PageBase
         $this->renderBody();
     }
 
+    protected function sendHeader($field)
+    {
+        header($field);
+    }
+
+    protected function renderCacheControl()
+    {
+    }
+
     protected function getTitle()
     {
         return "Manx";
@@ -60,7 +69,8 @@ abstract class PageBase
 
     protected function renderHeader()
     {
-        header("Content-Type: text/html; charset=utf-8");
+        $this->renderCacheControl();
+        $this->sendHeader("Content-Type: text/html; charset=utf-8");
         print <<<EOH
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/tr/html4/strict.dtd">
 <html lang="en">
@@ -175,9 +185,9 @@ EOH;
 
     protected function redirect($target)
     {
-        header("Status: 303 See Also");
-        header("Location: " . $target);
-        header("Content-Type: text/plain");
+        $this->sendHeader("Status: 303 See Also");
+        $this->sendHeader("Location: " . $target);
+        $this->sendHeader("Content-Type: text/plain");
         print "Redirecting to " . $target;
     }
 

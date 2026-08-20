@@ -34,7 +34,10 @@ class UrlWizardPage extends AdminPageBase
         $this->addSupersession($pubId);
         $siteId = $this->addSite();
         $copyId = $this->addCopy($pubId, $siteId);
-        $this->removeSiteUnknownPath($copyId);
+        if ($this->removeSiteUnknownPath($copyId))
+        {
+            $this->clearBrowserCache();
+        }
         $this->redirect(sprintf("details.php/%s,%s", $companyId, $pubId));
     }
 
@@ -57,11 +60,17 @@ class UrlWizardPage extends AdminPageBase
         $siteUnknownId = $this->siteUnknownId();
         if (strlen($siteUnknownId) == 0)
         {
-            return;
+            return false;
         }
         $this->_db->setCopySiteUnknownDirId($copyId, $siteUnknownId);
         $this->_db->updateIgnoredUnknownSingleDir($siteUnknownId);
         $this->_db->removeSiteUnknownPathById($siteUnknownId);
+        return true;
+    }
+
+    private function clearBrowserCache()
+    {
+        $this->sendHeader('Clear-Site-Data: "cache"');
     }
 
     private function addCompany()
