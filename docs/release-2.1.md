@@ -8,33 +8,12 @@ Ship the outstanding milestone issues:
 
 - #165 Schema change to make transaction-wrapped updates atomic
 - #163 Recognize YYYYMM[DD] dates in bitsavers URLs
-- #142 Run unit tests in github actions
 - #121 Perform keyword search on bitsavers IndexByDate.txt
 - #120 Documents are not removed from the WhatsNew list
 - #103 Login from WhatsNew does not preserve query params
 
 Implement one numbered slice at a time.  When a slice is complete, remove
 that slice and leave the remaining numbers unchanged.
-
-## 1. CI baseline (#142)
-
-The issue body says the workflow did not run tests and the README badge
-needed to point at GitHub Actions.  The current checkout already has
-`.github/workflows/php.yml` running the Composer test script, and
-`README.md` already points at `actions/workflows/php.yml`.
-
-Implementation:
-
-- Check the latest `PHP Composer` Actions runs for `develop` and PRs.
-- If tests are not running, update the workflow to run `composer test`.
-- Refresh workflow actions only where required by current GitHub support.
-- Keep the README badge pointed at `actions/workflows/php.yml`.
-
-Verification:
-
-- `composer validate --strict`
-- `composer test`
-- A current GitHub Actions run shows the test step executing.
 
 ## 2. Transaction-safe schema (#165)
 

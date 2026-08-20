@@ -1,5 +1,5 @@
 [![PHP Composer](https://github.com/LegalizeAdulthood/manx/actions/workflows/php.yml/badge.svg)](https://github.com/LegalizeAdulthood/manx/actions/workflows/php.yml)
-[![Coveralls](http://img.shields.io/coveralls/LegalizeAdulthood/manx.svg?style=flat)](https://coveralls.io/r/LegalizeAdulthood/manx)
+[![Coveralls](https://badge.coveralls.io/repos/github/LegalizeAdulthood/manx/badge.svg?branch=master)](https://coveralls.io/github/LegalizeAdulthood/manx?branch=master)
 
 # manx
 Source for the manx vintage computer documentation database.
