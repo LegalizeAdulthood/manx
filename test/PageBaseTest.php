@@ -59,6 +59,7 @@ class PageBaseTest extends Manx\Test\TestCase
 <head><title>Manx</title>
 <link rel="stylesheet" type="text/css" href="assets/manx.css" />
 <link rel="shortcut icon" type="image/x-icon" href="assets/manx.ico" />
+<link rel="search" type="application/opensearchdescription+xml" href="assets/manx.mspx" title="Manx" />
 <link rel="alternate" type="application/rss+xml" href="rss.php" title="Manx New Documents" />
 </head>
 
@@ -82,6 +83,7 @@ EOH;
 <head><title>Manx</title>
 <link rel="stylesheet" type="text/css" href="../assets/manx.css" />
 <link rel="shortcut icon" type="image/x-icon" href="../assets/manx.ico" />
+<link rel="search" type="application/opensearchdescription+xml" href="../assets/manx.mspx" title="Manx" />
 <link rel="alternate" type="application/rss+xml" href="../rss.php" title="Manx New Documents" />
 </head>
 
