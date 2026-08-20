@@ -79,20 +79,4 @@ class UrlInfo implements IUrlInfo
             }
         }
     }
-
-    private function getHeaderValue($headers, $name)
-    {
-        foreach (explode("\n", str_replace("\r", '', $headers)) as $line)
-        {
-            if (strpos($line, ':') > 0)
-            {
-                list($header, $value) = explode(':', $line, 2);
-                if (strtolower($header) == $name)
-                {
-                    return trim($value);
-                }
-            }
-        }
-        return false;
-    }
 }
