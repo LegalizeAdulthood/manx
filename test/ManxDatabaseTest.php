@@ -875,10 +875,12 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
             . "AND `s`.`site_id` = `su`.`site_id` "
             . "AND `s`.`site_id` = `sud`.`site_id` "
             . "AND `su`.`dir_id` = `sud`.`id` "
+            . "AND `c`.`md5` <> '' "
+            . "AND `c`.`size` > 0 "
             . "AND ((`c`.`sud_id` <> -1 AND `su`.`dir_id` <> `c`.`sud_id`) "
                 . "OR (`c`.`sud_id` = -1 AND `c`.`url` <> CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))) "
             . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`";
-        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['path', 'path_id', 'url', 'copy_id', 'md5'],
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['path', 'path_id', 'url', 'copy_id', 'size', 'md5'],
             [
                 ['foo/bar/foo.pdf', 11, 'http://bitsavers.org/pdf/foo/bar/foo.pdf', 22, 6566, 'd131dd02c5e6eec4']
             ]);

@@ -866,6 +866,8 @@ class ManxDatabase implements IManxDatabase
                 . "AND `s`.`site_id` = `su`.`site_id` "
                 . "AND `s`.`site_id` = `sud`.`site_id` "
                 . "AND `su`.`dir_id` = `sud`.`id` "
+                . "AND `c`.`md5` <> '' "
+                . "AND `c`.`size` > 0 "
                 . "AND ((`c`.`sud_id` <> -1 AND `su`.`dir_id` <> `c`.`sud_id`) "
                     . "OR (`c`.`sud_id` = -1 AND `c`.`url` <> CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))) "
                 . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`",
