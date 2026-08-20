@@ -4,6 +4,9 @@
 *.swp
 private
 vendor
+# hosting runtime files
+public/.php-ini
+public/.php-version
 # codegraph metadata
 .codegraph
 # phpunit metadata
