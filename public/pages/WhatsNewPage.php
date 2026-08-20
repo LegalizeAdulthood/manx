@@ -21,6 +21,7 @@ class WhatsNewPage extends AdminPageBase
     private $_menuType;
     private $_page;
     private $_title;
+    private $_thisDir;
 
     public function __construct(Container $config)
     {
@@ -37,11 +38,35 @@ class WhatsNewPage extends AdminPageBase
         $this->_factory = $config['whatsNewPageFactory'];
         $vars = $config['vars'];
         $this->_parentDirId = array_key_exists('parentDir', $vars) ? $vars['parentDir'] : -1;
+        $this->_thisDir = null;
     }
 
     protected function getMenuType()
     {
         return $this->_menuType;
+    }
+
+    protected function getTitle()
+    {
+        $dir = $this->getThisDir()['path'];
+        return strlen($dir) ? $this->_title . ' ' . $dir : $this->_title;
+    }
+
+    private function getThisDir()
+    {
+        if (is_null($this->_thisDir))
+        {
+            if ($this->_parentDirId != -1)
+            {
+                $this->_thisDir = $this->_manxDb->getSiteUnknownDir($this->_parentDirId);
+            }
+            else
+            {
+                $this->_thisDir = ['id' => -1, 'path' => '', 'parent_dir_id' => -1,
+                    'part_regex' => '', 'ignored' => 0];
+            }
+        }
+        return $this->_thisDir;
     }
 
     protected function postPage()
@@ -74,14 +99,7 @@ class WhatsNewPage extends AdminPageBase
 
     protected function renderBodyContent()
     {
-        if ($this->_parentDirId != -1)
-        {
-            $thisDir = $this->_manxDb->getSiteUnknownDir($this->_parentDirId);
-        }
-        else
-        {
-            $thisDir = ['id' => -1, 'path' => '', 'parent_dir_id' => -1, 'part_regex' => '', 'ignored' => 0];
-        }
+        $thisDir = $this->getThisDir();
         $currentDir = $thisDir['path'];
         $dirs = [];
         foreach ($this->_manxDb->getSiteUnknownDirectories($this->_siteName, $this->_parentDirId) as $dir)

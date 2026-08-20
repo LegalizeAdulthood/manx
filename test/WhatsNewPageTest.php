@@ -19,6 +19,11 @@ class WhatsNewPageTester extends Manx\WhatsNewPage
     {
         parent::ignorePaths();
     }
+
+    public function getTitle()
+    {
+        return parent::getTitle();
+    }
 }
 
 class WhatsNewPageTest extends Manx\Test\TestCase
@@ -79,6 +84,27 @@ class WhatsNewPageTest extends Manx\Test\TestCase
 
         $this->assertTrue(is_object($this->_page));
         $this->assertFalse(is_null($this->_page));
+    }
+
+    public function testTitleForRoot()
+    {
+        $this->createPage(['parentDir' => -1]);
+        $this->_db->expects($this->never())->method('getSiteUnknownDir');
+
+        $this->assertEquals('BitSavers', $this->_page->getTitle());
+    }
+
+    public function testTitleForDir()
+    {
+        $parentDirId = 1339;
+        $this->createPage(['parentDir' => $parentDirId]);
+        $thisDirRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
+            [
+                [100, 3, 'dec/pdp11', 150, '']
+            ]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDir')->with($parentDirId)->willReturn($thisDirRows[0]);
+
+        $this->assertEquals('BitSavers dec/pdp11', $this->_page->getTitle());
     }
 
     public function testRenderBodyContentNoRootPaths()
