@@ -428,6 +428,16 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($rows, $pubs);
     }
 
+    public function testDeleteUserSession()
+    {
+        $sessionId = '20260820120000.123456';
+        $this->_db->expects($this->once())->method('execute')
+            ->with("DELETE FROM `user_session` WHERE `ascii_session_id`=?",
+                array($sessionId));
+
+        $this->_manxDb->deleteUserSession($sessionId);
+    }
+
     public function testAddCopy()
     {
         $query = 'INSERT INTO `copy`'

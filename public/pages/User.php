@@ -13,6 +13,16 @@ class User implements IUser
     private $_displayName;
     private $_admin;
 
+    private static function guestRow()
+    {
+        return [
+            'user_id' => -1,
+            'logged_in' => 0,
+            'first_name' => 'Guest',
+            'last_name' => ''
+        ];
+    }
+
     public static function getInstanceFromSession(IManxDatabase $manxDb)
     {
         $row = $manxDb->getUserFromSessionId(Cookie::get());
@@ -23,14 +33,12 @@ class User implements IUser
             {
                 $manxDb->deleteUserSession(Cookie::get());
                 Cookie::delete();
+                $row = self::guestRow();
             }
         }
         else
         {
-            $row['user_id'] = -1;
-            $row['logged_in'] = 0;
-            $row['first_name'] = 'Guest';
-            $row['last_name'] = '';
+            $row = self::guestRow();
         }
         return new User($row);
     }

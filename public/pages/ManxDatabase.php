@@ -521,7 +521,7 @@ class ManxDatabase implements IManxDatabase
     function deleteUserSession($session)
     {
         $this->execute("DELETE FROM `user_session` WHERE `ascii_session_id`=?",
-            array($sessionId));
+            array($session));
     }
 
     function getUserFromSessionId($sessionId)
