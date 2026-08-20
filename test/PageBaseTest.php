@@ -21,7 +21,7 @@ class PageBaseTester extends Manx\PageBase
     }
 }
 
-class PageBaseTest extends PHPUnit\Framework\TestCase
+class PageBaseTest extends Manx\Test\TestCase
 {
     protected function setUp(): void
     {
@@ -82,7 +82,7 @@ class PageBaseTest extends PHPUnit\Framework\TestCase
 </table></div>
 
 EOH;
-        $this->expectOutputString($output);
+        $this->expectOutputStringIgnoringLineEndings($output);
     }
 
     public function testRenderMenu()
@@ -97,7 +97,7 @@ EOH;
 <div class="menu"><a class="first" href="search.php">Search</a><a href="news.php">News</a><a href="about.php">About</a><a href="help.php">Help</a><a href="rss.php"><img style="vertical-align: middle" src="assets/rss.png"></a></div>
 
 EOH;
-        $this->expectOutputString($output);
+        $this->expectOutputStringIgnoringLineEndings($output);
     }
 
     public function testRenderAdminMenu()
@@ -116,7 +116,7 @@ EOH;
 <a class="first" href="site.php">Site</a><a href="mirror.php">Mirror</a></div>
 
 EOH;
-        $this->expectOutputString($output);
+        $this->expectOutputStringIgnoringLineEndings($output);
     }
 
     /** @var Manx\IManx */

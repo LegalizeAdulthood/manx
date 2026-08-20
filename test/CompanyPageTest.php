@@ -35,7 +35,7 @@ class CompanyPageTester extends Manx\CompanyPage
     public $redirectCalled, $redirectLastUrl;
 }
 
-class CompanyPageTest extends PHPUnit\Framework\TestCase
+class CompanyPageTest extends Manx\Test\TestCase
 {
     /** @var Container */
     private $_config;
@@ -112,7 +112,7 @@ EOH;
 
         $this->_page->renderBodyContent();
 
-        $this->expectOutputString($output);
+        $this->expectOutputStringIgnoringLineEndings($output);
     }
 
     function testRenderAddCompanyForm()
@@ -146,7 +146,7 @@ EOH;
 
         $this->_page->renderBodyContent();
 
-        $this->expectOutputString($output);
+        $this->expectOutputStringIgnoringLineEndings($output);
     }
 
     function testAddCompany()

@@ -29,7 +29,7 @@ class UrlWizardPageTester extends Manx\UrlWizardPage
     }
 }
 
-class UrlWizardPageTest extends PHPUnit\Framework\TestCase
+class UrlWizardPageTest extends Manx\Test\TestCase
 {
     /** @var Container */
     private $_config;
@@ -210,7 +210,7 @@ EOH;
 
         $this->_page->renderHeaderContent();
 
-        $this->expectOutputString($expected);
+        $this->expectOutputStringIgnoringLineEndings($expected);
     }
 
     public function testRenderPageNoParams()
@@ -227,7 +227,7 @@ EOH;
         $page->renderBodyContent();
 
         $expected = self::expectedBodyContent($vars);
-        $this->expectOutputString($expected);
+        $this->expectOutputStringIgnoringLineEndings($expected);
     }
 
     public function testRenderPageParams()
@@ -296,7 +296,7 @@ EOH;
 
         $page->renderBodyContent();
 
-        $this->expectOutputString(self::expectedBodyContent(array_merge($vars, $metaData, ['sites' => $sites, 'companies' => $companies])));
+        $this->expectOutputStringIgnoringLineEndings(self::expectedBodyContent(array_merge($vars, $metaData, ['sites' => $sites, 'companies' => $companies])));
     }
 
     public function testRenderPageParamsNoSiteCompanyDir()
@@ -365,7 +365,7 @@ EOH;
 
         $page->renderBodyContent();
 
-        $this->expectOutputString(self::expectedBodyContent(array_merge($vars, $metaData, ['sites' => $sites, 'companies' => $companies])));
+        $this->expectOutputStringIgnoringLineEndings(self::expectedBodyContent(array_merge($vars, $metaData, ['sites' => $sites, 'companies' => $companies])));
     }
 
     private static function expectedSiteOptions($vars)

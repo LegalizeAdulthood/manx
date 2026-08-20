@@ -21,7 +21,7 @@ class WhatsNewPageTester extends Manx\WhatsNewPage
     }
 }
 
-class WhatsNewPageTest extends PHPUnit\Framework\TestCase
+class WhatsNewPageTest extends Manx\Test\TestCase
 {
     /** @var Container */
     private $_config;
@@ -92,7 +92,7 @@ class WhatsNewPageTest extends PHPUnit\Framework\TestCase
 
         $this->_page->renderBodyContent();
 
-        $this->expectOutputString("<h1>No New BitSavers Publications Found</h1>\n");
+        $this->expectOutputStringIgnoringLineEndings("<h1>No New BitSavers Publications Found</h1>\n");
     }
 
     public function testRenderBodyContentNoDocumentsForDir()
@@ -118,7 +118,7 @@ class WhatsNewPageTest extends PHPUnit\Framework\TestCase
 </ul>
 
 EOH;
-        $this->expectOutputString($expected);
+        $this->expectOutputStringIgnoringLineEndings($expected);
     }
 
     public function testRenderBodyContent()
@@ -184,7 +184,7 @@ EOH;
 </form>
 
 EOH;
-        $this->expectOutputString($expected);
+        $this->expectOutputStringIgnoringLineEndings($expected);
     }
 
     public function testIgnorePaths()

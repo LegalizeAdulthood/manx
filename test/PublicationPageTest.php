@@ -35,7 +35,7 @@ class PublicationPageTester extends Manx\PublicationPage
     public $redirectCalled, $redirectLastUrl;
 }
 
-class PublicationPageTest extends PHPUnit\Framework\TestCase
+class PublicationPageTest extends Manx\Test\TestCase
 {
     /** @var Container */
     private $_config;
@@ -123,7 +123,7 @@ EOH;
 
         $this->_page->renderBodyContent();
 
-        $this->expectOutputString($output);
+        $this->expectOutputStringIgnoringLineEndings($output);
     }
 
     function testAddPublication()
