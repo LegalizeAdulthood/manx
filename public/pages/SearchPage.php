@@ -20,7 +20,7 @@ class SearchPage extends PageBase
         $keywords = urldecode(array_key_exists('q', $params) ? $params['q'] : '');
         $searcher->renderCompanies($company);
         print ' Keywords: <input id="q" name="q" size="20" maxlength="256" '
-            . (array_key_exists('q', $params) ? ' value="' . $keywords . '"' : '')
+            . (array_key_exists('q', $params) ? ' value="' . htmlspecialchars($keywords) . '"' : '')
             . '/> '
             . 'Online only: <input type="checkbox" name="on" '
             . (array_key_exists('on', $params) ? 'checked="checked" ' : '')
@@ -28,6 +28,6 @@ class SearchPage extends PageBase
             . '<input id="Submit1" type="submit" value="Search" /></div></form></div>';
         $formatter = HtmlFormatter::getInstance();
         $online = array_key_exists('on', $params) && ($params['on'] != '0');
-        $searcher->renderSearchResults($formatter, $company, $keywords, $online);
+        $searcher->renderSearchResults($formatter, $company, $keywords, $online, $this->_user->isAdmin());
     }
 }

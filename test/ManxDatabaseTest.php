@@ -326,6 +326,78 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($rows, $pubs);
     }
 
+    public function testSearchSiteUnknownPaths()
+    {
+        $siteName = 'bitsavers';
+        $company = 1;
+        $keywords = array('VT220', 'terminal');
+        $query = "SELECT DISTINCT `su`.`id`, "
+                . "CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path`, "
+                . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) AS `url` "
+            . "FROM `site` `s`, `site_unknown` `su`, `site_unknown_dir` `sud` "
+            . "WHERE `s`.`name` = ? "
+                . "AND `s`.`live` = 'Y' "
+                . "AND `s`.`site_id` = `su`.`site_id` "
+                . "AND `s`.`site_id` = `sud`.`site_id` "
+                . "AND `su`.`dir_id` = `sud`.`id` "
+                . "AND `su`.`ignored` = 0"
+                . " AND (CONCAT(`sud`.`path`, '/', `su`.`path`) LIKE '%VT220%' "
+                . "AND CONCAT(`sud`.`path`, '/', `su`.`path`) LIKE '%terminal%')"
+                . " AND ("
+                    . "NOT EXISTS ("
+                        . "SELECT 1 FROM `site_company_dir` `scd_all` "
+                        . "WHERE `scd_all`.`site_id` = `s`.`site_id` "
+                        . "AND `scd_all`.`company_id` = ?"
+                    . ") "
+                    . "OR EXISTS ("
+                        . "SELECT 1 FROM `site_company_dir` `scd` "
+                        . "WHERE `scd`.`site_id` = `s`.`site_id` "
+                        . "AND `scd`.`company_id` = ? "
+                        . "AND ("
+                            . "(`scd`.`parent_directory` = '' "
+                                . "AND (`sud`.`path` = `scd`.`directory` "
+                                    . "OR `sud`.`path` LIKE CONCAT(`scd`.`directory`, '/%'))) "
+                            . "OR "
+                            . "(`scd`.`parent_directory` <> '' "
+                                . "AND (`sud`.`path` = CONCAT(`scd`.`parent_directory`, '/', `scd`.`directory`) "
+                                    . "OR `sud`.`path` LIKE CONCAT(`scd`.`parent_directory`, '/', `scd`.`directory`, '/%')))"
+                        . ")"
+                    . ")"
+                . ") "
+                . "AND NOT EXISTS ("
+                    . "SELECT 1 FROM `copy` `c` "
+                    . "WHERE `c`.`site` = `s`.`site_id` "
+                    . "AND ("
+                        . "`c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) "
+                        . "OR (`c`.`sud_id` = `su`.`dir_id` "
+                            . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`)"
+                    . ")"
+                . ") "
+            . "ORDER BY `path`";
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            array('id', 'path', 'url'),
+            array(
+                array(55, 'dec/vt220/VT220_User_Guide.pdf',
+                    'http://bitsavers.org/pdf/dec/vt220/VT220_User_Guide.pdf')
+                ));
+        $this->_db->expects($this->once())->method('execute')
+            ->with($query, [$siteName, $company, $company])
+            ->willReturn($rows);
+
+        $pubs = $this->_manxDb->searchSiteUnknownPaths($siteName, $company, $keywords);
+
+        $this->assertEquals($rows, $pubs);
+    }
+
+    public function testSearchSiteUnknownPathsNoKeywords()
+    {
+        $this->_db->expects($this->never())->method('execute');
+
+        $pubs = $this->_manxDb->searchSiteUnknownPaths('bitsavers', 1, array());
+
+        $this->assertEquals(array(), $pubs);
+    }
+
     public function testGetPublicationsSupersededByPub()
     {
         $pubId = 6105;

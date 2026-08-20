@@ -20,6 +20,7 @@ interface IManxDatabase
     function getCopiesForPub($pubId);
     function getDetailsForPub($pubId);
     function searchForPublications($company, array $keywords, $online);
+    function searchSiteUnknownPaths($siteName, $company, array $keywords);
     function getPublicationsSupersededByPub($pubId);
     function getPublicationsSupersedingPub($pubId);
     function getUserId($email, $pw_sha1);

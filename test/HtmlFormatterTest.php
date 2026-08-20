@@ -45,6 +45,15 @@ class HtmlFormatterTest extends PHPUnit\Framework\TestCase
         $this->expectOutputString('<div class="resbar">Searching for "graphics" and "terminal". Results <b>1 - 1</b> of <b>1</b>.</div>');
     }
 
+    public function testRenderResultsBarSearchWordsNoResults()
+    {
+        $formatter = Manx\HtmlFormatter::getInstance();
+
+        $formatter->renderResultsBar(array(), array('graphics'), 0, -1, 0);
+
+        $this->expectOutputString('<div class="resbar">Searching for "graphics". Results <b>0 - 0</b> of <b>0</b>.</div>');
+    }
+
     public function testRenderResultsBarIgnoredWordsOneResult()
     {
         $formatter = Manx\HtmlFormatter::getInstance();
@@ -166,5 +175,58 @@ class HtmlFormatterTest extends PHPUnit\Framework\TestCase
             . '</tr>'
             . '</tbody>'
             . '</table>');
+    }
+
+    public function testRenderSiteUnknownResultsPageNoRows()
+    {
+        $formatter = Manx\HtmlFormatter::getInstance();
+
+        $formatter->renderSiteUnknownResultsPage(array(), false);
+
+        $this->expectOutputString('');
+    }
+
+    public function testRenderSiteUnknownResultsPage()
+    {
+        $formatter = Manx\HtmlFormatter::getInstance();
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            array('id', 'path', 'url'),
+            array(
+                array(55, 'dec/vt220/VT220_User_Guide.pdf',
+                    'http://bitsavers.org/pdf/dec/vt220/VT220_User_Guide.pdf')
+                ));
+
+        $formatter->renderSiteUnknownResultsPage($rows, false);
+
+        $this->expectOutputString('<h2>Additional BitSavers matches</h2>'
+            . '<table class="restable">'
+            . '<thead><tr><th>Path</th><th class="last">Status</th></tr></thead>'
+            . '<tbody><tr valign="top">'
+            . '<td><a href="http://bitsavers.org/pdf/dec/vt220/VT220_User_Guide.pdf">'
+            . 'dec/vt220/VT220_User_Guide.pdf</a></td>'
+            . '<td>BitSavers</td></tr></tbody></table>');
+    }
+
+    public function testRenderSiteUnknownResultsPageAdmin()
+    {
+        $formatter = Manx\HtmlFormatter::getInstance();
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            array('id', 'path', 'url'),
+            array(
+                array(55, 'dec/vt220/VT220_User_Guide.pdf',
+                    'http://bitsavers.org/pdf/dec/vt220/VT220_User_Guide.pdf')
+                ));
+
+        $formatter->renderSiteUnknownResultsPage($rows, true);
+
+        $this->expectOutputString('<h2>Additional BitSavers matches</h2>'
+            . '<table class="restable">'
+            . '<thead><tr><th>Path</th><th class="last">Status</th></tr></thead>'
+            . '<tbody><tr valign="top">'
+            . '<td><a href="http://bitsavers.org/pdf/dec/vt220/VT220_User_Guide.pdf">'
+            . 'dec/vt220/VT220_User_Guide.pdf</a></td>'
+            . '<td><a href="url-wizard.php?id=55&amp;url='
+            . 'http%3A%2F%2Fbitsavers.org%2Fpdf%2Fdec%2Fvt220%2FVT220_User_Guide.pdf">'
+            . 'URL Wizard</a></td></tr></tbody></table>');
     }
 }

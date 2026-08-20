@@ -9,4 +9,5 @@ interface IFormatter
     public function renderResultsBar(array $ignoredWords, array $searchWords, $start, $end, $total);
     public function renderPageSelectionBar($start, $total, $rowsPerPage, array $params);
     public function renderResultsPage(array $rows, $start, $end);
+    public function renderSiteUnknownResultsPage(array $rows, $admin);
 }

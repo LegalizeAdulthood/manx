@@ -390,6 +390,34 @@ class ManxDatabase implements IManxDatabase
         return $matchClause;
     }
 
+    private static function matchClauseForUnknownPathSearchWords($searchWords)
+    {
+        $matchClause = '';
+        $matchCond = ' AND ';
+        if (count($searchWords) > 0)
+        {
+            $matchClause .= ' AND (';
+            $ordWord = 0;
+            foreach ($searchWords as $word)
+            {
+                if (++$ordWord > 1)
+                {
+                    $matchClause .= $matchCond;
+                }
+                $cleanWord = ManxDatabase::cleanSqlWord($word);
+                $matchClause .= "CONCAT(`sud`.`path`, '/', `su`.`path`) LIKE '%$cleanWord%'";
+            }
+            $matchClause .= ')';
+        }
+
+        if (strlen(trim($matchClause)) == 0)
+        {
+            $matchClause = ' ';
+        }
+
+        return $matchClause;
+    }
+
     public function searchForPublications($company, array $keywords, $online)
     {
         $matchClause = self::matchClauseForSearchWords($keywords);
@@ -404,6 +432,58 @@ class ManxDatabase implements IManxDatabase
             . " AND `ph_company`=$company"
             . " ORDER BY `ph_sort_part`, `ph_pub_date`, `pub_id`";
         return $this->fetchAll($query);
+    }
+
+    public function searchSiteUnknownPaths($siteName, $company, array $keywords)
+    {
+        if (count($keywords) == 0)
+        {
+            return [];
+        }
+        $matchClause = self::matchClauseForUnknownPathSearchWords($keywords);
+        $query = "SELECT DISTINCT `su`.`id`, "
+                . "CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path`, "
+                . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) AS `url` "
+            . "FROM `site` `s`, `site_unknown` `su`, `site_unknown_dir` `sud` "
+            . "WHERE `s`.`name` = ? "
+                . "AND `s`.`live` = 'Y' "
+                . "AND `s`.`site_id` = `su`.`site_id` "
+                . "AND `s`.`site_id` = `sud`.`site_id` "
+                . "AND `su`.`dir_id` = `sud`.`id` "
+                . "AND `su`.`ignored` = 0"
+                . $matchClause
+                . " AND ("
+                    . "NOT EXISTS ("
+                        . "SELECT 1 FROM `site_company_dir` `scd_all` "
+                        . "WHERE `scd_all`.`site_id` = `s`.`site_id` "
+                        . "AND `scd_all`.`company_id` = ?"
+                    . ") "
+                    . "OR EXISTS ("
+                        . "SELECT 1 FROM `site_company_dir` `scd` "
+                        . "WHERE `scd`.`site_id` = `s`.`site_id` "
+                        . "AND `scd`.`company_id` = ? "
+                        . "AND ("
+                            . "(`scd`.`parent_directory` = '' "
+                                . "AND (`sud`.`path` = `scd`.`directory` "
+                                    . "OR `sud`.`path` LIKE CONCAT(`scd`.`directory`, '/%'))) "
+                            . "OR "
+                            . "(`scd`.`parent_directory` <> '' "
+                                . "AND (`sud`.`path` = CONCAT(`scd`.`parent_directory`, '/', `scd`.`directory`) "
+                                    . "OR `sud`.`path` LIKE CONCAT(`scd`.`parent_directory`, '/', `scd`.`directory`, '/%')))"
+                        . ")"
+                    . ")"
+                . ") "
+                . "AND NOT EXISTS ("
+                    . "SELECT 1 FROM `copy` `c` "
+                    . "WHERE `c`.`site` = `s`.`site_id` "
+                    . "AND ("
+                        . "`c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) "
+                        . "OR (`c`.`sud_id` = `su`.`dir_id` "
+                            . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`)"
+                    . ")"
+                . ") "
+            . "ORDER BY `path`";
+        return $this->execute($query, [$siteName, $company, $company]);
     }
 
     function getPublicationsSupersededByPub($pubId)

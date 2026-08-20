@@ -43,7 +43,9 @@ class HtmlFormatter implements IFormatter
         {
             print 'Showing all documents.';
         }
-        print ' Results <b>' . ($start + 1) . ' - ' . ($end + 1) . '</b> of <b>' . $total . '</b>.</div>';
+        $first = $total > 0 ? $start + 1 : 0;
+        $last = $total > 0 ? $end + 1 : 0;
+        print ' Results <b>' . $first . ' - ' . $last . '</b> of <b>' . $total . '</b>.</div>';
     }
 
     public function renderPageSelectionBar($start, $total, $rowsPerPage, array $params)
@@ -157,6 +159,35 @@ class HtmlFormatter implements IFormatter
             else
             {
                 print '&nbsp;';
+            }
+            print '</td></tr>';
+        }
+        print '</tbody></table>';
+    }
+
+    public function renderSiteUnknownResultsPage(array $rows, $admin)
+    {
+        if (count($rows) == 0)
+        {
+            return;
+        }
+        print '<h2>Additional BitSavers matches</h2>';
+        print '<table class="restable"><thead><tr><th>Path</th><th class="last">Status</th></tr></thead><tbody>';
+        foreach ($rows as $row)
+        {
+            $url = htmlspecialchars($row['url'], ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401);
+            $path = htmlspecialchars($row['path'], ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401);
+            print '<tr valign="top">';
+            print '<td><a href="' . $url . '">' . $path . '</a></td>';
+            print '<td>';
+            if ($admin)
+            {
+                printf('<a href="url-wizard.php?id=%d&amp;url=%s">URL Wizard</a>',
+                    $row['id'], urlencode($row['url']));
+            }
+            else
+            {
+                print 'BitSavers';
             }
             print '</td></tr>';
         }

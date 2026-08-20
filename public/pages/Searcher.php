@@ -65,13 +65,14 @@ class Searcher implements ISearcher
         return $searchWords;
     }
 
-    public function renderSearchResults(IFormatter $formatter, $company, $keywords, $online)
+    public function renderSearchResults(IFormatter $formatter, $company, $keywords, $online, $admin = false)
     {
         $params = self::parameterSource($_GET, $_POST);
         $stmt = '';
         $rows = array();
         $this->_searchWords = self::filterSearchKeywords($keywords, $this->_ignoredWords);
         $rows = $this->_manxDb->searchForPublications($company, $this->_searchWords, $online);
+        $siteUnknownRows = $this->_manxDb->searchSiteUnknownPaths('bitsavers', $company, $this->_searchWords);
         $total = count($rows);
         if (array_key_exists('start', $params))
         {
@@ -92,5 +93,6 @@ class Searcher implements ISearcher
         $formatter->renderPageSelectionBar($start, $total, $rowsPerPage, $params);
         $formatter->renderResultsPage($rows, $start, $end);
         $formatter->renderPageSelectionBar($start, $total, $rowsPerPage, $params);
+        $formatter->renderSiteUnknownResultsPage($siteUnknownRows, $admin);
     }
 }

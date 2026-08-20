@@ -85,6 +85,13 @@ class SearcherTest extends PHPUnit\Framework\TestCase
         $db->expects($this->once())->method('searchForPublications')
             ->with($company, explode(' ', $keywords), true)
             ->willReturn($rows);
+        $siteUnknownRows = array(
+            array('id' => 55, 'path' => 'dec/vt220/foo.pdf',
+                'url' => 'http://bitsavers.org/pdf/dec/vt220/foo.pdf')
+            );
+        $db->expects($this->once())->method('searchSiteUnknownPaths')
+            ->with('bitsavers', $company, explode(' ', $keywords))
+            ->willReturn($siteUnknownRows);
         $tags = array('OpenVMS VAX Version 6.0');
         $db->expects($this->once())->method('getOSTagsForPub')
             ->with($pubId)
@@ -98,6 +105,8 @@ class SearcherTest extends PHPUnit\Framework\TestCase
         $rowArgs[0]['tags'] = $tags;
         $formatter->expects($this->once())->method('renderResultsPage')
             ->with($rowArgs, 0, 0);
+        $formatter->expects($this->once())->method('renderSiteUnknownResultsPage')
+            ->with($siteUnknownRows, false);
         $searcher = Manx\Searcher::getInstance($db);
 
         $searcher->renderSearchResults($formatter, $company, $keywords, true);
