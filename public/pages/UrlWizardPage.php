@@ -138,7 +138,7 @@ class UrlWizardPage extends AdminPageBase
     {
         $this->renderLink("stylesheet", "text/css", "assets/UrlWizard.css");
         print <<<EOH
-<script type="text/javascript" src="assets/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="assets/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="assets/UrlWizard.js"></script>
 
 EOH;

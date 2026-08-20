@@ -16,7 +16,7 @@ class PublicationPage extends AdminPageBase
     protected function renderHeaderContent()
     {
         print <<<EOH
-<script type="text/javascript" src="assets/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="assets/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="assets/PartLookup.js"></script>
 EOH;
     }

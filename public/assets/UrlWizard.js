@@ -305,15 +305,22 @@ $(function()
 
     function ajax_error_handler(error_id)
     {
-        return function(e, response, settings, exception)
+        return function(e, response, settings)
         {
-            if (settings.data.indexOf('error_id=' + error_id + '&') == 0)
+            var data = settings.data || '';
+            if (data.indexOf('error_id=' + error_id + '&') == 0)
             {
                 show(error_id);
-                $(this).html(response.responseText);
+                $("#" + error_id).html(response.responseText);
             }
             next_enable(true);
         };
+    }
+
+    function register_ajax_error_handler(error_id)
+    {
+        $(document).off("ajaxError." + error_id)
+            .on("ajaxError." + error_id, ajax_error_handler(error_id));
     }
 
     function pub_search(id_base, callback)
@@ -323,7 +330,7 @@ $(function()
         var working_id = id_base + '_working';
         if (company_id != -1)
         {
-            $("#" + error_id).ajaxError(ajax_error_handler(error_id));
+            register_ajax_error_handler(error_id);
             show(working_id);
             next_enable(false);
             wizard_service(
@@ -527,7 +534,7 @@ $(function()
         }
     }
 
-    $("#copy_url_error").ajaxError(ajax_error_handler('copy_url_error'));
+    register_ajax_error_handler('copy_url_error');
     $("#copy_url").change(url_lookup);
     $("#copy_site").change(copy_site_change);
     $("#company_id").change(company_id_change);
