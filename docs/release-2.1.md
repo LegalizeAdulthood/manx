@@ -6,7 +6,6 @@ Generated from the open 2.1.0 milestone issues on 2026-08-20.
 
 Ship the outstanding milestone issues:
 
-- #165 Schema change to make transaction-wrapped updates atomic
 - #163 Recognize YYYYMM[DD] dates in bitsavers URLs
 - #121 Perform keyword search on bitsavers IndexByDate.txt
 - #120 Documents are not removed from the WhatsNew list
@@ -14,33 +13,6 @@ Ship the outstanding milestone issues:
 
 Implement one numbered slice at a time.  When a slice is complete, remove
 that slice and leave the remaining numbers unchanged.
-
-## 2. Transaction-safe schema (#165)
-
-The schema files create MyISAM tables, so PDO transaction calls do not
-make multi-statement updates atomic.  The issue comment says to change
-the tables to InnoDB.
-
-Implementation:
-
-- Add `schema/9-schema.sql` to convert all application tables to InnoDB.
-- Update fresh-install schema definitions, or otherwise prove that
-  applying all numbered schema files leaves no MyISAM tables behind.
-- Audit indexes, full-text usage, and stored procedures after conversion.
-- Document the production path: backup, maintenance window, migration,
-  post-migration engine check, and rollback from backup.
-- Verify `beginTransaction()` and `commit()` call sites in
-  `public/pages/ManxDatabase.php` now use transactional tables.
-
-Verification:
-
-- Apply the full schema to a scratch database.
-- Apply `schema/9-schema.sql` to a copy of production-shaped data.
-- Query `information_schema.tables` and confirm every app table uses
-  InnoDB.
-- Interrupt one transaction-wrapped cron or request path in staging and
-  confirm partial state is rolled back.
-- `composer test`
 
 ## 3. Preserve admin login query strings (#103)
 
