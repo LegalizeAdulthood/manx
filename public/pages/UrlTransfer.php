@@ -6,24 +6,28 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 class UrlTransfer implements IUrlTransfer
 {
-    public function __construct($url, $curlApi = null, $fileSystem = null)
+    public function __construct($url, \GuzzleHttp\ClientInterface $client = null, $fileSystem = null)
     {
         $this->_url = $url;
-        $this->_curl = is_null($curlApi) ? CurlApi::getInstance() : $curlApi;
+        $this->_client = is_null($client) ? new \GuzzleHttp\Client(array('http_errors' => false)) : $client;
         $this->_fileSystem = is_null($fileSystem) ? new FileSystem() : $fileSystem;
     }
 
     public function get($destination)
     {
-        $session = $this->_curl->init($this->_url);
         $tempDestination = $destination . ".tmp";
         $file = $this->_fileSystem->openFile($tempDestination, 'w');
-        $this->_curl->setopt($session, CURLOPT_FILE, $file->getStream());
-        $result = $this->_curl->exec($session);
-        $httpStatus = $this->_curl->getinfo($session, CURLINFO_HTTP_CODE);
-        $this->_curl->close($session);
+        $response = null;
+        try
+        {
+            $response = $this->_client->request('GET', $this->_url,
+                array('sink' => $file->getStream(), 'http_errors' => false));
+        }
+        catch (\GuzzleHttp\Exception\GuzzleException $e)
+        {
+        }
         $file->close();
-        if ($httpStatus != 200)
+        if (is_null($response) || $response->getStatusCode() != 200)
         {
             return false;
         }
@@ -37,6 +41,6 @@ class UrlTransfer implements IUrlTransfer
     }
 
     private $_url;
-    private $_curl;
+    private $_client;
     private $_fileSystem;
 }
