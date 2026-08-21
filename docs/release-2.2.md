@@ -23,8 +23,6 @@ Issues:
 
 - #66 Documents with `#` in file name have wrong URL.
 - #67 URLs with special characters don't get MD5 computed properly.
-- #68 URLs with special characters aren't checked for existence
-  properly.
 - #69 URL Wizard doesn't recognize document dates with day.
 - #73 If site URL and copy base URL differ, wizard produces incorrect
   URLs.
@@ -45,43 +43,6 @@ unchanged.
 
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
-
-## 8. Normalize copy URLs before duplicate checks
-
-Issue: #68
-
-Implementation:
-
-- Make no table or column changes for this issue.
-- In `schema/9-schema.sql`, normalize existing copy URLs into the
-  canonical encoded form with a one-off procedure that is dropped after
-  it runs.
-- Detect normalized URL collisions before updating rows.
-- Leave no stored normalization procedure behind after the migration.
-- Make copy lookup normalize input and query the canonical URL form.
-
-Acceptance criteria:
-
-- No new persistent table, column, index, trigger, function, or procedure
-  remains after the migration.
-- After migration, decoded path characters in `copy.url` are encoded.
-- Already encoded URLs are not double encoded.
-- Collisions between encoded and decoded forms are reported before data
-  changes are applied.
-- The migration does not leave a URL-normalization procedure installed.
-- Copy lookup finds existing rows by canonical URL only.
-- New duplicate copies cannot be inserted using decoded path variants.
-
-Automated tests:
-
-- Add a migration test proving no persistent schema object is added.
-- Add migration tests for decoded, encoded, and collision cases.
-- Add a migration test proving no normalization procedure remains.
-- Add an idempotence test for running the migration twice.
-- Add `ManxDatabaseTest` coverage for canonical-only copy lookup.
-- Add an ingestion duplicate-prevention regression test.
-
-Fixes #68
 
 ## 6. Encode `#` in document paths
 

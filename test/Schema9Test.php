@@ -26,6 +26,74 @@ class Schema9Test extends PHPUnit\Framework\TestCase
             $sql);
     }
 
+    public function testCopyUrlMigrationUsesTemporaryProcedures()
+    {
+        $sql = self::schemaSql();
+
+        $this->assertStringContainsString(
+            'CREATE PROCEDURE `manx_normalize_copy_urls`()',
+            $sql);
+        $this->assertStringContainsString(
+            'DROP PROCEDURE IF EXISTS `manx_normalize_copy_urls`;',
+            $sql);
+        $this->assertStringNotContainsString('ALTER TABLE `copy`', $sql);
+        $this->assertStringNotContainsString('CREATE TABLE `copy`', $sql);
+        $this->assertStringNotContainsString('CREATE FUNCTION', $sql);
+    }
+
+    public function testCopyUrlMigrationEncodesPathCharacters()
+    {
+        $sql = self::schemaSql();
+
+        $this->assertStringContainsString(
+            "ELSEIF `ch` REGEXP '^[-A-Za-z0-9._~/]$' THEN",
+            $sql);
+        $this->assertStringContainsString(
+            "LPAD(HEX(ASCII(`ch`)), 2, '0')",
+            $sql);
+    }
+
+    public function testCopyUrlMigrationPreservesEncodedBytes()
+    {
+        $sql = self::schemaSql();
+
+        $this->assertStringContainsString(
+            "SUBSTRING(`source_path`, `i` + 1, 2)",
+            $sql);
+        $this->assertStringContainsString(
+            "REGEXP '^[0-9A-Fa-f][0-9A-Fa-f]$'",
+            $sql);
+        $this->assertStringContainsString(
+            "UPPER(SUBSTRING(`source_path`, `i` + 1, 2))",
+            $sql);
+    }
+
+    public function testCopyUrlMigrationChecksCollisionsBeforeUpdate()
+    {
+        $sql = self::schemaSql();
+
+        $signal = strpos($sql, "SIGNAL SQLSTATE '45000'");
+        $update = strpos($sql, "UPDATE `copy` `c`, `tmp_copy_url_normalized` `n`");
+        $this->assertNotFalse($signal);
+        $this->assertNotFalse($update);
+        $this->assertLessThan($update, $signal);
+        $this->assertStringContainsString(
+            'HAVING COUNT(DISTINCT `url`) > 1',
+            $sql);
+    }
+
+    public function testCopyUrlMigrationDropsProceduresBeforeVersionUpdate()
+    {
+        $sql = self::schemaSql();
+
+        $drop = strpos($sql,
+            'DROP PROCEDURE IF EXISTS `manx_normalize_copy_urls`;',
+            strpos($sql, 'CALL `manx_normalize_copy_urls`();'));
+        $version = strrpos($sql, "SET `value` = '2.2.0'");
+        $this->assertNotFalse($drop);
+        $this->assertLessThan($version, $drop);
+    }
+
     private static function schemaSql()
     {
         return file_get_contents(__DIR__ . '/../schema/9-schema.sql');
