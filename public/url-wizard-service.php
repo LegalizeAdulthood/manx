@@ -14,5 +14,9 @@ $config['urlMetaData'] = function($c)
 {
     return new Manx\UrlMetaData($c);
 };
+$config['pdfMetadata'] = function($c)
+{
+    return new Manx\PdfMetadata($c['db']);
+};
 $page = new Manx\UrlWizardService($config);
 $page->processRequest();
