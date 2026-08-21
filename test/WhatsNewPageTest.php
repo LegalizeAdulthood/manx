@@ -239,6 +239,56 @@ EOH;
         $this->expectOutputStringIgnoringLineEndings($expected);
     }
 
+    public function testRenderBodyContentEscapesSpecialPathSegments()
+    {
+        $siteName = 'bitsavers';
+        $parentDirId = 1339;
+        $this->createPage(['siteName' => $siteName, 'parentDir' => $parentDirId]);
+        $thisDirRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
+            [
+                [100, 3, 'dec/foo#bar', 150, '', 0]
+            ]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDir')
+            ->with($parentDirId)->willReturn($thisDirRows[0]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDirectories')
+            ->with($siteName, $parentDirId)
+            ->willReturn([]);
+        $fileRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+            [
+                [222, 3, 'EK-11#1 & Guide.pdf', 0, 0, 1339]
+            ]);
+        $this->_db->expects($this->once())->method('getSiteUnknownPaths')
+            ->with($siteName, $parentDirId)
+            ->willReturn($fileRows);
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')
+            ->willReturn('PDF');
+
+        $this->_page->renderBodyContent();
+
+        $expected = <<<EOH
+<h1>New BitSavers dec/foo#bar Publications</h1>
+
+<ul>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
+</ul>
+<form action="whatsnew.php" method="POST">
+<input type="hidden" name="site" value="bitsavers" />
+<input type="hidden" name="parentDir" value="1339" />
+<table>
+<tr><th>Ignored?</th><th>File</th></tr>
+<tr><td><input type="checkbox" id="ignore0" name="ignore0" value="222"/></td>
+<td><a href="url-wizard.php?id=222&url=http://bitsavers.org/pdf/dec/foo%23bar/EK-11%231%20%26%20Guide.pdf">EK-11#1 &amp; Guide.pdf</a></td></tr>
+</table>
+<input type="submit" value="Ignore" />
+</form>
+
+EOH;
+        $this->expectOutputStringIgnoringLineEndings($expected);
+    }
+
     public function testIgnorePaths()
     {
         $ignoredId = 111;
@@ -290,5 +340,12 @@ EOH;
     {
         $this->assertEquals("microCornucopia/Micro_Cornucopia%2050_Nov89.pdf",
             Manx\WhatsNewPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
+    }
+
+    public function testEncodedPoundSignNotEscaped()
+    {
+        $path = "microCornucopia/Micro_Cornucopia_%2350_Nov89.pdf";
+
+        $this->assertEquals($path, Manx\WhatsNewPage::escapeSpecialChars($path));
     }
 }

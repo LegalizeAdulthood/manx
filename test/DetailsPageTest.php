@@ -615,6 +615,91 @@ class DetailsPageTest extends PHPUnit\Framework\TestCase
             . "</table>\n");
     }
 
+    public function testRenderCopiesEncodesRawPathCharacters()
+    {
+        $pubId = 123;
+        $copyId = 7165;
+        $this->_db->expects($this->once())->method('getCopiesForPub')
+            ->with($pubId)
+            ->willReturn(\Manx\Test\RowFactory::createResultRowsForColumns(
+                array('format', 'url', 'notes', 'size', 'name', 'site_url',
+                    'description', 'copy_base', 'low', 'md5', 'amend_serial',
+                    'credits', 'copy_id'),
+                array(
+                    array('PDF',
+                        'http://bitsavers.org/pdf/dec/foo#bar/EK#1 & guide.pdf',
+                        NULL, 0, 'bitsavers', 'http://bitsavers.org/',
+                        "Al Kossow's Bitsavers", 'http://bitsavers.org/pdf/',
+                        'N', NULL, NULL, NULL, $copyId)
+                    )));
+        $this->_db->expects($this->once())->method('getMirrorsForCopy')
+            ->with($copyId)
+            ->willReturn(array());
+
+        $this->_page->renderCopies($pubId);
+
+        $this->expectOutputString(
+            "<h2>Copies</h2>\n"
+            . "<table>\n"
+            . "<tbody><tr>\n"
+            . "<td>Address:</td>\n"
+            . "<td><a href=\"http://bitsavers.org/pdf/dec/foo%23bar/EK%231%20%26%20guide.pdf\">"
+            . "http://bitsavers.org/pdf/dec/foo#bar/EK#1 &amp; guide.pdf</a></td>\n"
+            . "</tr>\n"
+            . "<tr>\n"
+            . "<td>Site:</td>\n"
+            . "<td><a href=\"http://bitsavers.org/\">Al Kossow's Bitsavers</a></td>\n"
+            . "</tr>\n"
+            . "<tr>\n"
+            . "<td>Format:</td>\n"
+            . "<td>PDF</td>\n"
+            . "</tr>\n"
+            . "</tbody>\n"
+            . "</table>\n");
+    }
+
+    public function testRenderCopiesDoesNotDoubleEncodePathCharacters()
+    {
+        $pubId = 123;
+        $copyId = 7165;
+        $url = 'http://bitsavers.org/pdf/dec/foo%23bar/EK%231.pdf';
+        $this->_db->expects($this->once())->method('getCopiesForPub')
+            ->with($pubId)
+            ->willReturn(\Manx\Test\RowFactory::createResultRowsForColumns(
+                array('format', 'url', 'notes', 'size', 'name', 'site_url',
+                    'description', 'copy_base', 'low', 'md5', 'amend_serial',
+                    'credits', 'copy_id'),
+                array(
+                    array('PDF', $url, NULL, 0, 'bitsavers',
+                        'http://bitsavers.org/', "Al Kossow's Bitsavers",
+                        'http://bitsavers.org/pdf/', 'N', NULL, NULL, NULL,
+                        $copyId)
+                    )));
+        $this->_db->expects($this->once())->method('getMirrorsForCopy')
+            ->with($copyId)
+            ->willReturn(array());
+
+        $this->_page->renderCopies($pubId);
+
+        $this->expectOutputString(
+            "<h2>Copies</h2>\n"
+            . "<table>\n"
+            . "<tbody><tr>\n"
+            . "<td>Address:</td>\n"
+            . "<td><a href=\"$url\">$url</a></td>\n"
+            . "</tr>\n"
+            . "<tr>\n"
+            . "<td>Site:</td>\n"
+            . "<td><a href=\"http://bitsavers.org/\">Al Kossow's Bitsavers</a></td>\n"
+            . "</tr>\n"
+            . "<tr>\n"
+            . "<td>Format:</td>\n"
+            . "<td>PDF</td>\n"
+            . "</tr>\n"
+            . "</tbody>\n"
+            . "</table>\n");
+    }
+
     public function testRenderSupersessionPubSupersedesOlder()
     {
         $pubId = 6105;

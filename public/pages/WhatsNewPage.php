@@ -190,11 +190,11 @@ EOH;
                 $file = $files[$i];
                 $path = $file['path'];
                 $extension = pathinfo($path, PATHINFO_EXTENSION);
-                $urlPath = self::escapeSpecialChars(trim($path));
+                $url = $this->documentUrl($thisDir['path'], $path);
                 $checked = $file['ignored'] == 1 || self::ignoreExtension($this->_manxDb, $extension) ? ' checked' : '';
                 printf('<tr><td><input type="checkbox" id="ignore%1$d" name="ignore%1$d" value="%2$s"%5$s/></td>' . "\n"
-                    .  '<td><a href="url-wizard.php?id=%2$d&url=' . $this->_baseUrl . '/%3$s/%4$s">%4$s</a></td></tr>' . "\n",
-                    $i, $file['id'], $thisDir['path'], $path, $checked);
+                    .  '<td><a href="url-wizard.php?id=%2$d&url=%3$s">%4$s</a></td></tr>' . "\n",
+                    $i, $file['id'], $url, htmlspecialchars($path), $checked);
             }
             print <<<EOH
 </table>
@@ -214,6 +214,16 @@ EOH;
 
     public static function escapeSpecialChars($path)
     {
-        return str_replace(" ", "%20", str_replace("#", urlencode("#"), $path));
+        return UrlNormalizer::normalizeCopyUrl($path);
+    }
+
+    private function documentUrl($dir, $path)
+    {
+        $relativePath = trim($path);
+        if (strlen($dir) > 0)
+        {
+            $relativePath = trim($dir, '/') . '/' . $relativePath;
+        }
+        return UrlNormalizer::normalizeCopyUrl($this->_baseUrl . '/' . $relativePath);
     }
 }

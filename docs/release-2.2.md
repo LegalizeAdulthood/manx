@@ -21,7 +21,6 @@ directories without creating broken or duplicate copies.
 
 Issues:
 
-- #66 Documents with `#` in file name have wrong URL.
 - #67 URLs with special characters don't get MD5 computed properly.
 - #69 URL Wizard doesn't recognize document dates with day.
 - #73 If site URL and copy base URL differ, wizard produces incorrect
@@ -43,34 +42,6 @@ unchanged.
 
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
-
-## 6. Encode `#` in document paths
-
-Issue: #66
-
-Implementation:
-
-- Encode `#` and other unsafe characters in any path segment before
-  rendering document links.
-- Keep stored copy URLs stable unless a save path explicitly updates
-  them.
-
-Acceptance criteria:
-
-- A path containing `#` in a directory or file name renders a usable
-  `%23` link.
-- The readable link text still shows the original path text.
-- Existing already-encoded URLs are not double encoded.
-
-Automated tests:
-
-- Add `WhatsNewPageTest` or link-formatting coverage for `#` in a
-  directory segment and in a file segment.
-- Add `DetailsPageTest` coverage for copy links containing `#` in any
-  path segment.
-- Add a regression case for an already encoded `%23` path.
-
-Fixes #66
 
 ## 7. Compute MD5 for URLs with special characters
 
