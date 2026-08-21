@@ -21,8 +21,6 @@ directories without creating broken or duplicate copies.
 
 Issues:
 
-- #46 Allow the user to review extracted metadata from the PDF file in
-  the URL wizard.
 - #66 Documents with `#` in file name have wrong URL.
 - #67 URLs with special characters don't get MD5 computed properly.
 - #68 URLs with special characters aren't checked for existence
@@ -47,51 +45,6 @@ unchanged.
 
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
-
-## 5A. Review PDF metadata in URL Wizard
-
-Issue: #46
-
-Implementation:
-
-- Add a button beside the URL Wizard document URL controls when the URL
-  appears to identify a PDF.
-- Fetch PDF metadata from the `pdf-metadata` service method only when
-  the user clicks the button.
-- Give the metadata AJAX call an explicit client-side timeout.
-- Show metadata results in a new collapsible section.
-- Include a button in the results section that copies extracted values
-  into the editable form fields.
-- Copy only non-empty extracted values.
-- Keep user-entered values authoritative when the form is submitted.
-- Leave PDF metadata extraction out of the ordinary `url-lookup` flow.
-
-Acceptance criteria:
-
-- Given a PDF URL, the wizard offers a control to fetch PDF metadata.
-- Given a non-PDF URL, the wizard does not offer PDF metadata fetching.
-- Given a PDF with metadata, the fetched values appear in a collapsible
-  results section without changing editable fields.
-- Given the copy button is clicked, non-empty extracted values are
-  copied into title, keywords, abstract, copy notes, and credits fields.
-- Given manual edits after copying, saving stores the edited values.
-- Given a metadata timeout or service error, existing wizard values are
-  left unchanged and the form can still be submitted.
-- Given a PDF with no usable metadata, existing wizard behavior is
-  unchanged.
-
-Automated tests:
-
-- Add `UrlWizardPageTest` coverage for the PDF metadata fetch controls
-  and collapsed results section markup.
-- Add `UrlWizardPageTest` coverage proving manual edits win on submit.
-- Add JavaScript test coverage, or focused manual test notes if no
-  JavaScript test harness exists, for fetch timeout handling.
-- Add JavaScript test coverage, or focused manual test notes if no
-  JavaScript test harness exists, for copying metadata into editable
-  fields.
-
-Fixes #46
 
 ## 6. Encode `#` in document paths
 

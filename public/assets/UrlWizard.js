@@ -5,6 +5,16 @@ String.prototype.trim = function()
 
 $(function()
 {
+    var PDF_METADATA_TIMEOUT = 30000;
+    var pdf_metadata = null;
+    var pdf_metadata_fields = [
+        ['title', 'pub_history_ph_title'],
+        ['keywords', 'pub_history_ph_keywords'],
+        ['abstract', 'pub_history_ph_abstract'],
+        ['copy_notes', 'copy_notes'],
+        ['copy_credits', 'copy_credits']
+    ];
+
     function show(id)
     {
         $("#" + id).removeClass("hidden");
@@ -303,6 +313,20 @@ $(function()
         $.post("url-wizard-service.php", data, callback, "json");
     }
 
+    function wizard_service_with_timeout(data, timeout, callback, error_callback)
+    {
+        $.ajax(
+            {
+                type: "POST",
+                url: "url-wizard-service.php",
+                data: data,
+                dataType: "json",
+                timeout: timeout,
+                success: callback,
+                error: error_callback
+            });
+    }
+
     function ajax_error_handler(error_id)
     {
         return function(e, response, settings)
@@ -377,6 +401,7 @@ $(function()
     function reset_form()
     {
         reset_copy();
+        reset_pdf_metadata();
         reset_site();
         reset_company();
         reset_publication();
@@ -402,6 +427,119 @@ $(function()
             ;
             hide(label_id);
             show(link_id);
+        }
+    }
+
+    function url_is_pdf(url)
+    {
+        return /^[^?#]+\.pdf([?#].*)?$/i.test(url);
+    }
+
+    function clear_pdf_metadata_results()
+    {
+        pdf_metadata = null;
+        hide("pdf_metadata_results");
+        hide("pdf_metadata_empty");
+        hide("pdf_metadata_error");
+        hide("pdf_metadata_working");
+        $("#pdf_metadata_results").prop("open", false);
+        $("#pdf_metadata_copy").prop("disabled", false);
+        for (var i = 0; i < pdf_metadata_fields.length; ++i)
+        {
+            var source = pdf_metadata_fields[i][0];
+            hide("pdf_metadata_" + source + "_row");
+            $("#pdf_metadata_" + source).text('');
+        }
+    }
+
+    function reset_pdf_metadata()
+    {
+        hide("pdf_metadata_fetch_field");
+        clear_pdf_metadata_results();
+    }
+
+    function show_or_hide_pdf_metadata(url)
+    {
+        clear_pdf_metadata_results();
+        (url_is_pdf(url) ? show : hide)("pdf_metadata_fetch_field");
+    }
+
+    function set_pdf_metadata(json)
+    {
+        pdf_metadata = json;
+        var any = false;
+        for (var i = 0; i < pdf_metadata_fields.length; ++i)
+        {
+            var source = pdf_metadata_fields[i][0];
+            var value = json[source] || '';
+            $("#pdf_metadata_" + source).text(value);
+            if (value.length > 0)
+            {
+                show("pdf_metadata_" + source + "_row");
+                any = true;
+            }
+            else
+            {
+                hide("pdf_metadata_" + source + "_row");
+            }
+        }
+        (any ? hide : show)("pdf_metadata_empty");
+        $("#pdf_metadata_copy").prop("disabled", !any);
+        show("pdf_metadata_results");
+        $("#pdf_metadata_results").prop("open", true);
+    }
+
+    function pdf_metadata_fetch_error()
+    {
+        hide("pdf_metadata_working");
+        $("#pdf_metadata_error").text("PDF metadata request failed.");
+        show("pdf_metadata_error");
+        next_enable(true);
+    }
+
+    function fetch_pdf_metadata()
+    {
+        var url = $("#copy_url").val();
+        if (!url_is_pdf(url))
+        {
+            reset_pdf_metadata();
+            return;
+        }
+
+        clear_pdf_metadata_results();
+        show("pdf_metadata_working");
+        next_enable(false);
+        wizard_service_with_timeout(
+            {
+                'method': "pdf-metadata",
+                'url': url
+            },
+            PDF_METADATA_TIMEOUT,
+            function(json)
+            {
+                set_pdf_metadata(json);
+                hide("pdf_metadata_working");
+                next_enable(true);
+            },
+            pdf_metadata_fetch_error);
+    }
+
+    function copy_pdf_metadata()
+    {
+        if (pdf_metadata === null)
+        {
+            return;
+        }
+
+        for (var i = 0; i < pdf_metadata_fields.length; ++i)
+        {
+            var source = pdf_metadata_fields[i][0];
+            var target = pdf_metadata_fields[i][1];
+            var value = pdf_metadata[source] || '';
+            if (value.length > 0)
+            {
+                $("#" + target).val(value);
+            }
         }
     }
 
@@ -435,6 +573,7 @@ $(function()
                     {
                         reset_exists();
                         set_copy(json);
+                        show_or_hide_pdf_metadata(json.url);
                         set_site_company_directory(json);
                         show_or_hide("copy_site")("site_fields");
                         set_company(json);
@@ -543,6 +682,8 @@ $(function()
     $("#supersession_new_pub").change(supersession_new_pub_change);
     $("#pub_search_keywords").change(search_for_publications);
     $("#pub_pub_id").change(pub_pub_id_change);
+    $("#pdf_metadata_fetch").click(fetch_pdf_metadata);
+    $("#pdf_metadata_copy").click(copy_pdf_metadata);
     $("input[name='next']").click(next_click);
 
     var help_shown = { };
