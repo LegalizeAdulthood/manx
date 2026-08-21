@@ -1060,6 +1060,24 @@ class ManxDatabase implements IManxDatabase
         return $this->execute($select, [$dirId])[0];
     }
 
+    public function getCompanyIdForSiteUnknownDir($siteName, $dirPath)
+    {
+        $directoryPath = "CASE WHEN `scd`.`parent_directory` = '' "
+            . "THEN `scd`.`directory` "
+            . "ELSE CONCAT(`scd`.`parent_directory`, '/', `scd`.`directory`) "
+            . "END";
+        $select = "SELECT `scd`.`company_id` "
+            . "FROM `site_company_dir` `scd`, `site` `s` "
+            . "WHERE `scd`.`site_id` = `s`.`site_id` "
+                . "AND `s`.`name` = ? "
+                . "AND (? = $directoryPath "
+                    . "OR ? LIKE CONCAT($directoryPath, '/%')) "
+            . "ORDER BY LENGTH($directoryPath) DESC "
+            . "LIMIT 1";
+        $rows = $this->execute($select, [$siteName, $dirPath, $dirPath]);
+        return count($rows) > 0 ? $rows[0]['company_id'] : -1;
+    }
+
     public function updateSiteUnknownDirPartRegex($dirId, $partRegex)
     {
         $this->execute(

@@ -159,6 +159,217 @@ $error</fieldset>
 EOH;
     }
 
+    private function unknownFileInfos($thisDir, $files)
+    {
+        $infos = [];
+        foreach ($files as $file)
+        {
+            $path = $file['path'];
+            $extension = pathinfo($path, PATHINFO_EXTENSION);
+            $format = $file['ignored'] == 1 ? ''
+                : $this->_manxDb->getFormatForExtension($extension);
+            $infos[] = [
+                'id' => $file['id'],
+                'path' => $path,
+                'url' => $this->documentUrl($thisDir['path'], $path),
+                'extension' => $extension,
+                'format' => $format,
+                'ignored' => $file['ignored'] == 1
+                    || self::ignoreFormat($format)
+            ];
+        }
+        return $infos;
+    }
+
+    protected function previewRows($thisDir, $files)
+    {
+        $companyId = $this->previewCompanyId($thisDir);
+        if ($companyId <= 0)
+        {
+            return [];
+        }
+        return $this->previewRowsForFileInfos($thisDir,
+            $this->unknownFileInfos($thisDir, $files), $companyId);
+    }
+
+    private function previewCompanyId($thisDir)
+    {
+        if ($this->_parentDirId == -1)
+        {
+            return -1;
+        }
+        return $this->_manxDb->getCompanyIdForSiteUnknownDir(
+            $this->_siteName, $thisDir['path']);
+    }
+
+    private function previewRowsForFileInfos($thisDir, $fileInfos,
+        $companyId = null)
+    {
+        if ($companyId === null)
+        {
+            $companyId = $this->previewCompanyId($thisDir);
+        }
+        if ($companyId <= 0)
+        {
+            return [];
+        }
+
+        $previewRows = [];
+        foreach ($fileInfos as $fileInfo)
+        {
+            if ($fileInfo['ignored'])
+            {
+                continue;
+            }
+            $previewRows[] = $this->previewRow($thisDir, $companyId, $fileInfo);
+        }
+        return $previewRows;
+    }
+
+    private function previewRow($thisDir, $companyId, $fileInfo)
+    {
+        list($fileName, $fileBase, $extension) =
+            UrlMetaData::extractFileNameExtension($fileInfo['path']);
+        list($pubDate, $fileBase) = UrlMetaData::extractPubDate($fileBase);
+        list($part, $fileBase, $regexResult) =
+            $this->previewPart($fileBase, $thisDir['part_regex']);
+        $title = UrlMetaData::titleForFileBase($fileBase);
+        $existingCopy = $this->_manxDb->copyExistsForUrl($fileInfo['url']);
+        $pubs = $part == '' || is_array($existingCopy) ? []
+            : $this->_manxDb->getPublicationsForPartNumber($part, $companyId);
+
+        return [
+            'id' => $fileInfo['id'],
+            'path' => $fileInfo['path'],
+            'url' => $fileInfo['url'],
+            'part' => $part,
+            'pub_date' => $pubDate,
+            'title' => $title,
+            'format' => $fileInfo['format'],
+            'regex_result' => $regexResult,
+            'matching_publication' =>
+                self::matchingPublicationHtml($companyId, $pubs),
+            'existing_copy' => self::existingCopyHtml($existingCopy),
+            'status' => self::previewStatus(
+                $part, $pubDate, $title, $pubs, $existingCopy, $regexResult)
+        ];
+    }
+
+    private function previewPart($fileBase, $partRegex)
+    {
+        if ($partRegex != '' && !UrlMetaData::partRegexIsValid($partRegex))
+        {
+            return ['', $fileBase, 'Invalid'];
+        }
+        if ($partRegex != '')
+        {
+            list($part, $fileBase) =
+                UrlMetaData::extractPartNumberWithRegex($fileBase, $partRegex);
+            return [$part, $fileBase, $part == '' ? 'No match' : 'Match'];
+        }
+
+        list($part, $fileBase) = UrlMetaData::extractPartNumber($fileBase);
+        return [$part, $fileBase,
+            $part == '' ? 'Default no match' : 'Default match'];
+    }
+
+    private static function previewStatus($part, $pubDate, $title, $pubs,
+        $existingCopy, $regexResult)
+    {
+        if (is_array($existingCopy))
+        {
+            return 'Duplicate';
+        }
+        if ($regexResult == 'Invalid'
+            || $regexResult == 'No match'
+            || $regexResult == 'Default no match')
+        {
+            return 'Rejected';
+        }
+        if ($part == '' || $pubDate == '' || $title == '')
+        {
+            return 'Rejected';
+        }
+        if (count($pubs) != 1)
+        {
+            return 'Uncertain';
+        }
+        if ($pubs[0]['ph_part'] != $part)
+        {
+            return 'Uncertain';
+        }
+        return 'Accepted';
+    }
+
+    private static function detailsLink($companyId, $pubId, $title)
+    {
+        return sprintf('<a href="details.php/%s,%s">%s</a>',
+            htmlspecialchars($companyId),
+            htmlspecialchars($pubId),
+            htmlspecialchars($title));
+    }
+
+    private static function matchingPublicationHtml($companyId, $pubs)
+    {
+        if (count($pubs) == 0)
+        {
+            return 'None';
+        }
+        if (count($pubs) > 1)
+        {
+            return sprintf('%d candidates', count($pubs));
+        }
+        return self::detailsLink(
+            $companyId, $pubs[0]['pub_id'], $pubs[0]['ph_title']);
+    }
+
+    private static function existingCopyHtml($existingCopy)
+    {
+        if (!is_array($existingCopy))
+        {
+            return 'No';
+        }
+        return self::detailsLink($existingCopy['ph_company'],
+            $existingCopy['ph_pub'], $existingCopy['ph_title']);
+    }
+
+    private function renderPreviewTable($previewRows)
+    {
+        if (count($previewRows) == 0)
+        {
+            return;
+        }
+
+        print <<<EOH
+<h2>Ingestion Preview</h2>
+<table>
+<tr><th>File</th><th>Status</th><th>Part</th><th>Date</th><th>Title</th><th>Format</th><th>Regex</th><th>Matching Publication</th><th>Existing Copy</th></tr>
+
+EOH;
+        foreach ($previewRows as $row)
+        {
+            printf('<tr><td><a href="url-wizard.php?id=%d&url=%s">%s</a></td>'
+                . '<td>%s</td><td>%s</td><td>%s</td><td>%s</td>'
+                . '<td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
+                . "\n",
+                $row['id'],
+                htmlspecialchars($row['url']),
+                htmlspecialchars($row['path']),
+                htmlspecialchars($row['status']),
+                htmlspecialchars($row['part']),
+                htmlspecialchars($row['pub_date']),
+                htmlspecialchars($row['title']),
+                htmlspecialchars($row['format']),
+                htmlspecialchars($row['regex_result']),
+                $row['matching_publication'],
+                $row['existing_copy']);
+        }
+        print <<<EOH
+</table>
+
+EOH;
+    }
+
     protected function renderBodyContent()
     {
         $thisDir = $this->getThisDir();
@@ -195,6 +406,7 @@ EOH;
             }
             return;
         }
+        $fileInfos = $this->unknownFileInfos($thisDir, $files);
 
         print <<<EOH
 <h1>New $title $currentDir Publications</h1>
@@ -203,6 +415,8 @@ EOH;
 EOH;
 
         $this->renderPartRegexForm($thisDir);
+        $this->renderPreviewTable(
+            $this->previewRowsForFileInfos($thisDir, $fileInfos));
 
         if ($this->_parentDirId != -1)
         {
@@ -244,13 +458,12 @@ EOH;
 <tr><th>Ignored?</th><th>File</th></tr>
 
 EOH;
-            for ($i = 0; $i < count($files); ++$i)
+            for ($i = 0; $i < count($fileInfos); ++$i)
             {
-                $file = $files[$i];
+                $file = $fileInfos[$i];
                 $path = $file['path'];
-                $extension = pathinfo($path, PATHINFO_EXTENSION);
-                $url = $this->documentUrl($thisDir['path'], $path);
-                $checked = $file['ignored'] == 1 || self::ignoreExtension($this->_manxDb, $extension) ? ' checked' : '';
+                $url = $file['url'];
+                $checked = $file['ignored'] ? ' checked' : '';
                 printf('<tr><td><input type="checkbox" id="ignore%1$d" name="ignore%1$d" value="%2$s"%5$s/></td>' . "\n"
                     .  '<td><a href="url-wizard.php?id=%2$d&url=%3$s">%4$s</a></td></tr>' . "\n",
                     $i, $file['id'], $url, htmlspecialchars($path), $checked);
@@ -267,6 +480,11 @@ EOH;
     public static function ignoreExtension(IManxDatabase $manxDb, $extension)
     {
         $format = $manxDb->getFormatForExtension($extension);
+        return self::ignoreFormat($format);
+    }
+
+    private static function ignoreFormat($format)
+    {
         $imageFormats = array('TIFF' => 1, 'PNG' => 1, 'JPEG' => 1, 'GIF' => 1);
         return strlen($format) == 0 || array_key_exists($format, $imageFormats);
     }

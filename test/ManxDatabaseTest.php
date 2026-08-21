@@ -1218,6 +1218,48 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($companyId, $result);
     }
 
+    public function testGetCompanyForSiteUnknownDir()
+    {
+        $siteName = 'VTDA';
+        $dirPath = 'computing/Sun/hardware';
+        $directoryPath = "CASE WHEN `scd`.`parent_directory` = '' "
+            . "THEN `scd`.`directory` "
+            . "ELSE CONCAT(`scd`.`parent_directory`, '/', `scd`.`directory`) "
+            . "END";
+        $select = "SELECT `scd`.`company_id` "
+            . "FROM `site_company_dir` `scd`, `site` `s` "
+            . "WHERE `scd`.`site_id` = `s`.`site_id` "
+                . "AND `s`.`name` = ? "
+                . "AND (? = $directoryPath "
+                    . "OR ? LIKE CONCAT($directoryPath, '/%')) "
+            . "ORDER BY LENGTH($directoryPath) DESC "
+            . "LIMIT 1";
+        $companyId = 38;
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['company_id'], [[$companyId]]);
+        $this->_db->expects($this->once())->method('execute')
+            ->with($select, [$siteName, $dirPath, $dirPath])
+            ->willReturn($rows);
+
+        $result = $this->_manxDb->getCompanyIdForSiteUnknownDir(
+            $siteName, $dirPath);
+
+        $this->assertEquals($companyId, $result);
+    }
+
+    public function testGetCompanyForSiteUnknownDirWithoutMatch()
+    {
+        $siteName = 'VTDA';
+        $dirPath = 'unknown/path';
+        $this->_db->expects($this->once())->method('execute')
+            ->willReturn([]);
+
+        $result = $this->_manxDb->getCompanyIdForSiteUnknownDir(
+            $siteName, $dirPath);
+
+        $this->assertEquals(-1, $result);
+    }
+
     public function testSetSiteLive()
     {
         $execute = "UPDATE `site` SET `live`=? WHERE `site_id`=?";
