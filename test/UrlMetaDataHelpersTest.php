@@ -100,6 +100,14 @@ class UrlMetaDataHelpersTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('foobar', $newFileBase);
     }
 
+    public function testExtractPubDateNoSeparatorOnlyDayFourDigitYear()
+    {
+        list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('1Jul1989');
+
+        $this->assertEquals('1989-07-01', $pubDate);
+        $this->assertEquals('', $newFileBase);
+    }
+
     public function testExtractPubDateNoSeparatorSuffixFullMonthTwoDigitYear()
     {
         list($pubDate, $newFileBase) = Manx\UrlMetaData::extractPubDate('foobarOctober85');
@@ -192,6 +200,26 @@ class UrlMetaDataHelpersTest extends PHPUnit\Framework\TestCase
         $this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar1975');
     }
 
+    public function testExtractPubDateCompactDayMonthYear()
+    {
+        $this->assertPubDateForFileBase('1989-07-01', 'foo_bar_1Jul1989');
+    }
+
+    public function testExtractPubDateCompactZeroPaddedDayMonthYear()
+    {
+        $this->assertPubDateForFileBase('1989-07-01', 'foo_bar_01Jul1989');
+    }
+
+    public function testExtractPubDateCompactMonthYearStillWorks()
+    {
+        $this->assertPubDateForFileBase('1989-07', 'foo_bar_Jul1989');
+    }
+
+    public function testExtractPubDateCompactMonthTwoDigitYearStillWorks()
+    {
+        $this->assertPubDateForFileBase('1989-07', 'foo_bar_Jul89');
+    }
+
     public function testExtractPubDateYear()
     {
         $this->assertPubDateForFileBase('1975', 'foo_bar_1975');
@@ -210,6 +238,33 @@ class UrlMetaDataHelpersTest extends PHPUnit\Framework\TestCase
     public function testExtractPubDateMonthTwoDigitYear()
     {
         $this->assertPubDateForFileBase('1975-03', 'foo_bar_Mar75');
+    }
+
+    public function testExtractPubDateCompactInvalidDay()
+    {
+        list($date, $newFileBase) =
+            Manx\UrlMetaData::extractPubDate('foo_bar_32Jul1989');
+
+        $this->assertEquals('', $date);
+        $this->assertEquals('foo_bar_32Jul1989', $newFileBase);
+    }
+
+    public function testExtractPubDateCompactInvalidMonth()
+    {
+        list($date, $newFileBase) =
+            Manx\UrlMetaData::extractPubDate('foo_bar_1Jly1989');
+
+        $this->assertEquals('', $date);
+        $this->assertEquals('foo_bar_1Jly1989', $newFileBase);
+    }
+
+    public function testExtractPubDateCompactSuffixKeepsTitlePrefix()
+    {
+        list($date, $newFileBase) =
+            Manx\UrlMetaData::extractPubDate('foo_bar_noteJul1989');
+
+        $this->assertEquals('', $date);
+        $this->assertEquals('foo_bar_noteJul1989', $newFileBase);
     }
 
     private function assertPubDateForFileBase($pubDate, $fileBase)
