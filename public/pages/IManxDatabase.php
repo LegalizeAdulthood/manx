@@ -74,6 +74,7 @@ interface IManxDatabase
     function getSiteUnknownDirectories($siteName, $parentDirId);
     function getSiteUnknownPaths($siteName, $parentDirId);
     function getSiteUnknownDir($dirId);
+    function updateSiteUnknownDirPartRegex($dirId, $partRegex);
     function updateIgnoredUnknownDirs();
     function updateIgnoredUnknownSingleDir($siteUnknownId);
 }

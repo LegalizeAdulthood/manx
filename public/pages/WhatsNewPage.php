@@ -22,6 +22,7 @@ class WhatsNewPage extends AdminPageBase
     private $_page;
     private $_title;
     private $_thisDir;
+    private $_partRegexError;
 
     public function __construct(Container $config)
     {
@@ -39,6 +40,7 @@ class WhatsNewPage extends AdminPageBase
         $vars = $config['vars'];
         $this->_parentDirId = array_key_exists('parentDir', $vars) ? $vars['parentDir'] : -1;
         $this->_thisDir = null;
+        $this->_partRegexError = '';
     }
 
     protected function renderCacheControl()
@@ -78,6 +80,7 @@ class WhatsNewPage extends AdminPageBase
 
     protected function postPage()
     {
+        $this->savePartRegex();
         $this->ignorePaths();
         PageBase::renderPage();
     }
@@ -101,6 +104,59 @@ class WhatsNewPage extends AdminPageBase
         {
             $this->_manxDb->ignoreSitePaths($ignoredIds);
         }
+    }
+
+    protected function savePartRegex()
+    {
+        if ($this->_parentDirId == -1
+            || !array_key_exists('part_regex', $this->_vars))
+        {
+            return;
+        }
+
+        $partRegex = trim($this->_vars['part_regex']);
+        if (!UrlMetaData::partRegexIsValid($partRegex))
+        {
+            $this->_partRegexError = 'Invalid part-number regex.';
+            return;
+        }
+
+        $this->_manxDb->updateSiteUnknownDirPartRegex(
+            $this->_parentDirId, $partRegex);
+        $this->_thisDir = null;
+    }
+
+    private function renderPartRegexForm($thisDir)
+    {
+        if ($this->_parentDirId == -1)
+        {
+            return;
+        }
+
+        $siteName = htmlspecialchars($this->_siteName);
+        $parentDirId = $this->_parentDirId;
+        $partRegex = htmlspecialchars($thisDir['part_regex']);
+        $error = '';
+        if (strlen($this->_partRegexError) > 0)
+        {
+            $error = sprintf('<div class="error">%s</div>' . "\n",
+                htmlspecialchars($this->_partRegexError));
+        }
+
+        print <<<EOH
+<form action="whatsnew.php" method="POST">
+<input type="hidden" name="site" value="$siteName" />
+<input type="hidden" name="parentDir" value="$parentDirId" />
+<fieldset>
+<legend>Directory Metadata</legend>
+<label for="part_regex">Part Regex</label>
+<input type="text" id="part_regex" name="part_regex" size="60" value="$partRegex" />
+<input type="submit" value="Save" />
+$error</fieldset>
+</form>
+
+
+EOH;
     }
 
     protected function renderBodyContent()
@@ -133,6 +189,7 @@ EOH;
 
 
 EOH;
+                $this->renderPartRegexForm($thisDir);
                 printf("<ul>\n<li><a href=\"%s&parentDir=%d#D%d\">(parent)</a></li>\n</ul>\n",
                     $this->_page, $thisDir['parent_dir_id'], $thisDir['id']);
             }
@@ -144,6 +201,8 @@ EOH;
 
 
 EOH;
+
+        $this->renderPartRegexForm($thisDir);
 
         if ($this->_parentDirId != -1)
         {

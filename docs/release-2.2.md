@@ -21,7 +21,6 @@ directories without creating broken or duplicate copies.
 
 Issues:
 
-- #98 Associate directories with a regex for part numbers to aid ingestion.
 - #99 Make the site render naturally on mobile devices.
 - #105 Preview ingested metadata for a directory.
 - #106 Allow all unknown documents in a directory to be manually ingested.
@@ -38,67 +37,6 @@ unchanged.
 
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
-
-## 11. Associate directory regex with ingestion
-
-Issue: #98
-
-Implementation:
-
-- Store a part-number regex on each unknown directory.
-- In `schema/9-schema.sql`, alter only the existing column default:
-
-```sql
-ALTER TABLE `site_unknown_dir`
-  ALTER COLUMN `part_regex`
-  SET DEFAULT '^([^_]*[0-9][0-9][^_]*)_';
-```
-
-- In `schema/9-schema.sql`, backfill existing rows with a one-off
-  procedure that is dropped after it runs:
-
-```sql
-CREATE PROCEDURE `manx_backfill_site_unknown_dir_part_regex`()
-BEGIN
-  UPDATE `site_unknown_dir`
-  SET `part_regex` = '^([^_]*[0-9][0-9][^_]*)_'
-  WHERE `part_regex` = '';
-END;
-CALL `manx_backfill_site_unknown_dir_part_regex`();
-DROP PROCEDURE `manx_backfill_site_unknown_dir_part_regex`;
-```
-
-- Render and save the regex from `whatsnew.php` directory pages.
-- Apply the regex to the date-stripped filename base before automatic
-  ingestion accepts a row.
-- Treat capture group 1 as the candidate part number, matching the URL
-  metadata extractor's leading-token behavior.
-
-Acceptance criteria:
-
-- A logged-in user can view, edit, clear, and save a directory regex.
-- New `site_unknown_dir` rows get the default regex from the column
-  definition.
-- Upgraded databases have existing `site_unknown_dir.part_regex` values
-  backfilled by the migration procedure.
-- New directories use a default regex that captures the leading
-  underscore-delimited token only when it contains two consecutive digits.
-- Matching rows are eligible for ingestion.
-- Non-matching rows remain visible for review.
-- Invalid regex input is rejected with a useful validation error.
-
-Automated tests:
-
-- Add `ManxDatabaseTest` coverage for reading and saving directory regex.
-- Add schema migration tests for the `part_regex` column default.
-- Add migration procedure tests for backfilling existing rows.
-- Add `WhatsNewPageTest` coverage for regex rendering and POST handling.
-- Add tests proving the default regex captures the same part number as
-  `UrlMetaData::extractPartNumber()` for underscore-delimited filenames.
-- Add `WhatsNewCleanerTest` coverage for match, no-match, empty, and
-  invalid regex ingestion cases.
-
-Fixes #98
 
 ## 12. Preview directory ingestion metadata
 

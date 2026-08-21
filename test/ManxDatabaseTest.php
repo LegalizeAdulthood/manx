@@ -884,6 +884,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $siteName = 'bitsavers';
         $select =
             "SELECT `su`.`id`, `su`.`site_id`, `scd`.`company_id`, "
+                . "`sud`.`part_regex`, "
                 . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`filename`) AS `url` "
             . "FROM "
                 . "`site` `s`, "
@@ -911,10 +912,12 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
                     . ") "
             . "ORDER BY `su`.`id`";
         $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
-            ['id', 'site_id', 'company_id', 'url'],
+            ['id', 'site_id', 'company_id', 'part_regex', 'url'],
             [
-                [7766, 3, 13, 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf'],
-                [7767, 3, 13, 'http://bitsavers.org/pdf/dec/foo/EK-6666-01_Jumbotron_Reference_Manual.pdf']
+                [7766, 3, 13, Manx\UrlMetaData::DEFAULT_PART_REGEX,
+                    'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide.pdf'],
+                [7767, 3, 13, Manx\UrlMetaData::DEFAULT_PART_REGEX,
+                    'http://bitsavers.org/pdf/dec/foo/EK-6666-01_Jumbotron_Reference_Manual.pdf']
             ]);
         $this->_db->expects($this->once())->method('execute')->with($select, [$siteName])->willReturn($rows);
 
@@ -1012,6 +1015,17 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $results = $this->_manxDb->getSiteUnknownDir($dirId);
 
         $this->assertEquals($results, $rows[0]);
+    }
+
+    public function testUpdateSiteUnknownDirPartRegex()
+    {
+        $dirId = 133;
+        $partRegex = '^([^_]+)_';
+        $update = "UPDATE `site_unknown_dir` SET `part_regex` = ? WHERE `id` = ?";
+        $this->_db->expects($this->once())->method('execute')
+            ->with($update, [$partRegex, $dirId]);
+
+        $this->_manxDb->updateSiteUnknownDirPartRegex($dirId, $partRegex);
     }
 
     public function testGetSiteUnknownDirectories()

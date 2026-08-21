@@ -22,6 +22,28 @@ class UrlMetaDataHelpersTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('Adaptec_ACB_4000_and_5000_Series_Disk_Controllers_OEM_Manual_(Preliminary)', $fileBase);
     }
 
+    public function testDefaultPartRegexMatchesLeadingUnderscorePartNumber()
+    {
+        $fileBase = '800-1023-01_Adaptec_ACB_4000_Controller';
+
+        $default = Manx\UrlMetaData::extractPartNumber($fileBase);
+        $regex = Manx\UrlMetaData::extractPartNumberWithRegex(
+            $fileBase, Manx\UrlMetaData::DEFAULT_PART_REGEX);
+
+        $this->assertEquals($default, $regex);
+    }
+
+    public function testDefaultPartRegexRequiresTwoConsecutiveDigits()
+    {
+        list($partNumber, $fileBase) =
+            Manx\UrlMetaData::extractPartNumberWithRegex(
+                'LSI-1_Systems_Service_Manual',
+                Manx\UrlMetaData::DEFAULT_PART_REGEX);
+
+        $this->assertEquals('', $partNumber);
+        $this->assertEquals('LSI-1_Systems_Service_Manual', $fileBase);
+    }
+
     public function testExtractFileNameExtensionWithExtension()
     {
         list($fileName, $fileBase, $extension) = Manx\UrlMetaData::extractFileNameExtension('foo.bar.pdf');
