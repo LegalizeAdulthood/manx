@@ -22,7 +22,6 @@ directories without creating broken or duplicate copies.
 Issues:
 
 - #99 Make the site render naturally on mobile devices.
-- #105 Preview ingested metadata for a directory.
 - #106 Allow all unknown documents in a directory to be manually ingested.
 - #124 Extract PDF metadata via cron.
 - #135 `https` URLs aren't recognized properly.
@@ -37,47 +36,6 @@ unchanged.
 
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
-
-## 12. Preview directory ingestion metadata
-
-Issue: #105
-
-Implementation:
-
-- Build a preview model for unknown files in the current directory.
-- Skip preview generation entirely when the viewed directory has no known
-  company association.
-- Exclude files that would have their ignore checkbox set by default.
-- Render the preview table before the existing bullet lists of files and
-  subdirectories.
-- Show extracted part number, date, title, format, regex result, matching
-  publication, and existing-copy state.
-- Render preview data without mutating database state.
-
-Acceptance criteria:
-
-- Directory pages show one preview row per unignored unknown file.
-- Files that would have the ignore checkbox set by default do not appear
-  in the preview table.
-- Directories with no known company association do not show a preview
-  table or run preview metadata extraction.
-- The preview table appears before the file and subdirectory bullet
-  lists.
-- Each row identifies accepted, rejected, duplicate, and uncertain states.
-- Reloading the preview does not mark paths scanned or add copies.
-
-Automated tests:
-
-- Add preview model tests for extracted metadata and row status.
-- Add preview model tests proving default-ignored files are excluded.
-- Add preview model or page tests proving no preview work runs without a
-  directory company association.
-- Add `WhatsNewPageTest` coverage for rendering preview rows.
-- Add `WhatsNewPageTest` coverage for preview placement before the file
-  and subdirectory bullet lists.
-- Add `ManxDatabaseTest` or mock assertions proving preview is read-only.
-
-Fixes #105
 
 ## 13. Manually ingest all documents in a directory
 
