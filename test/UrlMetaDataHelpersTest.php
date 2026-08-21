@@ -85,6 +85,27 @@ class UrlMetaDataHelpersTest extends PHPUnit\Framework\TestCase
             'http://bitsavers.org/pdf/');
     }
 
+    public function testUrlComponentsMatchHttpsUrlToHttpSite()
+    {
+        $this->assertUrlMatchesSite(
+            'https://bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf',
+            'http://bitsavers.org/pdf/');
+    }
+
+    public function testUrlComponentsMatchHttpUrlToHttpsSite()
+    {
+        $this->assertUrlMatchesSite(
+            'http://bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf',
+            'https://bitsavers.org/pdf/');
+    }
+
+    public function testUrlComponentsDoNotMatchOtherSchemes()
+    {
+        $this->assertFalse(Manx\UrlMetaData::urlComponentsMatch(
+            parse_url('ftp://bitsavers.org/pdf/foo.pdf'),
+            parse_url('https://bitsavers.org/pdf/')));
+    }
+
     private function assertUrlMatchesSite($url, $site)
     {
         $this->assertTrue(Manx\UrlMetaData::urlComponentsMatch(parse_url($url), parse_url($site)));

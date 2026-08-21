@@ -115,6 +115,52 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
             $page->headerLastField);
     }
 
+    public function testUrlLookupHttpUrlMatchesHttpsSite()
+    {
+        $url = 'http://bitsavers.org/pdf/univac/1100/UE-637_1108execUG_1970.pdf';
+        $site = self::databaseRowFromDictionary([
+            'site_id' => '3',
+            'name' => 'bitsavers',
+            'url' => 'https://bitsavers.org',
+            'description' => '',
+            'copy_base' => 'https://bitsavers.org/pdf/',
+            'low' => 'N',
+            'live' => 'Y',
+            'display_order' => '1'
+        ]);
+        $urlInfo = $this->createMock(Manx\IUrlInfo::class);
+        $urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $urlInfoFactory = $this->createMock(Manx\IUrlInfoFactory::class);
+        $urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with($url)->willReturn($urlInfo);
+        $this->_db->expects($this->once())->method('getSites')
+            ->willReturn([$site]);
+        $this->_db->expects($this->never())->method('getMirrors');
+        $this->_db->expects($this->once())
+            ->method('getCompanyIdForSiteDirectory')
+            ->with('bitsavers', 'univac', '')
+            ->willReturn('-1');
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($url)->willReturn(false);
+        $this->_config['db'] = $this->_db;
+        $this->_config['urlInfoFactory'] = $urlInfoFactory;
+        $this->_config['urlMetaData'] =
+            new Manx\UrlMetaData($this->_config);
+        $this->_config['vars'] = self::varsForUrlLookup($url);
+        $page = new UrlWizardServiceTester($this->_config);
+
+        ob_start();
+        $page->processRequest();
+        $output = ob_get_clean();
+
+        $data = json_decode($output, true);
+        $this->assertEquals($url, $data['url']);
+        $this->assertEquals($site['site_id'], $data['site']['site_id']);
+        $this->assertEquals('UE-637', $data['part']);
+    }
+
     public function testPdfMetadata()
     {
         $url = 'http://bitsavers.org/pdf/foo.pdf';

@@ -39,29 +39,6 @@ manual testing window.
 
 # Implementation
 
-## 15. Recognize `https` URLs correctly
-
-Issue: #135
-
-Implementation:
-
-- Treat `https` archive URLs as matching their configured base site.
-- Preserve mirror ranking and mirror rendering for `https` URLs.
-
-Acceptance criteria:
-
-- `https://bitsavers.org/...` recognizes the Bitsavers site.
-- Mirrors are listed for the recognized site.
-- Existing `http` URL recognition remains unchanged.
-
-Automated tests:
-
-- Add `UrlMetaDataHelpersTest` cases for `https` base-site matching.
-- Add `UrlMetaDataTest` coverage for `https` mirror results.
-- Add `UrlWizardServiceTest` coverage for `https` URL lookup.
-
-Fixes #135
-
 ## 16. Speed moved-file checks for many unknown paths
 
 Issue: #145
