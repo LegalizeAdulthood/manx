@@ -494,4 +494,108 @@ ul.citelist li
     {
         text-align: left
     }
+
+    input[type="text"],
+    input[type="password"],
+    select,
+    textarea
+    {
+        box-sizing: border-box;
+        max-width: 100%
+    }
+
+    #LOGINBOX,
+    #LOGINBOX tbody,
+    #LOGINBOX tr,
+    #LOGINBOX td
+    {
+        display: block;
+        width: 100%
+    }
+
+    #LOGINBOX
+    {
+        box-sizing: border-box;
+        margin: 0;
+        max-width: 100%
+    }
+
+    #LOGINBOX label
+    {
+        float: none;
+        display: block;
+        margin-bottom: 0.2em
+    }
+
+    #USERFIELD,
+    #PASSFIELD
+    {
+        width: 100%
+    }
+
+    #LOGIBUTT
+    {
+        float: none;
+        margin-top: 0.5em
+    }
+
+    .manx-form,
+    #wikitext
+    {
+        margin-left: 0
+    }
+
+    .manx-form ul
+    {
+        padding-left: 0
+    }
+
+    .manx-form li
+    {
+        margin-bottom: 0.75em;
+        overflow-wrap: anywhere
+    }
+
+    .manx-form label
+    {
+        float: none;
+        display: block;
+        width: auto;
+        margin-bottom: 0.2em;
+        white-space: normal
+    }
+
+    .manx-form input,
+    .manx-form select,
+    .manx-form textarea,
+    .manx-form li > div
+    {
+        box-sizing: border-box;
+        margin-left: 0;
+        max-width: 100%
+    }
+
+    .manx-form input[type="text"],
+    .manx-form select,
+    .manx-form textarea
+    {
+        width: 100%
+    }
+
+    .manx-form input[type="submit"]
+    {
+        width: auto
+    }
+
+    #size-report ol,
+    #md5-report ol
+    {
+        padding-left: 1.5em
+    }
+
+    #size-report a,
+    #md5-report a
+    {
+        overflow-wrap: anywhere
+    }
 }

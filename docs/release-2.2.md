@@ -48,38 +48,6 @@ unchanged.
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
 
-## 4. Make forms and admin pages responsive
-
-Issue: #99
-
-Implementation:
-
-- Stack labels above controls on narrow screens.
-- Make text inputs, selects, and textareas fit within the viewport.
-- Remove mobile dependence on fixed `margin-left` and input `size`
-  assumptions in CSS.
-- Apply the same treatment to publication/company forms and URL Wizard.
-- Keep the desktop form layout close to the current aligned-label style.
-
-Acceptance criteria:
-
-- Login, publication, company, report, and URL Wizard forms fit phone
-  widths without page-level horizontal scrolling.
-- Help text, error text, and working indicators remain attached to the
-  relevant fields.
-- URL Wizard fields with long URLs remain usable on phones.
-- Desktop admin forms keep their current aligned-label behavior.
-
-Automated tests:
-
-- Add `UrlWizardPageTest` coverage for any markup changes needed for
-  responsive field groups.
-- Add page tests for publication or company markup only if those pages
-  need structural changes.
-- Keep CSS-only form layout changes covered by manual smoke tests.
-
-Fixes #99
-
 ## 5. Review PDF metadata in URL Wizard
 
 Issue: #46
