@@ -287,7 +287,8 @@ class DetailsPage extends PageBase
             {
                 $copyUrl = $row['copy_base'] . substr($copyUrl, 1);
             }
-            printf("<a href=\"%s\">%s</a></td>\n</tr>\n", $copyUrl, $copyUrl);
+            self::renderDocumentLink($copyUrl);
+            print "</td>\n</tr>\n";
             printf("<tr>\n<td>Site:</td>\n<td><a href=\"%s\">%s</a>",
                 htmlspecialchars($row['site_url'], ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401),
                 htmlspecialchars($row['description'], ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401));
@@ -347,7 +348,9 @@ class DetailsPage extends PageBase
                 {
                     print '<tr valign="top"><td>Mirrors:</td><td><ul style="list-style-type: none; margin: 0; padding: 0">';
                 }
-                printf("<li style=\"margin: 0; padding: 0\"><a href=\"%s\">%s</a></li>", $mirror, htmlspecialchars($mirror));
+                print '<li style="margin: 0; padding: 0">';
+                self::renderDocumentLink($mirror);
+                print '</li>';
             }
             if ($mirrorCount > 0)
             {
@@ -368,6 +371,17 @@ you know of an online copy of this publication.</p>
 
 EOH;
         }
+    }
+
+    private static function renderDocumentLink($url)
+    {
+        $href = UrlNormalizer::normalizeCopyUrl($url);
+        // Example: "A & B.pdf" is linked as "A%20%26%20B.pdf", while
+        // the visible text remains "A & B.pdf", emitted as HTML-safe
+        // "A &amp; B.pdf" in the markup.
+        printf('<a href="%s">%s</a>',
+            htmlspecialchars($href, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401),
+            htmlspecialchars($url, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401));
     }
 
     public static function detailParamsForPathInfo($pathInfo)
