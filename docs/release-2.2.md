@@ -20,6 +20,7 @@ Issues:
 - #73 If site URL and copy base URL differ, wizard produces incorrect
   URLs.
 - #98 Associate directories with a regex for part numbers to aid ingestion.
+- #99 Make the site render naturally on mobile devices.
 - #105 Preview ingested metadata for a directory.
 - #106 Allow all unknown documents in a directory to be manually ingested.
 - #124 Extract PDF metadata via cron.
@@ -29,8 +30,9 @@ Issues:
   checks more quickly.
 
 Implement one numbered slice at a time.  Each numbered slice fixes one
-issue.  When a slice is complete, remove that slice and leave the
-remaining numbers unchanged.
+issue, except #99 which is split into small mobile-layout slices.  When a
+slice is complete, remove that slice and leave the remaining numbers
+unchanged.
 
 ## 1. Review PDF metadata in URL Wizard
 
@@ -596,6 +598,128 @@ Automated tests:
 
 Fixes #154
 
+## 14. Add mobile viewport and readable base spacing
+
+Issue: #99
+
+Implementation:
+
+- Add a viewport meta tag from the shared page header.
+- Add the same viewport tag to the maintenance page.
+- Set a readable base text size and line height for small screens.
+- Use small-screen page margins that give content room without crowding
+  the viewport.
+- Keep desktop typography and spacing visually close to the current site.
+
+Acceptance criteria:
+
+- Phone browsers lay out pages at device width instead of scaling a
+  desktop-width page down.
+- Body text is readable without pinch zoom on 320px and 375px wide
+  viewports.
+- Page content has comfortable edge spacing on narrow screens.
+- Desktop pages keep the current compact Manx look.
+
+Automated tests:
+
+- Add `PageBaseTest` coverage for the viewport meta tag.
+- Add maintenance-page coverage if an existing static-page test path can
+  cover it cleanly.
+
+Relates #99
+
+## 15. Make the shared header and menus mobile-friendly
+
+Issue: #99
+
+Implementation:
+
+- Let the primary and admin menus wrap cleanly on narrow screens.
+- Adjust menu padding and link display for comfortable tap targets.
+- Prevent the authorization block from forcing horizontal scrolling.
+- Make the logo/header scale or crop gracefully on phone widths.
+
+Acceptance criteria:
+
+- The header does not create horizontal overflow at 320px width.
+- Menu links remain readable and tappable when wrapped.
+- Logged-in and logged-out headers both fit narrow screens.
+- Desktop menu rendering remains close to the current layout.
+
+Automated tests:
+
+- Add `PageBaseTest` coverage for logged-in and logged-out header output
+  if markup changes are needed.
+- Add CSS-only changes without PHP tests when no rendered markup changes.
+
+Relates #99
+
+## 16. Make public content pages responsive
+
+Issue: #99
+
+Implementation:
+
+- Make search controls wrap or stack on narrow screens.
+- Make result tables readable by allowing long titles, part numbers, and
+  status text to wrap.
+- Use horizontal overflow only for tables that must remain tabular.
+- Prevent detail-page cover images and floated content from crowding or
+  exceeding the viewport.
+- Adjust pagination, table-of-contents, and citation spacing for phone
+  widths.
+
+Acceptance criteria:
+
+- Search, results, details, about, help, news, login, and pagination are
+  readable at 320px and 375px widths.
+- Long document titles, URLs, and part numbers do not force page-level
+  horizontal scrolling.
+- Detail pages keep images visible without covering or squeezing text.
+- Desktop search and details pages remain visually stable.
+
+Automated tests:
+
+- Add `SearchPageTest`, `HtmlFormatterTest`, or `DetailsPageTest`
+  coverage for any markup wrappers or classes added for responsive
+  behavior.
+- Keep CSS-only changes covered by manual smoke tests when rendered
+  markup is unchanged.
+
+Relates #99
+
+## 17. Make forms and admin pages responsive
+
+Issue: #99
+
+Implementation:
+
+- Stack labels above controls on narrow screens.
+- Make text inputs, selects, and textareas fit within the viewport.
+- Remove mobile dependence on fixed `margin-left` and input `size`
+  assumptions in CSS.
+- Apply the same treatment to publication/company forms and URL Wizard.
+- Keep the desktop form layout close to the current aligned-label style.
+
+Acceptance criteria:
+
+- Login, publication, company, report, and URL Wizard forms fit phone
+  widths without page-level horizontal scrolling.
+- Help text, error text, and working indicators remain attached to the
+  relevant fields.
+- URL Wizard fields with long URLs remain usable on phones.
+- Desktop admin forms keep their current aligned-label behavior.
+
+Automated tests:
+
+- Add `UrlWizardPageTest` coverage for any markup changes needed for
+  responsive field groups.
+- Add page tests for publication or company markup only if those pages
+  need structural changes.
+- Keep CSS-only form layout changes covered by manual smoke tests.
+
+Fixes #99
+
 ## Release verification
 
 - Run the full test suite with `composer test`.
@@ -611,3 +735,5 @@ Fixes #154
 - Smoke test metadata preview on Bitsavers and VTDA directories.
 - Smoke test moved-file detection without per-copy HTTP checks.
 - Smoke test manual directory ingestion and browser refresh behavior.
+- Smoke test public pages at 320px and 375px mobile widths.
+- Smoke test URL Wizard and admin forms at 320px and 375px mobile widths.
