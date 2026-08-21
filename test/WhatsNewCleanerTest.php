@@ -420,6 +420,33 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
         $this->_cleaner->ingest();
     }
 
+    public function testIngestSpecialCharacterCopyExists()
+    {
+        $unknownId = 66;
+        $companyId = 13;
+        $siteId = 3;
+        $siteName = 'bitsavers';
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron #1 Guide_Feb1977.pdf';
+        $pathRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'company_id', 'directory', 'url'],
+            [
+                [$unknownId, $siteId, $companyId, 'dec', $url]
+            ]);
+        $data = $this->bitsaversMetaData($siteId, $companyId, $url);
+        $data['exists'] = true;
+        $data['ph_pub'] = 23;
+        $this->_manx->expects($this->never())->method('getUserFromSession');
+        $this->_urlMetaData->expects($this->once())->method('determineIngestData')
+            ->with($siteId, $companyId, $url)->willReturn($data);
+        $this->_db->expects($this->once())->method('getUnknownPathsForCompanies')
+            ->with($siteName)->willReturn($pathRows);
+        $this->_manx->expects($this->never())->method('addPublication');
+        $this->_db->expects($this->never())->method('addCopy');
+        $this->_db->expects($this->once())->method('markUnknownPathScanned')->with($unknownId);
+        $this->_logger->expects($this->exactly(4))->method('log');
+
+        $this->_cleaner->ingest();
+    }
+
     public function testUpdateWhatsNewNotNewer()
     {
         $this->_whatsNewIndex->expects($this->once())->method('needIndexByDateFile')->willReturn(false);

@@ -443,7 +443,8 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $pubId = 23;
         $format = 'PDF';
         $siteId = 5;
-        $url = 'http://foo.bar/file%20%231.pdf';
+        $url = 'http://foo.bar/path with spaces/file #1.pdf';
+        $encodedUrl = 'http://foo.bar/path%20with%20spaces/file%20%231.pdf';
         $filename = 'file #1.pdf';
         $notes = '';
         $size = '';
@@ -453,7 +454,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('beginTransaction');
         $update = 'UPDATE `pub` SET `pub_has_online_copies`=1 WHERE `pub_id`=?';
         $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
-            [ $query, array($pubId, $format, $siteId, $url, $filename, $notes, $size, $md5, $credits, $amendSerial) ],
+            [ $query, array($pubId, $format, $siteId, $encodedUrl, $filename, $notes, $size, $md5, $credits, $amendSerial) ],
             [ $update, array($pubId) ]
         );
         $newCopyId = 55;
@@ -496,10 +497,11 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
 
     public function testCopyExistsForUrlReturnsTrueWhenDatabaseContainsUrl()
     {
-        $url = 'http://bitsavers.org/pdf/sgi/iris/IM1_Schematic.pdf';
+        $url = 'http://bitsavers.org/pdf/sgi/iris/IM1_Schematic#1.pdf';
+        $encodedUrl = 'http://bitsavers.org/pdf/sgi/iris/IM1_Schematic%231.pdf';
         $this->_db->expects($this->once())->method('execute')
             ->with('SELECT `ph_company`,`ph_pub`,`ph_title` FROM `copy`,`pub_history` WHERE `copy`.`pub`=`pub_history`.`ph_pub` AND `copy`.`url`=?',
-                array($url))
+                array($encodedUrl))
             ->willReturn(\Manx\Test\RowFactory::createResultRowsForColumns(
                 array('ph_company', 'ph_pub', 'ph_title'),
                 array(array('1', '2', 'IM1 Schematic'))));
@@ -514,9 +516,12 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
 
     public function testCopyExistsForUrlReturnsFalseWhenDatabaseOmitsUrl()
     {
-        $this->_db->expects($this->once())->method('execute')->willReturn(array());
+        $url = 'http://bitsavers.org/pdf/sgi/iris/IM1_Schematic%231.pdf';
+        $this->_db->expects($this->once())->method('execute')
+            ->with($this->anything(), array($url))
+            ->willReturn(array());
 
-        $this->assertFalse($this->_manxDb->copyExistsForUrl('http://bitsavers.org/pdf/sgi/iris/IM1_Schematic.pdf'));
+        $this->assertFalse($this->_manxDb->copyExistsForUrl($url));
     }
 
     public function testGetZeroSizeDocuments()
@@ -1051,7 +1056,8 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     {
         $copyId = 66;
         $pathId = 77;
-        $url = 'http://bitsavers.org/pdf/new/path/to/file%20%231.pdf';
+        $url = 'http://bitsavers.org/pdf/new path/to/file #1.pdf';
+        $encodedUrl = 'http://bitsavers.org/pdf/new%20path/to/file%20%231.pdf';
         $filename = 'file #1.pdf';
         $this->_db->expects($this->once())->method('beginTransaction');
         $deleteId = "DELETE FROM site_unknown WHERE id = ?";
@@ -1061,7 +1067,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->exactly(4))->method('execute')
             ->withConsecutive(
                 [$deleteId, [$pathId]],
-                [$updateUrl, [$url, $filename, $copyId]],
+                [$updateUrl, [$encodedUrl, $filename, $copyId]],
                 [$purgeDirs, []],
                 [$refreshDirs, []]);
         $this->_db->expects($this->once())->method('commit');

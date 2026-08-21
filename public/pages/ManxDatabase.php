@@ -672,6 +672,7 @@ class ManxDatabase implements IManxDatabase
     function addCopy($pubId, $format, $siteId, $url,
         $notes, $size, $md5, $credits, $amendSerial)
     {
+        $url = UrlNormalizer::normalizeCopyUrl($url);
         $filename = self::decodedUrlBasename($url);
         $this->beginTransaction();
         $this->_db->execute('INSERT INTO `copy`(`pub`,`format`,`site`,`url`,`filename`,`notes`,`size`,`md5`,`credits`,`amend_serial`) '
@@ -730,6 +731,7 @@ class ManxDatabase implements IManxDatabase
 
     function copyExistsForUrl($url)
     {
+        $url = UrlNormalizer::normalizeCopyUrl($url);
         $rows = $this->execute("SELECT `ph_company`,`ph_pub`,`ph_title` "
                 . "FROM `copy`,`pub_history` "
                 . "WHERE `copy`.`pub`=`pub_history`.`ph_pub` AND `copy`.`url`=?",
@@ -974,6 +976,7 @@ class ManxDatabase implements IManxDatabase
 
     public function siteFileMoved($pathId, $copyId, $url)
     {
+        $url = UrlNormalizer::normalizeCopyUrl($url);
         $filename = self::decodedUrlBasename($url);
         $this->beginTransaction();
         $this->execute("DELETE FROM site_unknown WHERE id = ?", [$pathId]);
