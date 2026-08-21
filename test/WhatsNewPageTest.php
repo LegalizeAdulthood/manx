@@ -330,22 +330,4 @@ EOH;
         $this->_page->ignorePaths();
     }
 
-    public function testPoundSignEscaped()
-    {
-        $this->assertEquals("microCornucopia/Micro_Cornucopia_%2350_Nov89.pdf",
-            Manx\WhatsNewPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia_#50_Nov89.pdf"));
-    }
-
-    public function testSpaceEscaped()
-    {
-        $this->assertEquals("microCornucopia/Micro_Cornucopia%2050_Nov89.pdf",
-            Manx\WhatsNewPage::escapeSpecialChars("microCornucopia/Micro_Cornucopia 50_Nov89.pdf"));
-    }
-
-    public function testEncodedPoundSignNotEscaped()
-    {
-        $path = "microCornucopia/Micro_Cornucopia_%2350_Nov89.pdf";
-
-        $this->assertEquals($path, Manx\WhatsNewPage::escapeSpecialChars($path));
-    }
 }

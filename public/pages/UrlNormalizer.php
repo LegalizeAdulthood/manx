@@ -4,7 +4,7 @@ namespace Manx;
 
 class UrlNormalizer
 {
-    public static function normalizeCopyUrl($url)
+    public static function normalize($url)
     {
         if (!is_string($url) || $url == '')
         {
