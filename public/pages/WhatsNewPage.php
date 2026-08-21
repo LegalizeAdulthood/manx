@@ -174,7 +174,6 @@ class WhatsNewPage extends AdminPageBase
 
         $copyId = $this->_manxDb->addCopy($row['pub_id'], $row['format'],
             $row['site_id'], $row['url'], '', 0, '', '', '');
-        $this->_manxDb->setCopySiteUnknownDirId($copyId, $row['id']);
         $this->_manxDb->updateIgnoredUnknownSingleDir($row['id']);
         $this->_manxDb->removeSiteUnknownPathById($row['id']);
     }

@@ -17,6 +17,33 @@ class Schema9Test extends PHPUnit\Framework\TestCase
             $sql);
     }
 
+    public function testSiteUnknownPdfMetadataColumnsAreAdded()
+    {
+        $sql = self::schemaSql();
+
+        $this->assertStringContainsString(
+            "ALTER TABLE `site_unknown`\r\n"
+            . "  ADD COLUMN `pdf_title` VARCHAR(255) NOT NULL DEFAULT '',\r\n"
+            . "  ADD COLUMN `pdf_keywords` VARCHAR(100) NOT NULL DEFAULT '',\r\n"
+            . "  ADD COLUMN `pdf_abstract` VARCHAR(2048) NOT NULL DEFAULT '',\r\n"
+            . "  ADD COLUMN `pdf_notes` VARCHAR(200) NOT NULL DEFAULT '',\r\n"
+            . "  ADD COLUMN `pdf_credits` VARCHAR(200) NOT NULL DEFAULT '',\r\n"
+            . "  ADD COLUMN `pdf_metadata_status` VARCHAR(16) NOT NULL DEFAULT '',\r\n"
+            . "  ADD COLUMN `pdf_metadata_error` VARCHAR(255) NOT NULL DEFAULT '',\r\n"
+            . "  ADD COLUMN `pdf_metadata_checked` DATETIME NULL DEFAULT NULL;",
+            $sql);
+    }
+
+    public function testSiteUnknownPdfMetadataColumnsPrecedeVersionUpdate()
+    {
+        $sql = self::schemaSql();
+
+        $columns = strpos($sql, 'ALTER TABLE `site_unknown`');
+        $version = strrpos($sql, "SET `value` = '2.2.0'");
+        $this->assertNotFalse($columns);
+        $this->assertLessThan($version, $columns);
+    }
+
     public function testFinalStatementSetsVersion()
     {
         $sql = self::schemaSql();
