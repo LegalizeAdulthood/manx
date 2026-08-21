@@ -172,6 +172,23 @@ DROP PROCEDURE IF EXISTS `manx_normalize_copy_urls`;
 DROP PROCEDURE IF EXISTS `manx_normalize_copy_url`;
 DROP PROCEDURE IF EXISTS `manx_encode_url_path`;
 
+DROP PROCEDURE IF EXISTS `manx_upgrade_site_urls_to_https`;
+DELIMITER //
+CREATE PROCEDURE `manx_upgrade_site_urls_to_https`()
+BEGIN
+    UPDATE `site`
+        SET `url` = CONCAT('https://', SUBSTRING(`url`, 8))
+        WHERE `url` LIKE 'http://%';
+
+    UPDATE `site`
+        SET `copy_base` = CONCAT('https://', SUBSTRING(`copy_base`, 8))
+        WHERE `copy_base` LIKE 'http://%';
+END//
+DELIMITER ;
+
+CALL `manx_upgrade_site_urls_to_https`();
+DROP PROCEDURE IF EXISTS `manx_upgrade_site_urls_to_https`;
+
 ALTER TABLE `site_unknown_dir`
   ALTER COLUMN `part_regex`
   SET DEFAULT '^([^_]*[0-9][0-9][^_]*)_';

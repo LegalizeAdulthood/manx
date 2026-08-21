@@ -121,6 +121,40 @@ class Schema9Test extends PHPUnit\Framework\TestCase
         $this->assertLessThan($version, $drop);
     }
 
+    public function testSiteUrlMigrationUsesTemporaryProcedure()
+    {
+        $sql = self::schemaSql();
+
+        $this->assertStringContainsString(
+            'CREATE PROCEDURE `manx_upgrade_site_urls_to_https`()',
+            $sql);
+        $this->assertStringContainsString(
+            "UPDATE `site`\r\n"
+            . "        SET `url` = CONCAT('https://', SUBSTRING(`url`, 8))\r\n"
+            . "        WHERE `url` LIKE 'http://%';",
+            $sql);
+        $this->assertStringContainsString(
+            "UPDATE `site`\r\n"
+            . "        SET `copy_base` = CONCAT('https://', "
+            . "SUBSTRING(`copy_base`, 8))\r\n"
+            . "        WHERE `copy_base` LIKE 'http://%';",
+            $sql);
+        $this->assertStringContainsString(
+            'DROP PROCEDURE IF EXISTS `manx_upgrade_site_urls_to_https`;',
+            $sql);
+    }
+
+    public function testSiteUrlMigrationDropsProcedureBeforeVersionUpdate()
+    {
+        $sql = self::schemaSql();
+
+        $drop = strrpos($sql,
+            'DROP PROCEDURE IF EXISTS `manx_upgrade_site_urls_to_https`;');
+        $version = strrpos($sql, "SET `value` = '2.2.0'");
+        $this->assertNotFalse($drop);
+        $this->assertLessThan($version, $drop);
+    }
+
     public function testSiteUnknownDirPartRegexDefaultIsAltered()
     {
         $sql = self::schemaSql();

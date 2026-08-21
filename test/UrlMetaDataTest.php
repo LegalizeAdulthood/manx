@@ -214,6 +214,54 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($expectedData, $data);
     }
 
+    public function testDetermineDataHttpUrlMatchesHttpsBitSaversSite()
+    {
+        $siteId = 3;
+        $site = self::bitSaversSiteRow($siteId);
+        $site['url'] = 'https://bitsavers.org';
+        $site['copy_base'] = 'https://bitsavers.org/pdf/';
+        $this->_db->expects($this->once())->method('getSites')
+            ->willReturn([$site]);
+        $this->_db->expects($this->once())
+            ->method('getCompanyIdForSiteDirectory')
+            ->with('bitsavers', 'univac', '')
+            ->willReturn('-1');
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->never())
+            ->method('getPublicationsForPartNumber');
+        $this->_db->expects($this->never())->method('searchForPublications');
+        $this->_db->expects($this->never())->method('getMirrors');
+        $urlBase = '/pdf/univac/1100/UE-637_1108execUG_1970.pdf';
+        $url = 'http://bitsavers.org' . $urlBase;
+        $this->_urlInfo->expects($this->once())->method('size')
+            ->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())
+            ->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($url)->willReturn(false);
+
+        $data = $this->_meta->determineData($url);
+
+        $expectedData = [
+            'url' => $url,
+            'mirror_url' => '',
+            'size' => 1266,
+            'valid' => true,
+            'site' => $site,
+            'company' => '-1',
+            'part' => 'UE-637',
+            'pub_date' => '1970',
+            'title' => '1108exec UG',
+            'format' => 'PDF',
+            'site_company_directory' => 'univac',
+            'site_company_parent_directory' => '',
+            'pubs' => [],
+            'keywords' => 'UE-637 1108exec UG'
+        ];
+        $this->assertEquals($expectedData, $data);
+    }
+
     public function testDetermineDataMirrorUrl()
     {
         $siteId = 3;
@@ -256,6 +304,59 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
             'keywords' => '070-1183-01 Rev B 4010 Maintenance Manual'
         ];
         $this->assertEquals($data, $expected);
+    }
+
+    public function testDetermineDataHttpsMirrorUrl()
+    {
+        $siteId = 3;
+        $this->_db->expects($this->once())->method('getSites')
+            ->willReturn(self::sitesResultsForBitSavers($siteId));
+        $this->_db->expects($this->once())
+            ->method('getCompanyIdForSiteDirectory')
+            ->with('bitsavers', 'tektronix', '')
+            ->willReturn('5');
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('getMirrors')
+            ->willReturn([
+                self::databaseRowFromDictionary([
+                    'mirror_id' => '2',
+                    'site' => '3',
+                    'original_stem' => 'http://bitsavers.org/',
+                    'copy_stem' => 'http://bitsavers.trailing-edge.com/',
+                    'rank' => '9'
+                ])
+            ]);
+        $this->_db->expects($this->once())
+            ->method('getPublicationsForPartNumber')
+            ->with('070-1183-01', '5')->willReturn([]);
+        $this->_urlInfo->expects($this->once())->method('size')
+            ->willReturn(1266);
+        $urlBase =
+            '/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf';
+        $url = 'https://bitsavers.trailing-edge.com' . $urlBase;
+        $this->_urlInfoFactory->expects($this->once())
+            ->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
+
+        $data = $this->_meta->determineData($url);
+
+        $expected = [
+            'url' => 'http://bitsavers.org' . $urlBase,
+            'mirror_url' => $url,
+            'size' => 1266,
+            'valid' => true,
+            'site' => self::bitSaversSiteRow($siteId),
+            'company' => '5',
+            'part' => '070-1183-01',
+            'pub_date' => '1976-04',
+            'title' => 'Rev B 4010 Maintenance Manual',
+            'format' => 'PDF',
+            'site_company_directory' => 'tektronix',
+            'site_company_parent_directory' => '',
+            'pubs' => [],
+            'keywords' => '070-1183-01 Rev B 4010 Maintenance Manual'
+        ];
+        $this->assertEquals($expected, $data);
     }
 
     public function testDetermineDataKeepsUrlWhenCopyBaseDiffers()

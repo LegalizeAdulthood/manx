@@ -401,23 +401,28 @@ class UrlMetaData implements IUrlMetaData
         $matchingPrefix = '';
         $matchingSite = -1;
         $originalPrefix = '';
+        $urlPrefixLength = 0;
         foreach ($this->_db->getMirrors() as $mirror)
         {
             $mirrorBase = $mirror['copy_stem'];
-            if (substr($data['url'], 0, strlen($mirrorBase)) == $mirrorBase)
+            $prefixLength = self::matchingUrlPrefixLength(
+                $data['url'], $mirrorBase);
+            if ($prefixLength !== false)
             {
                 if (strlen($mirrorBase) > strlen($matchingPrefix))
                 {
                     $matchingPrefix = $mirrorBase;
                     $matchingSite = $mirror['site'];
                     $originalPrefix = $mirror['original_stem'];
+                    $urlPrefixLength = $prefixLength;
                 }
             }
         }
         if ($matchingSite != -1)
         {
             $data['mirror_url'] = $data['url'];
-            $data['url'] = $originalPrefix . substr($data['url'], strlen($matchingPrefix));
+            $data['url'] = $originalPrefix
+                . substr($data['url'], $urlPrefixLength);
         }
         return $this->findSiteById($matchingSite);
     }
@@ -468,6 +473,73 @@ class UrlMetaData implements IUrlMetaData
                 && $lhs[$component] == $rhs[$component]);
     }
 
+    private static function isHttpScheme($scheme)
+    {
+        $scheme = strtolower($scheme);
+        return $scheme == 'http' || $scheme == 'https';
+    }
+
+    private static function schemeCompatible($components, $siteComponents)
+    {
+        if (!array_key_exists('scheme', $components)
+            && !array_key_exists('scheme', $siteComponents))
+        {
+            return true;
+        }
+        if (!array_key_exists('scheme', $components)
+            || !array_key_exists('scheme', $siteComponents))
+        {
+            return false;
+        }
+
+        $scheme = strtolower($components['scheme']);
+        $siteScheme = strtolower($siteComponents['scheme']);
+        return $scheme == $siteScheme
+            || (self::isHttpScheme($scheme)
+                && self::isHttpScheme($siteScheme));
+    }
+
+    private static function urlPathStart($url)
+    {
+        if (substr($url, 0, 2) == '//')
+        {
+            $pathStart = strpos($url, '/', 2);
+            return $pathStart === false ? strlen($url) : $pathStart;
+        }
+
+        $schemeEnd = strpos($url, '://');
+        if ($schemeEnd === false)
+        {
+            return 0;
+        }
+
+        $pathStart = strpos($url, '/', $schemeEnd + 3);
+        return $pathStart === false ? strlen($url) : $pathStart;
+    }
+
+    private static function matchingUrlPrefixLength($url, $baseUrl)
+    {
+        $components = parse_url($url);
+        $baseComponents = parse_url($baseUrl);
+        if (!self::urlComponentsMatch($components, $baseComponents))
+        {
+            return false;
+        }
+
+        $path = array_key_exists('path', $components)
+            ? $components['path']
+            : '/';
+        $basePath = array_key_exists('path', $baseComponents)
+            ? $baseComponents['path']
+            : '/';
+        $pathStart = self::urlPathStart($url);
+        if ($path == '/' && $pathStart == strlen($url))
+        {
+            return $pathStart;
+        }
+        return $pathStart + strlen($basePath);
+    }
+
     public static function urlComponentsMatch($components, $siteComponents)
     {
         $path = array_key_exists('path', $components) ? $components['path'] : '/';
@@ -477,7 +549,7 @@ class UrlMetaData implements IUrlMetaData
         {
             return false;
         }
-        if (self::componentEqual('scheme', $components, $siteComponents)
+        if (self::schemeCompatible($components, $siteComponents)
             && self::componentEqual('port', $components, $siteComponents))
         {
             $hostEqual = false;
