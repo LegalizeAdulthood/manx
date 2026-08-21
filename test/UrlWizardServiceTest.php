@@ -38,6 +38,7 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
     private $_db;
     private $_manx;
     private $_meta;
+    private $_pdfMetadata;
 
     protected function setUp(): void
     {
@@ -50,9 +51,11 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $this->_meta = $this->createMock(Manx\IUrlMetaData::class);
+        $this->_pdfMetadata = $this->createMock(Manx\IPdfMetadata::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
         $config['urlMetaData'] = $this->_meta;
+        $config['pdfMetadata'] = $this->_pdfMetadata;
         $this->_config = $config;
     }
 
@@ -68,6 +71,28 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
 
         $expected = json_encode(array('valid' => false));
         $this->expectOutputString($expected);
+    }
+
+    public function testPdfMetadata()
+    {
+        $url = 'http://bitsavers.org/pdf/foo.pdf';
+        $metadata = array(
+            'status' => 'ok',
+            'title' => 'Title',
+            'keywords' => 'keywords',
+            'abstract' => 'Abstract',
+            'copy_notes' => 'Notes',
+            'copy_credits' => 'Credits'
+        );
+        $this->_pdfMetadata->expects($this->once())->method('metadataForUrl')
+            ->with($url)
+            ->willReturn($metadata);
+        $this->_config['vars'] = self::varsForPdfMetadata($url);
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $this->expectOutputString(json_encode($metadata));
     }
 
     private static function databaseRowFromDictionary(array $dict)
@@ -87,6 +112,14 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
     {
         return array(
             'method' => 'url-lookup',
+            'url' => $url
+        );
+    }
+
+    private static function varsForPdfMetadata($url)
+    {
+        return array(
+            'method' => 'pdf-metadata',
             'url' => $url
         );
     }

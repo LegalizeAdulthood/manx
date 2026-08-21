@@ -29,11 +29,14 @@ class UrlWizardService extends ServicePageBase
 {
     /** @var IUrlMetaData */
     private $_meta;
+    /** @var IPdfMetadata */
+    private $_pdfMetadata;
 
     public function __construct(Container $config)
     {
         parent::__construct($config);
         $this->_meta = $config['urlMetaData'];
+        $this->_pdfMetadata = $config['pdfMetadata'];
     }
 
     private function determineData()
@@ -106,6 +109,11 @@ class UrlWizardService extends ServicePageBase
         return $data;
     }
 
+    private function pdfMetadata()
+    {
+        return $this->_pdfMetadata->metadataForUrl($this->param('url'));
+    }
+
     protected function renderJsonResponse($data)
     {
         $this->header("Content-Type: application/json; charset=utf-8");
@@ -128,6 +136,11 @@ class UrlWizardService extends ServicePageBase
         else if ($method == 'pub-search')
         {
             $this->renderJsonResponse($this->findPublications());
+            return true;
+        }
+        else if ($method == 'pdf-metadata')
+        {
+            $this->renderJsonResponse($this->pdfMetadata());
             return true;
         }
 

@@ -48,65 +48,6 @@ unchanged.
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
 
-## 5. Add PDF metadata API endpoint
-
-Issue: #46
-
-Implementation:
-
-- Add a `pdf-metadata` method to `url-wizard-service.php`.
-- Require a PDF URL parameter and return JSON metadata.
-- Download the PDF to a temporary server-side file before parsing.
-- Read the maximum PDF metadata download size from
-  `properties.name = 'pdf_metadata_max_bytes'`.
-- Default the size cap to 4194304 bytes, or 4 MiB.
-- Refuse missing or over-limit `Content-Length` values before download.
-- Enforce the same byte cap while downloading.
-- Use `smalot/pdfparser` to parse the downloaded file with
-  `Parser::parseFile()` and `Document::getDetails()`.
-- Map parser details to `title`, `keywords`, `abstract`, `copy_notes`,
-  and `copy_credits` response fields.
-- Delete the temporary file after success or failure.
-
-Schema and data changes:
-
-- Do not add or alter any table or column for this slice.
-- In `schema/9-schema.sql`, insert the default property row:
-
-  ```sql
-  INSERT INTO `properties` (`name`, `value`)
-  VALUES ('pdf_metadata_max_bytes', '4194304')
-  ON DUPLICATE KEY UPDATE `value` = `value`;
-  ```
-
-Acceptance criteria:
-
-- Given a small PDF with usable metadata, the endpoint returns those
-  fields in JSON.
-- Given a non-PDF URL, the endpoint returns an empty metadata result
-  without downloading the document.
-- Given a PDF whose `Content-Length` is missing or over the configured
-  cap, the endpoint returns an over-limit result without downloading the
-  document.
-- Given a PDF whose download exceeds the configured cap, the endpoint
-  aborts the transfer and returns an over-limit result.
-- Given an encrypted, malformed, or metadata-empty PDF, the endpoint
-  returns an empty metadata result without failing the request.
-- The endpoint leaves ordinary URL Wizard `url-lookup` behavior
-  unchanged.
-
-Automated tests:
-
-- Add `UrlWizardServiceTest` coverage for the `pdf-metadata` method.
-- Add parser tests for populated metadata, empty metadata, and parser
-  failure.
-- Add service tests for non-PDF URLs, missing `Content-Length`,
-  over-limit `Content-Length`, and over-limit streamed download.
-- Add migration coverage proving the `pdf_metadata_max_bytes` property
-  default is created.
-
-Refs #46
-
 ## 5A. Review PDF metadata in URL Wizard
 
 Issue: #46
