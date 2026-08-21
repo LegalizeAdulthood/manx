@@ -2,6 +2,17 @@
 
 Generated from the open 2.2.0 milestone issues on 2026-08-20.
 
+## Schema Guidance
+
+All release 2.2 schema changes go into `schema/9-schema.sql`.  Do not
+edit earlier schema files for this release.
+
+The final statement in `schema/9-schema.sql` sets the version property to
+`2.2.0`, after all DDL and migration cleanup have completed.
+
+Migrate data using one-off procedures.  Drop each procedure as soon as
+its data migration has run.
+
 ## Scope
 
 Release 2.2.0 implements per-directory document ingestion.  It also
@@ -126,8 +137,9 @@ Issue: #68
 Implementation:
 
 - Make no table or column changes for this issue.
-- Add one-off migration logic that normalizes existing copy URLs into the
-  canonical encoded form.
+- In `schema/9-schema.sql`, normalize existing copy URLs into the
+  canonical encoded form with a one-off procedure that is dropped after
+  it runs.
 - Detect normalized URL collisions before updating rows.
 - Leave no stored normalization procedure behind after the migration.
 - Make copy lookup normalize input and query the canonical URL form.
@@ -211,7 +223,7 @@ Issue: #98
 Implementation:
 
 - Store a part-number regex on each unknown directory.
-- In the release migration, alter only the existing column default:
+- In `schema/9-schema.sql`, alter only the existing column default:
 
 ```sql
 ALTER TABLE `site_unknown_dir`
@@ -219,7 +231,7 @@ ALTER TABLE `site_unknown_dir`
   SET DEFAULT '^([^_]*[0-9][0-9][^_]*)_';
 ```
 
-- In the release migration, backfill existing rows with a one-off
+- In `schema/9-schema.sql`, backfill existing rows with a one-off
   procedure that is dropped after it runs:
 
 ```sql
@@ -353,20 +365,7 @@ Issue: #124
 
 Implementation:
 
-- In the base schema, add these columns to `site_unknown`:
-
-```sql
-`pdf_title` VARCHAR(255) NOT NULL DEFAULT '',
-`pdf_keywords` VARCHAR(100) NOT NULL DEFAULT '',
-`pdf_abstract` VARCHAR(2048) NOT NULL DEFAULT '',
-`pdf_notes` VARCHAR(200) NOT NULL DEFAULT '',
-`pdf_credits` VARCHAR(200) NOT NULL DEFAULT '',
-`pdf_metadata_status` VARCHAR(16) NOT NULL DEFAULT '',
-`pdf_metadata_error` VARCHAR(255) NOT NULL DEFAULT '',
-`pdf_metadata_checked` DATETIME NULL DEFAULT NULL
-```
-
-- In the release migration, add those columns:
+- In `schema/9-schema.sql`, add these columns to `site_unknown`:
 
 ```sql
 ALTER TABLE `site_unknown`
@@ -462,23 +461,27 @@ Issue: #145
 
 Implementation:
 
-- In the base schema, add this column and lookup key to `copy`:
-
-```sql
-`file_name` VARCHAR(255) NOT NULL DEFAULT '',
-KEY `site_file_sud` (`site`, `file_name`, `sud_id`)
-```
-
-- In the release migration, add and backfill the column:
+- In `schema/9-schema.sql`, add `copy.file_name` and the
+  `site_file_sud` lookup key:
 
 ```sql
 ALTER TABLE `copy`
   ADD COLUMN `file_name` VARCHAR(255) NOT NULL DEFAULT '',
   ADD KEY `site_file_sud` (`site`, `file_name`, `sud_id`);
+```
 
+- In `schema/9-schema.sql`, backfill existing copy rows with a one-off
+  procedure that is dropped after it runs:
+
+```sql
+CREATE PROCEDURE `manx_backfill_copy_file_name`()
+BEGIN
 UPDATE `copy`
 SET `file_name` = SUBSTRING_INDEX(`url`, '/', -1)
 WHERE `file_name` = '';
+END;
+CALL `manx_backfill_copy_file_name`();
+DROP PROCEDURE `manx_backfill_copy_file_name`;
 ```
 
 - Column semantics:
@@ -538,7 +541,7 @@ Issue: #154
 
 Implementation:
 
-- Make no base schema or release migration changes for this issue.
+- Make no persistent schema changes for this issue.
 - During each cron run, create this temporary table on the current
   database connection:
 
@@ -575,8 +578,8 @@ CREATE TEMPORARY TABLE `tmp_site_index_by_date` (
 
 Acceptance criteria:
 
-- No persistent table for `IndexByDate.txt` is added by the base schema
-  or release migration.
+- No persistent table for `IndexByDate.txt` is added to
+  `schema/9-schema.sql`.
 - The cron job creates `tmp_site_index_by_date` for the duration of the
   run.
 - The temporary table uses the columns, unique key, lookup key, and
