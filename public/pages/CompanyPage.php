@@ -16,7 +16,7 @@ class CompanyPage extends AdminPageBase
         print <<<EOH
 <h1>$heading</h1>
 
-<div id="compedit">
+<div id="compedit" class="manx-form">
 <form action="company.php" id="editform" method="$method">
 <fieldset><legend>$heading</legend>
 <ul>

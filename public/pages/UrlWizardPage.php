@@ -504,7 +504,7 @@ EOH;
         print <<<EOH
 <h1>URL Wizard</h1>
 
-<div id="form_container">
+<div id="form_container" class="manx-form">
 <form id="wizard" action="url-wizard.php" method="POST" name="f">
 
 

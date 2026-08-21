@@ -81,7 +81,7 @@ class PublicationPageTest extends Manx\Test\TestCase
         $output = <<<EOH
 <h1>Add Publication</h1>
 
-<div id="addformdiv"><form id="addform" action="publication.php" method="POST" name="f">
+<div id="addformdiv" class="manx-form"><form id="addform" action="publication.php" method="POST" name="f">
 <fieldset><legend id="plum">Essentials</legend><ul>
 <li><label for="company">Company:</label><select id="company" name="company"><option value="3">bitsavers</option>
 </select>

@@ -92,7 +92,7 @@ class CompanyPageTest extends Manx\Test\TestCase
         $output = <<<EOH
 <h1>Edit Company</h1>
 
-<div id="compedit">
+<div id="compedit" class="manx-form">
 <form action="company.php" id="editform" method="get">
 <fieldset><legend>Edit Company</legend>
 <ul>
@@ -121,7 +121,7 @@ EOH;
         $output = <<<EOH
 <h1>Add Company</h1>
 
-<div id="compedit">
+<div id="compedit" class="manx-form">
 <form action="company.php" id="editform" method="post">
 <fieldset><legend>Add Company</legend>
 <ul>
