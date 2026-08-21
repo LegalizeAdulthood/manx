@@ -48,40 +48,6 @@ unchanged.
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
 
-## 3. Make public content pages responsive
-
-Issue: #99
-
-Implementation:
-
-- Make search controls wrap or stack on narrow screens.
-- Make result tables readable by allowing long titles, part numbers, and
-  status text to wrap.
-- Use horizontal overflow only for tables that must remain tabular.
-- Prevent detail-page cover images and floated content from crowding or
-  exceeding the viewport.
-- Adjust pagination, table-of-contents, and citation spacing for phone
-  widths.
-
-Acceptance criteria:
-
-- Search, results, details, about, help, news, login, and pagination are
-  readable at 320px and 375px widths.
-- Long document titles, URLs, and part numbers do not force page-level
-  horizontal scrolling.
-- Detail pages keep images visible without covering or squeezing text.
-- Desktop search and details pages remain visually stable.
-
-Automated tests:
-
-- Add `SearchPageTest`, `HtmlFormatterTest`, or `DetailsPageTest`
-  coverage for any markup wrappers or classes added for responsive
-  behavior.
-- Keep CSS-only changes covered by manual smoke tests when rendered
-  markup is unchanged.
-
-Relates #99
-
 ## 4. Make forms and admin pages responsive
 
 Issue: #99

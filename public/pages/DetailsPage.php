@@ -59,7 +59,7 @@ class DetailsPage extends PageBase
         $coverImage = $row['ph_cover_image'];
         if (!is_null($coverImage))
         {
-            printf('<div style="float:right; margin: 10px"><img src="%s" alt="" /></div>', $coverImage);
+            printf('<div class="cover-image"><img src="%s" alt="" /></div>', $coverImage);
         }
         echo '<div class="det"><h1>', $row['ph_title'], "</h1>\n";
         echo '<table><tbody>';

@@ -26,59 +26,6 @@ div.det
     margin: 10px
 }
 
-@media (max-width: 600px)
-{
-    body
-    {
-        font-size: 16px;
-        line-height: 1.4
-    }
-
-    div.det
-    {
-        margin: 0.75em
-    }
-
-    #AUTH
-    {
-        float: none;
-        padding: 0.5em 0.75em;
-        background-color: #009193;
-        overflow-wrap: anywhere
-    }
-
-    #AUTH table
-    {
-        width: 100%
-    }
-
-    #AUTH td
-    {
-        text-align: left
-    }
-
-    #LOGO h1
-    {
-        height: 56px;
-        background-size: auto 56px
-    }
-
-    .menu
-    {
-        display: flex;
-        flex-wrap: wrap;
-        padding: 0.15em 0.25em
-    }
-
-    .menu a
-    {
-        display: block;
-        margin: 0.15em 0;
-        padding: 0.55em 0.75em;
-        line-height: 1.2
-    }
-}
-
 #LOGO h1 span
 {
     display: none
@@ -117,6 +64,12 @@ table.restable th.idcol
 {
     float: left;
     width: 180px
+}
+
+.cover-image
+{
+    float: right;
+    margin: 10px
 }
 
 img.button
@@ -378,4 +331,167 @@ ul.citelist li
 #wikitext textarea
 {
     width: 100%
+}
+
+@media (max-width: 600px)
+{
+    body
+    {
+        font-size: 16px;
+        line-height: 1.4
+    }
+
+    div.det
+    {
+        margin: 0.75em;
+        overflow-wrap: break-word
+    }
+
+    div.det a,
+    .pagesel,
+    .resbar,
+    .restable
+    {
+        overflow-wrap: anywhere
+    }
+
+    div.det table,
+    table.restable
+    {
+        max-width: 100%;
+        width: 100%
+    }
+
+    div.det td,
+    table.restable td,
+    table.restable th
+    {
+        padding: 0.25em 0.35em;
+        vertical-align: top
+    }
+
+    #AUTH
+    {
+        float: none;
+        padding: 0.5em 0.75em;
+        background-color: #009193;
+        overflow-wrap: anywhere
+    }
+
+    #AUTH table
+    {
+        width: 100%
+    }
+
+    #AUTH td
+    {
+        text-align: left
+    }
+
+    #LOGO h1
+    {
+        height: 56px;
+        background-size: auto 56px
+    }
+
+    .menu
+    {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0.15em 0.25em
+    }
+
+    .menu a
+    {
+        display: block;
+        margin: 0.15em 0;
+        padding: 0.55em 0.75em;
+        line-height: 1.2
+    }
+
+    #Div1 .field
+    {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5em;
+        margin: 0.5em 0
+    }
+
+    #Div1 select,
+    #Div1 input[type="text"],
+    #q
+    {
+        box-sizing: border-box;
+        max-width: 100%
+    }
+
+    #q
+    {
+        width: 16em
+    }
+
+    .resbar
+    {
+        padding: 0.2em 0
+    }
+
+    .pagesel
+    {
+        line-height: 2
+    }
+
+    .pagesel a,
+    .pagesel b
+    {
+        display: inline-block;
+        margin: 0.1em
+    }
+
+    .logo,
+    .cover-image
+    {
+        float: none;
+        width: auto;
+        margin: 0 0 0.75em 0
+    }
+
+    .logo img,
+    .cover-image img
+    {
+        max-width: 100%;
+        height: auto
+    }
+
+    div.toc ul
+    {
+        padding-left: 1em
+    }
+
+    div.toc li.level2,
+    div.toc li.level3,
+    div.toc li.level4,
+    div.toc li.level5
+    {
+        margin-left: 1em
+    }
+
+    div.toc li.level2 span,
+    div.toc li.level3 span,
+    div.toc li.level4 span,
+    div.toc li.level5 span
+    {
+        float: none;
+        width: auto
+    }
+
+    ul.citelist
+    {
+        overflow-wrap: anywhere
+    }
+
+    .navbot
+    {
+        text-align: left
+    }
 }

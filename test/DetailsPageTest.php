@@ -760,7 +760,7 @@ class DetailsPageTest extends PHPUnit\Framework\TestCase
         $this->assertTrue($page->renderCopiesCalled);
         $this->assertEquals(3, $page->renderCopiesLastPubId);
         $expected = implode("\n", array(
-            '<div style="float:right; margin: 10px"><img src="gigi_regis_handbook.png" alt="" /></div><div class="det"><h1>GIGI/ReGIS Handbook</h1>',
+            '<div class="cover-image"><img src="gigi_regis_handbook.png" alt="" /></div><div class="det"><h1>GIGI/ReGIS Handbook</h1>',
             '<table><tbody><tr><td>Company:</td><td><a href="../search.php?cp=1&q=">Digital Equipment Corporation</a></td></tr>',
             '<tr><td>Part:</td><td>AA-K336A-TK</td></tr>',
             '<tr><td>Date:</td><td></td></tr>',
