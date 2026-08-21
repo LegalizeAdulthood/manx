@@ -792,9 +792,6 @@ EOH;
             ->with(23, 'PDF', 3, $selectedUrl, '', 0, '', '', '')
             ->willReturn(884);
         $this->_db->expects($this->once())
-            ->method('setCopySiteUnknownDirId')
-            ->with(884, 222);
-        $this->_db->expects($this->once())
             ->method('updateIgnoredUnknownSingleDir')
             ->with(222);
         $this->_db->expects($this->once())

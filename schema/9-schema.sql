@@ -4,6 +4,16 @@ INSERT INTO `properties` (`name`, `value`)
 VALUES ('pdf_metadata_max_bytes', '4194304')
 ON DUPLICATE KEY UPDATE `value` = `value`;
 
+ALTER TABLE `site_unknown`
+  ADD COLUMN `pdf_title` VARCHAR(255) NOT NULL DEFAULT '',
+  ADD COLUMN `pdf_keywords` VARCHAR(100) NOT NULL DEFAULT '',
+  ADD COLUMN `pdf_abstract` VARCHAR(2048) NOT NULL DEFAULT '',
+  ADD COLUMN `pdf_notes` VARCHAR(200) NOT NULL DEFAULT '',
+  ADD COLUMN `pdf_credits` VARCHAR(200) NOT NULL DEFAULT '',
+  ADD COLUMN `pdf_metadata_status` VARCHAR(16) NOT NULL DEFAULT '',
+  ADD COLUMN `pdf_metadata_error` VARCHAR(255) NOT NULL DEFAULT '',
+  ADD COLUMN `pdf_metadata_checked` DATETIME NULL DEFAULT NULL;
+
 DROP PROCEDURE IF EXISTS `manx_encode_url_path`;
 DELIMITER //
 CREATE PROCEDURE `manx_encode_url_path`(

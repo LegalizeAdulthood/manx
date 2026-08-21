@@ -19,6 +19,10 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
     private $_factory;
     /** @var Manx\Cron\ILogger */
     private $_logger;
+    /** @var Manx\IPdfMetadata */
+    private $_pdfMetadata;
+    /** @var Manx\IDateTimeProvider */
+    private $_dateTimeProvider;
     /** @var Manx\IUser */
     private $_user;
     /** @var Manx\Cron\BitSaversCleaner */
@@ -37,6 +41,9 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
         $this->_manx->expects($this->atLeast(1))->method('getDatabase')->willReturn($this->_db);
         $this->_whatsNewIndex = $this->createMock(Manx\IWhatsNewIndex::class);
         $this->_urlMetaData = $this->createMock(Manx\IUrlMetaData::class);
+        $this->_pdfMetadata = $this->createMock(Manx\IPdfMetadata::class);
+        $this->_dateTimeProvider =
+            $this->createMock(Manx\IDateTimeProvider::class);
         $this->_user = $this->createMock(Manx\IUser::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
@@ -45,6 +52,8 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
         $config['whatsNewIndex'] = $this->_whatsNewIndex;
         $config['fileSystem'] = $this->createMock(Manx\IFileSystem::class);
         $config['urlMetaData'] = $this->_urlMetaData;
+        $config['pdfMetadata'] = $this->_pdfMetadata;
+        $config['dateTimeProvider'] = $this->_dateTimeProvider;
         $config['user'] = $this->_user;
         $this->_config = $config;
         $this->_cleaner = new Manx\Cron\BitSaversCleaner($this->_config);
@@ -663,4 +672,133 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
         $this->_cleaner->updateIgnoredUnknownDirs();
     }
 
+    public function testCachePdfMetadataStoresOkResult()
+    {
+        $unknownId = 66;
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK 3333.pdf';
+        $encodedUrl = 'http://bitsavers.org/pdf/dec/foo/EK%203333.pdf';
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'url'],
+            [
+                [$unknownId, $url]
+            ]);
+        $metadata = [
+            'status' => Manx\PdfMetadata::STATUS_OK,
+            'title' => 'Title',
+            'keywords' => 'keywords',
+            'abstract' => 'Abstract',
+            'copy_notes' => 'Notes',
+            'copy_credits' => 'Credits'
+        ];
+        $this->_dateTimeProvider->expects($this->exactly(2))
+            ->method('now')
+            ->willReturn(self::dateAt(1000), self::dateAt(1000));
+        $this->_db->expects($this->once())
+            ->method('getUnknownPdfMetadataPaths')
+            ->with('bitsavers')->willReturn($rows);
+        $this->_pdfMetadata->expects($this->once())
+            ->method('metadataForUrl')
+            ->with($encodedUrl)->willReturn($metadata);
+        $this->_db->expects($this->once())
+            ->method('updateSiteUnknownPdfMetadata')
+            ->with($unknownId, 'Title', 'keywords', 'Abstract', 'Notes',
+                'Credits', 'ok', '');
+        $this->_logger->expects($this->exactly(3))->method('log');
+
+        $this->_cleaner->cachePdfMetadata(1800);
+    }
+
+    public function testCachePdfMetadataStoresNoneResult()
+    {
+        $unknownId = 66;
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333.pdf';
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'url'],
+            [
+                [$unknownId, $url]
+            ]);
+        $this->_dateTimeProvider->method('now')->willReturn(self::dateAt(0));
+        $this->_db->expects($this->once())
+            ->method('getUnknownPdfMetadataPaths')
+            ->with('bitsavers')->willReturn($rows);
+        $this->_pdfMetadata->expects($this->once())
+            ->method('metadataForUrl')
+            ->with($url)
+            ->willReturn(Manx\PdfMetadata::emptyResult(
+                Manx\PdfMetadata::STATUS_EMPTY));
+        $this->_db->expects($this->once())
+            ->method('updateSiteUnknownPdfMetadata')
+            ->with($unknownId, '', '', '', '', '', 'none', '');
+
+        $this->_cleaner->cachePdfMetadata(1800);
+    }
+
+    public function testCachePdfMetadataStoresErrorAndContinues()
+    {
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'url'],
+            [
+                [66, 'http://bitsavers.org/pdf/dec/foo/broken.pdf'],
+                [67, 'http://bitsavers.org/pdf/dec/foo/ok.pdf']
+            ]);
+        $ok = [
+            'status' => Manx\PdfMetadata::STATUS_OK,
+            'title' => 'OK',
+            'keywords' => '',
+            'abstract' => '',
+            'copy_notes' => '',
+            'copy_credits' => ''
+        ];
+        $this->_dateTimeProvider->method('now')->willReturn(self::dateAt(0));
+        $this->_db->expects($this->once())
+            ->method('getUnknownPdfMetadataPaths')
+            ->with('bitsavers')->willReturn($rows);
+        $this->_pdfMetadata->expects($this->exactly(2))
+            ->method('metadataForUrl')
+            ->willReturnCallback(function($url) use ($ok) {
+                if ($url == 'http://bitsavers.org/pdf/dec/foo/broken.pdf')
+                {
+                    throw new RuntimeException('parse failed');
+                }
+                return $ok;
+            });
+        $this->_db->expects($this->exactly(2))
+            ->method('updateSiteUnknownPdfMetadata')
+            ->withConsecutive(
+                [66, '', '', '', '', '', 'error', 'parse failed'],
+                [67, 'OK', '', '', '', '', 'ok', '']);
+
+        $this->_cleaner->cachePdfMetadata(1800);
+    }
+
+    public function testCachePdfMetadataHonorsTimeLimit()
+    {
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'url'],
+            [
+                [66, 'http://bitsavers.org/pdf/dec/foo/first.pdf'],
+                [67, 'http://bitsavers.org/pdf/dec/foo/second.pdf']
+            ]);
+        $this->_dateTimeProvider->expects($this->exactly(3))
+            ->method('now')
+            ->willReturn(self::dateAt(0), self::dateAt(0), self::dateAt(31));
+        $this->_db->expects($this->once())
+            ->method('getUnknownPdfMetadataPaths')
+            ->with('bitsavers')->willReturn($rows);
+        $this->_pdfMetadata->expects($this->once())
+            ->method('metadataForUrl')
+            ->with('http://bitsavers.org/pdf/dec/foo/first.pdf')
+            ->willReturn(Manx\PdfMetadata::emptyResult(
+                Manx\PdfMetadata::STATUS_EMPTY));
+        $this->_db->expects($this->once())
+            ->method('updateSiteUnknownPdfMetadata')
+            ->with(66, '', '', '', '', '', 'none', '');
+
+        $this->_cleaner->cachePdfMetadata(30);
+    }
+
+    private static function dateAt($timestamp)
+    {
+        return new DateTime('@' . $timestamp);
+    }
 }

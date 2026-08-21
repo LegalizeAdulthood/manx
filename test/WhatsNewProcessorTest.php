@@ -71,15 +71,39 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
         $this->_processor->process(['cleaner.php', 'ingest']);
     }
 
+    public function testPdfMetadataDefaultTimeLimit()
+    {
+        $this->_locker->expects($this->once())->method('lock')
+            ->with('pdf-metadata.lock');
+        $this->_cleaner->expects($this->once())
+            ->method('cachePdfMetadata')
+            ->with(Manx\Cron\WhatsNewCleaner::DEFAULT_PDF_METADATA_TIME_LIMIT_SECONDS);
+
+        $this->_processor->process(['cleaner.php', 'pdf-metadata']);
+    }
+
+    public function testPdfMetadataTimeLimitOption()
+    {
+        $this->_locker->expects($this->once())->method('lock')
+            ->with('pdf-metadata.lock');
+        $this->_cleaner->expects($this->once())
+            ->method('cachePdfMetadata')
+            ->with(60);
+
+        $this->_processor->process(['cleaner.php', 'pdf-metadata',
+            '--time-limit-seconds', '60']);
+    }
+
     public function testHelp()
     {
-        $this->_logger->expects($this->exactly(6))->method('log')->withConsecutive(
+        $this->_logger->expects($this->exactly(7))->method('log')->withConsecutive(
             [ "existence:      remove non-existent unknown paths" ],
             [ "moved           update moved files" ],
             [ "index           fetch IndexByDate.txt" ],
             [ "unknown-copies  remove unknown paths with existing copy" ],
             [ "ingest          ingest copies from guessable unknown paths" ],
-            [ "md5             compute MD5 hashes for copies" ]
+            [ "md5             compute MD5 hashes for copies" ],
+            [ "pdf-metadata    cache PDF metadata for unknown paths" ]
         );
 
         $this->_processor->process(['cleaner.php', 'help']);

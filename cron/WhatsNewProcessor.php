@@ -30,6 +30,7 @@ class WhatsNewProcessor
             $this->log("unknown-copies  remove unknown paths with existing copy");
             $this->log("ingest          ingest copies from guessable unknown paths");
             $this->log("md5             compute MD5 hashes for copies");
+            $this->log("pdf-metadata    cache PDF metadata for unknown paths");
         }
         else if ($args[1] == 'existence')
         {
@@ -65,6 +66,32 @@ class WhatsNewProcessor
             $this->lock($args[1]);
             $this->_cleaner->computeMissingMD5();
         }
+        else if ($args[1] == 'pdf-metadata')
+        {
+            $this->lock($args[1]);
+            $this->_cleaner->cachePdfMetadata(
+                self::pdfMetadataTimeLimitSeconds($args));
+        }
+    }
+
+    private static function pdfMetadataTimeLimitSeconds(array $args)
+    {
+        $result = WhatsNewCleaner::DEFAULT_PDF_METADATA_TIME_LIMIT_SECONDS;
+        for ($i = 2; $i < count($args); ++$i)
+        {
+            if ($args[$i] == '--time-limit-seconds' && $i + 1 < count($args))
+            {
+                $result = $args[$i + 1];
+                ++$i;
+            }
+            else if (strpos($args[$i], '--time-limit-seconds=') === 0)
+            {
+                $result = substr($args[$i], strlen('--time-limit-seconds='));
+            }
+        }
+        return preg_match('/^[0-9]+$/', (string)$result)
+            ? intval($result)
+            : WhatsNewCleaner::DEFAULT_PDF_METADATA_TIME_LIMIT_SECONDS;
     }
 
     private function lock($name)

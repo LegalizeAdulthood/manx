@@ -8,6 +8,8 @@ use Pimple\Container;
 
 class WhatsNewCleaner implements IWhatsNewCleaner
 {
+    const DEFAULT_PDF_METADATA_TIME_LIMIT_SECONDS = 1800;
+
     private $_manx;
     private $_db;
     private $_factory;
@@ -18,6 +20,10 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     private $_whatsNewIndex;
     /** @var IUrlMetaData */
     private $_urlMetaData;
+    /** @var IPdfMetadata */
+    private $_pdfMetadata;
+    /** @var IDateTimeProvider */
+    private $_dateTimeProvider;
     private $_limit;
 
     private static function endsWith($str, $needle)
@@ -45,6 +51,8 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->_baseUrl = self::ensureTrailingSlash($config['baseUrl']);
         $this->_whatsNewIndex = $config['whatsNewIndex'];
         $this->_urlMetaData = $config['urlMetaData'];
+        $this->_pdfMetadata = $config['pdfMetadata'];
+        $this->_dateTimeProvider = $config['dateTimeProvider'];
         $this->_user = $config['user'];
         $this->_limit = 500;
     }
@@ -152,6 +160,41 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     {
         $this->log("Updating ignored unknown directories");
         $this->_db->updateIgnoredUnknownDirs();
+    }
+
+    public function cachePdfMetadata($timeLimitSeconds)
+    {
+        $this->log("Caching PDF metadata for unknown paths");
+        $rows = $this->_db->getUnknownPdfMetadataPaths($this->_siteName);
+        $start = $this->nowSeconds();
+        $count = 0;
+        $cachedCount = 0;
+        foreach ($rows as $row)
+        {
+            if ($this->timeLimitReached($start, $timeLimitSeconds))
+            {
+                break;
+            }
+
+            ++$count;
+            $url = \Manx\UrlNormalizer::normalize($row['url']);
+            try
+            {
+                $metadata = $this->_pdfMetadata->metadataForUrl($url);
+            }
+            catch (\Throwable $e)
+            {
+                $metadata = array(
+                    'status' => 'error',
+                    'error' => $e->getMessage());
+            }
+            $this->storePdfMetadata($row['id'], $metadata);
+            ++$cachedCount;
+            $this->log(sprintf("PDF metadata: %d %s", $row['id'], $url));
+        }
+
+        $this->log(sprintf("PDF metadata: %d scanned, %d cached.",
+            $count, $cachedCount));
     }
 
     public function ingest()
@@ -326,6 +369,72 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url,
             $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
         $this->log(sprintf('Copy:        %d.%d %s "%s" (%s)', $siteId, $copyId, $data['pub_date'], $data['title'], $data['part']));
+    }
+
+    private function timeLimitReached($start, $timeLimitSeconds)
+    {
+        return $this->nowSeconds() - $start >= $timeLimitSeconds;
+    }
+
+    private function nowSeconds()
+    {
+        return $this->_dateTimeProvider->now()->getTimestamp();
+    }
+
+    private function storePdfMetadata($unknownId, array $metadata)
+    {
+        $status = self::pdfMetadataStatus($metadata);
+        $error = $status == 'error'
+            ? self::pdfMetadataError($metadata)
+            : '';
+        $this->_db->updateSiteUnknownPdfMetadata($unknownId,
+            self::pdfMetadataValue($metadata, 'title', 255),
+            self::pdfMetadataValue($metadata, 'keywords', 100),
+            self::pdfMetadataValue($metadata, 'abstract', 2048),
+            self::pdfMetadataValue($metadata, 'copy_notes', 200),
+            self::pdfMetadataValue($metadata, 'copy_credits', 200),
+            $status, $error);
+    }
+
+    private static function pdfMetadataStatus(array $metadata)
+    {
+        if (!array_key_exists('status', $metadata))
+        {
+            return 'error';
+        }
+        if ($metadata['status'] == \Manx\PdfMetadata::STATUS_OK)
+        {
+            return 'ok';
+        }
+        if ($metadata['status'] == \Manx\PdfMetadata::STATUS_EMPTY)
+        {
+            return 'none';
+        }
+        return 'error';
+    }
+
+    private static function pdfMetadataError(array $metadata)
+    {
+        if (array_key_exists('error', $metadata)
+            && strlen($metadata['error']) > 0)
+        {
+            return self::truncate($metadata['error'], 255);
+        }
+        return self::truncate(
+            array_key_exists('status', $metadata) ? $metadata['status'] : '',
+            255);
+    }
+
+    private static function pdfMetadataValue(array $metadata, $key, $length)
+    {
+        return self::truncate(
+            array_key_exists($key, $metadata) ? trim((string)$metadata[$key]) : '',
+            $length);
+    }
+
+    private static function truncate($value, $length)
+    {
+        return substr($value, 0, $length);
     }
 
     private function log($text)

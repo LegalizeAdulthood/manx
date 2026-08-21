@@ -1038,9 +1038,48 @@ class ManxDatabase implements IManxDatabase
             [$siteName]);
     }
 
+    public function getUnknownPdfMetadataPaths($siteName)
+    {
+        return $this->execute("SELECT "
+                . "`su`.`id`, "
+                . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) AS `url` "
+            . "FROM "
+                . "`site` `s`, "
+                . "`site_unknown` `su`, "
+                . "`site_unknown_dir` `sud` "
+            . "WHERE "
+                . "`s`.`name` = ? "
+                . "AND `s`.`live` = 'Y' "
+                . "AND `s`.`site_id` = `su`.`site_id` "
+                . "AND `s`.`site_id` = `sud`.`site_id` "
+                . "AND `su`.`dir_id` = `sud`.`id` "
+                . "AND `su`.`ignored` = 0 "
+                . "AND LOWER(`su`.`path`) LIKE '%.pdf' "
+                . "AND `su`.`pdf_metadata_status` IN ('', 'error') "
+            . "ORDER BY `su`.`id`",
+            [$siteName]);
+    }
+
     public function markUnknownPathScanned($unknownId)
     {
         $this->execute("UPDATE `site_unknown` SET `scanned` = 1 WHERE `id` = ?", [$unknownId]);
+    }
+
+    public function updateSiteUnknownPdfMetadata($unknownId, $title, $keywords,
+        $abstract, $notes, $credits, $status, $error)
+    {
+        $this->execute("UPDATE `site_unknown` "
+            . "SET `pdf_title` = ?, "
+                . "`pdf_keywords` = ?, "
+                . "`pdf_abstract` = ?, "
+                . "`pdf_notes` = ?, "
+                . "`pdf_credits` = ?, "
+                . "`pdf_metadata_status` = ?, "
+                . "`pdf_metadata_error` = ?, "
+                . "`pdf_metadata_checked` = NOW() "
+            . "WHERE `id` = ?",
+            [$title, $keywords, $abstract, $notes, $credits, $status,
+                $error, $unknownId]);
     }
 
     public function getSiteUnknownDirectories($siteName, $parentDirId)

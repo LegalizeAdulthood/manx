@@ -10,5 +10,6 @@ interface IWhatsNewCleaner
     function removeUnknownPathsWithCopy();
     function ingest();
     function computeMissingMD5();
+    function cachePdfMetadata($timeLimitSeconds);
     function updateIgnoredUnknownDirs();
 }

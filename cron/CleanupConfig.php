@@ -30,6 +30,11 @@ class CleanupConfig
         {
             return new \Manx\UrlMetaData($c);
         };
+        $config['pdfMetadata'] = function($c)
+        {
+            return new \Manx\PdfMetadata($c['db']);
+        };
+        $config['dateTimeProvider'] = new \Manx\DateTimeProvider();
         $config['urlInfoFactory'] = new \Manx\UrlInfoFactory();
         return $config;
     }
