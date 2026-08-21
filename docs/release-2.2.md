@@ -45,7 +45,132 @@ issue, except #99 which is split into small mobile-layout slices.  When a
 slice is complete, remove that slice and leave the remaining numbers
 unchanged.
 
-## 1. Review PDF metadata in URL Wizard
+The mobile slices are listed first so responsive changes get the longest
+manual testing window.
+
+## 1. Add mobile viewport and readable base spacing
+
+Issue: #99
+
+Implementation:
+
+- Add a viewport meta tag from the shared page header.
+- Add the same viewport tag to the maintenance page.
+- Set a readable base text size and line height for small screens.
+- Use small-screen page margins that give content room without crowding
+  the viewport.
+- Keep desktop typography and spacing visually close to the current site.
+
+Acceptance criteria:
+
+- Phone browsers lay out pages at device width instead of scaling a
+  desktop-width page down.
+- Body text is readable without pinch zoom on 320px and 375px wide
+  viewports.
+- Page content has comfortable edge spacing on narrow screens.
+- Desktop pages keep the current compact Manx look.
+
+Automated tests:
+
+- Add `PageBaseTest` coverage for the viewport meta tag.
+- Add maintenance-page coverage if an existing static-page test path can
+  cover it cleanly.
+
+Relates #99
+
+## 2. Make the shared header and menus mobile-friendly
+
+Issue: #99
+
+Implementation:
+
+- Let the primary and admin menus wrap cleanly on narrow screens.
+- Adjust menu padding and link display for comfortable tap targets.
+- Prevent the authorization block from forcing horizontal scrolling.
+- Make the logo/header scale or crop gracefully on phone widths.
+
+Acceptance criteria:
+
+- The header does not create horizontal overflow at 320px width.
+- Menu links remain readable and tappable when wrapped.
+- Logged-in and logged-out headers both fit narrow screens.
+- Desktop menu rendering remains close to the current layout.
+
+Automated tests:
+
+- Add `PageBaseTest` coverage for logged-in and logged-out header output
+  if markup changes are needed.
+- Add CSS-only changes without PHP tests when no rendered markup changes.
+
+Relates #99
+
+## 3. Make public content pages responsive
+
+Issue: #99
+
+Implementation:
+
+- Make search controls wrap or stack on narrow screens.
+- Make result tables readable by allowing long titles, part numbers, and
+  status text to wrap.
+- Use horizontal overflow only for tables that must remain tabular.
+- Prevent detail-page cover images and floated content from crowding or
+  exceeding the viewport.
+- Adjust pagination, table-of-contents, and citation spacing for phone
+  widths.
+
+Acceptance criteria:
+
+- Search, results, details, about, help, news, login, and pagination are
+  readable at 320px and 375px widths.
+- Long document titles, URLs, and part numbers do not force page-level
+  horizontal scrolling.
+- Detail pages keep images visible without covering or squeezing text.
+- Desktop search and details pages remain visually stable.
+
+Automated tests:
+
+- Add `SearchPageTest`, `HtmlFormatterTest`, or `DetailsPageTest`
+  coverage for any markup wrappers or classes added for responsive
+  behavior.
+- Keep CSS-only changes covered by manual smoke tests when rendered
+  markup is unchanged.
+
+Relates #99
+
+## 4. Make forms and admin pages responsive
+
+Issue: #99
+
+Implementation:
+
+- Stack labels above controls on narrow screens.
+- Make text inputs, selects, and textareas fit within the viewport.
+- Remove mobile dependence on fixed `margin-left` and input `size`
+  assumptions in CSS.
+- Apply the same treatment to publication/company forms and URL Wizard.
+- Keep the desktop form layout close to the current aligned-label style.
+
+Acceptance criteria:
+
+- Login, publication, company, report, and URL Wizard forms fit phone
+  widths without page-level horizontal scrolling.
+- Help text, error text, and working indicators remain attached to the
+  relevant fields.
+- URL Wizard fields with long URLs remain usable on phones.
+- Desktop admin forms keep their current aligned-label behavior.
+
+Automated tests:
+
+- Add `UrlWizardPageTest` coverage for any markup changes needed for
+  responsive field groups.
+- Add page tests for publication or company markup only if those pages
+  need structural changes.
+- Keep CSS-only form layout changes covered by manual smoke tests.
+
+Fixes #99
+
+## 5. Review PDF metadata in URL Wizard
 
 Issue: #46
 
@@ -73,7 +198,7 @@ Automated tests:
 
 Fixes #46
 
-## 2. Encode `#` in document paths
+## 6. Encode `#` in document paths
 
 Issue: #66
 
@@ -101,7 +226,7 @@ Automated tests:
 
 Fixes #66
 
-## 3. Compute MD5 for URLs with special characters
+## 7. Compute MD5 for URLs with special characters
 
 Issue: #67
 
@@ -130,7 +255,7 @@ Automated tests:
 
 Fixes #67
 
-## 4. Normalize copy URLs before duplicate checks
+## 8. Normalize copy URLs before duplicate checks
 
 Issue: #68
 
@@ -167,7 +292,7 @@ Automated tests:
 
 Fixes #68
 
-## 5. Parse URL Wizard dates that include a day
+## 9. Parse URL Wizard dates that include a day
 
 Issue: #69
 
@@ -190,7 +315,7 @@ Automated tests:
 
 Fixes #69
 
-## 6. Use site URL when copy base URL differs
+## 10. Use site URL when copy base URL differs
 
 Issue: #73
 
@@ -216,7 +341,7 @@ Automated tests:
 
 Fixes #73
 
-## 7. Associate directory regex with ingestion
+## 11. Associate directory regex with ingestion
 
 Issue: #98
 
@@ -277,7 +402,7 @@ Automated tests:
 
 Fixes #98
 
-## 8. Preview directory ingestion metadata
+## 12. Preview directory ingestion metadata
 
 Issue: #105
 
@@ -318,7 +443,7 @@ Automated tests:
 
 Fixes #105
 
-## 9. Manually ingest all documents in a directory
+## 13. Manually ingest all documents in a directory
 
 Issue: #106
 
@@ -359,7 +484,7 @@ Automated tests:
 
 Fixes #106
 
-## 10. Extract PDF metadata via cron
+## 14. Extract PDF metadata via cron
 
 Issue: #124
 
@@ -432,7 +557,7 @@ Automated tests:
 
 Fixes #124
 
-## 11. Recognize `https` URLs correctly
+## 15. Recognize `https` URLs correctly
 
 Issue: #135
 
@@ -455,7 +580,7 @@ Automated tests:
 
 Fixes #135
 
-## 12. Speed moved-file checks for many unknown paths
+## 16. Speed moved-file checks for many unknown paths
 
 Issue: #145
 
@@ -535,7 +660,7 @@ Automated tests:
 
 Fixes #145
 
-## 13. Use IndexByDate for existence and moved checks
+## 17. Use IndexByDate for existence and moved checks
 
 Issue: #154
 
@@ -600,128 +725,6 @@ Automated tests:
 - Add `WhatsNewCleanerTest` coverage proving only candidates are checked.
 
 Fixes #154
-
-## 14. Add mobile viewport and readable base spacing
-
-Issue: #99
-
-Implementation:
-
-- Add a viewport meta tag from the shared page header.
-- Add the same viewport tag to the maintenance page.
-- Set a readable base text size and line height for small screens.
-- Use small-screen page margins that give content room without crowding
-  the viewport.
-- Keep desktop typography and spacing visually close to the current site.
-
-Acceptance criteria:
-
-- Phone browsers lay out pages at device width instead of scaling a
-  desktop-width page down.
-- Body text is readable without pinch zoom on 320px and 375px wide
-  viewports.
-- Page content has comfortable edge spacing on narrow screens.
-- Desktop pages keep the current compact Manx look.
-
-Automated tests:
-
-- Add `PageBaseTest` coverage for the viewport meta tag.
-- Add maintenance-page coverage if an existing static-page test path can
-  cover it cleanly.
-
-Relates #99
-
-## 15. Make the shared header and menus mobile-friendly
-
-Issue: #99
-
-Implementation:
-
-- Let the primary and admin menus wrap cleanly on narrow screens.
-- Adjust menu padding and link display for comfortable tap targets.
-- Prevent the authorization block from forcing horizontal scrolling.
-- Make the logo/header scale or crop gracefully on phone widths.
-
-Acceptance criteria:
-
-- The header does not create horizontal overflow at 320px width.
-- Menu links remain readable and tappable when wrapped.
-- Logged-in and logged-out headers both fit narrow screens.
-- Desktop menu rendering remains close to the current layout.
-
-Automated tests:
-
-- Add `PageBaseTest` coverage for logged-in and logged-out header output
-  if markup changes are needed.
-- Add CSS-only changes without PHP tests when no rendered markup changes.
-
-Relates #99
-
-## 16. Make public content pages responsive
-
-Issue: #99
-
-Implementation:
-
-- Make search controls wrap or stack on narrow screens.
-- Make result tables readable by allowing long titles, part numbers, and
-  status text to wrap.
-- Use horizontal overflow only for tables that must remain tabular.
-- Prevent detail-page cover images and floated content from crowding or
-  exceeding the viewport.
-- Adjust pagination, table-of-contents, and citation spacing for phone
-  widths.
-
-Acceptance criteria:
-
-- Search, results, details, about, help, news, login, and pagination are
-  readable at 320px and 375px widths.
-- Long document titles, URLs, and part numbers do not force page-level
-  horizontal scrolling.
-- Detail pages keep images visible without covering or squeezing text.
-- Desktop search and details pages remain visually stable.
-
-Automated tests:
-
-- Add `SearchPageTest`, `HtmlFormatterTest`, or `DetailsPageTest`
-  coverage for any markup wrappers or classes added for responsive
-  behavior.
-- Keep CSS-only changes covered by manual smoke tests when rendered
-  markup is unchanged.
-
-Relates #99
-
-## 17. Make forms and admin pages responsive
-
-Issue: #99
-
-Implementation:
-
-- Stack labels above controls on narrow screens.
-- Make text inputs, selects, and textareas fit within the viewport.
-- Remove mobile dependence on fixed `margin-left` and input `size`
-  assumptions in CSS.
-- Apply the same treatment to publication/company forms and URL Wizard.
-- Keep the desktop form layout close to the current aligned-label style.
-
-Acceptance criteria:
-
-- Login, publication, company, report, and URL Wizard forms fit phone
-  widths without page-level horizontal scrolling.
-- Help text, error text, and working indicators remain attached to the
-  relevant fields.
-- URL Wizard fields with long URLs remain usable on phones.
-- Desktop admin forms keep their current aligned-label behavior.
-
-Automated tests:
-
-- Add `UrlWizardPageTest` coverage for any markup changes needed for
-  responsive field groups.
-- Add page tests for publication or company markup only if those pages
-  need structural changes.
-- Keep CSS-only form layout changes covered by manual smoke tests.
-
-Fixes #99
 
 ## Release verification
 
