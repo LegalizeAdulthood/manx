@@ -38,6 +38,45 @@ div.det
     {
         margin: 0.75em
     }
+
+    #AUTH
+    {
+        float: none;
+        padding: 0.5em 0.75em;
+        background-color: #009193;
+        overflow-wrap: anywhere
+    }
+
+    #AUTH table
+    {
+        width: 100%
+    }
+
+    #AUTH td
+    {
+        text-align: left
+    }
+
+    #LOGO h1
+    {
+        height: 56px;
+        background-size: auto 56px
+    }
+
+    .menu
+    {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0.15em 0.25em
+    }
+
+    .menu a
+    {
+        display: block;
+        margin: 0.15em 0;
+        padding: 0.55em 0.75em;
+        line-height: 1.2
+    }
 }
 
 #LOGO h1 span

@@ -48,32 +48,6 @@ unchanged.
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
 
-## 2. Make the shared header and menus mobile-friendly
-
-Issue: #99
-
-Implementation:
-
-- Let the primary and admin menus wrap cleanly on narrow screens.
-- Adjust menu padding and link display for comfortable tap targets.
-- Prevent the authorization block from forcing horizontal scrolling.
-- Make the logo/header scale or crop gracefully on phone widths.
-
-Acceptance criteria:
-
-- The header does not create horizontal overflow at 320px width.
-- Menu links remain readable and tappable when wrapped.
-- Logged-in and logged-out headers both fit narrow screens.
-- Desktop menu rendering remains close to the current layout.
-
-Automated tests:
-
-- Add `PageBaseTest` coverage for logged-in and logged-out header output
-  if markup changes are needed.
-- Add CSS-only changes without PHP tests when no rendered markup changes.
-
-Relates #99
-
 ## 3. Make public content pages responsive
 
 Issue: #99
