@@ -37,47 +37,6 @@ unchanged.
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
 
-## 13. Manually ingest all documents in a directory
-
-Issue: #106
-
-Implementation:
-
-- Add a directory ingest form to the metadata preview page.
-- Add one checkbox per preview row for selecting documents to ingest.
-- Add a submit button that immediately ingests selected rows.
-- Do not provide metadata editing in the directory ingest form.
-- Recompute selected preview rows on submit before ingesting them.
-- Leave unselected rows for one-by-one ingestion or later review.
-- Add copies for selected rows that still pass validation.
-
-Acceptance criteria:
-
-- Each preview row has a checkbox controlling whether that row is
-  ingested.
-- Submitting the form immediately ingests selected valid rows.
-- Submitted ingestion does not trust hidden metadata values.
-- The form does not contain editable metadata fields.
-- Valid selected rows create publications or copies according to existing
-  rules.
-- Ingested unknown paths are removed or marked scanned.
-- Unselected rows remain visible for later one-by-one ingestion.
-- Selected rows that fail validation remain visible with a reason.
-
-Automated tests:
-
-- Add `WhatsNewPageTest` POST coverage proving preview is recomputed.
-- Add `WhatsNewPageTest` coverage for one checkbox per preview row and a
-  submit button.
-- Add `WhatsNewPageTest` coverage proving metadata fields are not
-  editable in the ingest form.
-- Add `WhatsNewCleanerTest` or ingestion service tests for selected valid
-  rows.
-- Add tests proving unselected, duplicate, regex-rejected, and invalid
-  rows are not ingested.
-
-Fixes #106
-
 ## 14. Extract PDF metadata via cron
 
 Issue: #124

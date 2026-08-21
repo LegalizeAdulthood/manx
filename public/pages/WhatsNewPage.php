@@ -81,6 +81,7 @@ class WhatsNewPage extends AdminPageBase
     protected function postPage()
     {
         $this->savePartRegex();
+        $this->ingestPreviewRows();
         $this->ignorePaths();
         PageBase::renderPage();
     }
@@ -124,6 +125,58 @@ class WhatsNewPage extends AdminPageBase
         $this->_manxDb->updateSiteUnknownDirPartRegex(
             $this->_parentDirId, $partRegex);
         $this->_thisDir = null;
+    }
+
+    protected function ingestPreviewRows()
+    {
+        if (!array_key_exists('ingest_preview', $this->_vars))
+        {
+            return;
+        }
+
+        $selectedIds = $this->selectedPreviewRowIds();
+        if (count($selectedIds) == 0)
+        {
+            return;
+        }
+
+        $thisDir = $this->getThisDir();
+        $files = $this->_manxDb->getSiteUnknownPaths(
+            $this->_siteName, $this->_parentDirId);
+        foreach ($this->previewRows($thisDir, $files) as $row)
+        {
+            if (array_key_exists($row['id'], $selectedIds))
+            {
+                $this->ingestPreviewRow($row);
+            }
+        }
+    }
+
+    private function selectedPreviewRowIds()
+    {
+        $selectedIds = [];
+        foreach (array_keys($this->_vars) as $key)
+        {
+            if (preg_match('/^ingest[0-9]+$/', $key))
+            {
+                $selectedIds[$this->_vars[$key]] = true;
+            }
+        }
+        return $selectedIds;
+    }
+
+    private function ingestPreviewRow($row)
+    {
+        if ($row['status'] != 'Accepted' || $row['pub_id'] == '')
+        {
+            return;
+        }
+
+        $copyId = $this->_manxDb->addCopy($row['pub_id'], $row['format'],
+            $row['site_id'], $row['url'], '', 0, '', '', '');
+        $this->_manxDb->setCopySiteUnknownDirId($copyId, $row['id']);
+        $this->_manxDb->updateIgnoredUnknownSingleDir($row['id']);
+        $this->_manxDb->removeSiteUnknownPathById($row['id']);
     }
 
     private function renderPartRegexForm($thisDir)
@@ -170,6 +223,7 @@ EOH;
                 : $this->_manxDb->getFormatForExtension($extension);
             $infos[] = [
                 'id' => $file['id'],
+                'site_id' => $file['site_id'],
                 'path' => $path,
                 'url' => $this->documentUrl($thisDir['path'], $path),
                 'extension' => $extension,
@@ -237,9 +291,14 @@ EOH;
         $existingCopy = $this->_manxDb->copyExistsForUrl($fileInfo['url']);
         $pubs = $part == '' || is_array($existingCopy) ? []
             : $this->_manxDb->getPublicationsForPartNumber($part, $companyId);
+        $status = self::previewStatus(
+            $part, $pubDate, $title, $pubs, $existingCopy, $regexResult);
+        $pubId = $status == 'Accepted' ? $pubs[0]['pub_id'] : '';
 
         return [
             'id' => $fileInfo['id'],
+            'site_id' => $fileInfo['site_id'],
+            'pub_id' => $pubId,
             'path' => $fileInfo['path'],
             'url' => $fileInfo['url'],
             'part' => $part,
@@ -248,10 +307,9 @@ EOH;
             'format' => $fileInfo['format'],
             'regex_result' => $regexResult,
             'matching_publication' =>
-                self::matchingPublicationHtml($companyId, $pubs),
+                self::matchingPublicationHtml($companyId, $part, $pubs),
             'existing_copy' => self::existingCopyHtml($existingCopy),
-            'status' => self::previewStatus(
-                $part, $pubDate, $title, $pubs, $existingCopy, $regexResult)
+            'status' => $status
         ];
     }
 
@@ -309,7 +367,7 @@ EOH;
             htmlspecialchars($title));
     }
 
-    private static function matchingPublicationHtml($companyId, $pubs)
+    private static function matchingPublicationHtml($companyId, $part, $pubs)
     {
         if (count($pubs) == 0)
         {
@@ -317,7 +375,9 @@ EOH;
         }
         if (count($pubs) > 1)
         {
-            return sprintf('%d candidates', count($pubs));
+            return sprintf('<a href="search.php?cp=%s&amp;q=%s">%d candidates</a>',
+                htmlspecialchars($companyId), htmlspecialchars(rawurlencode($part)),
+                count($pubs));
         }
         return self::detailsLink(
             $companyId, $pubs[0]['pub_id'], $pubs[0]['ph_title']);
@@ -340,21 +400,31 @@ EOH;
             return;
         }
 
+        $siteName = htmlspecialchars($this->_siteName);
+        $parentDirId = $this->_parentDirId;
+
         print <<<EOH
 <h2>Ingestion Preview</h2>
+<form action="whatsnew.php" method="POST">
+<input type="hidden" name="site" value="$siteName" />
+<input type="hidden" name="parentDir" value="$parentDirId" />
+<input type="hidden" name="ingest_preview" value="1" />
 <table>
-<tr><th>File</th><th>Status</th><th>Part</th><th>Date</th><th>Title</th><th>Format</th><th>Regex</th><th>Matching Publication</th><th>Existing Copy</th></tr>
+<tr><th>Ingest?</th><th>File</th><th>Status</th><th>Part</th><th>Date</th><th>Title</th><th>Format</th><th>Regex</th><th>Matching Publication</th><th>Existing Copy</th></tr>
 
 EOH;
+        $i = 0;
         foreach ($previewRows as $row)
         {
-            printf('<tr><td><a href="url-wizard.php?id=%d&url=%s">%s</a></td>'
-                . '<td>%s</td><td>%s</td><td>%s</td><td>%s</td>'
+            $disabled = $row['status'] == 'Accepted' ? '' : ' disabled="disabled"';
+            printf('<tr><td><input type="checkbox" id="ingest%d" name="ingest%d" value="%d"%s/></td>',
+                $i, $i, $row['id'], $disabled);
+            printf('<td><a href="url-wizard.php?id=%d&url=%s">%s</a></td>',
+                $row['id'], htmlspecialchars($row['url']),
+                htmlspecialchars($row['path']));
+            printf('<td>%s</td><td>%s</td><td>%s</td><td>%s</td>'
                 . '<td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
                 . "\n",
-                $row['id'],
-                htmlspecialchars($row['url']),
-                htmlspecialchars($row['path']),
                 htmlspecialchars($row['status']),
                 htmlspecialchars($row['part']),
                 htmlspecialchars($row['pub_date']),
@@ -363,9 +433,12 @@ EOH;
                 htmlspecialchars($row['regex_result']),
                 $row['matching_publication'],
                 $row['existing_copy']);
+            ++$i;
         }
         print <<<EOH
 </table>
+<input type="submit" value="Ingest Selected" />
+</form>
 
 EOH;
     }
