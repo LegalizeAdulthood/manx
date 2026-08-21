@@ -168,28 +168,8 @@ class UrlMetaData implements IUrlMetaData
         }
         if (count($parts) == 1)
         {
-            if (preg_match('/^(.*[^0-9])([0-9][0-9]|[0-9]|)([A-Z][a-z]+)([0-9][0-9]|[0-9][0-9][0-9][0-9])$/', $parts[0], $matches) == 1)
-            {
-                $day = $matches[2];
-                $month = self::matchMonth($matches[3]);
-                $year = $matches[4];
-                if ($month != '')
-                {
-                    if ($year < 1900)
-                    {
-                        $year += 1900;
-                    }
-                    if ($day != '')
-                    {
-                        $pubDate = sprintf("%d-%02d-%02d", $year, $month, $day);
-                    }
-                    else
-                    {
-                        $pubDate = sprintf("%d-%02d", $year, $month);
-                    }
-                    $fileBase = $matches[1];
-                }
-            }
+            list($pubDate, $fileBase) =
+                self::parseCompactTextMonthPubDate($parts[0]);
             if ($pubDate == ''
                 && preg_match('/^(.*[^0-9])([0-9]{6}|[0-9]{8})$/', $parts[0], $matches) == 1)
             {
@@ -204,16 +184,17 @@ class UrlMetaData implements IUrlMetaData
         if (count($parts) > 1)
         {
             $lastPart = count($parts)-1;
-            $year = strtolower($parts[$lastPart]);
-            $packedDate = self::parsePackedPubDate($year);
+            $datePart = strtolower($parts[$lastPart]);
+            $packedDate = self::parsePackedPubDate($datePart);
             if ($packedDate != '')
             {
                 $pubDate = $packedDate;
                 --$lastPart;
                 $fileBase = implode($sep, array_slice($parts, 0, $lastPart + 1));
             }
-            else if (is_numeric($year) && $year > 9 && $year < 2100)
+            else if (is_numeric($datePart) && $datePart > 9 && $datePart < 2100)
             {
+                $year = $datePart;
                 if ($year < 100)
                 {
                     $year += 1900;
@@ -265,17 +246,13 @@ class UrlMetaData implements IUrlMetaData
 
                 $fileBase = implode($sep, array_slice($parts, 0, $lastPart + 1));
             }
-            else if (1 == preg_match('/^([a-z]+)([0-9]+)$/', $year, $matches))
+            else
             {
-                $year = $matches[2];
-                if ($year < 100)
+                list($compactPubDate, $datePrefix) =
+                    self::parseCompactTextMonthPubDate($datePart);
+                if ($compactPubDate != '' && $datePrefix == '')
                 {
-                    $year += 1900;
-                }
-                $month = self::matchMonth(substr($matches[1], 0, 3));
-                if ($month != '')
-                {
-                    $pubDate = sprintf("%d-%s", $year, $month);
+                    $pubDate = $compactPubDate;
                     --$lastPart;
                     $fileBase = implode($sep, array_slice($parts, 0, $lastPart + 1));
                 }
@@ -309,6 +286,72 @@ class UrlMetaData implements IUrlMetaData
         }
 
         return sprintf("%04d-%02d", $year, $month);
+    }
+
+    private static function parseCompactTextMonthPubDate($text)
+    {
+        $matches = array();
+        if (preg_match('/^(.*?)([0-9]{4}|[0-9]{2})$/', $text, $matches) != 1)
+        {
+            return array('', $text);
+        }
+
+        $dateText = $matches[1];
+        $year = intval($matches[2]);
+        $monthText = strtolower($dateText);
+        $monthMap = array_merge(self::monthNames(), self::months());
+        uksort($monthMap, function($a, $b) {
+            return strlen($b) - strlen($a);
+        });
+
+        $prefix = '';
+        $day = '';
+        $month = '';
+        foreach ($monthMap as $monthName => $monthNumber)
+        {
+            $monthLength = strlen($monthName);
+            if (substr($monthText, -$monthLength) != $monthName)
+            {
+                continue;
+            }
+
+            $prefix = substr($dateText, 0, strlen($dateText) - $monthLength);
+            if (preg_match('/^(.*[^0-9]|)([0-9]{1,2})$/', $prefix,
+                $matches) == 1)
+            {
+                $prefix = $matches[1];
+                $day = $matches[2];
+            }
+            else if ($prefix != '' && preg_match('/[^0-9]$/', $prefix) != 1)
+            {
+                continue;
+            }
+
+            $month = $monthNumber;
+            break;
+        }
+
+        if ($month == '')
+        {
+            return array('', $text);
+        }
+
+        if ($year < 100)
+        {
+            $year += 1900;
+        }
+
+        if ($day != '')
+        {
+            $day = intval($day);
+            if (!checkdate($month, $day, $year))
+            {
+                return array('', $text);
+            }
+            return array(sprintf("%04d-%s-%02d", $year, $month, $day), $prefix);
+        }
+
+        return array(sprintf("%04d-%s", $year, $month), $prefix);
     }
 
     private static function matchMonth($text)

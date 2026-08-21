@@ -21,7 +21,6 @@ directories without creating broken or duplicate copies.
 
 Issues:
 
-- #69 URL Wizard doesn't recognize document dates with day.
 - #73 If site URL and copy base URL differ, wizard produces incorrect
   URLs.
 - #98 Associate directories with a regex for part numbers to aid ingestion.
@@ -41,29 +40,6 @@ unchanged.
 
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
-
-## 9. Parse URL Wizard dates that include a day
-
-Issue: #69
-
-Implementation:
-
-- Extend publication-date extraction for compact day-month-year forms.
-- Preserve all existing year and month-year date extraction behavior.
-
-Acceptance criteria:
-
-- `1Jul1989` extracts `1989-07-01`.
-- Existing `Jul1989`, `Jul89`, and year-only forms still parse.
-- Invalid day or month text is left in the title, as before.
-
-Automated tests:
-
-- Add `UrlMetaDataHelpersTest` cases for `1Jul1989` and `01Jul1989`.
-- Add `UrlMetaDataHelpersTest` cases for invalid day-bearing dates.
-- Keep existing date parser tests passing.
-
-Fixes #69
 
 ## 10. Use site URL when copy base URL differs
 
