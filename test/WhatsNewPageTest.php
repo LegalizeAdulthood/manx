@@ -32,6 +32,11 @@ class WhatsNewPageTester extends Manx\WhatsNewPage
         parent::ignorePaths();
     }
 
+    public function savePartRegex()
+    {
+        parent::savePartRegex();
+    }
+
     public function getTitle()
     {
         return parent::getTitle();
@@ -165,6 +170,17 @@ class WhatsNewPageTest extends Manx\Test\TestCase
         $expected = <<<EOH
 <h1>No New BitSavers dec/pdp11 Publications Found</h1>
 
+<form action="whatsnew.php" method="POST">
+<input type="hidden" name="site" value="bitsavers" />
+<input type="hidden" name="parentDir" value="1339" />
+<fieldset>
+<legend>Directory Metadata</legend>
+<label for="part_regex">Part Regex</label>
+<input type="text" id="part_regex" name="part_regex" size="60" value="" />
+<input type="submit" value="Save" />
+</fieldset>
+</form>
+
 <ul>
 <li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
 </ul>
@@ -180,7 +196,8 @@ EOH;
         $this->createPage(['siteName' => $siteName, 'parentDir' => $parentDirId]);
         $thisDirRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
             [
-                [100, 3, 'dec/pdp11', 150, '', 0]
+                [100, 3, 'dec/pdp11', 150,
+                    Manx\UrlMetaData::DEFAULT_PART_REGEX, 0]
             ]);
         $this->_db->expects($this->once())->method('getSiteUnknownDir')->with($parentDirId)->willReturn($thisDirRows[0]);
         $dirRows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
@@ -211,6 +228,17 @@ EOH;
 
         $expected = <<<EOH
 <h1>New BitSavers dec/pdp11 Publications</h1>
+
+<form action="whatsnew.php" method="POST">
+<input type="hidden" name="site" value="bitsavers" />
+<input type="hidden" name="parentDir" value="1339" />
+<fieldset>
+<legend>Directory Metadata</legend>
+<label for="part_regex">Part Regex</label>
+<input type="text" id="part_regex" name="part_regex" size="60" value="^([^_]*[0-9][0-9][^_]*)_" />
+<input type="submit" value="Save" />
+</fieldset>
+</form>
 
 <ul>
 <li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
@@ -271,6 +299,17 @@ EOH;
         $expected = <<<EOH
 <h1>New BitSavers dec/foo#bar Publications</h1>
 
+<form action="whatsnew.php" method="POST">
+<input type="hidden" name="site" value="bitsavers" />
+<input type="hidden" name="parentDir" value="1339" />
+<fieldset>
+<legend>Directory Metadata</legend>
+<label for="part_regex">Part Regex</label>
+<input type="text" id="part_regex" name="part_regex" size="60" value="" />
+<input type="submit" value="Save" />
+</fieldset>
+</form>
+
 <ul>
 <li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
 </ul>
@@ -287,6 +326,66 @@ EOH;
 
 EOH;
         $this->expectOutputStringIgnoringLineEndings($expected);
+    }
+
+    public function testSavePartRegex()
+    {
+        $parentDirId = 1339;
+        $partRegex = '^([^_]+)_';
+        $this->createPage(['siteName' => 'bitsavers',
+            'parentDir' => $parentDirId, 'part_regex' => $partRegex]);
+        $this->_db->expects($this->once())
+            ->method('updateSiteUnknownDirPartRegex')
+            ->with($parentDirId, $partRegex);
+
+        $this->_page->savePartRegex();
+    }
+
+    public function testClearPartRegex()
+    {
+        $parentDirId = 1339;
+        $this->createPage(['siteName' => 'bitsavers',
+            'parentDir' => $parentDirId, 'part_regex' => '']);
+        $this->_db->expects($this->once())
+            ->method('updateSiteUnknownDirPartRegex')
+            ->with($parentDirId, '');
+
+        $this->_page->savePartRegex();
+    }
+
+    public function testSavePartRegexRejectsInvalidRegex()
+    {
+        $parentDirId = 1339;
+        $this->createPage(['siteName' => 'bitsavers',
+            'parentDir' => $parentDirId, 'part_regex' => '([broken']);
+        $this->_db->expects($this->never())
+            ->method('updateSiteUnknownDirPartRegex');
+
+        $this->_page->savePartRegex();
+    }
+
+    public function testInvalidPartRegexErrorIsRendered()
+    {
+        $siteName = 'bitsavers';
+        $parentDirId = 1339;
+        $this->createPage(['siteName' => $siteName,
+            'parentDir' => $parentDirId, 'part_regex' => '([broken']);
+        $this->_page->savePartRegex();
+        $thisDirRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
+            [
+                [100, 3, 'dec/pdp11', 150, '', 0]
+            ]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDir')
+            ->with($parentDirId)->willReturn($thisDirRows[0]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDirectories')
+            ->with($siteName, $parentDirId)->willReturn([]);
+        $this->_db->expects($this->once())->method('getSiteUnknownPaths')
+            ->with($siteName, $parentDirId)->willReturn([]);
+
+        $this->_page->renderBodyContent();
+
+        $this->expectOutputRegex('/Invalid part-number regex\\./');
     }
 
     public function testIgnorePaths()

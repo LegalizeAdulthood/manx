@@ -173,10 +173,24 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             $companyId = $row['company_id'];
             $url = $row['url'];
             $this->log(sprintf("Scanned:     %d.%d %s", $siteId, $companyId, $url));
+            $partRegex = self::partRegexForRow($row);
+            if (!$this->partRegexAcceptsUrl($url, $partRegex))
+            {
+                continue;
+            }
 
             // Don't need to re-extract data[url] because we're working from the site's base copy URL.
             // The url argument to determineData will never be a mirror URL.
-            $data = $this->_urlMetaData->determineIngestData($siteId, $companyId, $url);
+            if (strlen($partRegex) > 0)
+            {
+                $data = $this->_urlMetaData->determineIngestData(
+                    $siteId, $companyId, $url, $partRegex);
+            }
+            else
+            {
+                $data = $this->_urlMetaData->determineIngestData(
+                    $siteId, $companyId, $url);
+            }
             if (!is_array($data) || !array_key_exists('part', $data) || !array_key_exists('title', $data) || !array_key_exists('pub_date', $data))
             {
                 $this->log(sprintf("Skipped:     Couldn't identify document %d.%d %s", $siteId, $companyId, $url));
@@ -257,6 +271,45 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         }
 
         $this->log(sprintf('Ingestion:   %d scanned, %d ingested (%0.2f%%)', $count, $ingestCount, $count > 0 ? 100*($ingestCount/$count) : 0));
+    }
+
+    private static function partRegexForRow($row)
+    {
+        return array_key_exists('part_regex', $row) ? $row['part_regex'] : '';
+    }
+
+    private function partRegexAcceptsUrl($url, $partRegex)
+    {
+        if ($partRegex == '')
+        {
+            return true;
+        }
+        if (!\Manx\UrlMetaData::partRegexIsValid($partRegex))
+        {
+            $this->log("Skipped:     Invalid part regex.");
+            return false;
+        }
+        if (self::partNumberForUrl($url, $partRegex) == '')
+        {
+            $this->log("Skipped:     Part regex did not match.");
+            return false;
+        }
+        return true;
+    }
+
+    private static function partNumberForUrl($url, $partRegex)
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+        if (!is_string($path))
+        {
+            return '';
+        }
+        list($fileName, $fileBase, $extension) =
+            \Manx\UrlMetaData::extractFileNameExtension(basename($path));
+        list($pubDate, $fileBase) = \Manx\UrlMetaData::extractPubDate($fileBase);
+        list($partNumber, $fileBase) =
+            \Manx\UrlMetaData::extractPartNumberWithRegex($fileBase, $partRegex);
+        return $partNumber;
     }
 
     private function addCopy($data, $row)

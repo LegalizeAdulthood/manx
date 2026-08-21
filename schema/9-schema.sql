@@ -162,6 +162,23 @@ DROP PROCEDURE IF EXISTS `manx_normalize_copy_urls`;
 DROP PROCEDURE IF EXISTS `manx_normalize_copy_url`;
 DROP PROCEDURE IF EXISTS `manx_encode_url_path`;
 
+ALTER TABLE `site_unknown_dir`
+  ALTER COLUMN `part_regex`
+  SET DEFAULT '^([^_]*[0-9][0-9][^_]*)_';
+
+DROP PROCEDURE IF EXISTS `manx_backfill_site_unknown_dir_part_regex`;
+DELIMITER //
+CREATE PROCEDURE `manx_backfill_site_unknown_dir_part_regex`()
+BEGIN
+    UPDATE `site_unknown_dir`
+        SET `part_regex` = '^([^_]*[0-9][0-9][^_]*)_'
+        WHERE `part_regex` = '';
+END//
+DELIMITER ;
+
+CALL `manx_backfill_site_unknown_dir_part_regex`();
+DROP PROCEDURE IF EXISTS `manx_backfill_site_unknown_dir_part_regex`;
+
 UPDATE `properties`
     SET `value` = '2.2.0'
     WHERE `name` = 'version';

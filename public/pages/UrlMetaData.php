@@ -8,6 +8,8 @@ use Pimple\Container;
 
 class UrlMetaData implements IUrlMetaData
 {
+    const DEFAULT_PART_REGEX = '^([^_]*[0-9][0-9][^_]*)_';
+
     /** @var IManxDatabase */
     private $_db;
     /** @var IUrlInfoFactory */
@@ -25,7 +27,8 @@ class UrlMetaData implements IUrlMetaData
         return $urlInfo->md5();
     }
 
-    public function determineIngestData($siteId, $companyId, $url)
+    public function determineIngestData($siteId, $companyId, $url,
+        $partRegex = '')
     {
         $urlInfo = $this->_urlInfoFactory->createUrlInfo($url);
         $size = $urlInfo->size();
@@ -46,11 +49,11 @@ class UrlMetaData implements IUrlMetaData
         $data['title'] = '';
         if ($this->siteIsBitSavers($data))
         {
-            $this->determineIngestBitSaversData($data);
+            $this->determineIngestBitSaversData($data, $partRegex);
         }
         else if ($this->siteIsVtda($data))
         {
-            $this->determineIngestVtdaData($data);
+            $this->determineIngestVtdaData($data, $partRegex);
         }
         else
         {
@@ -525,14 +528,23 @@ class UrlMetaData implements IUrlMetaData
     // table entries that match the unknown paths, so we don't need to compute
     // site_company_directory or site_company_parent_directory data elements.
     //
-    private function determineIngestSiteData($siteName, $companyComponent, &$data)
+    private function determineIngestSiteData($siteName, $companyComponent,
+        &$data, $partRegex = '')
     {
         $url = $data['url'];
         $urlComponents = parse_url($url);
         $dirs = explode('/', $urlComponents['path']);
         list($fileName, $fileBase, $extension) = self::extractFileNameExtension(array_pop($dirs));
         list($data['pub_date'], $fileBase) = self::extractPubDate($fileBase);
-        list($data['part'], $fileBase) = self::extractPartNumber($fileBase);
+        if (strlen($partRegex) > 0)
+        {
+            list($data['part'], $fileBase) =
+                self::extractPartNumberWithRegex($fileBase, $partRegex);
+        }
+        else
+        {
+            list($data['part'], $fileBase) = self::extractPartNumber($fileBase);
+        }
         if (strlen($data['part']) > 1)
         {
             $data['pubs'] = $this->_db->getPublicationsForPartNumber($data['part'], $data['company']);
@@ -544,14 +556,14 @@ class UrlMetaData implements IUrlMetaData
         $data['title'] = self::titleForFileBase($fileBase);
     }
 
-    private function determineIngestBitSaversData(&$data)
+    private function determineIngestBitSaversData(&$data, $partRegex = '')
     {
-        $this->determineIngestSiteData('bitsavers', 2, $data);
+        $this->determineIngestSiteData('bitsavers', 2, $data, $partRegex);
     }
 
-    private function determineIngestVtdaData(&$data)
+    private function determineIngestVtdaData(&$data, $partRegex = '')
     {
-        $this->determineIngestSiteData('VTDA', 4, $data);
+        $this->determineIngestSiteData('VTDA', 4, $data, $partRegex);
     }
 
     private function determineSiteData($siteName, $companyComponent, $parentDirComponent, &$data)
@@ -611,6 +623,42 @@ class UrlMetaData implements IUrlMetaData
             }
         }
         return [$partNumber, $fileBase];
+    }
+
+    public static function partRegexIsValid($partRegex)
+    {
+        return $partRegex == ''
+            || @preg_match(self::partRegexPattern($partRegex), '') !== false;
+    }
+
+    public static function extractPartNumberWithRegex($fileBase, $partRegex)
+    {
+        if ($partRegex == '')
+        {
+            return self::extractPartNumber($fileBase);
+        }
+
+        $matches = array();
+        if (@preg_match(self::partRegexPattern($partRegex), $fileBase, $matches,
+            PREG_OFFSET_CAPTURE) != 1)
+        {
+            return ['', $fileBase];
+        }
+        if (!array_key_exists(1, $matches) || $matches[1][0] == '')
+        {
+            return ['', $fileBase];
+        }
+
+        $match = $matches[0];
+        $partNumber = $matches[1][0];
+        $fileBase = substr($fileBase, 0, $match[1])
+            . substr($fileBase, $match[1] + strlen($match[0]));
+        return [$partNumber, $fileBase];
+    }
+
+    private static function partRegexPattern($partRegex)
+    {
+        return '~' . str_replace('~', '\\~', $partRegex) . '~';
     }
 
     public static function extractFileNameExtension($fileName)

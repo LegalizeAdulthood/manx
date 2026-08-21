@@ -387,6 +387,137 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
         $this->_cleaner->ingest();
     }
 
+    public function testIngestUsesDirectoryPartRegex()
+    {
+        $unknownId = 66;
+        $companyId = 13;
+        $siteId = 3;
+        $siteName = 'bitsavers';
+        $partRegex = '^Guide_([^_]+)_';
+        $url = 'http://bitsavers.org/pdf/dec/foo/Guide_EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $pathRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'company_id', 'part_regex', 'directory', 'url'],
+            [
+                [$unknownId, $siteId, $companyId, $partRegex, 'dec', $url]
+            ]);
+        $data = $this->bitsaversMetaData($siteId, $companyId, $url);
+        $data['part'] = 'EK-3333-01';
+        $data['pub_date'] = '1977-02';
+        $data['title'] = 'Jumbotron Users Guide';
+        $pubId = 23;
+        $data['pubs'] = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['pub_id', 'ph_part', 'ph_title'],
+            [
+                [$pubId, 'EK-3333-01', 'Jumbotron Users Guide'],
+            ]);
+        $copyData = $this->stockCopyData();
+        $this->_urlMetaData->expects($this->once())
+            ->method('determineIngestData')
+            ->with($siteId, $companyId, $url, $partRegex)
+            ->willReturn($data);
+        $copyMD5 = 'deadbeeffacef00d';
+        $this->_urlMetaData->expects($this->once())->method('getCopyMD5')
+            ->with($url)->willReturn($copyMD5);
+        $this->_db->expects($this->once())
+            ->method('getUnknownPathsForCompanies')
+            ->with($siteName)->willReturn($pathRows);
+        $this->_manx->expects($this->never())->method('addPublication');
+        $this->_db->expects($this->once())->method('addCopy')
+            ->with($pubId, $data['format'], $siteId, $url,
+                $copyData['notes'], $data['size'], $copyMD5,
+                $copyData['credits'], $copyData['amend_serial']);
+        $this->_db->expects($this->once())->method('markUnknownPathScanned')
+            ->with($unknownId);
+        $this->_logger->expects($this->exactly(6))->method('log');
+
+        $this->_cleaner->ingest();
+    }
+
+    public function testIngestEmptyPartRegexUsesDefaultExtraction()
+    {
+        $unknownId = 66;
+        $companyId = 13;
+        $siteId = 3;
+        $siteName = 'bitsavers';
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $pathRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'company_id', 'part_regex', 'directory', 'url'],
+            [
+                [$unknownId, $siteId, $companyId, '', 'dec', $url]
+            ]);
+        $data = $this->bitsaversMetaData($siteId, $companyId, $url);
+        $this->_manx->expects($this->never())->method('getUserFromSession');
+        $this->_urlMetaData->expects($this->once())
+            ->method('determineIngestData')
+            ->with($siteId, $companyId, $url)->willReturn($data);
+        $this->_db->expects($this->once())
+            ->method('getUnknownPathsForCompanies')
+            ->with($siteName)->willReturn($pathRows);
+        $this->_manx->expects($this->never())->method('addPublication');
+        $this->_db->expects($this->never())->method('addCopy');
+        $this->_db->expects($this->once())->method('markUnknownPathScanned')
+            ->with($unknownId);
+        $this->_logger->expects($this->exactly(4))->method('log');
+
+        $this->_cleaner->ingest();
+    }
+
+    public function testIngestPartRegexNoMatchSkips()
+    {
+        $unknownId = 66;
+        $companyId = 13;
+        $siteId = 3;
+        $siteName = 'bitsavers';
+        $partRegex = '^Guide_([^_]+)_';
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $pathRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'company_id', 'part_regex', 'directory', 'url'],
+            [
+                [$unknownId, $siteId, $companyId, $partRegex, 'dec', $url]
+            ]);
+        $this->_urlMetaData->expects($this->never())
+            ->method('determineIngestData');
+        $this->_urlMetaData->expects($this->never())->method('getCopyMD5');
+        $this->_db->expects($this->once())
+            ->method('getUnknownPathsForCompanies')
+            ->with($siteName)->willReturn($pathRows);
+        $this->_manx->expects($this->never())->method('addPublication');
+        $this->_db->expects($this->never())->method('addCopy');
+        $this->_db->expects($this->once())->method('markUnknownPathScanned')
+            ->with($unknownId);
+        $this->_logger->expects($this->exactly(4))->method('log');
+
+        $this->_cleaner->ingest();
+    }
+
+    public function testIngestInvalidPartRegexSkips()
+    {
+        $unknownId = 66;
+        $companyId = 13;
+        $siteId = 3;
+        $siteName = 'bitsavers';
+        $partRegex = '([broken';
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $pathRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'company_id', 'part_regex', 'directory', 'url'],
+            [
+                [$unknownId, $siteId, $companyId, $partRegex, 'dec', $url]
+            ]);
+        $this->_urlMetaData->expects($this->never())
+            ->method('determineIngestData');
+        $this->_urlMetaData->expects($this->never())->method('getCopyMD5');
+        $this->_db->expects($this->once())
+            ->method('getUnknownPathsForCompanies')
+            ->with($siteName)->willReturn($pathRows);
+        $this->_manx->expects($this->never())->method('addPublication');
+        $this->_db->expects($this->never())->method('addCopy');
+        $this->_db->expects($this->once())->method('markUnknownPathScanned')
+            ->with($unknownId);
+        $this->_logger->expects($this->exactly(4))->method('log');
+
+        $this->_cleaner->ingest();
+    }
+
     public function testIngestSinglePubsExistForPartWithMismatchedPartSkips()
     {
         $unknownId = 66;

@@ -103,6 +103,39 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($expectedData, $data);
     }
 
+    public function testDetermineIngestDataUsesPartRegex()
+    {
+        $url = 'http://bitsavers.org/pdf/dec/foo/Guide_EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')->with($url)->willReturn($this->_urlInfo);
+        $copySize = 4096;
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn($copySize);
+        $siteId = 3;
+        $bitsaversSiteRow = $this->bitSaversSiteRow($siteId);
+        $this->_db->expects($this->once())->method('getSites')->willReturn([$bitsaversSiteRow]);
+        $companyId = 13;
+        $part = 'EK-3333-01';
+        $partRegex = '^Guide_([^_]+)_';
+        $this->_db->expects($this->once())->method('getPublicationsForPartNumber')->with($part, $companyId)->willReturn([]);
+        $this->_db->expects($this->once())->method('copyExistsForUrl')->with($url)->willReturn(false);
+        $this->_db->expects($this->never())->method('getCompanyIdForSiteDirectory');
+        $this->_db->expects($this->never())->method('getFormatForExtension');
+        $this->_db->expects($this->never())->method('getMirrors');
+
+        $data = $this->_meta->determineIngestData($siteId, $companyId, $url, $partRegex);
+
+        $expectedData = [
+            'size' => $copySize,
+            'valid' => true,
+            'site' => $bitsaversSiteRow,
+            'company' => 13,
+            'part' => $part,
+            'pub_date' => '1977-02',
+            'title' => 'Jumbotron Users Guide',
+            'pubs' => [],
+        ];
+        $this->assertEquals($expectedData, $data);
+    }
+
     public function testDetermineDataNonExistentUrl()
     {
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';

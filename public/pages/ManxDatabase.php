@@ -1002,6 +1002,7 @@ class ManxDatabase implements IManxDatabase
                 . "`su`.`id`, "
                 . "`su`.`site_id`, "
                 . "`scd`.`company_id`, "
+                . "`sud`.`part_regex`, "
                 . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`filename`) AS `url` "
             . "FROM "
                 . "`site` `s`, "
@@ -1051,6 +1052,13 @@ class ManxDatabase implements IManxDatabase
     {
         $select = "SELECT * FROM `site_unknown_dir` WHERE `id` = ?";
         return $this->execute($select, [$dirId])[0];
+    }
+
+    public function updateSiteUnknownDirPartRegex($dirId, $partRegex)
+    {
+        $this->execute(
+            "UPDATE `site_unknown_dir` SET `part_regex` = ? WHERE `id` = ?",
+            [$partRegex, $dirId]);
     }
 
     public function getSiteUnknownPaths($siteName, $parentDirId)

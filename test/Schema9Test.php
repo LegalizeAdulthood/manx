@@ -94,6 +94,50 @@ class Schema9Test extends PHPUnit\Framework\TestCase
         $this->assertLessThan($version, $drop);
     }
 
+    public function testSiteUnknownDirPartRegexDefaultIsAltered()
+    {
+        $sql = self::schemaSql();
+
+        $this->assertStringContainsString(
+            "ALTER TABLE `site_unknown_dir`\r\n"
+            . "  ALTER COLUMN `part_regex`\r\n"
+            . "  SET DEFAULT '^([^_]*[0-9][0-9][^_]*)_';",
+            $sql);
+        $this->assertStringNotContainsString(
+            'ADD COLUMN `part_regex`',
+            $sql);
+    }
+
+    public function testSiteUnknownDirPartRegexBackfillUsesTemporaryProcedure()
+    {
+        $sql = self::schemaSql();
+
+        $this->assertStringContainsString(
+            'CREATE PROCEDURE `manx_backfill_site_unknown_dir_part_regex`()',
+            $sql);
+        $this->assertStringContainsString(
+            "UPDATE `site_unknown_dir`\r\n"
+            . "        SET `part_regex` = '^([^_]*[0-9][0-9][^_]*)_'\r\n"
+            . "        WHERE `part_regex` = '';",
+            $sql);
+        $this->assertStringContainsString(
+            'DROP PROCEDURE IF EXISTS '
+            . '`manx_backfill_site_unknown_dir_part_regex`;',
+            $sql);
+    }
+
+    public function testSiteUnknownDirPartRegexBackfillDropsBeforeVersionUpdate()
+    {
+        $sql = self::schemaSql();
+
+        $drop = strrpos($sql,
+            'DROP PROCEDURE IF EXISTS '
+            . '`manx_backfill_site_unknown_dir_part_regex`;');
+        $version = strrpos($sql, "SET `value` = '2.2.0'");
+        $this->assertNotFalse($drop);
+        $this->assertLessThan($version, $drop);
+    }
+
     private static function schemaSql()
     {
         return file_get_contents(__DIR__ . '/../schema/9-schema.sql');
