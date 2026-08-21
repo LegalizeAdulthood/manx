@@ -39,59 +39,6 @@ manual testing window.
 
 # Implementation
 
-## 14. Use cached PDF metadata during individual ingestion
-
-Issue: #124
-
-Implementation:
-
-- Add a database read method that returns cached PDF metadata for a
-  `site_unknown.id`.
-- In the URL Wizard page opened from `whatsnew.php` for an individual
-  unknown path, load cached PDF metadata for that unknown path.
-- When cached PDF metadata exists with status `ok`, populate the existing
-  PDF metadata results block from the cached values.
-- When cached PDF metadata is shown, omit the button that fetches PDF
-  metadata through the AJAX endpoint.
-- Keep the button that copies displayed PDF metadata into editable form
-  fields.
-- Do not automatically copy cached metadata into editable form fields.
-- When cached PDF metadata does not exist, keep the existing AJAX fetch
-  button behavior.
-- No schema changes are needed for this slice.
-
-Acceptance criteria:
-
-- Opening an unknown PDF path with cached PDF metadata status `ok` shows
-  the populated PDF metadata results block.
-- The AJAX fetch button is omitted when cached PDF metadata already
-  exists.
-- The copy-to-form button remains available when cached PDF metadata is
-  displayed.
-- Opening an unknown PDF path without cached PDF metadata still shows the
-  AJAX fetch button.
-- Cached title, keywords, abstract, copy notes, and copy credits are
-  displayed with HTML escaping.
-- Displaying cached PDF metadata does not require an AJAX request or a
-  server-side PDF download.
-
-Automated tests:
-
-- Add `ManxDatabaseTest` coverage for cached PDF metadata lookup by
-  `site_unknown.id`.
-- Add `UrlWizardPageTest` coverage proving cached PDF metadata populates
-  the results block for an individual unknown path.
-- Add `UrlWizardPageTest` coverage proving the AJAX fetch button is
-  omitted when cached PDF metadata exists.
-- Add `UrlWizardPageTest` coverage proving the copy-to-form button is
-  still rendered with cached PDF metadata.
-- Add `UrlWizardPageTest` coverage proving missing cached metadata keeps
-  the AJAX fetch button.
-- Add page or script coverage proving the copy-to-form button maps cached
-  metadata fields into the editable form fields.
-
-Fixes #124
-
 ## 15. Recognize `https` URLs correctly
 
 Issue: #135

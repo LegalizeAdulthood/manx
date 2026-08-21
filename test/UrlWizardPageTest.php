@@ -469,6 +469,127 @@ EOH;
             $output);
     }
 
+    public function testCachedPdfMetadataPopulatesResults()
+    {
+        $output = $this->renderPdfMetadataPage([
+            'title' => 'A & B <Guide>',
+            'keywords' => 'alpha "beta"',
+            'abstract' => "Use 'safe' <tags>",
+            'copy_notes' => 'Scanned & OCR',
+            'copy_credits' => 'Alice <Bob>'
+        ]);
+
+        $this->assertStringContainsString(
+            '<details id="pdf_metadata_results" class="" open="open">',
+            $output);
+        $this->assertStringContainsString(
+            '<td id="pdf_metadata_title">A &amp; B &lt;Guide&gt;</td>',
+            $output);
+        $this->assertStringContainsString(
+            '<td id="pdf_metadata_keywords">alpha &quot;beta&quot;</td>',
+            $output);
+        $this->assertStringContainsString(
+            "<td id=\"pdf_metadata_abstract\">Use 'safe' &lt;tags&gt;</td>",
+            $output);
+        $this->assertStringContainsString(
+            '<td id="pdf_metadata_copy_notes">Scanned &amp; OCR</td>',
+            $output);
+        $this->assertStringContainsString(
+            '<td id="pdf_metadata_copy_credits">Alice &lt;Bob&gt;</td>',
+            $output);
+    }
+
+    public function testCachedPdfMetadataOmitsFetchButtonAndKeepsCopy()
+    {
+        $output = $this->renderPdfMetadataPage([
+            'title' => 'Cached Manual',
+            'keywords' => '',
+            'abstract' => '',
+            'copy_notes' => '',
+            'copy_credits' => ''
+        ]);
+
+        $this->assertStringNotContainsString('id="pdf_metadata_fetch"',
+            $output);
+        $this->assertStringContainsString(
+            '<button type="button" id="pdf_metadata_copy">Copy metadata</button>',
+            $output);
+        $this->assertStringContainsString(
+            '<script type="application/json" id="cached_pdf_metadata">',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="text" id="pub_history_ph_title"'
+                . ' name="pub_history_ph_title" size="60" maxlength="255"'
+                . ' value="URL Title" />',
+            $output);
+    }
+
+    public function testMissingCachedPdfMetadataKeepsFetchButton()
+    {
+        $output = $this->renderPdfMetadataPage([]);
+
+        $this->assertStringContainsString(
+            '<button type="button" id="pdf_metadata_fetch">Fetch</button>',
+            $output);
+        $this->assertStringContainsString(
+            '<details id="pdf_metadata_results" class="hidden">',
+            $output);
+        $this->assertStringNotContainsString('cached_pdf_metadata', $output);
+    }
+
+    private function renderPdfMetadataPage($cachedPdfMetadata)
+    {
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $siteUnknownId = 7077;
+        $url = 'http://bitsavers.org/pdf/dec/foo/EK-1234_Guide.pdf';
+        $siteId = 3;
+        $sites = \Manx\Test\RowFactory::createResultRowsForColumns(
+            [ 'site_id', 'name', 'url', 'description', 'copy_base', 'low',
+                'live', 'display_order' ],
+            [
+                [ $siteId, 'bitsavers', 'http://bitsavers.org', '',
+                    'http://bitsavers.org/pdf/', 'N', 'Y', 0 ]
+            ]);
+        $companies = \Manx\Test\RowFactory::createResultRowsForColumns(
+            [ 'id', 'name' ],
+            [
+                [ 22, 'DEC' ]
+            ]);
+        $metaData = [
+            'url' => $url,
+            'mirror_url' => '',
+            'size' => 10204,
+            'valid' => true,
+            'site' => [ 'site_id' => $siteId ],
+            'company' => 22,
+            'part' => 'EK-1234',
+            'pub_date' => '',
+            'title' => 'URL Title',
+            'format' => 'PDF',
+            'site_company_directory' => 'dec',
+            'site_company_parent_directory' => '',
+            'pubs' => [],
+            'keywords' => 'EK-1234 URL Title'
+        ];
+        $this->_db->method('getSites')->willReturn($sites);
+        $this->_db->method('getCompanyList')->willReturn($companies);
+        $this->_db->expects($this->once())
+            ->method('getSiteUnknownPdfMetadata')
+            ->with($siteUnknownId)
+            ->willReturn($cachedPdfMetadata);
+        $this->_manx->method('getDatabase')->willReturn($this->_db);
+        $this->_urlMeta->expects($this->once())->method('determineData')
+            ->with($url)
+            ->willReturn($metaData);
+        $this->_config['vars'] = ['id' => $siteUnknownId, 'url' => $url];
+        $page = new UrlWizardPageTester($this->_config);
+
+        ob_start();
+        $page->renderBodyContent();
+        return ob_get_clean();
+    }
+
     private static function expectedSiteOptions($vars)
     {
         $options = [];

@@ -1054,6 +1054,21 @@ class ManxDatabase implements IManxDatabase
             [$siteName]);
     }
 
+    public function getSiteUnknownPdfMetadata($siteUnknownId)
+    {
+        $rows = $this->execute("SELECT "
+                . "`pdf_title` AS `title`, "
+                . "`pdf_keywords` AS `keywords`, "
+                . "`pdf_abstract` AS `abstract`, "
+                . "`pdf_notes` AS `copy_notes`, "
+                . "`pdf_credits` AS `copy_credits` "
+            . "FROM `site_unknown` "
+            . "WHERE `id` = ? "
+                . "AND `pdf_metadata_status` = ?",
+            [$siteUnknownId, PdfMetadata::STATUS_OK]);
+        return count($rows) > 0 ? $rows[0] : [];
+    }
+
     public function markUnknownPathScanned($unknownId)
     {
         $this->execute("UPDATE `site_unknown` SET `scanned` = 1 WHERE `id` = ?", [$unknownId]);
