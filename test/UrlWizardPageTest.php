@@ -101,6 +101,8 @@ class UrlWizardPageTest extends Manx\Test\TestCase
                 'site_unknown_id' => $siteUnknownId,
                 'site_company_directory' => '',
                 'site_company_parent_directory' => '',
+                'copy_notes' => 'Edited copy notes',
+                'copy_credits' => 'Edited copy credits',
                 'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
                 'pub_pub_id' => '-1',
                 'supersession_search_keywords' => '4010 Maintenance Manual',
@@ -425,6 +427,48 @@ EOH;
         $this->expectOutputStringIgnoringLineEndings(self::expectedBodyContent(array_merge($vars, $metaData, ['sites' => $sites, 'companies' => $companies])));
     }
 
+    public function testPdfMetadataControlsHiddenForNonPdfUrl()
+    {
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $url = 'http://vtda.org/docs/computing/DEC/ChicagoDECStore1.jpg';
+        $metaData = [
+            'url' => $url,
+            'mirror_url' => '',
+            'size' => 10204,
+            'valid' => true,
+            'site' => [ 'site_id' => 58 ],
+            'company' => 5,
+            'part' => '',
+            'pub_date' => '1979',
+            'title' => 'Chicago DEC Store1',
+            'format' => 'JPEG',
+            'site_company_directory' => 'DEC',
+            'site_company_parent_directory' => '',
+            'pubs' => [],
+            'keywords' => 'Chicago DEC Store1'
+        ];
+        $this->_db->method('getSites')->willReturn([]);
+        $this->_db->method('getCompanyList')->willReturn([]);
+        $this->_manx->method('getDatabase')->willReturn($this->_db);
+        $this->_urlMeta->expects($this->once())->method('determineData')
+            ->with($url)
+            ->willReturn($metaData);
+        $this->_config['vars'] = ['url' => $url];
+        $page = new UrlWizardPageTester($this->_config);
+
+        ob_start();
+        $page->renderBodyContent();
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString(
+            '<li id="pdf_metadata_fetch_field" class="hidden">',
+            $output);
+        $this->assertStringContainsString(
+            '<details id="pdf_metadata_results" class="hidden">',
+            $output);
+    }
+
     private static function expectedSiteOptions($vars)
     {
         $options = [];
@@ -526,6 +570,7 @@ EOH;
         $copyLink = $urlPresent ? sprintf(' href="%s"', $vars['url']) : '';
         $copyLinkClass = $urlPresent ? '' : 'hidden';
         $copyTextClass = $urlPresent ? 'hidden' : '';
+        $pdfMetadataClass = $urlPresent && self::isPdfUrl($copyUrl) ? '' : 'hidden';
 
         return <<<EOH
 <h1>URL Wizard</h1>
@@ -544,6 +589,13 @@ $siteUnknown
 <span id="copy_url_working" class="hidden working">Working...</span>
 <div id="copy_url_help" class="hidden">The complete URL for the document.</div>
 <div id="copy_url_error" class="error hidden"></div>
+</li>
+
+<li id="pdf_metadata_fetch_field" class="$pdfMetadataClass">
+<label for="pdf_metadata_fetch">PDF Metadata</label>
+<button type="button" id="pdf_metadata_fetch">Fetch</button>
+<span id="pdf_metadata_working" class="hidden working">Working...</span>
+<div id="pdf_metadata_error" class="error hidden"></div>
 </li>
 
 <li id="copy_mirror_url_field" class="$mirrorClass">
@@ -593,6 +645,35 @@ $copySiteHidden</li>
 
 </ul>
 </fieldset>
+<details id="pdf_metadata_results" class="hidden">
+<summary>Extracted Metadata</summary>
+<table>
+<tbody>
+<tr id="pdf_metadata_title_row" class="hidden">
+<th scope="row">Title</th>
+<td id="pdf_metadata_title"></td>
+</tr>
+<tr id="pdf_metadata_keywords_row" class="hidden">
+<th scope="row">Keywords</th>
+<td id="pdf_metadata_keywords"></td>
+</tr>
+<tr id="pdf_metadata_abstract_row" class="hidden">
+<th scope="row">Abstract</th>
+<td id="pdf_metadata_abstract"></td>
+</tr>
+<tr id="pdf_metadata_copy_notes_row" class="hidden">
+<th scope="row">Notes</th>
+<td id="pdf_metadata_copy_notes"></td>
+</tr>
+<tr id="pdf_metadata_copy_credits_row" class="hidden">
+<th scope="row">Credits</th>
+<td id="pdf_metadata_copy_credits"></td>
+</tr>
+</tbody>
+</table>
+<div id="pdf_metadata_empty" class="hidden">No PDF metadata found.</div>
+<button type="button" id="pdf_metadata_copy">Copy metadata</button>
+</details>
 
 <fieldset id="site_company_field" class="hidden">
 <input type="hidden" id="site_company_directory" name="site_company_directory" value="" />
@@ -846,6 +927,12 @@ $publications</select>
 </div>
 
 EOH;
+    }
+
+    private static function isPdfUrl($url)
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+        return is_string($path) && strtolower(substr($path, -4)) == '.pdf';
     }
 
     private static function copyData($url, $format, $site)

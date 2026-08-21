@@ -9,7 +9,7 @@
     width: 10em;
     white-space: nowrap
 }
-#wizard input, #wizard select, #wizard li > div
+#wizard input, #wizard select, #wizard li > button, #wizard li > div
 {
     margin-left: 5em
 }
@@ -31,4 +31,28 @@
 .working
 {
     color: #009193;
+}
+
+#pdf_metadata_results
+{
+    margin: 0 0 1em 5em
+}
+
+#pdf_metadata_results table
+{
+    border-collapse: collapse;
+    margin: 0.5em 0
+}
+
+#pdf_metadata_results th
+{
+    padding-right: 1em;
+    text-align: left;
+    vertical-align: top
+}
+
+#pdf_metadata_results td
+{
+    max-width: 40em;
+    word-break: break-word
 }

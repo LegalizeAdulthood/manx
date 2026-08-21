@@ -139,6 +139,12 @@ class UrlWizardPage extends AdminPageBase
         return (strtolower($text) == 'y') ? 'Y' : 'N';
     }
 
+    private static function isPdfUrl($url)
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+        return is_string($path) && strtolower(substr($path, -4)) == '.pdf';
+    }
+
     private function addSite()
     {
         $siteId = $this->param('copy_site');
@@ -215,6 +221,17 @@ EOH;
             'help' => 'The complete URL for the document.',
             'readonly' => $urlPresent, 'value' => $url
             ]);
+        $pdfMetadataClass = $urlPresent && self::isPdfUrl($url) ? '' : 'hidden';
+        print <<<EOH
+<li id="pdf_metadata_fetch_field" class="$pdfMetadataClass">
+<label for="pdf_metadata_fetch">PDF Metadata</label>
+<button type="button" id="pdf_metadata_fetch">Fetch</button>
+<span id="pdf_metadata_working" class="hidden working">Working...</span>
+<div id="pdf_metadata_error" class="error hidden"></div>
+</li>
+
+
+EOH;
         $this->renderTextInput('Mirror Document URL', 'copy_mirror_url', [
             'class' => strlen($mirrorUrl) == 0 ? 'hidden' : '', 'size' => 60, 'maxlength' => 255,
             'readonly' => true, 'value' => $mirrorUrl,
@@ -264,6 +281,42 @@ EOH;
 
 </ul>
 </fieldset>
+EOH;
+    }
+
+    private function renderPdfMetadataFields()
+    {
+        print <<<EOH
+
+<details id="pdf_metadata_results" class="hidden">
+<summary>Extracted Metadata</summary>
+<table>
+<tbody>
+<tr id="pdf_metadata_title_row" class="hidden">
+<th scope="row">Title</th>
+<td id="pdf_metadata_title"></td>
+</tr>
+<tr id="pdf_metadata_keywords_row" class="hidden">
+<th scope="row">Keywords</th>
+<td id="pdf_metadata_keywords"></td>
+</tr>
+<tr id="pdf_metadata_abstract_row" class="hidden">
+<th scope="row">Abstract</th>
+<td id="pdf_metadata_abstract"></td>
+</tr>
+<tr id="pdf_metadata_copy_notes_row" class="hidden">
+<th scope="row">Notes</th>
+<td id="pdf_metadata_copy_notes"></td>
+</tr>
+<tr id="pdf_metadata_copy_credits_row" class="hidden">
+<th scope="row">Credits</th>
+<td id="pdf_metadata_copy_credits"></td>
+</tr>
+</tbody>
+</table>
+<div id="pdf_metadata_empty" class="hidden">No PDF metadata found.</div>
+<button type="button" id="pdf_metadata_copy">Copy metadata</button>
+</details>
 
 EOH;
     }
@@ -512,6 +565,7 @@ EOH;
 
         $this->renderSiteUnknownFields($idPresent);
         $this->renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData, $idPresent);
+        $this->renderPdfMetadataFields();
         $this->renderSiteCompanyFields();
         $this->renderSiteFields($urlPresent, $idPresent, $metaData);
         $this->renderPublicationFields($urlPresent, $metaData);
