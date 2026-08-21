@@ -48,31 +48,107 @@ unchanged.
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
 
-## 5. Review PDF metadata in URL Wizard
+## 5. Add PDF metadata API endpoint
 
 Issue: #46
 
 Implementation:
 
-- Extract PDF metadata into a service that the URL Wizard can call.
-- Populate URL Wizard defaults from PDF title, keywords, abstract, copy
-  notes, and credits.
-- Keep user-entered values authoritative when the form is submitted.
+- Add a `pdf-metadata` method to `url-wizard-service.php`.
+- Require a PDF URL parameter and return JSON metadata.
+- Download the PDF to a temporary server-side file before parsing.
+- Read the maximum PDF metadata download size from
+  `properties.name = 'pdf_metadata_max_bytes'`.
+- Default the size cap to 4194304 bytes, or 4 MiB.
+- Refuse missing or over-limit `Content-Length` values before download.
+- Enforce the same byte cap while downloading.
+- Use `smalot/pdfparser` to parse the downloaded file with
+  `Parser::parseFile()` and `Document::getDetails()`.
+- Map parser details to `title`, `keywords`, `abstract`, `copy_notes`,
+  and `copy_credits` response fields.
+- Delete the temporary file after success or failure.
+
+Schema and data changes:
+
+- Do not add or alter any table or column for this slice.
+- In `schema/9-schema.sql`, insert the default property row:
+
+  ```sql
+  INSERT INTO `properties` (`name`, `value`)
+  VALUES ('pdf_metadata_max_bytes', '4194304')
+  ON DUPLICATE KEY UPDATE `value` = `value`;
+  ```
 
 Acceptance criteria:
 
-- Given a PDF URL with metadata, the wizard shows extracted metadata
-  before save.
-- Given manual edits, saving the wizard stores the edited values rather
-  than re-extracted values.
+- Given a small PDF with usable metadata, the endpoint returns those
+  fields in JSON.
+- Given a non-PDF URL, the endpoint returns an empty metadata result
+  without downloading the document.
+- Given a PDF whose `Content-Length` is missing or over the configured
+  cap, the endpoint returns an over-limit result without downloading the
+  document.
+- Given a PDF whose download exceeds the configured cap, the endpoint
+  aborts the transfer and returns an over-limit result.
+- Given an encrypted, malformed, or metadata-empty PDF, the endpoint
+  returns an empty metadata result without failing the request.
+- The endpoint leaves ordinary URL Wizard `url-lookup` behavior
+  unchanged.
+
+Automated tests:
+
+- Add `UrlWizardServiceTest` coverage for the `pdf-metadata` method.
+- Add parser tests for populated metadata, empty metadata, and parser
+  failure.
+- Add service tests for non-PDF URLs, missing `Content-Length`,
+  over-limit `Content-Length`, and over-limit streamed download.
+- Add migration coverage proving the `pdf_metadata_max_bytes` property
+  default is created.
+
+Refs #46
+
+## 5A. Review PDF metadata in URL Wizard
+
+Issue: #46
+
+Implementation:
+
+- Add a button beside the URL Wizard document URL controls when the URL
+  appears to identify a PDF.
+- Fetch PDF metadata from the `pdf-metadata` service method only when
+  the user clicks the button.
+- Give the metadata AJAX call an explicit client-side timeout.
+- Show metadata results in a new collapsible section.
+- Include a button in the results section that copies extracted values
+  into the editable form fields.
+- Copy only non-empty extracted values.
+- Keep user-entered values authoritative when the form is submitted.
+- Leave PDF metadata extraction out of the ordinary `url-lookup` flow.
+
+Acceptance criteria:
+
+- Given a PDF URL, the wizard offers a control to fetch PDF metadata.
+- Given a non-PDF URL, the wizard does not offer PDF metadata fetching.
+- Given a PDF with metadata, the fetched values appear in a collapsible
+  results section without changing editable fields.
+- Given the copy button is clicked, non-empty extracted values are
+  copied into title, keywords, abstract, copy notes, and credits fields.
+- Given manual edits after copying, saving stores the edited values.
+- Given a metadata timeout or service error, existing wizard values are
+  left unchanged and the form can still be submitted.
 - Given a PDF with no usable metadata, existing wizard behavior is
   unchanged.
 
 Automated tests:
 
-- Add `UrlWizardPageTest` coverage for rendered PDF metadata fields.
+- Add `UrlWizardPageTest` coverage for the PDF metadata fetch controls
+  and collapsed results section markup.
 - Add `UrlWizardPageTest` coverage proving manual edits win on submit.
-- Add metadata parser tests for populated and empty PDF metadata.
+- Add JavaScript test coverage, or focused manual test notes if no
+  JavaScript test harness exists, for fetch timeout handling.
+- Add JavaScript test coverage, or focused manual test notes if no
+  JavaScript test harness exists, for copying metadata into editable
+  fields.
 
 Fixes #46
 
