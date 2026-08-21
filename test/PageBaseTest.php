@@ -57,6 +57,7 @@ class PageBaseTest extends Manx\Test\TestCase
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/tr/html4/strict.dtd">
 <html lang="en">
 <head><title>Manx</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" type="text/css" href="assets/manx.css" />
 <link rel="shortcut icon" type="image/x-icon" href="assets/manx.ico" />
 <link rel="search" type="application/opensearchdescription+xml" href="assets/manx.mspx" title="Manx" />
@@ -81,6 +82,7 @@ EOH;
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/tr/html4/strict.dtd">
 <html lang="en">
 <head><title>Manx</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" type="text/css" href="../assets/manx.css" />
 <link rel="shortcut icon" type="image/x-icon" href="../assets/manx.ico" />
 <link rel="search" type="application/opensearchdescription+xml" href="../assets/manx.mspx" title="Manx" />
@@ -89,6 +91,16 @@ EOH;
 
 EOH;
         $this->expectOutputStringIgnoringLineEndings($output);
+    }
+
+    public function testMaintenancePageHasViewportMeta()
+    {
+        $html = file_get_contents(__DIR__ . '/../public/maintenance.html');
+
+        $this->assertStringContainsString(
+            '<meta name="viewport" content="width=device-width, initial-scale=1" />',
+            $html
+        );
     }
 
     public function testRenderLoginLink()

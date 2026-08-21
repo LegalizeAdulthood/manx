@@ -26,6 +26,20 @@ div.det
     margin: 10px
 }
 
+@media (max-width: 600px)
+{
+    body
+    {
+        font-size: 16px;
+        line-height: 1.4
+    }
+
+    div.det
+    {
+        margin: 0.75em
+    }
+}
+
 #LOGO h1 span
 {
     display: none
