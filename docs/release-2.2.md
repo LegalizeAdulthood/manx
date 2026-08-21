@@ -48,36 +48,6 @@ unchanged.
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
 
-## 1. Add mobile viewport and readable base spacing
-
-Issue: #99
-
-Implementation:
-
-- Add a viewport meta tag from the shared page header.
-- Add the same viewport tag to the maintenance page.
-- Set a readable base text size and line height for small screens.
-- Use small-screen page margins that give content room without crowding
-  the viewport.
-- Keep desktop typography and spacing visually close to the current site.
-
-Acceptance criteria:
-
-- Phone browsers lay out pages at device width instead of scaling a
-  desktop-width page down.
-- Body text is readable without pinch zoom on 320px and 375px wide
-  viewports.
-- Page content has comfortable edge spacing on narrow screens.
-- Desktop pages keep the current compact Manx look.
-
-Automated tests:
-
-- Add `PageBaseTest` coverage for the viewport meta tag.
-- Add maintenance-page coverage if an existing static-page test path can
-  cover it cleanly.
-
-Relates #99
-
 ## 2. Make the shared header and menus mobile-friendly
 
 Issue: #99

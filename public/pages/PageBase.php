@@ -77,6 +77,7 @@ abstract class PageBase
 <head>
 EOH;
         printf("<title>%s</title>\n", $this->getTitle());
+        print "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n";
         $this->renderLink("stylesheet", "text/css", "assets/manx.css");
         $this->renderLink("shortcut icon", "image/x-icon", "assets/manx.ico");
         $this->renderLink("search", "application/opensearchdescription+xml", "assets/manx.mspx",
