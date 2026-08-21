@@ -10,7 +10,7 @@ class UrlNormalizerTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             'http://bitsavers.org/pdf/dec/foo/file%231.pdf',
-            Manx\UrlNormalizer::normalizeCopyUrl($url));
+            Manx\UrlNormalizer::normalize($url));
     }
 
     public function testRawHashInDirectoryIsEncoded()
@@ -19,7 +19,7 @@ class UrlNormalizerTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             'http://bitsavers.org/pdf/dec/foo%23bar/file.pdf',
-            Manx\UrlNormalizer::normalizeCopyUrl($url));
+            Manx\UrlNormalizer::normalize($url));
     }
 
     public function testRawReservedCharactersAreEncoded()
@@ -28,14 +28,14 @@ class UrlNormalizerTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             'http://bitsavers.org/pdf/dec/foo%20%26%20bar/file%20%281%29.pdf',
-            Manx\UrlNormalizer::normalizeCopyUrl($url));
+            Manx\UrlNormalizer::normalize($url));
     }
 
     public function testExistingEscapesAreNotDoubleEncoded()
     {
         $url = 'http://bitsavers.org/pdf/dec/foo%23bar/file%20%281%29.pdf';
 
-        $this->assertEquals($url, Manx\UrlNormalizer::normalizeCopyUrl($url));
+        $this->assertEquals($url, Manx\UrlNormalizer::normalize($url));
     }
 
     public function testLowercaseEscapesAreCanonicalized()
@@ -44,7 +44,7 @@ class UrlNormalizerTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             'http://bitsavers.org/pdf/dec/foo%23bar/file%2F1.pdf',
-            Manx\UrlNormalizer::normalizeCopyUrl($url));
+            Manx\UrlNormalizer::normalize($url));
     }
 
     public function testQueryStringIsPreserved()
@@ -53,7 +53,7 @@ class UrlNormalizerTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             'http://bitsavers.org/pdf/dec/foo%20bar/file.pdf?download=1&x=2',
-            Manx\UrlNormalizer::normalizeCopyUrl($url));
+            Manx\UrlNormalizer::normalize($url));
     }
 
     public function testPlusRelativeCopyPathIsPreserved()
@@ -62,6 +62,6 @@ class UrlNormalizerTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             '+dec/foo%20bar/file%231.pdf',
-            Manx\UrlNormalizer::normalizeCopyUrl($url));
+            Manx\UrlNormalizer::normalize($url));
     }
 }

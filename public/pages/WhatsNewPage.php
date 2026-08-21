@@ -212,11 +212,6 @@ EOH;
         return strlen($format) == 0 || array_key_exists($format, $imageFormats);
     }
 
-    public static function escapeSpecialChars($path)
-    {
-        return UrlNormalizer::normalizeCopyUrl($path);
-    }
-
     private function documentUrl($dir, $path)
     {
         $relativePath = trim($path);
@@ -224,6 +219,6 @@ EOH;
         {
             $relativePath = trim($dir, '/') . '/' . $relativePath;
         }
-        return UrlNormalizer::normalizeCopyUrl($this->_baseUrl . '/' . $relativePath);
+        return UrlNormalizer::normalize($this->_baseUrl . '/' . $relativePath);
     }
 }

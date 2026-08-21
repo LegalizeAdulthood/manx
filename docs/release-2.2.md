@@ -21,7 +21,6 @@ directories without creating broken or duplicate copies.
 
 Issues:
 
-- #67 URLs with special characters don't get MD5 computed properly.
 - #69 URL Wizard doesn't recognize document dates with day.
 - #73 If site URL and copy base URL differ, wizard produces incorrect
   URLs.
@@ -42,35 +41,6 @@ unchanged.
 
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
-
-## 7. Compute MD5 for URLs with special characters
-
-Issue: #67
-
-Implementation:
-
-- Normalize unsafe characters before fetching a copy for MD5.
-- Do not double encode existing `%xx` escapes while normalizing.
-- Keep the database update tied to the original copy row.
-
-Acceptance criteria:
-
-- A copy URL containing `#` is fetched with an encoded URL.
-- A copy URL already containing `%23` is fetched without becoming
-  `%2523`.
-- A successful fetch stores the computed MD5 on the original copy.
-- A failed fetch clears or preserves MD5 exactly as existing failure
-  rules require.
-
-Automated tests:
-
-- Add `WhatsNewCleanerTest` coverage for MD5 fetch with `#`.
-- Add `WhatsNewCleanerTest` coverage for an already encoded `%23` path.
-- Add `UrlInfoTest` or `UrlTransferTest` coverage for encoded fetch
-  input.
-- Add a regression test proving spaces still work.
-
-Fixes #67
 
 ## 9. Parse URL Wizard dates that include a day
 

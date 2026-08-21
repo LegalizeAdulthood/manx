@@ -59,7 +59,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         foreach($rows as $row)
         {
             $path = $row['path'];
-            $url = $this->_baseCheckUrl . self::escapeSpecialChars($path);
+            $url = \Manx\UrlNormalizer::normalize($this->_baseCheckUrl . $path);
             $urlInfo = $this->_factory->createUrlInfo($url);
             if (!$urlInfo->exists())
             {
@@ -132,7 +132,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->log(sprintf("Computing %d missing MD5 hashes for known copies.", $total));
         foreach ($rows as $row)
         {
-            $url = self::escapeSpecialChars($row['url']);
+            $url = \Manx\UrlNormalizer::normalize($row['url']);
             $urlInfo = $this->_factory->createUrlInfo($url);
             $md5 = '';
             if ($urlInfo->exists())
@@ -273,20 +273,6 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $copyId = $this->_db->addCopy($pubId, $format, $siteId, $url,
             $copyNotes, $copySize, $copyMD5, $credits, $amendSerial);
         $this->log(sprintf('Copy:        %d.%d %s "%s" (%s)', $siteId, $copyId, $data['pub_date'], $data['title'], $data['part']));
-    }
-
-    private static function escapeSpecialChars($url)
-    {
-        $replacements = [
-            ' ' => '%20',
-            '#' => urlencode('#'),
-            '&' => urlencode('&')
-        ];
-        foreach (array_keys($replacements) as $special)
-        {
-            $url = str_replace($special, $replacements[$special], $url);
-        }
-        return $url;
     }
 
     private function log($text)

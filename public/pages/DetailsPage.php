@@ -375,7 +375,7 @@ EOH;
 
     private static function renderDocumentLink($url)
     {
-        $href = UrlNormalizer::normalizeCopyUrl($url);
+        $href = UrlNormalizer::normalize($url);
         // Example: "A & B.pdf" is linked as "A%20%26%20B.pdf", while
         // the visible text remains "A & B.pdf", emitted as HTML-safe
         // "A &amp; B.pdf" in the markup.

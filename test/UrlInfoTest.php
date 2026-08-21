@@ -3,6 +3,7 @@
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -13,6 +14,8 @@ class UrlInfoTest extends PHPUnit\Framework\TestCase
     {
         $this->_handler = new MockHandler();
         $this->_handlerStack = HandlerStack::create($this->_handler);
+        $this->_history = array();
+        $this->_handlerStack->push(Middleware::history($this->_history));
         $redirects = \GuzzleHttp\RedirectMiddleware::$defaultSettings;
         $redirects['track_redirects'] = true;
         $this->_client = new Client(['handler' => $this->_handlerStack, 'allow_redirects' => $redirects]);
@@ -96,10 +99,25 @@ class UrlInfoTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($newUrl, $this->_info->url());
     }
 
+    public function testExistsUsesEncodedUrl()
+    {
+        $url = 'http://bitsavers.org/pdf/dec/foo%23bar/EK-3333%231.pdf';
+        $this->_info = new Manx\UrlInfo($url, $this->_client);
+        $this->_handler->append(new Response(200));
+
+        $result = $this->_info->exists();
+
+        $this->assertTrue($result);
+        $this->assertCount(1, $this->_history);
+        $this->assertEquals($url, (string)$this->_history[0]['request']->getUri());
+    }
+
     /** @var string */
     private $_url;
     /** @var GuzzleHttp\Handler\MockHandler */
     private $_handler;
+    /** @var array */
+    private $_history;
     /** @var GuzzleHttp\Client */
     private $_client;
     /** @var Manx\UrlInfo */
