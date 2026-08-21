@@ -427,18 +427,16 @@ class UrlMetaData implements IUrlMetaData
         $components = parse_url($url);
         foreach ($this->_sites as $site)
         {
-            $siteBase = $site['copy_base'];
-            if (strlen($siteBase) == 0)
+            foreach (self::siteBaseUrls($site) as $siteBase)
             {
-                $siteBase = $site['url'];
-            }
-            $siteComponents = parse_url($siteBase);
-            if (self::urlComponentsMatch($components, $siteComponents))
-            {
-                if (strlen($siteBase) > strlen($matchingPrefix))
+                $siteComponents = parse_url($siteBase);
+                if (self::urlComponentsMatch($components, $siteComponents))
                 {
-                    $matchingPrefix = $siteBase;
-                    $matchingSite = $site;
+                    if (strlen($siteBase) > strlen($matchingPrefix))
+                    {
+                        $matchingPrefix = $siteBase;
+                        $matchingSite = $site;
+                    }
                 }
             }
         }
@@ -446,15 +444,17 @@ class UrlMetaData implements IUrlMetaData
         {
             return $this->determineSiteFromMirrorUrl($data);
         }
-        $siteComponents = parse_url($matchingSite['url']);
-        $components['host'] = $siteComponents['host'];
-        $data['url'] = self::buildUrl($components);
         return $matchingSite;
     }
 
-    private static function buildUrl($components)
+    private static function siteBaseUrls($site)
     {
-        return sprintf("%s://%s%s", $components['scheme'], $components['host'], $components['path']);
+        $baseUrls = array($site['url']);
+        if (strlen($site['copy_base']) > 0 && $site['copy_base'] != $site['url'])
+        {
+            $baseUrls[] = $site['copy_base'];
+        }
+        return $baseUrls;
     }
 
     private static function componentEqual($component, $lhs, $rhs)
@@ -467,8 +467,9 @@ class UrlMetaData implements IUrlMetaData
 
     public static function urlComponentsMatch($components, $siteComponents)
     {
-        $path = $components['path'];
-        $sitePath = $siteComponents['path'];
+        $path = array_key_exists('path', $components) ? $components['path'] : '/';
+        $sitePath = array_key_exists('path', $siteComponents) ?
+            $siteComponents['path'] : '/';
         if (strlen($sitePath) > strlen($path))
         {
             return false;
