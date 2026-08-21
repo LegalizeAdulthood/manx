@@ -144,6 +144,54 @@ class UrlWizardPage extends AdminPageBase
         return is_string($path) && strtolower(substr($path, -4)) == '.pdf';
     }
 
+    private function cachedPdfMetadata($idPresent, $urlPresent, $url)
+    {
+        if (!$idPresent || !$urlPresent || !self::isPdfUrl($url))
+        {
+            return [];
+        }
+        $metadata = $this->_db->getSiteUnknownPdfMetadata(
+            $this->siteUnknownId());
+        return is_array($metadata) ? $metadata : [];
+    }
+
+    private static function pdfMetadataFields()
+    {
+        return ['title', 'keywords', 'abstract', 'copy_notes',
+            'copy_credits'];
+    }
+
+    private static function pdfMetadataValue($metadata, $key)
+    {
+        return array_key_exists($key, $metadata) ? $metadata[$key] : '';
+    }
+
+    private static function pdfMetadataHtml($metadata, $key)
+    {
+        return htmlspecialchars(
+            self::pdfMetadataValue($metadata, $key),
+            ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401);
+    }
+
+    private static function pdfMetadataRowClass($metadata, $key)
+    {
+        return strlen(self::pdfMetadataValue($metadata, $key)) > 0
+            ? ''
+            : 'hidden';
+    }
+
+    private static function hasPdfMetadataValues($metadata)
+    {
+        foreach (self::pdfMetadataFields() as $key)
+        {
+            if (strlen(self::pdfMetadataValue($metadata, $key)) > 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private function addSite()
     {
         $siteId = $this->param('copy_site');
@@ -203,7 +251,8 @@ EOH;
         }
     }
 
-    private function renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData, $idPresent)
+    private function renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData,
+        $idPresent, $cachedPdfMetadata)
     {
         $copyLink = $urlPresent ? sprintf(' href="%s"', $url) : '';
         $copyLinkClass = $urlPresent ? '' : 'hidden';
@@ -220,8 +269,12 @@ EOH;
             'help' => 'The complete URL for the document.',
             'readonly' => $urlPresent, 'value' => $url
             ]);
-        $pdfMetadataClass = $urlPresent && self::isPdfUrl($url) ? '' : 'hidden';
-        print <<<EOH
+        if (count($cachedPdfMetadata) == 0)
+        {
+            $pdfMetadataClass = $urlPresent && self::isPdfUrl($url)
+                ? ''
+                : 'hidden';
+            print <<<EOH
 <li id="pdf_metadata_fetch_field" class="$pdfMetadataClass">
 <label for="pdf_metadata_fetch">PDF Metadata</label>
 <button type="button" id="pdf_metadata_fetch">Fetch</button>
@@ -231,6 +284,7 @@ EOH;
 
 
 EOH;
+        }
         $this->renderTextInput('Mirror Document URL', 'copy_mirror_url', [
             'class' => strlen($mirrorUrl) == 0 ? 'hidden' : '', 'size' => 60, 'maxlength' => 255,
             'readonly' => true, 'value' => $mirrorUrl,
@@ -283,41 +337,81 @@ EOH;
 EOH;
     }
 
-    private function renderPdfMetadataFields()
+    private function renderCachedPdfMetadataJson($cachedPdfMetadata)
     {
+        if (count($cachedPdfMetadata) == 0)
+        {
+            return;
+        }
+
+        $json = json_encode($cachedPdfMetadata,
+            JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+        if (!is_string($json))
+        {
+            return;
+        }
+        print <<<EOH
+<script type="application/json" id="cached_pdf_metadata">$json</script>
+
+EOH;
+    }
+
+    private function renderPdfMetadataFields($cachedPdfMetadata)
+    {
+        $cached = count($cachedPdfMetadata) > 0;
+        $hasValues = $cached && self::hasPdfMetadataValues($cachedPdfMetadata);
+        $detailsClass = $cached ? '' : 'hidden';
+        $detailsOpen = $cached ? ' open="open"' : '';
+        $emptyClass = $cached && !$hasValues ? '' : 'hidden';
+        $copyDisabled = $cached && !$hasValues ? ' disabled="disabled"' : '';
+        $titleClass = self::pdfMetadataRowClass($cachedPdfMetadata, 'title');
+        $keywordsClass = self::pdfMetadataRowClass($cachedPdfMetadata,
+            'keywords');
+        $abstractClass = self::pdfMetadataRowClass($cachedPdfMetadata,
+            'abstract');
+        $notesClass = self::pdfMetadataRowClass($cachedPdfMetadata,
+            'copy_notes');
+        $creditsClass = self::pdfMetadataRowClass($cachedPdfMetadata,
+            'copy_credits');
+        $title = self::pdfMetadataHtml($cachedPdfMetadata, 'title');
+        $keywords = self::pdfMetadataHtml($cachedPdfMetadata, 'keywords');
+        $abstract = self::pdfMetadataHtml($cachedPdfMetadata, 'abstract');
+        $notes = self::pdfMetadataHtml($cachedPdfMetadata, 'copy_notes');
+        $credits = self::pdfMetadataHtml($cachedPdfMetadata, 'copy_credits');
         print <<<EOH
 
-<details id="pdf_metadata_results" class="hidden">
+<details id="pdf_metadata_results" class="$detailsClass"$detailsOpen>
 <summary>Extracted Metadata</summary>
 <table>
 <tbody>
-<tr id="pdf_metadata_title_row" class="hidden">
+<tr id="pdf_metadata_title_row" class="$titleClass">
 <th scope="row">Title</th>
-<td id="pdf_metadata_title"></td>
+<td id="pdf_metadata_title">$title</td>
 </tr>
-<tr id="pdf_metadata_keywords_row" class="hidden">
+<tr id="pdf_metadata_keywords_row" class="$keywordsClass">
 <th scope="row">Keywords</th>
-<td id="pdf_metadata_keywords"></td>
+<td id="pdf_metadata_keywords">$keywords</td>
 </tr>
-<tr id="pdf_metadata_abstract_row" class="hidden">
+<tr id="pdf_metadata_abstract_row" class="$abstractClass">
 <th scope="row">Abstract</th>
-<td id="pdf_metadata_abstract"></td>
+<td id="pdf_metadata_abstract">$abstract</td>
 </tr>
-<tr id="pdf_metadata_copy_notes_row" class="hidden">
+<tr id="pdf_metadata_copy_notes_row" class="$notesClass">
 <th scope="row">Notes</th>
-<td id="pdf_metadata_copy_notes"></td>
+<td id="pdf_metadata_copy_notes">$notes</td>
 </tr>
-<tr id="pdf_metadata_copy_credits_row" class="hidden">
+<tr id="pdf_metadata_copy_credits_row" class="$creditsClass">
 <th scope="row">Credits</th>
-<td id="pdf_metadata_copy_credits"></td>
+<td id="pdf_metadata_copy_credits">$credits</td>
 </tr>
 </tbody>
 </table>
-<div id="pdf_metadata_empty" class="hidden">No PDF metadata found.</div>
-<button type="button" id="pdf_metadata_copy">Copy metadata</button>
+<div id="pdf_metadata_empty" class="$emptyClass">No PDF metadata found.</div>
+<button type="button" id="pdf_metadata_copy"$copyDisabled>Copy metadata</button>
 </details>
 
 EOH;
+        $this->renderCachedPdfMetadataJson($cachedPdfMetadata);
     }
 
     private function renderSiteCompanyFields($metaData)
@@ -561,6 +655,8 @@ EOH;
         $url = $metaData['url'];
         $mirrorUrl = $metaData['mirror_url'];
         $keywords = $metaData['keywords'];
+        $cachedPdfMetadata = $this->cachedPdfMetadata($idPresent,
+            $urlPresent, $url);
 
         print <<<EOH
 <h1>URL Wizard</h1>
@@ -572,8 +668,9 @@ EOH;
 EOH;
 
         $this->renderSiteUnknownFields($idPresent);
-        $this->renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData, $idPresent);
-        $this->renderPdfMetadataFields();
+        $this->renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData,
+            $idPresent, $cachedPdfMetadata);
+        $this->renderPdfMetadataFields($cachedPdfMetadata);
         $this->renderSiteCompanyFields($metaData);
         $this->renderSiteFields($urlPresent, $idPresent, $metaData);
         $this->renderPublicationFields($urlPresent, $metaData);

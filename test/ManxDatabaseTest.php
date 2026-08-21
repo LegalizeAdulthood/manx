@@ -968,6 +968,42 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($rows, $results);
     }
 
+    public function testGetSiteUnknownPdfMetadata()
+    {
+        $unknownId = 13;
+        $select = "SELECT "
+                . "`pdf_title` AS `title`, "
+                . "`pdf_keywords` AS `keywords`, "
+                . "`pdf_abstract` AS `abstract`, "
+                . "`pdf_notes` AS `copy_notes`, "
+                . "`pdf_credits` AS `copy_credits` "
+            . "FROM `site_unknown` "
+            . "WHERE `id` = ? "
+                . "AND `pdf_metadata_status` = ?";
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['title', 'keywords', 'abstract', 'copy_notes', 'copy_credits'],
+            [
+                ['Title', 'keywords', 'Abstract', 'Notes', 'Credits']
+            ]);
+        $this->_db->expects($this->once())->method('execute')
+            ->with($select, [$unknownId, Manx\PdfMetadata::STATUS_OK])
+            ->willReturn($rows);
+
+        $results = $this->_manxDb->getSiteUnknownPdfMetadata($unknownId);
+
+        $this->assertEquals($rows[0], $results);
+    }
+
+    public function testGetSiteUnknownPdfMetadataWithoutOkRow()
+    {
+        $this->_db->expects($this->once())->method('execute')
+            ->willReturn([]);
+
+        $results = $this->_manxDb->getSiteUnknownPdfMetadata(13);
+
+        $this->assertEquals([], $results);
+    }
+
     public function testUpdateSiteUnknownPdfMetadata()
     {
         $unknownId = 13;

@@ -543,6 +543,15 @@ $(function()
         }
     }
 
+    function load_cached_pdf_metadata()
+    {
+        var cached = $("#cached_pdf_metadata");
+        if (cached.length > 0)
+        {
+            pdf_metadata = JSON.parse(cached.text());
+        }
+    }
+
     function url_lookup()
     {
         var url = $("#copy_url").val();
@@ -673,6 +682,7 @@ $(function()
         }
     }
 
+    load_cached_pdf_metadata();
     register_ajax_error_handler('copy_url_error');
     $("#copy_url").change(url_lookup);
     $("#copy_site").change(copy_site_change);

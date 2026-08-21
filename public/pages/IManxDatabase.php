@@ -68,6 +68,7 @@ interface IManxDatabase
     function removeUnknownPathsWithCopy();
     function getUnknownPathsForCompanies($siteName);
     function getUnknownPdfMetadataPaths($siteName);
+    function getSiteUnknownPdfMetadata($siteUnknownId);
     function markUnknownPathScanned($unknownId);
     function updateSiteUnknownPdfMetadata($unknownId, $title, $keywords,
         $abstract, $notes, $credits, $status, $error);

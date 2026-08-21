@@ -34,6 +34,24 @@ class UrlWizardScriptTest extends PHPUnit\Framework\TestCase
             $script);
     }
 
+    public function testCachedPdfMetadataIsLoadedForCopy()
+    {
+        $script = self::script();
+
+        $this->assertStringContainsString(
+            'function load_cached_pdf_metadata()',
+            $script);
+        $this->assertStringContainsString(
+            'var cached = $("#cached_pdf_metadata")',
+            $script);
+        $this->assertStringContainsString(
+            'pdf_metadata = JSON.parse(cached.text())',
+            $script);
+        $this->assertStringContainsString(
+            'load_cached_pdf_metadata();',
+            $script);
+    }
+
     private static function script()
     {
         return file_get_contents(__DIR__ . '/../public/assets/UrlWizard.js');
