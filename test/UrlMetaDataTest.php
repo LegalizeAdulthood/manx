@@ -225,6 +225,81 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($data, $expected);
     }
 
+    public function testDetermineDataKeepsUrlWhenCopyBaseDiffers()
+    {
+        $site = self::genericSiteRow();
+        $urlBase = '/manuals/acme/ABC-123_Guide_Jan1980.pdf';
+        $url = 'http://example.com' . $urlBase;
+        $this->_db->expects($this->once())->method('getSites')->willReturn([$site]);
+        $this->_db->expects($this->never())->method('getMirrors');
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($url)->willReturn(false);
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with($url)->willReturn($this->_urlInfo);
+
+        $data = $this->_meta->determineData($url);
+
+        $expected = [
+            'url' => $url,
+            'mirror_url' => '',
+            'size' => 1266,
+            'valid' => true,
+            'site' => $site,
+            'company' => -1,
+            'part' => '',
+            'pub_date' => '1980-01',
+            'title' => 'ABC-123 Guide',
+            'format' => 'PDF',
+            'keywords' => 'ABC-123 Guide'
+        ];
+        $this->assertEquals($expected, $data);
+    }
+
+    public function testDetermineDataMirrorUrlWhenCopyBaseDiffers()
+    {
+        $site = self::genericSiteRow();
+        $path = 'acme/ABC-123_Guide_Jan1980.pdf';
+        $url = 'http://mirror.example.net/files/' . $path;
+        $copyUrl = 'http://cdn.example.net/files/' . $path;
+        $this->_db->expects($this->once())->method('getSites')->willReturn([$site]);
+        $this->_db->expects($this->once())->method('getMirrors')->willReturn([
+            self::databaseRowFromDictionary([
+                'mirror_id' => '2',
+                'site' => $site['site_id'],
+                'original_stem' => 'http://cdn.example.net/files/',
+                'copy_stem' => 'http://mirror.example.net/files/',
+                'rank' => '9'
+            ])
+        ]);
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($copyUrl)->willReturn(false);
+        $this->_urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $this->_urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with($url)->willReturn($this->_urlInfo);
+
+        $data = $this->_meta->determineData($url);
+
+        $expected = [
+            'url' => $copyUrl,
+            'mirror_url' => $url,
+            'size' => 1266,
+            'valid' => true,
+            'site' => $site,
+            'company' => -1,
+            'part' => '',
+            'pub_date' => '1980-01',
+            'title' => 'ABC-123 Guide',
+            'format' => 'PDF',
+            'keywords' => 'ABC-123 Guide'
+        ];
+        $this->assertEquals($expected, $data);
+    }
+
     public function testDetermineDataWwwBitSaversOrg()
     {
         $siteId = 3;
@@ -467,6 +542,20 @@ class UrlMetaDataTest extends PHPUnit\Framework\TestCase
             'live' => 'Y',
             'display_order' => 1
         ];
+    }
+
+    private static function genericSiteRow()
+    {
+        return self::databaseRowFromDictionary([
+            'site_id' => '77',
+            'name' => 'example',
+            'url' => 'http://example.com/manuals/',
+            'description' => 'Example Manuals',
+            'copy_base' => 'http://cdn.example.net/files/',
+            'low' => 'N',
+            'live' => 'Y',
+            'display_order' => '77'
+        ]);
     }
 
     private $_manx;

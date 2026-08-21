@@ -21,8 +21,6 @@ directories without creating broken or duplicate copies.
 
 Issues:
 
-- #73 If site URL and copy base URL differ, wizard produces incorrect
-  URLs.
 - #98 Associate directories with a regex for part numbers to aid ingestion.
 - #99 Make the site render naturally on mobile devices.
 - #105 Preview ingested metadata for a directory.
@@ -40,32 +38,6 @@ unchanged.
 
 The mobile slices are listed first so responsive changes get the longest
 manual testing window.
-
-## 10. Use site URL when copy base URL differs
-
-Issue: #73
-
-Implementation:
-
-- Preserve the configured site URL for wizard lookup and copy links.
-- Use copy base URL only when constructing the stored copy URL.
-- Keep mirror selection consistent with the recognized base site.
-
-Acceptance criteria:
-
-- A site with different `site_url` and `copy_base` produces a valid copy
-  link.
-- Wizard lookup keeps the original document URL unchanged.
-- Mirror choices are based on the recognized site.
-
-Automated tests:
-
-- Add `UrlWizardServiceTest` coverage for differing site URL and copy
-  base URL.
-- Add `UrlMetaDataTest` coverage for mirror selection in this case.
-- Add `ManxDatabaseTest` coverage for copy URL construction if needed.
-
-Fixes #73
 
 ## 11. Associate directory regex with ingestion
 

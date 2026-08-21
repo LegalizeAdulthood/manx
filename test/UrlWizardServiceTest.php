@@ -62,7 +62,8 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
     public function testUrlLookup()
     {
         $url = 'http://bitsavers.org/pdf/sandersAssociates/graphic7/Graphic_7_Monitor_Preliminary_Users_Guide_May_1979.pdf';
-        $this->_meta->expects($this->once())->method('determineData')->willReturn(['valid' => false]);
+        $this->_meta->expects($this->once())->method('determineData')
+            ->with($url)->willReturn(['valid' => false]);
         $vars = self::varsForUrlLookup($url);
         $this->_config['vars'] = $vars;
         $page = new UrlWizardServiceTester($this->_config);
@@ -71,6 +72,47 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
 
         $expected = json_encode(array('valid' => false));
         $this->expectOutputString($expected);
+    }
+
+    public function testUrlLookupKeepsUrlWhenCopyBaseDiffers()
+    {
+        $url = 'http://example.com/manuals/acme/ABC-123_Guide_Jan1980.pdf';
+        $site = self::databaseRowFromDictionary([
+            'site_id' => '77',
+            'name' => 'example',
+            'url' => 'http://example.com/manuals/',
+            'description' => 'Example Manuals',
+            'copy_base' => 'http://cdn.example.net/files/',
+            'low' => 'N',
+            'live' => 'Y',
+            'display_order' => '77'
+        ]);
+        $urlInfo = $this->createMock(Manx\IUrlInfo::class);
+        $urlInfo->expects($this->once())->method('size')->willReturn(1266);
+        $urlInfoFactory = $this->createMock(Manx\IUrlInfoFactory::class);
+        $urlInfoFactory->expects($this->once())->method('createUrlInfo')
+            ->with($url)->willReturn($urlInfo);
+        $this->_db->expects($this->once())->method('getSites')->willReturn([$site]);
+        $this->_db->expects($this->never())->method('getMirrors');
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($url)->willReturn(false);
+        $this->_config['db'] = $this->_db;
+        $this->_config['urlInfoFactory'] = $urlInfoFactory;
+        $this->_config['urlMetaData'] = new Manx\UrlMetaData($this->_config);
+        $this->_config['vars'] = self::varsForUrlLookup($url);
+        $page = new UrlWizardServiceTester($this->_config);
+
+        ob_start();
+        $page->processRequest();
+        $output = ob_get_clean();
+
+        $data = json_decode($output, true);
+        $this->assertEquals($url, $data['url']);
+        $this->assertEquals($site['site_id'], $data['site']['site_id']);
+        $this->assertEquals('Content-Type: application/json; charset=utf-8',
+            $page->headerLastField);
     }
 
     public function testPdfMetadata()
