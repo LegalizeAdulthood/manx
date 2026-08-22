@@ -475,10 +475,11 @@ class ManxDatabase implements IManxDatabase
                 . ") "
                 . "AND NOT EXISTS ("
                     . "SELECT 1 FROM `copy` `c` "
+                    . "LEFT JOIN `site_unknown_copy_dir` `sucd` ON `sucd`.`copy_id` = `c`.`copy_id` "
                     . "WHERE `c`.`site` = `s`.`site_id` "
                     . "AND ("
                         . "`c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) "
-                        . "OR (`c`.`sud_id` = `su`.`dir_id` "
+                        . "OR (`sucd`.`dir_id` = `su`.`dir_id` "
                             . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`)"
                     . ")"
                 . ") "
@@ -940,16 +941,16 @@ class ManxDatabase implements IManxDatabase
     public function getPossiblyMovedSiteUnknownPaths($siteName)
     {
         return $this->execute("SELECT CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path`, `su`.`id` AS `path_id`, `c`.`url`, `c`.`copy_id`, `c`.`size`, `c`.`md5` "
-            . "FROM `copy` `c`, `site` `s`, `site_unknown` `su`, `site_unknown_dir` `sud` "
+            . "FROM `copy` `c` "
+                . "INNER JOIN `site` `s` ON `s`.`site_id` = `c`.`site` "
+                . "INNER JOIN `site_unknown` `su` ON `su`.`site_id` = `s`.`site_id` "
+                . "INNER JOIN `site_unknown_dir` `sud` ON `sud`.`site_id` = `s`.`site_id` AND `su`.`dir_id` = `sud`.`id` "
+                . "LEFT JOIN `site_unknown_copy_dir` `sucd` ON `sucd`.`copy_id` = `c`.`copy_id` "
             . "WHERE `s`.`name` = ? "
-                . "AND `s`.`site_id` = `c`.`site` "
-                . "AND `s`.`site_id` = `su`.`site_id` "
-                . "AND `s`.`site_id` = `sud`.`site_id` "
-                . "AND `su`.`dir_id` = `sud`.`id` "
                 . "AND `c`.`md5` <> '' "
                 . "AND `c`.`size` > 0 "
-                . "AND ((`c`.`sud_id` <> -1 AND `su`.`dir_id` <> `c`.`sud_id`) "
-                    . "OR (`c`.`sud_id` = -1 AND `c`.`url` <> CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))) "
+                . "AND ((`sucd`.`copy_id` IS NOT NULL AND `su`.`dir_id` <> `sucd`.`dir_id`) "
+                    . "OR (`sucd`.`copy_id` IS NULL AND `c`.`url` <> CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))) "
                 . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`",
             [$siteName]);
     }
@@ -957,9 +958,12 @@ class ManxDatabase implements IManxDatabase
     public function siteFileMoved($pathId, $copyId, $url)
     {
         $this->beginTransaction();
+        $this->execute("INSERT INTO `site_unknown_copy_dir`(`copy_id`, `dir_id`) "
+            . "SELECT ?, `dir_id` FROM `site_unknown` WHERE `id` = ? "
+            . "ON DUPLICATE KEY UPDATE `dir_id` = VALUES(`dir_id`)",
+            [$copyId, $pathId]);
         $this->execute("DELETE FROM site_unknown WHERE id = ?", [$pathId]);
         $this->execute("UPDATE copy SET url = ? WHERE copy_id = ?", [$url, $copyId]);
-        $this->execute("UPDATE copy SET sud_id = -1 WHERE copy_id = ?", [$copyId]);
         $this->commit();
     }
 
@@ -1065,14 +1069,15 @@ class ManxDatabase implements IManxDatabase
 
     public function updateCopySiteUnknownDirIds()
     {
-        $this->execute("CALL `manx_update_copy_sud_ids`()", []);
+        $this->execute("CALL `manx_update_copy_unknown_dir_ids`()", []);
     }
 
     public function setCopySiteUnknownDirId($copyId, $siteUnknownId)
     {
-        $this->execute("UPDATE `copy` AS `c` INNER JOIN `site_unknown` AS `su` "
-            . "SET `c`.`sud_id` = `su`.`dir_id` "
-            . "WHERE `c`.`copy_id` = ? AND `su`.`id` = ?", [$copyId, $siteUnknownId]);
+        $this->execute("INSERT INTO `site_unknown_copy_dir`(`copy_id`, `dir_id`) "
+            . "SELECT ?, `dir_id` FROM `site_unknown` WHERE `id` = ? "
+            . "ON DUPLICATE KEY UPDATE `dir_id` = VALUES(`dir_id`)",
+            [$copyId, $siteUnknownId]);
     }
 
     public function updateIgnoredUnknownSingleDir($siteUnknownId)
