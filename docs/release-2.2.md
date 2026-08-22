@@ -13,6 +13,10 @@ The final statement in `schema/9-schema.sql` sets the version property to
 Migrate data using one-off procedures.  Drop each procedure as soon as
 its data migration has run.
 
+The 2.1 schema stores the known-copy to unknown-directory cache in
+`site_unknown_copy_dir(copy_id, dir_id)`.  Do not add unknown-directory
+id columns to `copy`.
+
 ## Scope
 
 Release 2.2.0 implements per-directory document ingestion.  It also
@@ -45,13 +49,16 @@ Issue: #145
 
 Implementation:
 
-- In `schema/9-schema.sql`, add `copy.file_name` and the
-  `site_file_sud` lookup key:
+- Preserve the 2.1 schema separation: `site_unknown_copy_dir` remains
+  the only table that links known copies to `site_unknown_dir` rows.
+  Do not add a `site_unknown_dir` id column to `copy`.
+- In `schema/9-schema.sql`, add `copy.file_name` as a URL basename
+  cache and add the `site_file` lookup key:
 
 ```sql
 ALTER TABLE `copy`
   ADD COLUMN `file_name` VARCHAR(255) NOT NULL DEFAULT '',
-  ADD KEY `site_file_sud` (`site`, `file_name`, `sud_id`);
+  ADD KEY `site_file` (`site`, `file_name`);
 ```
 
 - In `schema/9-schema.sql`, backfill existing copy rows with a one-off
@@ -70,16 +77,23 @@ DROP PROCEDURE `manx_backfill_copy_file_name`;
 
 - Column semantics:
   - `copy.file_name` stores the basename portion of `copy.url`.
-  - `copy.file_name` is a derived lookup cache, not user-authored data.
+  - `copy.file_name` is a derived lookup cache, not user-authored data
+    and not an unknown-directory association.
+  - `site_unknown_copy_dir.dir_id` is the cached
+    `site_unknown_dir.id` associated with a known copy.
 - Populate `copy.file_name` in `ManxDatabase::addCopy()` from the copy
   URL basename.
 - Update `copy.file_name` in `ManxDatabase::siteFileMoved()` when the
   copy URL is changed.
-- Change `getPossiblyMovedSiteUnknownPaths()` to join candidates with
+- Keep `ManxDatabase::siteFileMoved()` updating
+  `site_unknown_copy_dir(copy_id, dir_id)` from the unknown path before
+  the `site_unknown` row is deleted.
+- Change `getPossiblyMovedSiteUnknownPaths()` to join candidates by
   `c.site = su.site_id`, `c.file_name = su.path`, `c.md5 <> ''`, and
   `c.size > 0`.
-- Filter same-directory rows in SQL with
-  `c.sud_id = -1 OR c.sud_id <> su.dir_id`.
+- Join `site_unknown_copy_dir` by `copy_id` and filter same-directory
+  rows in SQL with
+  `sucd.copy_id IS NULL OR sucd.dir_id <> su.dir_id`.
 - Return the candidate new URL from the query and skip unchanged URLs in
   PHP before any HEAD, size, or MD5 request.
 - Remove `SUBSTRING_INDEX(c.url, '/', -1)` and `CONCAT(...)` from the
@@ -91,8 +105,11 @@ Acceptance criteria:
 - Existing copy rows have `copy.file_name` backfilled from `copy.url`.
 - Newly inserted copies store the basename of `copy.url` in
   `copy.file_name`.
-- Moved copies update both `copy.url` and `copy.file_name`.
-- The moved-candidate query uses the `site_file_sud` key.
+- Moved copies update `copy.url`, `copy.file_name`, and
+  `site_unknown_copy_dir`.
+- No 2.2 migration adds a `site_unknown_dir` id column to `copy`.
+- The moved-candidate query uses the `site_file` key and
+  `site_unknown_copy_dir`.
 - The moved-candidate query has no computed expressions on `copy.url` in
   its `JOIN` or `WHERE` predicates.
 - Rows whose current URL already equals the candidate URL are skipped
@@ -101,17 +118,20 @@ Acceptance criteria:
 
 Automated tests:
 
-- Add schema migration tests for `copy.file_name`, `site_file_sud`, and
+- Add schema migration tests for `copy.file_name`, `site_file`, and
   the backfill.
+- Add a schema migration test proving no unknown-directory id column is
+  added to `copy`.
 - Add `ManxDatabaseTest` coverage proving `addCopy()` stores
   `copy.file_name`.
 - Add `ManxDatabaseTest` coverage proving `siteFileMoved()` updates
-  `copy.url`, `copy.file_name`, and unknown-path state.
+  `copy.url`, `copy.file_name`, `site_unknown_copy_dir`, and
+  unknown-path state.
 - Add `ManxDatabaseTest` coverage for moved-candidate lookup by
-  `copy.file_name`.
+  `copy.file_name` and `site_unknown_copy_dir`.
 - Add a query regression test proving the moved-candidate SQL does not
   use `SUBSTRING_INDEX(c.url, '/', -1)` or `CONCAT(...)` in `JOIN` or
-  `WHERE`.
+  `WHERE`, and does not reference `copy.sud_id`.
 - Add `WhatsNewCleanerTest` coverage proving unchanged candidate URLs do
   not trigger HEAD, size, or MD5 requests.
 - Add `WhatsNewCleanerTest` coverage for processing real moved
@@ -154,7 +174,7 @@ CREATE TEMPORARY TABLE `tmp_site_index_by_date` (
   site-relative paths are absent from `tmp_site_index_by_date`.
 - Find moved copy candidates with a set query that joins known copies to
   `tmp_site_index_by_date` by `site_id` and `file_name`, then compares
-  the current copy directory to `dir_path`.
+  the current copy directory from `site_unknown_copy_dir` to `dir_path`.
 - Limit HEAD and MD5 checks to candidates that need confirmation.
 - Drop `tmp_site_index_by_date` at the end of the cron run.  If the
   process exits first, rely on MySQL temporary-table cleanup when the
