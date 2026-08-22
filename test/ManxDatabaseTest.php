@@ -332,8 +332,8 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $company = 1;
         $keywords = array('VT220', 'terminal');
         $query = "SELECT DISTINCT `su`.`id`, "
-                . "CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path`, "
-                . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) AS `url` "
+                . "CONCAT(`sud`.`path`, '/', `su`.`filename`) AS `path`, "
+                . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`filename`) AS `url` "
             . "FROM `site` `s`, `site_unknown` `su`, `site_unknown_dir` `sud` "
             . "WHERE `s`.`name` = ? "
                 . "AND `s`.`live` = 'Y' "
@@ -341,8 +341,8 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
                 . "AND `s`.`site_id` = `sud`.`site_id` "
                 . "AND `su`.`dir_id` = `sud`.`id` "
                 . "AND `su`.`ignored` = 0"
-                . " AND (CONCAT(`sud`.`path`, '/', `su`.`path`) LIKE '%VT220%' "
-                . "AND CONCAT(`sud`.`path`, '/', `su`.`path`) LIKE '%terminal%')"
+                . " AND (CONCAT(`sud`.`path`, '/', `su`.`filename`) LIKE '%VT220%' "
+                . "AND CONCAT(`sud`.`path`, '/', `su`.`filename`) LIKE '%terminal%')"
                 . " AND ("
                     . "NOT EXISTS ("
                         . "SELECT 1 FROM `site_company_dir` `scd_all` "
@@ -366,13 +366,9 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
                 . ") "
                 . "AND NOT EXISTS ("
                     . "SELECT 1 FROM `copy` `c` "
-                    . "LEFT JOIN `site_unknown_copy_dir` `sucd` ON `sucd`.`copy_id` = `c`.`copy_id` "
                     . "WHERE `c`.`site` = `s`.`site_id` "
-                    . "AND ("
-                        . "`c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) "
-                        . "OR (`sucd`.`dir_id` = `su`.`dir_id` "
-                            . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`)"
-                    . ")"
+                    . "AND `c`.`filename` = `su`.`filename` "
+                    . "AND `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`filename`)"
                 . ") "
             . "ORDER BY `path`";
         $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
@@ -442,12 +438,13 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     public function testAddCopy()
     {
         $query = 'INSERT INTO `copy`'
-            . '(`pub`,`format`,`site`,`url`,`notes`,`size`,`md5`,`credits`,`amend_serial`) '
-            . 'VALUES (?,?,?,?,?,?,?,?,?)';
+            . '(`pub`,`format`,`site`,`url`,`filename`,`notes`,`size`,`md5`,`credits`,`amend_serial`) '
+            . 'VALUES (?,?,?,?,?,?,?,?,?,?)';
         $pubId = 23;
         $format = 'PDF';
         $siteId = 5;
-        $url = 'http://foo.bar';
+        $url = 'http://foo.bar/file%20%231.pdf';
+        $filename = 'file #1.pdf';
         $notes = '';
         $size = '';
         $md5 = '';
@@ -456,7 +453,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('beginTransaction');
         $update = 'UPDATE `pub` SET `pub_has_online_copies`=1 WHERE `pub_id`=?';
         $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
-            [ $query, array($pubId, $format, $siteId, $url, $notes, $size, $md5, $credits, $amendSerial) ],
+            [ $query, array($pubId, $format, $siteId, $url, $filename, $notes, $size, $md5, $credits, $amendSerial) ],
             [ $update, array($pubId) ]
         );
         $newCopyId = 55;
@@ -663,7 +660,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $dirId1 = 10;
         $dirId2 = 12;
         $dirId3 = 14;
-        $insertSU = "INSERT INTO `site_unknown`(`site_id`, `path`, `dir_id`) VALUES (3, ?, ?), (3, ?, ?), (3, ?, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
+        $insertSU = "INSERT INTO `site_unknown`(`site_id`, `filename`, `dir_id`) VALUES (3, ?, ?), (3, ?, ?), (3, ?, ?) ON DUPLICATE KEY UPDATE `site_id` = VALUES(`site_id`)";
         $this->_db->expects($this->exactly(5))->method('execute')
             ->withConsecutive(
                 [$selectSite, ['bitsavers']],
@@ -701,7 +698,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     public function testGetSiteUnknownPathsOrderedById()
     {
         $siteName = 'bitsavers';
-        $query = "SELECT `su`.`id`, CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path` "
+        $query = "SELECT `su`.`id`, CONCAT(`sud`.`path`, '/', `su`.`filename`) AS `path` "
             . "FROM `site_unknown` `su`, `site_unknown_dir` `sud`, `site` `s` "
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `su`.`site_id` "
@@ -730,28 +727,25 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
 
     public function testGetSiteUnknownPathsOrderedByPath()
     {
-        $select = "SELECT `site_id` FROM `site` WHERE `name`=?";
-        $query = "SELECT `path`,`id` FROM `site_unknown` WHERE `site_id`=? AND `ignored`=0 ORDER BY `path` ASC LIMIT 0, 10";
+        $query = "SELECT IF(`su`.`dir_id` = -1, `su`.`filename`, CONCAT(`sud`.`path`, '/', `su`.`filename`)) AS `path`, `su`.`id` "
+            . "FROM `site_unknown` `su` "
+                . "INNER JOIN `site` `s` ON `s`.`site_id` = `su`.`site_id` "
+                . "LEFT JOIN `site_unknown_dir` `sud` ON `sud`.`site_id` = `s`.`site_id` AND `su`.`dir_id` = `sud`.`id` "
+            . "WHERE `s`.`name` = ? "
+                . "AND `su`.`ignored` = 0 "
+            . "ORDER BY `path` ASC "
+            . "LIMIT 0, 10";
         $path1 = 'foo/foo.jpg';
         $path2 = 'foo/bar.jpg';
-        $this->_db->expects($this->exactly(2))->method('execute')
-            ->withConsecutive(
-                [ $select, array('bitsavers') ],
-                [ $query, array(3) ]
-            )
-            ->willReturn(
-                \Manx\Test\RowFactory::createResultRowsForColumns(
-                    array('site_id'), array(array(3))),
-                \Manx\Test\RowFactory::createResultRowsForColumns(
-                    array('path', 'id', 'site_id'), array(array($path2, '2', '3'), array($path1, '1', '3')))
-            );
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['path', 'id'], [[$path2, '2'], [$path1, '1']]);
+        $this->_db->expects($this->once())->method('execute')
+            ->with($query, ['bitsavers'])
+            ->willReturn($rows);
 
         $paths = $this->_manxDb->getSiteUnknownPathsOrderedByPath('bitsavers', 0, true);
 
-        $this->assertEquals( array(
-                array('path' => $path2, 'id' => '2', 'site_id' => '3'),
-                array('path' => $path1, 'site_id' => '3', 'id' => '1')),
-            $paths);
+        $this->assertEquals($rows, $paths);
     }
 
     public function testgetSiteUnknownPathCount()
@@ -870,7 +864,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $siteName = 'bitsavers';
         $select =
             "SELECT `su`.`id`, `su`.`site_id`, `scd`.`company_id`, "
-                . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) AS `url` "
+                . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`filename`) AS `url` "
             . "FROM "
                 . "`site` `s`, "
                 . "`site_unknown` `su`, "
@@ -885,11 +879,11 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
                 . "AND `su`.`dir_id` = `sud`.`id` "
                 . "AND `su`.`scanned` = 0 "
                 . "AND `su`.`ignored` = 0 "
-                . "AND INSTR(`su`.`path`, '#') = 0 "
-                . "AND INSTR(`su`.`path`, ' ') = 0 "
-                . "AND INSTR(`su`.`path`, '&') = 0 "
-                . "AND INSTR(`su`.`path`, '%') = 0 "
-                . "AND `su`.`path` LIKE '%\_%\_%.pdf' "
+                . "AND INSTR(`su`.`filename`, '#') = 0 "
+                . "AND INSTR(`su`.`filename`, ' ') = 0 "
+                . "AND INSTR(`su`.`filename`, '&') = 0 "
+                . "AND INSTR(`su`.`filename`, '%') = 0 "
+                . "AND `su`.`filename` LIKE '%\_%\_%.pdf' "
                 . "AND ("
                     . "(`scd`.`parent_directory` = '' AND `sud`.`path` LIKE CONCAT(`scd`.`directory`, '/%')) "
                     . "OR "
@@ -920,7 +914,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     public function testGetAllSiteUnknownPaths()
     {
         $siteName = 'bitsavers';
-        $select = "SELECT `su`.`id`, CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path` "
+        $select = "SELECT `su`.`id`, CONCAT(`sud`.`path`, '/', `su`.`filename`) AS `path` "
             . "FROM `site_unknown` `su`, `site_unknown_dir` `sud`, `site` `s` "
                 . "WHERE `s`.`name` = ? "
                     . "AND `s`.`site_id` = `su`.`site_id` "
@@ -951,21 +945,24 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     public function testGetPossiblyMovedSiteUnknownPaths()
     {
         $siteName = 'bitsavers';
-        $select = "SELECT CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path`, `su`.`id` AS `path_id`, `c`.`url`, `c`.`copy_id`, `c`.`size`, `c`.`md5` "
+        $select = "SELECT CONCAT(`sud`.`path`, '/', `su`.`filename`) AS `path`, "
+            . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`filename`) AS `candidate_url`, "
+            . "`su`.`id` AS `path_id`, `c`.`url`, `c`.`copy_id`, `c`.`size`, `c`.`md5` "
             . "FROM `copy` `c` "
                 . "INNER JOIN `site` `s` ON `s`.`site_id` = `c`.`site` "
-                . "INNER JOIN `site_unknown` `su` ON `su`.`site_id` = `s`.`site_id` "
+                . "INNER JOIN `site_unknown` `su` ON `su`.`site_id` = `s`.`site_id` AND `su`.`filename` = `c`.`filename` "
                 . "INNER JOIN `site_unknown_dir` `sud` ON `sud`.`site_id` = `s`.`site_id` AND `su`.`dir_id` = `sud`.`id` "
-                . "LEFT JOIN `site_unknown_copy_dir` `sucd` ON `sucd`.`copy_id` = `c`.`copy_id` "
             . "WHERE `s`.`name` = ? "
             . "AND `c`.`md5` <> '' "
-            . "AND `c`.`size` > 0 "
-            . "AND ((`sucd`.`copy_id` IS NOT NULL AND `su`.`dir_id` <> `sucd`.`dir_id`) "
-                . "OR (`sucd`.`copy_id` IS NULL AND `c`.`url` <> CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))) "
-            . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`";
-        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['path', 'path_id', 'url', 'copy_id', 'size', 'md5'],
+            . "AND `c`.`size` > 0";
+        $whereClause = substr($select, strpos($select, "WHERE"));
+        $this->assertStringNotContainsString("SUBSTRING_INDEX(`c`.`url`", $select);
+        $this->assertStringNotContainsString("CONCAT(", $whereClause);
+        $this->assertStringNotContainsString("site_unknown_copy_dir", $select);
+        $this->assertStringNotContainsString("copy.sud_id", $select);
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['path', 'candidate_url', 'path_id', 'url', 'copy_id', 'size', 'md5'],
             [
-                ['foo/bar/foo.pdf', 11, 'http://bitsavers.org/pdf/foo/bar/foo.pdf', 22, 6566, 'd131dd02c5e6eec4']
+                ['foo/bar/foo.pdf', 'http://bitsavers.org/pdf/foo/bar/foo.pdf', 11, 'http://bitsavers.org/pdf/foo/foo.pdf', 22, 6566, 'd131dd02c5e6eec4']
             ]);
         $this->_db->expects($this->once())->method('execute')->with($select, [$siteName])->willReturn($rows);
 
@@ -1013,7 +1010,8 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     public function testGetSiteUnknownPaths()
     {
         $siteName = 'bitsavers';
-        $select = "SELECT `su`.* "
+        $select = "SELECT `su`.`id`, `su`.`site_id`, "
+            . "`su`.`filename` AS `path`, `su`.`ignored`, `su`.`scanned`, `su`.`dir_id` "
             . "FROM `site_unknown` `su`, `site_unknown_dir` `sud`, `site` `s` "
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `su`.`site_id` "
@@ -1021,7 +1019,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
             . "AND `su`.`ignored` = 0 "
             . "AND `su`.`dir_id` = `sud`.`id` "
             . "AND `su`.`dir_id` = ? "
-            . "ORDER BY `su`.`path`";
+            . "ORDER BY `su`.`filename`";
         $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
             [
                 [5005, 3, 'foo.pdf', 0, 0, -1],
@@ -1038,18 +1036,15 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     {
         $copyId = 66;
         $pathId = 77;
-        $url = 'http://bitsavers.org/pdf/new/path/to/file.pdf';
+        $url = 'http://bitsavers.org/pdf/new/path/to/file%20%231.pdf';
+        $filename = 'file #1.pdf';
         $this->_db->expects($this->once())->method('beginTransaction');
-        $linkDir = "INSERT INTO `site_unknown_copy_dir`(`copy_id`, `dir_id`) "
-            . "SELECT ?, `dir_id` FROM `site_unknown` WHERE `id` = ? "
-            . "ON DUPLICATE KEY UPDATE `dir_id` = VALUES(`dir_id`)";
         $deleteId = "DELETE FROM site_unknown WHERE id = ?";
-        $updateUrl = "UPDATE copy SET url = ? WHERE copy_id = ?";
-        $this->_db->expects($this->exactly(3))->method('execute')
+        $updateUrl = "UPDATE copy SET url = ?, filename = ? WHERE copy_id = ?";
+        $this->_db->expects($this->exactly(2))->method('execute')
             ->withConsecutive(
-                [$linkDir, [$copyId, $pathId]],
                 [$deleteId, [$pathId]],
-                [$updateUrl, [$url, $copyId]]);
+                [$updateUrl, [$url, $filename, $copyId]]);
         $this->_db->expects($this->once())->method('commit');
 
 
@@ -1157,25 +1152,6 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('execute')->with($call, []);
 
         $this->_manxDb->updateIgnoredUnknownDirs();
-    }
-
-    public function testUpdateCopySiteUnknownDirIds()
-    {
-        $this->_db->expects($this->once())->method('execute')->with("CALL `manx_update_copy_unknown_dir_ids`()", []);
-
-        $this->_manxDb->updateCopySiteUnknownDirIds();
-    }
-
-    public function testSetCopySiteUnknownDirId()
-    {
-        $copyId = 2066;
-        $siteUnknownId = 509;
-        $insert = "INSERT INTO `site_unknown_copy_dir`(`copy_id`, `dir_id`) "
-            . "SELECT ?, `dir_id` FROM `site_unknown` WHERE `id` = ? "
-            . "ON DUPLICATE KEY UPDATE `dir_id` = VALUES(`dir_id`)";
-        $this->_db->expects($this->once())->method('execute')->with($insert, [$copyId, $siteUnknownId]);
-
-        $this->_manxDb->setCopySiteUnknownDirId($copyId, $siteUnknownId);
     }
 
     public function testupdateIgnoredUnknownSingleDir()

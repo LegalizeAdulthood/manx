@@ -62,7 +62,6 @@ class UrlWizardPage extends AdminPageBase
         {
             return false;
         }
-        $this->_db->setCopySiteUnknownDirId($copyId, $siteUnknownId);
         $this->_db->updateIgnoredUnknownSingleDir($siteUnknownId);
         $this->_db->removeSiteUnknownPathById($siteUnknownId);
         return true;
