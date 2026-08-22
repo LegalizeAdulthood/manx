@@ -366,10 +366,11 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
                 . ") "
                 . "AND NOT EXISTS ("
                     . "SELECT 1 FROM `copy` `c` "
+                    . "LEFT JOIN `site_unknown_copy_dir` `sucd` ON `sucd`.`copy_id` = `c`.`copy_id` "
                     . "WHERE `c`.`site` = `s`.`site_id` "
                     . "AND ("
                         . "`c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`) "
-                        . "OR (`c`.`sud_id` = `su`.`dir_id` "
+                        . "OR (`sucd`.`dir_id` = `su`.`dir_id` "
                             . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`)"
                     . ")"
                 . ") "
@@ -951,16 +952,16 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     {
         $siteName = 'bitsavers';
         $select = "SELECT CONCAT(`sud`.`path`, '/', `su`.`path`) AS `path`, `su`.`id` AS `path_id`, `c`.`url`, `c`.`copy_id`, `c`.`size`, `c`.`md5` "
-            . "FROM `copy` `c`, `site` `s`, `site_unknown` `su`, `site_unknown_dir` `sud` "
+            . "FROM `copy` `c` "
+                . "INNER JOIN `site` `s` ON `s`.`site_id` = `c`.`site` "
+                . "INNER JOIN `site_unknown` `su` ON `su`.`site_id` = `s`.`site_id` "
+                . "INNER JOIN `site_unknown_dir` `sud` ON `sud`.`site_id` = `s`.`site_id` AND `su`.`dir_id` = `sud`.`id` "
+                . "LEFT JOIN `site_unknown_copy_dir` `sucd` ON `sucd`.`copy_id` = `c`.`copy_id` "
             . "WHERE `s`.`name` = ? "
-            . "AND `s`.`site_id` = `c`.`site` "
-            . "AND `s`.`site_id` = `su`.`site_id` "
-            . "AND `s`.`site_id` = `sud`.`site_id` "
-            . "AND `su`.`dir_id` = `sud`.`id` "
             . "AND `c`.`md5` <> '' "
             . "AND `c`.`size` > 0 "
-            . "AND ((`c`.`sud_id` <> -1 AND `su`.`dir_id` <> `c`.`sud_id`) "
-                . "OR (`c`.`sud_id` = -1 AND `c`.`url` <> CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))) "
+            . "AND ((`sucd`.`copy_id` IS NOT NULL AND `su`.`dir_id` <> `sucd`.`dir_id`) "
+                . "OR (`sucd`.`copy_id` IS NULL AND `c`.`url` <> CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))) "
             . "AND SUBSTRING_INDEX(`c`.`url`, '/', -1) = `su`.`path`";
         $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['path', 'path_id', 'url', 'copy_id', 'size', 'md5'],
             [
@@ -1039,14 +1040,16 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $pathId = 77;
         $url = 'http://bitsavers.org/pdf/new/path/to/file.pdf';
         $this->_db->expects($this->once())->method('beginTransaction');
+        $linkDir = "INSERT INTO `site_unknown_copy_dir`(`copy_id`, `dir_id`) "
+            . "SELECT ?, `dir_id` FROM `site_unknown` WHERE `id` = ? "
+            . "ON DUPLICATE KEY UPDATE `dir_id` = VALUES(`dir_id`)";
         $deleteId = "DELETE FROM site_unknown WHERE id = ?";
         $updateUrl = "UPDATE copy SET url = ? WHERE copy_id = ?";
-        $updateSudId = "UPDATE copy SET sud_id = -1 WHERE copy_id = ?";
         $this->_db->expects($this->exactly(3))->method('execute')
             ->withConsecutive(
+                [$linkDir, [$copyId, $pathId]],
                 [$deleteId, [$pathId]],
-                [$updateUrl, [$url, $copyId]],
-                [$updateSudId, [$copyId]]);
+                [$updateUrl, [$url, $copyId]]);
         $this->_db->expects($this->once())->method('commit');
 
 
@@ -1158,7 +1161,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
 
     public function testUpdateCopySiteUnknownDirIds()
     {
-        $this->_db->expects($this->once())->method('execute')->with("CALL `manx_update_copy_sud_ids`()", []);
+        $this->_db->expects($this->once())->method('execute')->with("CALL `manx_update_copy_unknown_dir_ids`()", []);
 
         $this->_manxDb->updateCopySiteUnknownDirIds();
     }
@@ -1167,12 +1170,10 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     {
         $copyId = 2066;
         $siteUnknownId = 509;
-        $update = "UPDATE `copy` AS `c` "
-            . "INNER JOIN `site_unknown` AS `su` "
-            . "SET `c`.`sud_id` = `su`.`dir_id` "
-            . "WHERE `c`.`copy_id` = ? "
-            . "AND `su`.`id` = ?";
-        $this->_db->expects($this->once())->method('execute')->with($update, [$copyId, $siteUnknownId]);
+        $insert = "INSERT INTO `site_unknown_copy_dir`(`copy_id`, `dir_id`) "
+            . "SELECT ?, `dir_id` FROM `site_unknown` WHERE `id` = ? "
+            . "ON DUPLICATE KEY UPDATE `dir_id` = VALUES(`dir_id`)";
+        $this->_db->expects($this->once())->method('execute')->with($insert, [$copyId, $siteUnknownId]);
 
         $this->_manxDb->setCopySiteUnknownDirId($copyId, $siteUnknownId);
     }

@@ -18,10 +18,20 @@ CREATE TABLE site_unknown_dir (
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table `site_unknown_copy_dir`
+--
+DROP TABLE IF EXISTS `site_unknown_copy_dir`;
+CREATE TABLE `site_unknown_copy_dir` (
+  `copy_id` INT(11) NOT NULL,
+  `dir_id` INT(11) NOT NULL,
+  PRIMARY KEY (`copy_id`),
+  KEY `dir_id` (`dir_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
 -- `manx_add_site_unknown_dir_id`
 --
 -- Update table structure for `site_unknown` to include `dir_id` column
--- Update table structure for `copy` to include `sud_id` column
 --
 DROP PROCEDURE IF EXISTS `manx_add_site_unknown_dir_id`;
 DELIMITER //
@@ -34,12 +44,6 @@ BEGIN
         ADD COLUMN `dir_id` INT(11) NOT NULL DEFAULT -1,
         DROP INDEX `site_id`,
         ADD UNIQUE KEY `site_id`(`site_id`, `path`, `dir_id`);
-
-    IF EXISTS (SELECT * FROM `information_schema`.`columns` WHERE `table_schema` = SCHEMA() AND `table_name` = 'copy' AND `column_name` = 'sud_id') THEN
-        ALTER TABLE `copy` DROP COLUMN `sud_id`;
-    END IF;
-    ALTER TABLE `copy`
-        ADD COLUMN `sud_id` INT(11) NOT NULL DEFAULT -1;
 END//
 DELIMITER ;
 
@@ -137,7 +141,7 @@ BEGIN
         SELECT `id` FROM `site_unknown_dir`
         WHERE NOT `id` IN (SELECT DISTINCT `dir_id` FROM `site_unknown`)
         AND NOT `id` IN (SELECT DISTINCT `parent_dir_id` FROM `site_unknown_dir`)
-        AND NOT `id` IN (SELECT DISTINCT `sud_id` FROM `copy` WHERE `sud_id` <> -1);
+        AND NOT `id` IN (SELECT DISTINCT `dir_id` FROM `site_unknown_copy_dir`);
 
     WHILE (SELECT COUNT(*) FROM `tmp_dir_ids`) > 0 DO
         DELETE FROM `site_unknown_dir` WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids`);
@@ -147,7 +151,7 @@ BEGIN
             SELECT `id` FROM `site_unknown_dir`
             WHERE NOT `id` IN (SELECT DISTINCT `dir_id` FROM `site_unknown`)
             AND NOT `id` IN (SELECT DISTINCT `parent_dir_id` FROM `site_unknown_dir`)
-            AND NOT `id` IN (SELECT DISTINCT `sud_id` FROM `copy` WHERE `sud_id` <> -1);
+            AND NOT `id` IN (SELECT DISTINCT `dir_id` FROM `site_unknown_copy_dir`);
     END WHILE;
 END//
 DELIMITER ;
@@ -250,9 +254,10 @@ DELIMITER ;
 -- `manx_build_copy_ids`
 --
 -- Populate `tmp_copy_ids` with id and filename path of every document copy on a site
--- in `site_unknown_dir` that isn't associated with a site unknown directory.  These
--- could be newly added documents, or they could be documents that have moved and their
--- location in the WhatsNew.txt doesn't match the directory in the copy's URL.
+-- in `site_unknown_dir` that has not been linked to a site unknown directory.
+-- These could be newly added documents, or they could be documents that have
+-- moved and their location in the WhatsNew.txt doesn't match the directory in
+-- the copy's URL.
 --
 DROP PROCEDURE IF EXISTS `manx_build_copy_ids`;
 DELIMITER //
@@ -267,7 +272,8 @@ BEGIN
     INSERT INTO `tmp_copy_ids`
         SELECT `c`.`copy_id` AS `id`, SUBSTRING_INDEX(`c`.`url`, '/', -1) AS `path`
         FROM `copy` `c`
-        WHERE `c`.`sud_id` = -1
+        LEFT JOIN `site_unknown_copy_dir` `sucd` ON `sucd`.`copy_id` = `c`.`copy_id`
+        WHERE `sucd`.`copy_id` IS NULL
         AND `c`.`site` IN (SELECT DISTINCT `site_id` FROM `site_unknown_dir`);
 END//
 DELIMITER ;
@@ -293,31 +299,30 @@ END//
 DELIMITER ;
 
 --
--- `manx_update_copy_sud_ids`
+-- `manx_update_copy_unknown_dir_ids`
 --
--- Update the `sud_id` column in the `copy` table to the correct
--- id from the `site_unknown_dir` table.  This accelerates dropping
--- site_unknown paths for known copies.
+-- Link document copies to the matching `site_unknown_dir` row.  This
+-- accelerates dropping site_unknown paths for known copies without storing
+-- unknown-path data on production copy rows.
 --
-DROP PROCEDURE IF EXISTS `manx_update_copy_sud_ids`;
+DROP PROCEDURE IF EXISTS `manx_update_copy_unknown_dir_ids`;
 DELIMITER //
-CREATE PROCEDURE `manx_update_copy_sud_ids`()
+CREATE PROCEDURE `manx_update_copy_unknown_dir_ids`()
 BEGIN
     CALL `manx_build_copy_ids`();
 
-    UPDATE `copy`,
-        (SELECT `c`.`copy_id`, `sud`.`id` AS `sud_id`
-            FROM `site` `s`, `copy` `c`, `site_unknown` `su`, `site_unknown_dir` `sud`, `tmp_copy_ids` `tci`
-            WHERE `c`.`copy_id` = `tci`.`id`
-            AND `s`.`site_id` = `c`.`site`
-            AND `s`.`site_id` = `sud`.`site_id`
-            AND `s`.`site_id` = `su`.`site_id`
-            AND `su`.`dir_id` = `sud`.`id`
-            AND `su`.`path` = `tci`.`path`
-            AND `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`))
-        AS `tmp`
-        SET `copy`.`sud_id` = `tmp`.`sud_id`
-        WHERE `copy`.`copy_id` = `tmp`.`copy_id`;
+    INSERT INTO `site_unknown_copy_dir`(`copy_id`, `dir_id`)
+        SELECT `c`.`copy_id`, `sud`.`id`
+        FROM `site` `s`, `copy` `c`, `site_unknown` `su`,
+            `site_unknown_dir` `sud`, `tmp_copy_ids` `tci`
+        WHERE `c`.`copy_id` = `tci`.`id`
+        AND `s`.`site_id` = `c`.`site`
+        AND `s`.`site_id` = `sud`.`site_id`
+        AND `s`.`site_id` = `su`.`site_id`
+        AND `su`.`dir_id` = `sud`.`id`
+        AND `su`.`path` = `tci`.`path`
+        AND `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`path`)
+        ON DUPLICATE KEY UPDATE `dir_id` = VALUES(`dir_id`);
 END//
 DELIMITER ;
 
@@ -330,7 +335,7 @@ DROP PROCEDURE IF EXISTS `manx_purge_su_copies`;
 DELIMITER //
 CREATE PROCEDURE `manx_purge_su_copies`()
 BEGIN
-    CALL `manx_build_copy_ids`();
+    CALL `manx_update_copy_unknown_dir_ids`();
     CALL `manx_build_unknown_urls`();
 
     DROP TABLE IF EXISTS `tmp_su_ids`;
@@ -338,14 +343,11 @@ BEGIN
     CREATE TEMPORARY TABLE `tmp_su_ids`(`id` INT(11) NOT NULL);
     INSERT INTO `tmp_su_ids`
         SELECT `su`.`id`
-        FROM `site` `s`, `copy` `c`, `site_unknown` `su`, `site_unknown_dir` `sud`, `tmp_copy_ids` `tci`
-        WHERE `c`.`copy_id` = `tci`.`id`
-        AND `c`.`site` = `s`.`site_id`
+        FROM `copy` `c`, `site_unknown` `su`, `site_unknown_copy_dir` `sucd`
+        WHERE `c`.`copy_id` = `sucd`.`copy_id`
         AND `c`.`site` = `su`.`site_id`
-        AND `c`.`site` = `sud`.`site_id`
-        AND `su`.`dir_id` = `sud`.`id`
-        AND `su`.`path` = `tci`.`path`
-        AND `c`.`sud_id` = `sud`.`id`;
+        AND `su`.`dir_id` = `sucd`.`dir_id`
+        AND `su`.`path` = SUBSTRING_INDEX(`c`.`url`, '/', -1);
     -- Find unknowns that match copies by url
     INSERT INTO `tmp_su_ids`
         SELECT `su`.`id`
@@ -429,9 +431,9 @@ START TRANSACTION;
 CALL `manx_unknown_directory_migrater`();
 
 --
--- Populate `copy`.`sud_id`
+-- Populate `site_unknown_copy_dir`
 --
-CALL `manx_update_copy_sud_ids`();
+CALL `manx_update_copy_unknown_dir_ids`();
 
 --
 -- Purge site_unknown paths for existing copies
@@ -444,6 +446,10 @@ CALL `manx_purge_su_copies`();
 -- in the database, just nuke all the stuff.
 --
 DELETE FROM `properties`       WHERE `name`    = 'chiclassiccomp_whats_new_timestamp';
+DELETE `sucd`
+    FROM `site_unknown_copy_dir` `sucd`, `copy` `c`
+    WHERE `sucd`.`copy_id` = `c`.`copy_id`
+    AND `c`.`site` = 58;
 DELETE FROM `copy`             WHERE `site`    = 58;
 DELETE FROM `site_company_dir` WHERE `site_id` = 58;
 DELETE FROM `site_unknown`     WHERE `site_id` = 58;
