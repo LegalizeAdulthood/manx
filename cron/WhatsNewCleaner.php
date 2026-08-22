@@ -82,6 +82,11 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         foreach($rows as $row)
         {
             $path = $row['path'];
+            $candidateUrl = $row['candidate_url'];
+            if ($row['url'] == $candidateUrl)
+            {
+                continue;
+            }
             $urlInfo = $this->_factory->createUrlInfo($this->_baseCheckUrl . $path);
             if ($urlInfo->exists() && $row['md5'] != '')
             {
@@ -92,7 +97,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 }
                 if ($urlInfo->md5() == $row['md5'])
                 {
-                    $this->_db->siteFileMoved($row['path_id'], $row['copy_id'], $this->_baseUrl . $path);
+                    $this->_db->siteFileMoved($row['path_id'], $row['copy_id'], $candidateUrl);
                     $this->log('Path: ' . $path);
                 }
             }
@@ -147,12 +152,6 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     {
         $this->log("Updating ignored unknown directories");
         $this->_db->updateIgnoredUnknownDirs();
-    }
-
-    public function updateCopySiteUnknownDirIds()
-    {
-        $this->log("Updating site unknown directory ids for copies");
-        $this->_db->updateCopySiteUnknownDirIds();
     }
 
     public function ingest()

@@ -99,7 +99,9 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
             ->with('bitsavers')
             ->willReturn( [
                 ['path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
-                    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'size' => 1234, 'md5' => $md5]
+                    'candidate_url' => 'http://bitsavers.org/pdf/hp/newDir/foo.pdf',
+                    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10,
+                    'size' => 1234, 'md5' => $md5]
             ]);
         $this->_db->expects($this->once())->method('siteFileMoved')
             ->with(16, 10, 'http://bitsavers.org/pdf/hp/newDir/foo.pdf');
@@ -120,7 +122,9 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
             ->with('bitsavers')
             ->willReturn( [
                 ['path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
-                    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10, 'size' => 1234, 'md5' => $md5]
+                    'candidate_url' => 'http://bitsavers.org/pdf/hp/newDir/foo.pdf',
+                    'url' => 'http://bitsavers.org/pdf/hp/foo.pdf', 'copy_id' => 10,
+                    'size' => 1234, 'md5' => $md5]
             ]);
         $this->_db->expects($this->never())->method('siteFileMoved');
         $this->_factory->expects($this->once())->method('createUrlInfo')
@@ -129,6 +133,23 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
         $this->_urlInfo->expects($this->never())->method('md5');
         $this->_urlInfo->expects($this->once())->method('size')->willReturn(4321);
         $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
+
+        $this->_cleaner->updateMovedFiles();
+    }
+
+    public function testMovedFilesWithUnchangedUrlsAreSkipped()
+    {
+        $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
+        $url = 'http://bitsavers.org/pdf/hp/newDir/foo.pdf';
+        $this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
+            ->with('bitsavers')
+            ->willReturn( [
+                ['path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
+                    'candidate_url' => $url, 'url' => $url, 'copy_id' => 10,
+                    'size' => 1234, 'md5' => $md5]
+            ]);
+        $this->_db->expects($this->never())->method('siteFileMoved');
+        $this->_factory->expects($this->never())->method('createUrlInfo');
 
         $this->_cleaner->updateMovedFiles();
     }
@@ -426,11 +447,4 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
         $this->_cleaner->updateIgnoredUnknownDirs();
     }
 
-    public function testUpdateCopySudIds()
-    {
-        $this->_db->expects($this->once())->method('updateCopySiteUnknownDirIds');
-        $this->_logger->expects($this->once())->method('log');
-
-        $this->_cleaner->updateCopySiteUnknownDirIds();
-    }
 }
