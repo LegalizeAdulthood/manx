@@ -56,12 +56,16 @@ interface IManxDatabase
     function getAllMissingMD5Documents();
     function getProperty($name);
     function setProperty($name, $value);
+    function createTemporarySiteIndexByDate();
+    function addTemporarySiteIndexByDateRows($siteName, array $rows);
+    function dropTemporarySiteIndexByDate();
     function addSiteUnknownPaths($siteName, array $paths);
     function ignoreSitePaths(array $ignoredIds);
     function getSiteUnknownPathCount($siteName);
     function getSiteUnknownPathsOrderedById($siteName, $start, $ascending);
     function getSiteUnknownPathsOrderedByPath($siteName, $start, $ascending);
     function getAllSiteUnknownPaths($siteName);
+    function getSiteUnknownPathsMissingFromIndex($siteName);
     function removeSiteUnknownPathById($siteUnknownId);
     function getPossiblyMovedSiteUnknownPaths($siteName);
     function siteFileMoved($pathId, $copyId, $url);

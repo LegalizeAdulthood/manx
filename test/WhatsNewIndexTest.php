@@ -138,4 +138,60 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
 
         $this->_whatsNew->parseIndexByDateFile();
     }
+
+    public function testLoadIndexByDateTable()
+    {
+        $file = $this->createMock(Manx\IFile::class);
+        $this->_fileSystem->expects($this->once())->method('openFile')->with(\Manx\Config::configFile($this->_indexFile), 'r')->willReturn($file);
+        $file->expects($this->exactly(3))->method('eof')->willReturn(false, false, true);
+        $file->expects($this->exactly(2))->method('getString')->willReturn(
+            '2019-10-27 03:40:42 ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
+            '2019-10-27 01:24:00 ibm/370/VM_SP/Release_5_Dec86/SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf');
+        $this->_db->expects($this->once())->method('createTemporarySiteIndexByDate');
+        $this->_db->expects($this->once())->method('addTemporarySiteIndexByDateRows')
+            ->with($this->_config['siteName'], [
+                [
+                    'path' => 'ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
+                    'dir_path' => 'ibm/4381/fe',
+                    'filename' => 'SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
+                    'index_date' => '2019-10-27'
+                ],
+                [
+                    'path' => 'ibm/370/VM_SP/Release_5_Dec86/SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf',
+                    'dir_path' => 'ibm/370/VM_SP/Release_5_Dec86',
+                    'filename' => 'SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf',
+                    'index_date' => '2019-10-27'
+                ]
+            ]);
+
+        $this->_whatsNew->loadIndexByDateTable();
+    }
+
+    public function testLoadIndexByDateTableDecodesFilename()
+    {
+        $file = $this->createMock(Manx\IFile::class);
+        $this->_fileSystem->expects($this->once())->method('openFile')->with(\Manx\Config::configFile($this->_indexFile), 'r')->willReturn($file);
+        $file->expects($this->exactly(2))->method('eof')->willReturn(false, true);
+        $file->expects($this->once())->method('getString')->willReturn(
+            '2019-10-27 03:40:42 dec/pdp11/file%20%231.pdf');
+        $this->_db->expects($this->once())->method('createTemporarySiteIndexByDate');
+        $this->_db->expects($this->once())->method('addTemporarySiteIndexByDateRows')
+            ->with($this->_config['siteName'], [
+                [
+                    'path' => 'dec/pdp11/file%20%231.pdf',
+                    'dir_path' => 'dec/pdp11',
+                    'filename' => 'file #1.pdf',
+                    'index_date' => '2019-10-27'
+                ]
+            ]);
+
+        $this->_whatsNew->loadIndexByDateTable();
+    }
+
+    public function testDropIndexByDateTable()
+    {
+        $this->_db->expects($this->once())->method('dropTemporarySiteIndexByDate');
+
+        $this->_whatsNew->dropIndexByDateTable();
+    }
 }

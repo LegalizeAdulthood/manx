@@ -801,6 +801,84 @@ class ManxDatabase implements IManxDatabase
             array($name, $value, $value));
     }
 
+    public function createTemporarySiteIndexByDate()
+    {
+        $this->execute(
+            "CREATE TEMPORARY TABLE `tmp_site_index_by_date` ("
+            . "`site_id` INT(11) NOT NULL, "
+            . "`path` VARCHAR(255) NOT NULL, "
+            . "`dir_path` VARCHAR(255) NOT NULL DEFAULT '', "
+            . "`filename` VARCHAR(255) NOT NULL DEFAULT '', "
+            . "`index_date` DATE NULL DEFAULT NULL, "
+            . "UNIQUE KEY `site_path` (`site_id`, `path`), "
+            . "KEY `site_dir_filename` (`site_id`, `dir_path`(128), `filename`(128))"
+            . ") ENGINE=InnoDB DEFAULT CHARSET=utf8",
+            []);
+    }
+
+    public function addTemporarySiteIndexByDateRows($siteName, array $rows)
+    {
+        if (count($rows) == 0)
+        {
+            return;
+        }
+
+        $siteId = $this->siteIdForName($siteName);
+        foreach (array_chunk($rows, 500) as $chunk)
+        {
+            $values = [];
+            $params = [];
+            foreach ($chunk as $row)
+            {
+                $values[] = "(?, ?, ?, ?, ?)";
+                array_push($params, $siteId, $row['path'], $row['dir_path'],
+                    $row['filename'], $row['index_date']);
+            }
+            $this->execute(
+                "INSERT INTO `tmp_site_index_by_date`"
+                . "(`site_id`, `path`, `dir_path`, `filename`, `index_date`) "
+                . "VALUES " . implode(", ", $values) . " "
+                . "ON DUPLICATE KEY UPDATE "
+                    . "`dir_path` = VALUES(`dir_path`), "
+                    . "`filename` = VALUES(`filename`), "
+                    . "`index_date` = VALUES(`index_date`)",
+                $params);
+        }
+    }
+
+    public function dropTemporarySiteIndexByDate()
+    {
+        $this->execute(
+            "DROP TEMPORARY TABLE IF EXISTS `tmp_site_index_by_date`",
+            []);
+    }
+
+    private static function siteUnknownRelativePathSql()
+    {
+        return "IF(`su`.`dir_id` = -1, `su`.`filename`, "
+            . "CONCAT(`sud`.`path`, '/', `su`.`filename`))";
+    }
+
+    private static function copyRelativePathSql()
+    {
+        return "SUBSTRING(`c`.`url`, CHAR_LENGTH(`s`.`copy_base`) + 1)";
+    }
+
+    private static function copyRelativeDirSql()
+    {
+        $copyPath = self::copyRelativePathSql();
+        return "IF(INSTR($copyPath, '/') = 0, '', "
+            . "SUBSTRING_INDEX($copyPath, '/', "
+                . "CHAR_LENGTH($copyPath) - "
+                . "CHAR_LENGTH(REPLACE($copyPath, '/', ''))))";
+    }
+
+    private static function indexUnknownFilenameSql()
+    {
+        return "IF(`idx`.`dir_path` = '', `idx`.`path`, "
+            . "SUBSTRING(`idx`.`path`, CHAR_LENGTH(`idx`.`dir_path`) + 2))";
+    }
+
     private static function getAllDirs($dir)
     {
         $allDirs = [];
@@ -950,6 +1028,26 @@ class ManxDatabase implements IManxDatabase
             [$siteName]);
     }
 
+    public function getSiteUnknownPathsMissingFromIndex($siteName)
+    {
+        $path = self::siteUnknownRelativePathSql();
+        return $this->execute("SELECT `su`.`id`, $path AS `path` "
+            . "FROM `site_unknown` `su` "
+                . "INNER JOIN `site` `s` "
+                    . "ON `s`.`site_id` = `su`.`site_id` "
+                . "LEFT JOIN `site_unknown_dir` `sud` "
+                    . "ON `sud`.`site_id` = `s`.`site_id` "
+                    . "AND `su`.`dir_id` = `sud`.`id` "
+                . "LEFT JOIN `tmp_site_index_by_date` `idx` "
+                    . "ON `idx`.`site_id` = `s`.`site_id` "
+                    . "AND `idx`.`path` = $path "
+            . "WHERE `s`.`name` = ? "
+                . "AND `su`.`ignored` = 0 "
+                . "AND `idx`.`path` IS NULL "
+            . "ORDER BY `su`.`id`",
+            [$siteName]);
+    }
+
     public function removeSiteUnknownPathById($siteUnknownId)
     {
         $this->beginTransaction();
@@ -961,16 +1059,28 @@ class ManxDatabase implements IManxDatabase
 
     public function getPossiblyMovedSiteUnknownPaths($siteName)
     {
-        return $this->execute("SELECT CONCAT(`sud`.`path`, '/', `su`.`filename`) AS `path`, "
-            . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`filename`) AS `candidate_url`, "
+        $copyDir = self::copyRelativeDirSql();
+        $unknownFilename = self::indexUnknownFilenameSql();
+        return $this->execute("SELECT `idx`.`path`, "
+            . "CONCAT(`s`.`copy_base`, `idx`.`path`) AS `candidate_url`, "
             . "`su`.`id` AS `path_id`, `c`.`url`, `c`.`copy_id`, `c`.`size`, `c`.`md5` "
             . "FROM `copy` `c` "
                 . "INNER JOIN `site` `s` ON `s`.`site_id` = `c`.`site` "
-                . "INNER JOIN `site_unknown` `su` ON `su`.`site_id` = `s`.`site_id` AND `su`.`filename` = `c`.`filename` "
-                . "INNER JOIN `site_unknown_dir` `sud` ON `sud`.`site_id` = `s`.`site_id` AND `su`.`dir_id` = `sud`.`id` "
+                . "INNER JOIN `tmp_site_index_by_date` `idx` "
+                    . "ON `idx`.`site_id` = `s`.`site_id` "
+                    . "AND `idx`.`filename` = `c`.`filename` "
+                . "LEFT JOIN `site_unknown_dir` `sud` "
+                    . "ON `sud`.`site_id` = `s`.`site_id` "
+                    . "AND `sud`.`path` = `idx`.`dir_path` "
+                . "INNER JOIN `site_unknown` `su` "
+                    . "ON `su`.`site_id` = `s`.`site_id` "
+                    . "AND `su`.`filename` = $unknownFilename "
+                    . "AND `su`.`dir_id` = IF(`idx`.`dir_path` = '', -1, `sud`.`id`) "
             . "WHERE `s`.`name` = ? "
+                . "AND `c`.`url` LIKE CONCAT(`s`.`copy_base`, '%') "
                 . "AND `c`.`md5` <> '' "
-                . "AND `c`.`size` > 0",
+                . "AND `c`.`size` > 0 "
+                . "AND `idx`.`dir_path` <> $copyDir",
             [$siteName]);
     }
 

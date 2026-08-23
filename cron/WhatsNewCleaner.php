@@ -60,59 +60,73 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     public function removeNonExistentUnknownPaths()
     {
         $this->log("Remove non-existent unknown paths");
-        $count = 0;
-        $rows = $this->_db->getAllSiteUnknownPaths($this->_siteName);
-        $total = count($rows);
-        $this->log(sprintf('Checking %d paths.', $total));
-        foreach($rows as $row)
+        $this->loadIndexByDateTable();
+        try
         {
-            $path = $row['path'];
-            $url = \Manx\UrlNormalizer::normalize($this->_baseCheckUrl . $path);
-            $urlInfo = $this->_factory->createUrlInfo($url);
-            if (!$urlInfo->exists())
+            $count = 0;
+            $rows = $this->_db->getSiteUnknownPathsMissingFromIndex(
+                $this->_siteName);
+            $total = count($rows);
+            $this->log(sprintf('Checking %d paths.', $total));
+            foreach($rows as $row)
             {
-                $this->_db->removeSiteUnknownPathById($row['id']);
-                $this->log('    Path: ' . $path);
+                $path = $row['path'];
+                $url = \Manx\UrlNormalizer::normalize($this->_baseCheckUrl . $path);
+                $urlInfo = $this->_factory->createUrlInfo($url);
+                if (!$urlInfo->exists())
+                {
+                    $this->_db->removeSiteUnknownPathById($row['id']);
+                    $this->log('    Path: ' . $path);
+                }
+                if(++$count % 100 == 0)
+                {
+                    $this->log(sprintf('Progress: %d of %d (%.2f%%)', $count, $total, 100*$count/$total));
+                }
             }
-            if(++$count % 100 == 0)
-            {
-                $this->log(sprintf('Progress: %d of %d (%.2f%%)', $count, $total, 100*$count/$total));
-            }
+        }
+        finally
+        {
+            $this->_whatsNewIndex->dropIndexByDateTable();
         }
     }
 
     public function updateMovedFiles()
     {
-        $rows = $this->_db->getPossiblyMovedSiteUnknownPaths($this->_siteName);
-        $count = 0;
-        $total = count($rows);
-        $this->log(sprintf("Updating location of %d moved files for %s", $total, $this->_siteName));
-        foreach($rows as $row)
+        $this->loadIndexByDateTable();
+        try
         {
-            $path = $row['path'];
-            $candidateUrl = $row['candidate_url'];
-            if ($row['url'] == $candidateUrl)
+            $rows = $this->_db->getPossiblyMovedSiteUnknownPaths($this->_siteName);
+            $count = 0;
+            $total = count($rows);
+            $this->log(sprintf("Updating location of %d moved files for %s", $total, $this->_siteName));
+            foreach($rows as $row)
             {
-                continue;
-            }
-            $urlInfo = $this->_factory->createUrlInfo($this->_baseCheckUrl . $path);
-            if ($urlInfo->exists() && $row['md5'] != '')
-            {
-                $size = $urlInfo->size();
-                if ($size !== false && $row['size'] !== null && $size != $row['size'])
+                $path = $row['path'];
+                $candidateUrl = $row['candidate_url'];
+                $urlInfo = $this->_factory->createUrlInfo(
+                    \Manx\UrlNormalizer::normalize($this->_baseCheckUrl . $path));
+                if ($urlInfo->exists() && $row['md5'] != '')
                 {
-                    continue;
+                    $size = $urlInfo->size();
+                    if ($size !== false && $row['size'] !== null && $size != $row['size'])
+                    {
+                        continue;
+                    }
+                    if ($urlInfo->md5() == $row['md5'])
+                    {
+                        $this->_db->siteFileMoved($row['path_id'], $row['copy_id'], $candidateUrl);
+                        $this->log('Path: ' . $path);
+                    }
                 }
-                if ($urlInfo->md5() == $row['md5'])
+                if(++$count % 100 == 0)
                 {
-                    $this->_db->siteFileMoved($row['path_id'], $row['copy_id'], $candidateUrl);
-                    $this->log('Path: ' . $path);
+                    $this->log(sprintf('Progress: %d of %d (%.2f%%)', $count, $total, 100*$count/$total));
                 }
             }
-            if(++$count % 100 == 0)
-            {
-                $this->log(sprintf('Progress: %d of %d (%.2f%%)', $count, $total, 100*$count/$total));
-            }
+        }
+        finally
+        {
+            $this->_whatsNewIndex->dropIndexByDateTable();
         }
     }
 
@@ -160,6 +174,12 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     {
         $this->log("Updating ignored unknown directories");
         $this->_db->updateIgnoredUnknownDirs();
+    }
+
+    private function loadIndexByDateTable()
+    {
+        $this->updateWhatsNewIndex();
+        $this->_whatsNewIndex->loadIndexByDateTable();
     }
 
     public function cachePdfMetadata($timeLimitSeconds)

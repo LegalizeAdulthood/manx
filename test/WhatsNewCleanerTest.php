@@ -61,7 +61,9 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
 
     public function testNonExistentPathsAreRemoved()
     {
-        $this->_db->expects($this->once())->method('getAllSiteUnknownPaths')
+        $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
+        $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsMissingFromIndex')
             ->with('bitsavers')
             ->willReturn( array( array('id' => 1, 'path' => 'foo/path.pdf') ) );
         $this->_db->expects($this->once())->method('removeSiteUnknownPathById')->with(1);
@@ -76,12 +78,11 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
 
     public function testExistingPathsAreKept()
     {
-        $this->_db->expects($this->once())->method('getAllSiteUnknownPaths')
-            ->willReturn(array(
-                array('id' => 1, 'path' => 'foo/path.pdf')
-            ));
-        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
-        $this->_factory->expects($this->once())->method('createUrlInfo')->willReturn($this->_urlInfo);
+        $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
+        $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsMissingFromIndex')
+            ->willReturn(array());
+        $this->_factory->expects($this->never())->method('createUrlInfo');
         $this->_logger->expects($this->exactly(2))->method('log');
 
         $this->_cleaner->removeNonExistentUnknownPaths();
@@ -89,7 +90,9 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
 
     public function testPathsEscapeSpecialChars()
     {
-        $this->_db->expects($this->once())->method('getAllSiteUnknownPaths')
+        $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
+        $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
+        $this->_db->expects($this->once())->method('getSiteUnknownPathsMissingFromIndex')
             ->willReturn(array(
                 array('id' => 1, 'path' => 'foo/path#1.pdf')
             ));
@@ -104,6 +107,8 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
     public function testMovedFilesAreUpdated()
     {
         $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
+        $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
+        $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
         $this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
             ->with('bitsavers')
             ->willReturn( [
@@ -127,6 +132,8 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
     public function testMovedFilesWithDifferentSizesAreNotHashed()
     {
         $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
+        $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
+        $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
         $this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
             ->with('bitsavers')
             ->willReturn( [
@@ -148,15 +155,11 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
 
     public function testMovedFilesWithUnchangedUrlsAreSkipped()
     {
-        $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
-        $url = 'http://bitsavers.org/pdf/hp/newDir/foo.pdf';
+        $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
+        $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
         $this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
             ->with('bitsavers')
-            ->willReturn( [
-                ['path' => 'hp/newDir/foo.pdf', 'path_id' => 16,
-                    'candidate_url' => $url, 'url' => $url, 'copy_id' => 10,
-                    'size' => 1234, 'md5' => $md5]
-            ]);
+            ->willReturn( []);
         $this->_db->expects($this->never())->method('siteFileMoved');
         $this->_factory->expects($this->never())->method('createUrlInfo');
 

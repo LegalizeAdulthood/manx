@@ -199,6 +199,18 @@ class Schema9Test extends PHPUnit\Framework\TestCase
         $this->assertLessThan($version, $drop);
     }
 
+    public function testIndexByDateCacheTableIsNotPersistent()
+    {
+        $sql = self::schemaSql();
+
+        $this->assertStringNotContainsString(
+            'CREATE TABLE `tmp_site_index_by_date`',
+            $sql);
+        $this->assertStringNotContainsString(
+            'CREATE TABLE `site_index_by_date`',
+            $sql);
+    }
+
     private static function schemaSql()
     {
         return file_get_contents(__DIR__ . '/../schema/9-schema.sql');

@@ -44,31 +44,82 @@ class WhatsNewIndex implements IWhatsNewIndex
 
     public function parseIndexByDateFile()
     {
-        $indexByDate = $this->_fileSystem->openFile(Config::configFile($this->_indexByDateFile), 'r');
         $paths = [];
-        while (!$indexByDate->eof())
+        foreach ($this->readIndexByDateRows() as $row)
         {
-            $line = trim($indexByDate->getString());
-            if ($line == '')
-            {
-                continue;
-            }
-            $path = substr($line, 20);
-            if ($path !== false && $path != '')
-            {
-                array_push($paths, $path);
-            }
+            array_push($paths, $row['path']);
         }
         $this->_manxDb->addSiteUnknownPaths($this->_siteName, $paths);
     }
 
-    private static function escapeSpecialChars($path)
+    public function loadIndexByDateTable()
     {
-        return str_replace("#", urlencode("#"), $path);
+        $this->_manxDb->createTemporarySiteIndexByDate();
+        $this->_manxDb->addTemporarySiteIndexByDateRows(
+            $this->_siteName, $this->readIndexByDateRows());
+    }
+
+    public function dropIndexByDateTable()
+    {
+        $this->_manxDb->dropTemporarySiteIndexByDate();
+    }
+
+    private function readIndexByDateRows()
+    {
+        $indexByDate = $this->_fileSystem->openFile(
+            Config::configFile($this->_indexByDateFile), 'r');
+        $rows = [];
+        while (!$indexByDate->eof())
+        {
+            $row = self::parseIndexByDateLine(trim($indexByDate->getString()));
+            if (!is_null($row))
+            {
+                array_push($rows, $row);
+            }
+        }
+        return $rows;
+    }
+
+    private static function parseIndexByDateLine($line)
+    {
+        if ($line == '')
+        {
+            return null;
+        }
+        if (preg_match('/^([0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9]{2}:[0-9]{2}:[0-9]{2} (.+)$/',
+            $line, $matches) == 1)
+        {
+            return self::indexRow($matches[2], $matches[1]);
+        }
+        $path = substr($line, 20);
+        return ($path !== false && $path != '') ? self::indexRow($path, null) : null;
+    }
+
+    private static function indexRow($path, $indexDate)
+    {
+        $dirPath = pathinfo($path, PATHINFO_DIRNAME);
+        if ($dirPath == '.')
+        {
+            $dirPath = '';
+        }
+        return [
+            'path' => $path,
+            'dir_path' => $dirPath,
+            'filename' => self::decodedUrlBasename($path),
+            'index_date' => $indexDate
+        ];
+    }
+
+    private static function decodedUrlBasename($path)
+    {
+        $lastSlash = strrpos($path, '/');
+        $filename = ($lastSlash === false) ? $path : substr($path, $lastSlash + 1);
+        return rawurldecode($filename);
     }
 
     private $_manxDb;
     private $_factory;
+    private $_fileSystem;
     private $_timeStampProperty;
     private $_indexByDateUrl;
     private $_indexByDateFile;
