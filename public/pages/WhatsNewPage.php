@@ -314,16 +314,17 @@ EOH;
             $this->previewPart($fileBase, $thisDir['part_regex']);
         $title = UrlMetaData::titleForFileBase($fileBase);
         $existingCopy = $this->_manxDb->copyExistsForUrl($fileInfo['url']);
-        $pubs = $part == '' || is_array($existingCopy) ? []
-            : $this->_manxDb->getPublicationsForPartNumber($part, $companyId);
-        $exactPublication = self::exactPartPublication($part, $pubs);
+        list($pubs, $exactPublication, $searchType) =
+            $this->previewPublications(
+                $companyId, $part, $pubDate, $title, $existingCopy,
+                $regexResult);
         $status = self::previewStatus(
             $part, $pubDate, $title, $pubs, $existingCopy, $regexResult,
-            $exactPublication);
+            $exactPublication, $searchType);
         $pubId = $status == 'Accepted' ? $exactPublication['pub_id'] : '';
         $statusDetail = self::previewStatusDetail(
             $status, $part, $pubDate, $title, $pubs, $existingCopy,
-            $regexResult);
+            $regexResult, $searchType);
 
         return [
             'id' => $fileInfo['id'],
@@ -339,11 +340,44 @@ EOH;
             'regex_result' => $regexResult,
             'matching_publication' =>
                 self::matchingPublicationHtml(
-                    $companyId, $part, $pubs, $exactPublication),
+                    $companyId, $part, $title, $pubs, $exactPublication),
             'existing_copy' => self::existingCopyHtml($existingCopy),
             'status' => $status,
             'status_detail' => $statusDetail
         ];
+    }
+
+    private function previewPublications($companyId, $part, $pubDate, $title,
+        $existingCopy, $regexResult)
+    {
+        if (is_array($existingCopy) || $regexResult == 'Invalid'
+            || $pubDate == '' || $title == '')
+        {
+            return [[], null, ''];
+        }
+        if ($part != '')
+        {
+            $pubs = $this->_manxDb->getPublicationsForPartNumber(
+                $part, $companyId);
+            return [$pubs, self::exactPartPublication($part, $pubs), 'part'];
+        }
+
+        $pubs = $this->searchPublicationsForTitle($companyId, $title);
+        $exactPublication = count($pubs) == 1
+            ? self::exactTitlePublication($title, $pubs) : null;
+        return [$pubs, $exactPublication, 'title'];
+    }
+
+    private function searchPublicationsForTitle($companyId, $title)
+    {
+        $ignoredWords = [];
+        $keywords = Searcher::filterSearchKeywords($title, $ignoredWords);
+        if (count($keywords) == 0)
+        {
+            return [];
+        }
+        return $this->_manxDb->searchForPublications(
+            $companyId, $keywords, false);
     }
 
     private function previewPart($fileBase, $partRegex)
@@ -377,22 +411,47 @@ EOH;
         return count($matches) == 1 ? $matches[0] : null;
     }
 
+    private static function exactTitlePublication($title, $pubs)
+    {
+        $matches = [];
+        foreach ($pubs as $pub)
+        {
+            if (strcasecmp(trim($pub['ph_title']), trim($title)) == 0)
+            {
+                $matches[] = $pub;
+            }
+        }
+        return count($matches) == 1 ? $matches[0] : null;
+    }
+
     private static function previewStatus($part, $pubDate, $title, $pubs,
-        $existingCopy, $regexResult, $exactPublication)
+        $existingCopy, $regexResult, $exactPublication, $searchType)
     {
         if (is_array($existingCopy))
         {
             return 'Duplicate';
         }
-        if ($regexResult == 'Invalid'
-            || $regexResult == 'No match'
-            || $regexResult == 'Default no match')
+        if ($regexResult == 'Invalid')
         {
             return 'Rejected';
         }
-        if ($part == '' || $pubDate == '' || $title == '')
+        if ($pubDate == '' || $title == '')
         {
             return 'Rejected';
+        }
+        if ($searchType == 'title' && count($pubs) > 1)
+        {
+            return 'Rejected';
+        }
+        if ($searchType == 'title' && !is_null($exactPublication))
+        {
+            return 'Accepted';
+        }
+        if ($part == ''
+            || $regexResult == 'No match'
+            || $regexResult == 'Default no match')
+        {
+            return 'Uncertain';
         }
         if (count($pubs) == 0)
         {
@@ -406,7 +465,7 @@ EOH;
     }
 
     private static function previewStatusDetail($status, $part, $pubDate,
-        $title, $pubs, $existingCopy, $regexResult)
+        $title, $pubs, $existingCopy, $regexResult, $searchType)
     {
         if ($status == 'Accepted')
         {
@@ -421,6 +480,30 @@ EOH;
         {
             return 'The directory part-number regex is invalid.';
         }
+        if ($pubDate == '')
+        {
+            return 'No publication date was extracted from the filename.';
+        }
+        if ($title == '')
+        {
+            return 'No title was extracted from the filename.';
+        }
+        if ($searchType == 'title' && count($pubs) > 1)
+        {
+            return sprintf(
+                'The extracted title %s matched %d publications.',
+                $title, count($pubs));
+        }
+        if ($searchType == 'title' && count($pubs) == 0)
+        {
+            return sprintf(
+                'No publication matched the extracted title %s.', $title);
+        }
+        if ($searchType == 'title')
+        {
+            return sprintf(
+                'No exact title match was found for %s.', $title);
+        }
         if ($regexResult == 'No match')
         {
             return 'The directory part-number regex did not match the filename.';
@@ -432,14 +515,6 @@ EOH;
         if ($part == '')
         {
             return 'No part number was extracted from the filename.';
-        }
-        if ($pubDate == '')
-        {
-            return 'No publication date was extracted from the filename.';
-        }
-        if ($title == '')
-        {
-            return 'No title was extracted from the filename.';
         }
         if (count($pubs) == 0)
         {
@@ -469,8 +544,8 @@ EOH;
             htmlspecialchars($title));
     }
 
-    private static function matchingPublicationHtml($companyId, $part, $pubs,
-        $exactPublication = null)
+    private static function matchingPublicationHtml($companyId, $part, $title,
+        $pubs, $exactPublication = null)
     {
         if (count($pubs) == 0)
         {
@@ -484,9 +559,10 @@ EOH;
         }
         if (count($pubs) > 1)
         {
+            $query = $part == '' ? $title : $part;
             return sprintf('<a href="search.php?cp=%s&amp;q=%s">%d candidates</a>',
-                htmlspecialchars($companyId), htmlspecialchars(rawurlencode($part)),
-                count($pubs));
+                htmlspecialchars($companyId),
+                htmlspecialchars(rawurlencode($query)), count($pubs));
         }
         return self::detailsLink(
             $companyId, $pubs[0]['pub_id'], $pubs[0]['ph_title']);
@@ -519,6 +595,13 @@ EOH;
     {
         return sprintf('url-wizard.php?id=%d&amp;url=%s',
             $id, htmlspecialchars(rawurlencode($url)));
+    }
+
+    private static function documentCopyLink($url)
+    {
+        return sprintf(' (<a href="%s">Copy</a>)',
+            htmlspecialchars(UrlNormalizer::normalize($url),
+                ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401));
     }
 
     private static function isBulkSelectableStatus($status)
@@ -575,10 +658,10 @@ EOH;
                 ? '' : ' disabled="disabled"';
             printf('<tr><td><input type="checkbox" id="ingest%d" name="ingest%d" value="%d"%s%s/></td>',
                 $i, $i, $row['id'], $checked, $disabled);
-            printf('<td><a href="%s">%s</a>%s</td><td>%s</td></tr>' . "\n",
+            printf('<td><a href="%s">%s</a>%s%s</td><td>%s</td></tr>' . "\n",
                 self::urlWizardLink($row['id'], $row['url']),
-                htmlspecialchars($row['path']), self::previewMetadataHtml($row),
-                self::previewStatusHtml($row));
+                htmlspecialchars($row['path']), self::documentCopyLink($row['url']),
+                self::previewMetadataHtml($row), self::previewStatusHtml($row));
             ++$i;
         }
         print <<<EOH
