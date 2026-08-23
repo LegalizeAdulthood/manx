@@ -144,6 +144,15 @@ class UrlWizardPage extends AdminPageBase
         return is_string($path) && strtolower(substr($path, -4)) == '.pdf';
     }
 
+    private static function requestUrl($url)
+    {
+        // Decode the outer query parameter, not escapes in an already-decoded
+        // document URL.
+        return preg_match('/^[A-Za-z][A-Za-z0-9+.-]*%3A/i', $url)
+            ? rawurldecode($url)
+            : $url;
+    }
+
     private function cachedPdfMetadata($idPresent, $urlPresent, $url)
     {
         if (!$idPresent || !$urlPresent || !self::isPdfUrl($url))
@@ -640,7 +649,7 @@ EOH;
     {
         $idPresent = array_key_exists('id', $this->_vars);
         $urlPresent = array_key_exists('url', $this->_vars);
-        $url = $urlPresent ? $this->_vars['url'] : '';
+        $url = $urlPresent ? self::requestUrl($this->_vars['url']) : '';
         $metaData = $urlPresent ? $this->_urlMeta->determineData($url)
             : [
                 'format' => '',

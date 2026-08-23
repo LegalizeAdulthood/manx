@@ -453,7 +453,7 @@ EOH;
         $this->_urlMeta->expects($this->once())->method('determineData')
             ->with($url)
             ->willReturn($metaData);
-        $this->_config['vars'] = ['url' => $url];
+        $this->_config['vars'] = ['url' => rawurlencode($url)];
         $page = new UrlWizardPageTester($this->_config);
 
         ob_start();
@@ -512,7 +512,7 @@ EOH;
         $this->_urlMeta->expects($this->once())->method('determineData')
             ->with($url)
             ->willReturn($metaData);
-        $this->_config['vars'] = ['url' => $url];
+        $this->_config['vars'] = ['url' => rawurlencode($url)];
         $page = new UrlWizardPageTester($this->_config);
 
         ob_start();
