@@ -31,12 +31,15 @@ class UrlWizardService extends ServicePageBase
     private $_meta;
     /** @var IPdfMetadata */
     private $_pdfMetadata;
+    /** @var Container */
+    private $_config;
 
     public function __construct(Container $config)
     {
         parent::__construct($config);
+        $this->_config = $config;
         $this->_meta = $config['urlMetaData'];
-        $this->_pdfMetadata = $config['pdfMetadata'];
+        $this->_pdfMetadata = null;
     }
 
     private function determineData()
@@ -116,6 +119,10 @@ class UrlWizardService extends ServicePageBase
 
     private function pdfMetadata()
     {
+        if (is_null($this->_pdfMetadata))
+        {
+            $this->_pdfMetadata = $this->_config['pdfMetadata'];
+        }
         return $this->_pdfMetadata->metadataForUrl($this->param('url'));
     }
 

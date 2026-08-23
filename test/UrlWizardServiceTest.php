@@ -194,6 +194,21 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
         $this->expectOutputString('[]');
     }
 
+    public function testPubSearchDoesNotCreatePdfMetadataService()
+    {
+        $this->_config['pdfMetadata'] = function($c) {
+            throw new RuntimeException('PDF metadata should not be used.');
+        };
+        $this->_db->expects($this->any())->method('searchForPublications')
+            ->willReturn([]);
+        $this->_config['vars'] = self::varsForPubSearch(13, 'terminal');
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $this->expectOutputString('[]');
+    }
+
     private static function databaseRowFromDictionary(array $dict)
     {
         $result = array();
