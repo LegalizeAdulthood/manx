@@ -301,6 +301,9 @@ EOH;
         $status = self::previewStatus(
             $part, $pubDate, $title, $pubs, $existingCopy, $regexResult);
         $pubId = $status == 'Accepted' ? $pubs[0]['pub_id'] : '';
+        $statusDetail = self::previewStatusDetail(
+            $status, $part, $pubDate, $title, $pubs, $existingCopy,
+            $regexResult);
 
         return [
             'id' => $fileInfo['id'],
@@ -316,7 +319,8 @@ EOH;
             'matching_publication' =>
                 self::matchingPublicationHtml($companyId, $part, $pubs),
             'existing_copy' => self::existingCopyHtml($existingCopy),
-            'status' => $status
+            'status' => $status,
+            'status_detail' => $statusDetail
         ];
     }
 
@@ -366,6 +370,62 @@ EOH;
         return 'Accepted';
     }
 
+    private static function previewStatusDetail($status, $part, $pubDate,
+        $title, $pubs, $existingCopy, $regexResult)
+    {
+        if ($status == 'Accepted')
+        {
+            return '';
+        }
+        if (is_array($existingCopy))
+        {
+            return sprintf('A copy already exists for this URL: %s.',
+                $existingCopy['ph_title']);
+        }
+        if ($regexResult == 'Invalid')
+        {
+            return 'The directory part-number regex is invalid.';
+        }
+        if ($regexResult == 'No match')
+        {
+            return 'The directory part-number regex did not match the filename.';
+        }
+        if ($regexResult == 'Default no match')
+        {
+            return 'The default filename metadata rules did not find a part number.';
+        }
+        if ($part == '')
+        {
+            return 'No part number was extracted from the filename.';
+        }
+        if ($pubDate == '')
+        {
+            return 'No publication date was extracted from the filename.';
+        }
+        if ($title == '')
+        {
+            return 'No title was extracted from the filename.';
+        }
+        if (count($pubs) == 0)
+        {
+            return sprintf(
+                'No publication matched the extracted part number %s.', $part);
+        }
+        if (count($pubs) > 1)
+        {
+            return sprintf(
+                'The extracted part number %s matched %d publications.',
+                $part, count($pubs));
+        }
+        if ($pubs[0]['ph_part'] != $part)
+        {
+            return sprintf(
+                'The publication match used part number %s instead of %s.',
+                $pubs[0]['ph_part'], $part);
+        }
+        return sprintf('The row status is %s.', $status);
+    }
+
     private static function detailsLink($companyId, $pubId, $title)
     {
         return sprintf('<a href="details.php/%s,%s">%s</a>',
@@ -398,6 +458,19 @@ EOH;
         }
         return self::detailsLink($existingCopy['ph_company'],
             $existingCopy['ph_pub'], $existingCopy['ph_title']);
+    }
+
+    private static function previewStatusHtml($row)
+    {
+        $status = htmlspecialchars($row['status']);
+        if ($row['status'] == 'Accepted')
+        {
+            return $status;
+        }
+
+        return sprintf(
+            '<a href="#" onclick="showIngestPreviewStatusDetail(this); return false;" data-status-detail="%s">%s</a>',
+            htmlspecialchars($row['status_detail']), $status);
     }
 
     private function renderPreviewTable($previewRows)
@@ -435,7 +508,7 @@ EOH;
             printf('<td>%s</td><td>%s</td><td>%s</td><td>%s</td>'
                 . '<td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
                 . "\n",
-                htmlspecialchars($row['status']),
+                self::previewStatusHtml($row),
                 htmlspecialchars($row['part']),
                 htmlspecialchars($row['pub_date']),
                 htmlspecialchars($row['title']),
@@ -448,6 +521,11 @@ EOH;
         print <<<EOH
 </table>
 <script type="text/javascript">
+function showIngestPreviewStatusDetail(link)
+{
+    alert(link.getAttribute("data-status-detail"));
+}
+
 function setIngestPreviewChecked(checked)
 {
     var form = document.getElementById("ingest_preview_form");

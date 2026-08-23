@@ -453,7 +453,8 @@ EOH;
                 'matching_publication' =>
                     '<a href="details.php/13,23">Jumbotron Users Guide</a>',
                 'existing_copy' => 'No',
-                'status' => 'Accepted'
+                'status' => 'Accepted',
+                'status_detail' => ''
             ]
         ], $rows);
     }
@@ -584,6 +585,13 @@ EOH;
         $this->assertEquals(
             ['Duplicate', 'Rejected', 'Uncertain'],
             array_column($rows, 'status'));
+        $this->assertEquals(
+            [
+                'A copy already exists for this URL: Jumbotron Users Guide.',
+                'The directory part-number regex did not match the filename.',
+                'The extracted part number EK-4444-01 matched 2 publications.'
+            ],
+            array_column($rows, 'status_detail'));
         $this->assertEquals(
             '<a href="details.php/13,23">Jumbotron Users Guide</a>',
             $rows[0]['existing_copy']);
@@ -718,6 +726,11 @@ EOH;
             $output);
         $this->assertStringContainsString(
             '<input type="checkbox" id="ingest1" name="ingest1" value="223" disabled="disabled"/>',
+            $output);
+        $this->assertStringContainsString(
+            'function showIngestPreviewStatusDetail(link)', $output);
+        $this->assertStringContainsString(
+            '<td><a href="#" onclick="showIngestPreviewStatusDetail(this); return false;" data-status-detail="The directory part-number regex did not match the filename.">Rejected</a></td>',
             $output);
         $this->assertStringContainsString(
             'input[type="checkbox"][name^="ingest"]:not(:disabled)',
