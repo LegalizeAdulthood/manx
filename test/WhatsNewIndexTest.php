@@ -166,6 +166,16 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
                     'index_date' => '2019-10-27'
                 ]
             ]);
+        $this->_db->expects($this->once())->method(
+            'addTemporarySiteIndexDirectoryRows')
+            ->with($this->_config['siteName'], [
+                'ibm/4381/fe',
+                'ibm/4381',
+                'ibm',
+                'ibm/370/VM_SP/Release_5_Dec86',
+                'ibm/370/VM_SP',
+                'ibm/370'
+            ]);
         $this->_db->expects($this->once())->method('addSiteUnknownPaths')->
             with($this->_config['siteName'],
                 ['ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
@@ -188,6 +198,16 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
             'createTemporarySiteIndexByDate');
         $this->_db->expects($this->once())->method(
             'addTemporarySiteIndexByDateRows');
+        $this->_db->expects($this->once())->method(
+            'addTemporarySiteIndexDirectoryRows')
+            ->with($this->_config['siteName'], [
+                'ibm/4381/fe',
+                'ibm/4381',
+                'ibm',
+                'ibm/370/VM_SP/Release_5_Dec86',
+                'ibm/370/VM_SP',
+                'ibm/370'
+            ]);
         $this->_db->expects($this->once())->method('addSiteUnknownPaths')->
             with($this->_config['siteName'],
                 ['ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
@@ -217,6 +237,13 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
                 function($siteName, $rows) use (&$indexCalls) {
                     array_push($indexCalls, [$siteName, $rows]);
                 });
+        $dirCalls = [];
+        $this->_db->expects($this->exactly(2))
+            ->method('addTemporarySiteIndexDirectoryRows')
+            ->willReturnCallback(
+                function($siteName, $dirs) use (&$dirCalls) {
+                    array_push($dirCalls, [$siteName, $dirs]);
+                });
         $calls = [];
         $this->_db->expects($this->exactly(2))->method('addSiteUnknownPaths')
             ->willReturnCallback(
@@ -234,6 +261,9 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
             $indexCalls[0][1][0]['path']);
         $this->assertSame('file500.pdf',
             $indexCalls[1][1][0]['filename']);
+        $this->assertEquals(['dec/pdp11', 'dec'], $dirCalls[0][1]);
+        $this->assertEquals(['dec/pdp11', 'dec'], $dirCalls[1][1]);
+        $this->assertSame($this->_config['siteName'], $dirCalls[0][0]);
         $this->assertCount(500, $calls[0][1]);
         $this->assertCount(1, $calls[1][1]);
         $this->assertSame($this->_config['siteName'], $calls[0][0]);

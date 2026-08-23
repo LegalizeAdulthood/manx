@@ -815,6 +815,13 @@ class ManxDatabase implements IManxDatabase
             . "KEY `site_dir_filename` (`site_id`, `dir_path`(128), `filename`(128))"
             . ") ENGINE=InnoDB DEFAULT CHARSET=utf8",
             []);
+        $this->execute(
+            "CREATE TEMPORARY TABLE `tmp_site_index_dir` ("
+            . "`site_id` INT(11) NOT NULL, "
+            . "`path` VARCHAR(255) NOT NULL, "
+            . "UNIQUE KEY `site_path` (`site_id`, `path`)"
+            . ") ENGINE=InnoDB DEFAULT CHARSET=utf8",
+            []);
     }
 
     public function addTemporarySiteIndexByDateRows($siteName, array $rows)
@@ -850,8 +857,38 @@ class ManxDatabase implements IManxDatabase
     public function dropTemporarySiteIndexByDate()
     {
         $this->execute(
+            "DROP TEMPORARY TABLE IF EXISTS `tmp_site_index_dir`",
+            []);
+        $this->execute(
             "DROP TEMPORARY TABLE IF EXISTS `tmp_site_index_by_date`",
             []);
+    }
+
+    public function addTemporarySiteIndexDirectoryRows($siteName, array $dirs)
+    {
+        if (count($dirs) == 0)
+        {
+            return;
+        }
+
+        $siteId = $this->siteIdForName($siteName);
+        foreach (array_chunk(array_unique($dirs), 500) as $chunk)
+        {
+            $values = [];
+            $params = [];
+            foreach ($chunk as $dir)
+            {
+                $values[] = "(?, ?)";
+                array_push($params, $siteId, $dir);
+            }
+            $this->execute(
+                "INSERT INTO `tmp_site_index_dir`"
+                . "(`site_id`, `path`) "
+                . "VALUES " . implode(", ", $values) . " "
+                . "ON DUPLICATE KEY UPDATE "
+                    . "`site_id` = VALUES(`site_id`)",
+                $params);
+        }
     }
 
     private static function siteUnknownRelativePathSql()
@@ -1078,14 +1115,11 @@ class ManxDatabase implements IManxDatabase
             . "FROM `site_unknown_dir` `sud` "
                 . "INNER JOIN `site` `s` "
                     . "ON `s`.`site_id` = `sud`.`site_id` "
-                . "LEFT JOIN `tmp_site_index_by_date` `idx` "
-                    . "ON `idx`.`site_id` = `s`.`site_id` "
-                    . "AND (`idx`.`dir_path` = `sud`.`path` "
-                        . "OR LEFT(`idx`.`dir_path`, "
-                            . "CHAR_LENGTH(`sud`.`path`) + 1) = "
-                            . "CONCAT(`sud`.`path`, '/')) "
+                . "LEFT JOIN `tmp_site_index_dir` `idxd` "
+                    . "ON `idxd`.`site_id` = `s`.`site_id` "
+                    . "AND `idxd`.`path` = `sud`.`path` "
             . "WHERE `s`.`name` = ? "
-                . "AND `idx`.`path` IS NULL",
+                . "AND `idxd`.`path` IS NULL",
             [$siteName]);
     }
 

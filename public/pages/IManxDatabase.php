@@ -58,6 +58,7 @@ interface IManxDatabase
     function setProperty($name, $value);
     function createTemporarySiteIndexByDate();
     function addTemporarySiteIndexByDateRows($siteName, array $rows);
+    function addTemporarySiteIndexDirectoryRows($siteName, array $dirs);
     function dropTemporarySiteIndexByDate();
     function addSiteUnknownPaths($siteName, array $paths);
     function ignoreSitePaths(array $ignoredIds);

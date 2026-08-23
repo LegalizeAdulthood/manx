@@ -61,6 +61,8 @@ class WhatsNewIndex implements IWhatsNewIndex
                 }
                 $this->_manxDb->addTemporarySiteIndexByDateRows(
                     $this->_siteName, $rows);
+                $this->_manxDb->addTemporarySiteIndexDirectoryRows(
+                    $this->_siteName, self::directoryPathsForRows($rows));
                 $this->_manxDb->addSiteUnknownPaths($this->_siteName, $paths);
             });
             $this->_manxDb->removeSiteUnknownPathsMissingFromIndex(
@@ -140,6 +142,34 @@ class WhatsNewIndex implements IWhatsNewIndex
             'filename' => self::decodedUrlBasename($path),
             'index_date' => $indexDate
         ];
+    }
+
+    private static function directoryPathsForRows($rows)
+    {
+        $dirs = [];
+        foreach ($rows as $row)
+        {
+            foreach (self::directoryPaths($row['dir_path']) as $dir)
+            {
+                $dirs[$dir] = true;
+            }
+        }
+        return array_keys($dirs);
+    }
+
+    private static function directoryPaths($dir)
+    {
+        $dirs = [];
+        while ($dir != '')
+        {
+            $dirs[] = $dir;
+            $dir = pathinfo($dir, PATHINFO_DIRNAME);
+            if ($dir == '.')
+            {
+                $dir = '';
+            }
+        }
+        return $dirs;
     }
 
     private static function decodedUrlBasename($path)
