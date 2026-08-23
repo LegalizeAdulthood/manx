@@ -87,6 +87,10 @@ EOH;
 
 EOH;
         }
+        if (array_key_exists('after_help', $options))
+        {
+            print $options['after_help'];
+        }
         if (array_key_exists('working', $options))
         {
             print "<span id=\"${id}_working\" class=\"hidden working\">Working...</span>\n";

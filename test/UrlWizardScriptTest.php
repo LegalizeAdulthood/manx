@@ -30,7 +30,7 @@ class UrlWizardScriptTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString('function url_is_pdf(url)', $script);
         $this->assertStringContainsString('/^[^?#]+\\.pdf([?#].*)?$/i.test(url)', $script);
         $this->assertStringContainsString(
-            '(url_is_pdf(url) ? show : hide)("pdf_metadata_fetch_field")',
+            '(url_is_pdf(url) ? show : hide)("pdf_metadata_fetch")',
             $script);
     }
 

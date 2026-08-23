@@ -484,15 +484,9 @@ EOH;
         $output = ob_get_clean();
 
         $this->assertStringContainsString(
-            '<input type="hidden" id="site_company_directory"'
-                . ' name="site_company_directory" value="DEC" />',
+            '<button type="button" id="pdf_metadata_fetch" class="hidden">Fetch PDF Metadata</button>',
             $output);
-        $this->assertStringContainsString(
-            '<input type="hidden" id="site_company_parent_directory"'
-                . ' name="site_company_parent_directory" value="computing" />',
-            $output);
-        $this->assertStringContainsString(
-            '<li id="pdf_metadata_fetch_field" class="hidden">',
+        $this->assertStringNotContainsString('pdf_metadata_fetch_field',
             $output);
         $this->assertStringContainsString(
             '<details id="pdf_metadata_results" class="hidden">',
@@ -610,9 +604,13 @@ EOH;
     {
         $output = $this->renderPdfMetadataPage([]);
 
-        $this->assertStringContainsString(
-            '<button type="button" id="pdf_metadata_fetch">Fetch</button>',
-            $output);
+        $helpButton = '<img id="copy_url_help_button" src="assets/help.png" width="16" height="16" />';
+        $fetchButton =
+            '<button type="button" id="pdf_metadata_fetch">Fetch PDF Metadata</button>';
+        $this->assertStringContainsString($helpButton, $output);
+        $this->assertStringContainsString($fetchButton, $output);
+        $this->assertLessThan(strpos($output, $fetchButton),
+            strpos($output, $helpButton));
         $this->assertStringContainsString(
             '<details id="pdf_metadata_results" class="hidden">',
             $output);
@@ -781,10 +779,9 @@ EOH;
             : '';
         $copyLinkClass = $urlPresent ? '' : 'hidden';
         $copyTextClass = $urlPresent ? 'hidden' : '';
-        $siteCompanyDirectory = self::param($vars, 'site_company_directory');
-        $siteCompanyParentDirectory = self::param($vars,
-            'site_company_parent_directory');
-        $pdfMetadataClass = $urlPresent && self::isPdfUrl($copyUrl) ? '' : 'hidden';
+        $pdfMetadataClass = $urlPresent && self::isPdfUrl($copyUrl)
+            ? ''
+            : ' class="hidden"';
         $siteCompanyDirectory = self::param($vars, 'site_company_directory');
         $siteCompanyParentDirectory = self::param($vars,
             'site_company_parent_directory');
@@ -803,16 +800,12 @@ $siteUnknown
 <label for="copy_url">Document URL</label>
 <input type="text" id="copy_url" name="copy_url" size="60" maxlength="255"$copyReadOnly value="$copyUrl" />
 <img id="copy_url_help_button" src="assets/help.png" width="16" height="16" />
+<button type="button" id="pdf_metadata_fetch"$pdfMetadataClass>Fetch PDF Metadata</button>
+<span id="pdf_metadata_working" class="hidden working">Working...</span>
+<div id="pdf_metadata_error" class="error hidden"></div>
 <span id="copy_url_working" class="hidden working">Working...</span>
 <div id="copy_url_help" class="hidden">The complete URL for the document.</div>
 <div id="copy_url_error" class="error hidden"></div>
-</li>
-
-<li id="pdf_metadata_fetch_field" class="$pdfMetadataClass">
-<label for="pdf_metadata_fetch">PDF Metadata</label>
-<button type="button" id="pdf_metadata_fetch">Fetch</button>
-<span id="pdf_metadata_working" class="hidden working">Working...</span>
-<div id="pdf_metadata_error" class="error hidden"></div>
 </li>
 
 <li id="copy_mirror_url_field" class="$mirrorClass">

@@ -491,14 +491,14 @@ $(function()
 
     function reset_pdf_metadata()
     {
-        hide("pdf_metadata_fetch_field");
+        hide("pdf_metadata_fetch");
         clear_pdf_metadata_results();
     }
 
     function show_or_hide_pdf_metadata(url)
     {
         clear_pdf_metadata_results();
-        (url_is_pdf(url) ? show : hide)("pdf_metadata_fetch_field");
+        (url_is_pdf(url) ? show : hide)("pdf_metadata_fetch");
     }
 
     function set_pdf_metadata(json)

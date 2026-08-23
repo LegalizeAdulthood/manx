@@ -270,6 +270,19 @@ EOH;
             : '';
         $copyLinkClass = $hasCopyLink ? '' : 'hidden';
         $copyTextClass = $hasCopyLink ? 'hidden' : '';
+        $pdfMetadataAction = '';
+        if (count($cachedPdfMetadata) == 0)
+        {
+            $pdfMetadataClass = $urlPresent && self::isPdfUrl($url)
+                ? ''
+                : ' class="hidden"';
+            $pdfMetadataAction = <<<EOH
+<button type="button" id="pdf_metadata_fetch"$pdfMetadataClass>Fetch PDF Metadata</button>
+<span id="pdf_metadata_working" class="hidden working">Working...</span>
+<div id="pdf_metadata_error" class="error hidden"></div>
+
+EOH;
+        }
         print <<<EOH
 <fieldset id="copy_fields">
 <legend id="copy_legend"><a id="copy_link"$copyLink class="$copyLinkClass">Copy</a><span id="copy_text" class="$copyTextClass">Copy</span></legend>
@@ -280,24 +293,9 @@ EOH;
         $this->renderTextInput('Document URL', 'copy_url', [
             'size' => 60, 'maxlength' => 255, 'working' => true,
             'help' => 'The complete URL for the document.',
-            'readonly' => $urlPresent, 'value' => $url
+            'readonly' => $urlPresent, 'value' => $url,
+            'after_help' => $pdfMetadataAction
             ]);
-        if (count($cachedPdfMetadata) == 0)
-        {
-            $pdfMetadataClass = $urlPresent && self::isPdfUrl($url)
-                ? ''
-                : 'hidden';
-            print <<<EOH
-<li id="pdf_metadata_fetch_field" class="$pdfMetadataClass">
-<label for="pdf_metadata_fetch">PDF Metadata</label>
-<button type="button" id="pdf_metadata_fetch">Fetch</button>
-<span id="pdf_metadata_working" class="hidden working">Working...</span>
-<div id="pdf_metadata_error" class="error hidden"></div>
-</li>
-
-
-EOH;
-        }
         $this->renderTextInput('Mirror Document URL', 'copy_mirror_url', [
             'class' => strlen($mirrorUrl) == 0 ? 'hidden' : '', 'size' => 60, 'maxlength' => 255,
             'readonly' => true, 'value' => $mirrorUrl,
