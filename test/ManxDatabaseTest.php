@@ -690,12 +690,12 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     {
         $ignoredIds = [56, 111];
         $update = "UPDATE `site_unknown` `su` SET `su`.`ignored` = 1 WHERE `su`.`id` in (?, ?)";
-        $refreshDirs = "CALL `manx_update_unknown_dir_ignored`()";
-        $this->_db->expects($this->once())->method('beginTransaction');
-        $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
+        $refreshDir56 = "CALL `manx_update_unknown_single_dir_ignored`(56)";
+        $refreshDir111 = "CALL `manx_update_unknown_single_dir_ignored`(111)";
+        $this->_db->expects($this->exactly(3))->method('execute')->withConsecutive(
             [$update, $ignoredIds],
-            [$refreshDirs, []]);
-        $this->_db->expects($this->once())->method('commit');
+            [$refreshDir56, []],
+            [$refreshDir111, []]);
 
         $this->_manxDb->ignoreSitePaths($ignoredIds);
     }
