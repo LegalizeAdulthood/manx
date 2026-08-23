@@ -35,7 +35,18 @@
 
 #pdf_metadata_results
 {
-    margin: 0 0 1em 5em
+    margin-bottom: 1em
+}
+
+#pdf_metadata_results input
+{
+    margin-left: 0
+}
+
+#pdf_metadata_results label
+{
+    float: none;
+    width: auto
 }
 
 #pdf_metadata_results table

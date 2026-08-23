@@ -371,8 +371,7 @@ EOH;
     {
         $cached = count($cachedPdfMetadata) > 0;
         $hasValues = $cached && self::hasPdfMetadataValues($cachedPdfMetadata);
-        $detailsClass = $cached ? '' : 'hidden';
-        $detailsOpen = $cached ? ' open="open"' : '';
+        $fieldSetClass = $cached ? '' : 'hidden';
         $emptyClass = $cached && !$hasValues ? '' : 'hidden';
         $copyDisabled = $cached && !$hasValues ? ' disabled="disabled"' : '';
         $titleClass = self::pdfMetadataRowClass($cachedPdfMetadata, 'title');
@@ -391,35 +390,40 @@ EOH;
         $credits = self::pdfMetadataHtml($cachedPdfMetadata, 'copy_credits');
         print <<<EOH
 
-<details id="pdf_metadata_results" class="$detailsClass"$detailsOpen>
-<summary>Extracted Metadata</summary>
+<fieldset id="pdf_metadata_results" class="$fieldSetClass">
+<legend>Extracted Metadata</legend>
 <table>
 <tbody>
 <tr id="pdf_metadata_title_row" class="$titleClass">
-<th scope="row">Title</th>
+<td><input type="checkbox" id="pdf_metadata_title_copy" checked="checked" /></td>
+<th scope="row"><label for="pdf_metadata_title_copy">Title</label></th>
 <td id="pdf_metadata_title">$title</td>
 </tr>
 <tr id="pdf_metadata_keywords_row" class="$keywordsClass">
-<th scope="row">Keywords</th>
+<td><input type="checkbox" id="pdf_metadata_keywords_copy" checked="checked" /></td>
+<th scope="row"><label for="pdf_metadata_keywords_copy">Keywords</label></th>
 <td id="pdf_metadata_keywords">$keywords</td>
 </tr>
 <tr id="pdf_metadata_abstract_row" class="$abstractClass">
-<th scope="row">Abstract</th>
+<td><input type="checkbox" id="pdf_metadata_abstract_copy" checked="checked" /></td>
+<th scope="row"><label for="pdf_metadata_abstract_copy">Abstract</label></th>
 <td id="pdf_metadata_abstract">$abstract</td>
 </tr>
 <tr id="pdf_metadata_copy_notes_row" class="$notesClass">
-<th scope="row">Notes</th>
+<td><input type="checkbox" id="pdf_metadata_copy_notes_copy" checked="checked" /></td>
+<th scope="row"><label for="pdf_metadata_copy_notes_copy">Notes</label></th>
 <td id="pdf_metadata_copy_notes">$notes</td>
 </tr>
 <tr id="pdf_metadata_copy_credits_row" class="$creditsClass">
-<th scope="row">Credits</th>
+<td><input type="checkbox" id="pdf_metadata_copy_credits_copy" checked="checked" /></td>
+<th scope="row"><label for="pdf_metadata_copy_credits_copy">Credits</label></th>
 <td id="pdf_metadata_copy_credits">$credits</td>
 </tr>
 </tbody>
 </table>
 <div id="pdf_metadata_empty" class="$emptyClass">No PDF metadata found.</div>
 <button type="button" id="pdf_metadata_copy"$copyDisabled>Copy metadata</button>
-</details>
+</fieldset>
 
 EOH;
         $this->renderCachedPdfMetadataJson($cachedPdfMetadata);

@@ -21,6 +21,12 @@ class UrlWizardScriptTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString("['copy_notes', 'copy_notes']", $script);
         $this->assertStringContainsString("['copy_credits', 'copy_credits']", $script);
         $this->assertStringContainsString('if (value.length > 0)', $script);
+        $this->assertStringContainsString(
+            '$("#pdf_metadata_" + source + "_copy").prop("checked")',
+            $script);
+        $this->assertStringContainsString(
+            '$("#pdf_metadata_" + source + "_copy").prop("checked", true)',
+            $script);
     }
 
     public function testPdfMetadataFetchIsPdfOnly()

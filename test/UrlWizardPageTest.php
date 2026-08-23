@@ -489,7 +489,7 @@ EOH;
         $this->assertStringNotContainsString('pdf_metadata_fetch_field',
             $output);
         $this->assertStringContainsString(
-            '<details id="pdf_metadata_results" class="hidden">',
+            '<fieldset id="pdf_metadata_results" class="hidden">',
             $output);
         $this->assertStringContainsString(
             '<input type="hidden" id="site_company_directory"'
@@ -556,7 +556,16 @@ EOH;
         ]);
 
         $this->assertStringContainsString(
-            '<details id="pdf_metadata_results" class="" open="open">',
+            '<fieldset id="pdf_metadata_results" class="">',
+            $output);
+        $this->assertStringContainsString(
+            '<legend>Extracted Metadata</legend>',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="checkbox" id="pdf_metadata_title_copy" checked="checked" />',
+            $output);
+        $this->assertStringContainsString(
+            '<label for="pdf_metadata_title_copy">Title</label>',
             $output);
         $this->assertStringContainsString(
             '<td id="pdf_metadata_title">A &amp; B &lt;Guide&gt;</td>',
@@ -612,7 +621,7 @@ EOH;
         $this->assertLessThan(strpos($output, $fetchButton),
             strpos($output, $helpButton));
         $this->assertStringContainsString(
-            '<details id="pdf_metadata_results" class="hidden">',
+            '<fieldset id="pdf_metadata_results" class="hidden">',
             $output);
         $this->assertStringNotContainsString('cached_pdf_metadata', $output);
     }
@@ -855,35 +864,40 @@ $copySiteHidden</li>
 
 </ul>
 </fieldset>
-<details id="pdf_metadata_results" class="hidden">
-<summary>Extracted Metadata</summary>
+<fieldset id="pdf_metadata_results" class="hidden">
+<legend>Extracted Metadata</legend>
 <table>
 <tbody>
 <tr id="pdf_metadata_title_row" class="hidden">
-<th scope="row">Title</th>
+<td><input type="checkbox" id="pdf_metadata_title_copy" checked="checked" /></td>
+<th scope="row"><label for="pdf_metadata_title_copy">Title</label></th>
 <td id="pdf_metadata_title"></td>
 </tr>
 <tr id="pdf_metadata_keywords_row" class="hidden">
-<th scope="row">Keywords</th>
+<td><input type="checkbox" id="pdf_metadata_keywords_copy" checked="checked" /></td>
+<th scope="row"><label for="pdf_metadata_keywords_copy">Keywords</label></th>
 <td id="pdf_metadata_keywords"></td>
 </tr>
 <tr id="pdf_metadata_abstract_row" class="hidden">
-<th scope="row">Abstract</th>
+<td><input type="checkbox" id="pdf_metadata_abstract_copy" checked="checked" /></td>
+<th scope="row"><label for="pdf_metadata_abstract_copy">Abstract</label></th>
 <td id="pdf_metadata_abstract"></td>
 </tr>
 <tr id="pdf_metadata_copy_notes_row" class="hidden">
-<th scope="row">Notes</th>
+<td><input type="checkbox" id="pdf_metadata_copy_notes_copy" checked="checked" /></td>
+<th scope="row"><label for="pdf_metadata_copy_notes_copy">Notes</label></th>
 <td id="pdf_metadata_copy_notes"></td>
 </tr>
 <tr id="pdf_metadata_copy_credits_row" class="hidden">
-<th scope="row">Credits</th>
+<td><input type="checkbox" id="pdf_metadata_copy_credits_copy" checked="checked" /></td>
+<th scope="row"><label for="pdf_metadata_copy_credits_copy">Credits</label></th>
 <td id="pdf_metadata_copy_credits"></td>
 </tr>
 </tbody>
 </table>
 <div id="pdf_metadata_empty" class="hidden">No PDF metadata found.</div>
 <button type="button" id="pdf_metadata_copy">Copy metadata</button>
-</details>
+</fieldset>
 
 <fieldset id="site_company_field" class="hidden">
 <input type="hidden" id="site_company_directory" name="site_company_directory" value="$siteCompanyDirectory" />

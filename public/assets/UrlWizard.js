@@ -479,12 +479,12 @@ $(function()
         hide("pdf_metadata_empty");
         hide("pdf_metadata_error");
         hide("pdf_metadata_working");
-        $("#pdf_metadata_results").prop("open", false);
         $("#pdf_metadata_copy").prop("disabled", false);
         for (var i = 0; i < pdf_metadata_fields.length; ++i)
         {
             var source = pdf_metadata_fields[i][0];
             hide("pdf_metadata_" + source + "_row");
+            $("#pdf_metadata_" + source + "_copy").prop("checked", true);
             $("#pdf_metadata_" + source).text('');
         }
     }
@@ -513,6 +513,7 @@ $(function()
             if (value.length > 0)
             {
                 show("pdf_metadata_" + source + "_row");
+                $("#pdf_metadata_" + source + "_copy").prop("checked", true);
                 any = true;
             }
             else
@@ -523,7 +524,6 @@ $(function()
         (any ? hide : show)("pdf_metadata_empty");
         $("#pdf_metadata_copy").prop("disabled", !any);
         show("pdf_metadata_results");
-        $("#pdf_metadata_results").prop("open", true);
     }
 
     function pdf_metadata_fetch_error()
@@ -573,7 +573,8 @@ $(function()
             var source = pdf_metadata_fields[i][0];
             var target = pdf_metadata_fields[i][1];
             var value = pdf_metadata[source] || '';
-            if (value.length > 0)
+            if (value.length > 0
+                && $("#pdf_metadata_" + source + "_copy").prop("checked"))
             {
                 $("#" + target).val(value);
             }
