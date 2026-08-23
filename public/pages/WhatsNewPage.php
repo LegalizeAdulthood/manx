@@ -701,6 +701,13 @@ function setIngestPreviewChecked(checked)
 EOH;
     }
 
+    private function siteTitleLink()
+    {
+        return sprintf('<a href="%s">%s</a>',
+            htmlspecialchars($this->_page . '&parentDir=-1'),
+            htmlspecialchars($this->_title));
+    }
+
     private static function hasSelectablePreviewRows($previewRows)
     {
         foreach ($previewRows as $row)
@@ -720,7 +727,7 @@ EOH;
         $dirs = $this->_manxDb->getSiteUnknownDirectories(
             $this->_siteName, $this->_parentDirId);
         $files = $this->_manxDb->getSiteUnknownPaths($this->_siteName, $this->_parentDirId);
-        $title = $this->_title;
+        $title = $this->siteTitleLink();
         if (count($dirs) + count($files) == 0)
         {
             if ($this->_parentDirId == -1)

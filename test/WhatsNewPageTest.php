@@ -159,7 +159,8 @@ class WhatsNewPageTest extends Manx\Test\TestCase
 
         $this->_page->renderBodyContent();
 
-        $this->expectOutputStringIgnoringLineEndings("<h1>No New BitSavers Publications Found</h1>\n");
+        $this->expectOutputStringIgnoringLineEndings(
+            "<h1>No New <a href=\"whatsnew.php?site=bitsavers&amp;parentDir=-1\">BitSavers</a> Publications Found</h1>\n");
     }
 
     public function testRenderBodyContentNoDocumentsForDir()
@@ -178,7 +179,7 @@ class WhatsNewPageTest extends Manx\Test\TestCase
         $this->_page->renderBodyContent();
 
         $expected = <<<EOH
-<h1>No New BitSavers dec/pdp11 Publications Found</h1>
+<h1>No New <a href="whatsnew.php?site=bitsavers&amp;parentDir=-1">BitSavers</a> dec/pdp11 Publications Found</h1>
 
 <form action="whatsnew.php" method="POST">
 <input type="hidden" name="site" value="bitsavers" />
@@ -236,7 +237,7 @@ EOH;
         $this->_page->renderBodyContent();
 
         $expected = <<<EOH
-<h1>New BitSavers dec/pdp11 Publications</h1>
+<h1>New <a href="whatsnew.php?site=bitsavers&amp;parentDir=-1">BitSavers</a> dec/pdp11 Publications</h1>
 
 <form action="whatsnew.php" method="POST">
 <input type="hidden" name="site" value="bitsavers" />
@@ -306,7 +307,7 @@ EOH;
         $this->_page->renderBodyContent();
 
         $expected = <<<EOH
-<h1>New BitSavers dec/foo#bar Publications</h1>
+<h1>New <a href="whatsnew.php?site=bitsavers&amp;parentDir=-1">BitSavers</a> dec/foo#bar Publications</h1>
 
 <form action="whatsnew.php" method="POST">
 <input type="hidden" name="site" value="bitsavers" />
