@@ -171,6 +171,30 @@ BEGIN
     UPDATE `site`
         SET `copy_base` = CONCAT('https://', SUBSTRING(`copy_base`, 8))
         WHERE `copy_base` LIKE 'http://%';
+
+    DROP TEMPORARY TABLE IF EXISTS `tmp_https_copy_base_sites`;
+    CREATE TEMPORARY TABLE `tmp_https_copy_base_sites`(
+        `site_id` INT(11) NOT NULL,
+        `copy_base` VARCHAR(200) NOT NULL,
+        `http_copy_base` VARCHAR(200) NOT NULL,
+        PRIMARY KEY (`site_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    INSERT INTO `tmp_https_copy_base_sites`
+        (`site_id`, `copy_base`, `http_copy_base`)
+        SELECT `site_id`, `copy_base`,
+            CONCAT('http://', SUBSTRING(`copy_base`, 9))
+        FROM `site`
+        WHERE `copy_base` LIKE 'https://%';
+
+    UPDATE `copy` `c`, `tmp_https_copy_base_sites` `h`
+        SET `c`.`url` = CONCAT(`h`.`copy_base`,
+            SUBSTRING(`c`.`url`, CHAR_LENGTH(`h`.`http_copy_base`) + 1))
+        WHERE `c`.`site` = `h`.`site_id`
+        AND LEFT(`c`.`url`, CHAR_LENGTH(`h`.`http_copy_base`))
+            = `h`.`http_copy_base`;
+
+    DROP TEMPORARY TABLE IF EXISTS `tmp_https_copy_base_sites`;
 END//
 DELIMITER ;
 
