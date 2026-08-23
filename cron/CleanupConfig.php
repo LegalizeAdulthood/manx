@@ -16,7 +16,8 @@ class CleanupConfig
         $config['db'] = $manx->getDatabase();
         $config['whatsNewPageFactory'] = new \Manx\WhatsNewPageFactory();
         $config['locker'] = new ExclusiveLock();
-        $config['logger'] = new Logger();
+        $config['dateTimeProvider'] = new \Manx\DateTimeProvider();
+        $config['logger'] = new Logger($config['dateTimeProvider']);
         $config['fileSystem'] = new \Manx\FileSystem();
         $config['user'] = function($c)
         {
@@ -34,7 +35,6 @@ class CleanupConfig
         {
             return new \Manx\PdfMetadata($c['db']);
         };
-        $config['dateTimeProvider'] = new \Manx\DateTimeProvider();
         $config['urlInfoFactory'] = new \Manx\UrlInfoFactory();
         return $config;
     }

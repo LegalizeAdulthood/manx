@@ -13,6 +13,7 @@ class WhatsNewProcessor
         $this->_cleaner = $config['whatsNewCleaner'];
         $this->_logger = $config['logger'];
         $this->_locker = $config['locker'];
+        $this->_dateTimeProvider = $config['dateTimeProvider'];
     }
 
     private function log($text)
@@ -22,56 +23,77 @@ class WhatsNewProcessor
 
     public function process(array $args)
     {
-        if ($args[1] == 'help')
+        $startTime = $this->_dateTimeProvider->now();
+        try
         {
-            $this->log("existence:      remove non-existent unknown paths");
-            $this->log("moved           update moved files");
-            $this->log("index           fetch IndexByDate.txt");
-            $this->log("unknown-copies  remove unknown paths with existing copy");
-            $this->log("ingest          ingest copies from guessable unknown paths");
-            $this->log("md5             compute MD5 hashes for copies");
-            $this->log("pdf-metadata    cache PDF metadata for unknown paths");
+            if ($args[1] == 'help')
+            {
+                $this->log("existence:      remove non-existent unknown paths");
+                $this->log("moved           update moved files");
+                $this->log("index           fetch IndexByDate.txt");
+                $this->log("unknown-copies  remove unknown paths with existing copy");
+                $this->log("ingest          ingest copies from guessable unknown paths");
+                $this->log("md5             compute MD5 hashes for copies");
+                $this->log("pdf-metadata    cache PDF metadata for unknown paths");
+            }
+            else if ($args[1] == 'existence')
+            {
+                $this->lock($args[1]);
+                $this->_cleaner->removeNonExistentUnknownPaths();
+            }
+            else if ($args[1] == 'moved')
+            {
+                $this->lock($args[1]);
+                $this->_cleaner->updateMovedFiles();
+            }
+            else if ($args[1] == 'index')
+            {
+                $this->lock($args[1]);
+                $this->_cleaner->updateWhatsNewIndex();
+                $this->_cleaner->removeUnknownPathsWithCopy();
+                $this->_cleaner->updateIgnoredUnknownDirs();
+            }
+            else if ($args[1] == 'unknown-copies')
+            {
+                $this->lock($args[1]);
+                $this->_cleaner->removeUnknownPathsWithCopy();
+            }
+            else if ($args[1] == 'ingest')
+            {
+                $this->lock($args[1]);
+                $this->_cleaner->updateWhatsNewIndex();
+                $this->_cleaner->ingest();
+                $this->_cleaner->removeUnknownPathsWithCopy();
+            }
+            else if ($args[1] == 'md5')
+            {
+                $this->lock($args[1]);
+                $this->_cleaner->computeMissingMD5();
+            }
+            else if ($args[1] == 'pdf-metadata')
+            {
+                $this->lock($args[1]);
+                $this->_cleaner->cachePdfMetadata(
+                    self::pdfMetadataTimeLimitSeconds($args));
+            }
         }
-        else if ($args[1] == 'existence')
+        finally
         {
-            $this->lock($args[1]);
-            $this->_cleaner->removeNonExistentUnknownPaths();
+            $this->log(sprintf("Total elapsed time: %.3f seconds",
+                self::secondsBetween($startTime,
+                    $this->_dateTimeProvider->now())));
         }
-        else if ($args[1] == 'moved')
-        {
-            $this->lock($args[1]);
-            $this->_cleaner->updateMovedFiles();
-        }
-        else if ($args[1] == 'index')
-        {
-            $this->lock($args[1]);
-            $this->_cleaner->updateWhatsNewIndex();
-            $this->_cleaner->removeUnknownPathsWithCopy();
-            $this->_cleaner->updateIgnoredUnknownDirs();
-        }
-        else if ($args[1] == 'unknown-copies')
-        {
-            $this->lock($args[1]);
-            $this->_cleaner->removeUnknownPathsWithCopy();
-        }
-        else if ($args[1] == 'ingest')
-        {
-            $this->lock($args[1]);
-            $this->_cleaner->updateWhatsNewIndex();
-            $this->_cleaner->ingest();
-            $this->_cleaner->removeUnknownPathsWithCopy();
-        }
-        else if ($args[1] == 'md5')
-        {
-            $this->lock($args[1]);
-            $this->_cleaner->computeMissingMD5();
-        }
-        else if ($args[1] == 'pdf-metadata')
-        {
-            $this->lock($args[1]);
-            $this->_cleaner->cachePdfMetadata(
-                self::pdfMetadataTimeLimitSeconds($args));
-        }
+    }
+
+    private static function secondsBetween($startTime, $endTime)
+    {
+        return max(0.0, self::seconds($endTime) - self::seconds($startTime));
+    }
+
+    private static function seconds($dateTime)
+    {
+        return intval($dateTime->format('U'))
+            + intval($dateTime->format('u')) / 1000000.0;
     }
 
     private static function pdfMetadataTimeLimitSeconds(array $args)
@@ -105,4 +127,6 @@ class WhatsNewProcessor
     private $_logger;
     /** @var IExclusiveLock */
     private $_locker;
+    /** @var \Manx\IDateTimeProvider */
+    private $_dateTimeProvider;
 }
