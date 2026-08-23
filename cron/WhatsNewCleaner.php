@@ -10,6 +10,8 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 {
     const DEFAULT_PDF_METADATA_TIME_LIMIT_SECONDS = 1800;
 
+    /** @var Container */
+    private $_config;
     private $_manx;
     private $_db;
     private $_factory;
@@ -42,6 +44,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 
     public function __construct(Container $config)
     {
+        $this->_config = $config;
         $this->_manx = $config['manx'];
         $this->_db = $this->_manx->getDatabase();
         $this->_factory = $config['whatsNewPageFactory'];
@@ -51,7 +54,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->_baseUrl = self::ensureTrailingSlash($config['baseUrl']);
         $this->_whatsNewIndex = $config['whatsNewIndex'];
         $this->_urlMetaData = $config['urlMetaData'];
-        $this->_pdfMetadata = $config['pdfMetadata'];
+        $this->_pdfMetadata = null;
         $this->_dateTimeProvider = $config['dateTimeProvider'];
         $this->_user = $config['user'];
         $this->_limit = 500;
@@ -200,7 +203,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
             $url = \Manx\UrlNormalizer::normalize($row['url']);
             try
             {
-                $metadata = $this->_pdfMetadata->metadataForUrl($url);
+                $metadata = $this->pdfMetadata()->metadataForUrl($url);
             }
             catch (\Throwable $e)
             {
@@ -334,6 +337,15 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         }
 
         $this->log(sprintf('Ingestion:   %d scanned, %d ingested (%0.2f%%)', $count, $ingestCount, $count > 0 ? 100*($ingestCount/$count) : 0));
+    }
+
+    private function pdfMetadata()
+    {
+        if (is_null($this->_pdfMetadata))
+        {
+            $this->_pdfMetadata = $this->_config['pdfMetadata'];
+        }
+        return $this->_pdfMetadata;
     }
 
     private static function partRegexForRow($row)

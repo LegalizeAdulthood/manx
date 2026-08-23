@@ -59,6 +59,17 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
         $this->_cleaner = new Manx\Cron\BitSaversCleaner($this->_config);
     }
 
+    public function testConstructorDoesNotCreatePdfMetadata()
+    {
+        $this->_config['pdfMetadata'] = function($c) {
+            throw new RuntimeException('pdf metadata should not be created');
+        };
+
+        $cleaner = new Manx\Cron\BitSaversCleaner($this->_config);
+
+        $this->assertInstanceOf(Manx\Cron\BitSaversCleaner::class, $cleaner);
+    }
+
     public function testNonExistentPathsAreRemoved()
     {
         $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
