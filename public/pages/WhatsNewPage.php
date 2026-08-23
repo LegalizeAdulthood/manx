@@ -607,13 +607,20 @@ EOH;
 
     private static function previewMetadataHtml($row)
     {
-        $metadata = [
-            ['Part', htmlspecialchars($row['part'])],
-            ['Date', htmlspecialchars($row['pub_date'])],
+        $metadata = [];
+        if ($row['part'] != '')
+        {
+            $metadata[] = ['Part', htmlspecialchars($row['part'])];
+        }
+        if ($row['pub_date'] != '')
+        {
+            $metadata[] = ['Date', htmlspecialchars($row['pub_date'])];
+        }
+        $metadata = array_merge($metadata, [
             ['Title', htmlspecialchars($row['title'])],
             ['Matching Publication', $row['matching_publication']],
             ['Existing Copy', $row['existing_copy']]
-        ];
+        ]);
 
         $html = '<table class="ingest-preview-metadata">';
         foreach ($metadata as $field)

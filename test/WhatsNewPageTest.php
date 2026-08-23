@@ -1022,6 +1022,55 @@ EOH;
         $this->assertStringNotContainsString('name="copy_url"', $output);
     }
 
+    public function testRenderBodyContentOmitsEmptyPreviewMetadata()
+    {
+        $siteName = 'bitsavers';
+        $parentDirId = 1339;
+        $companyId = 13;
+        $this->createPage(['siteName' => $siteName,
+            'parentDir' => $parentDirId]);
+        $thisDirRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
+            [
+                [100, 3, 'dec/pdp11', 150,
+                    Manx\UrlMetaData::DEFAULT_PART_REGEX, 0]
+            ]);
+        $fileRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+            [
+                [222, 3, 'Operators_Guide.pdf', 0, 0, $parentDirId]
+            ]);
+        $url = 'http://bitsavers.org/pdf/dec/pdp11/Operators_Guide.pdf';
+        $this->_db->expects($this->once())->method('getSiteUnknownDir')
+            ->with($parentDirId)->willReturn($thisDirRows[0]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDirectories')
+            ->with($siteName, $parentDirId)->willReturn([]);
+        $this->_db->expects($this->once())->method('getSiteUnknownPaths')
+            ->with($siteName, $parentDirId)->willReturn($fileRows);
+        $this->_db->expects($this->once())
+            ->method('getCompanyIdForSiteUnknownDir')
+            ->with($siteName, 'dec/pdp11')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($url)->willReturn(false);
+        $this->_db->expects($this->never())
+            ->method('getPublicationsForPartNumber');
+        $this->_db->expects($this->once())->method('searchForPublications')
+            ->with($companyId, ['Operators', 'Guide'], false)
+            ->willReturn([]);
+
+        ob_start();
+        $this->_page->renderBodyContent();
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString(
+            '<table class="ingest-preview-metadata"><tr><th>Title</th><td>Operators Guide</td></tr>',
+            $output);
+        $this->assertStringNotContainsString('<tr><th>Part</th>', $output);
+        $this->assertStringNotContainsString('<tr><th>Date</th>', $output);
+    }
+
     public function testRenderBodyContentDisablesIngestControlsWithoutSelectableRows()
     {
         $siteName = 'bitsavers';
