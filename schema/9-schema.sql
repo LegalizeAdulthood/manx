@@ -146,18 +146,6 @@ BEGIN
     END LOOP;
     CLOSE `copy_urls`;
 
-    IF EXISTS (
-        SELECT `normalized_url`
-        FROM `tmp_copy_url_normalized`
-        GROUP BY `normalized_url`
-        HAVING COUNT(DISTINCT `url`) > 1
-        LIMIT 1
-    ) THEN
-        SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT =
-                'copy.url normalization would create duplicate URLs';
-    END IF;
-
     UPDATE `copy` `c`, `tmp_copy_url_normalized` `n`
         SET `c`.`url` = `n`.`normalized_url`
         WHERE `c`.`copy_id` = `n`.`copy_id`
