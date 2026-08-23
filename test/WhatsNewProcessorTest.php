@@ -34,8 +34,11 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
     {
         $this->_locker->expects($this->once())->method('lock')->with('md5.lock');
         $this->_cleaner->expects($this->once())->method('computeMissingMD5');
-        $this->_logger->expects($this->once())->method('log')
-            ->with('Total elapsed time: 3.500 seconds');
+        $this->_logger->expects($this->exactly(3))->method('log')
+            ->withConsecutive(
+                [ 'Begin md5' ],
+                [ 'End md5' ],
+                [ 'Total elapsed time: 3.500 seconds' ]);
 
         $this->_processor->process(['cleaner.php', 'md5']);
     }
@@ -110,7 +113,8 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
 
     public function testHelp()
     {
-        $this->_logger->expects($this->exactly(8))->method('log')->withConsecutive(
+        $this->_logger->expects($this->exactly(10))->method('log')->withConsecutive(
+            [ "Begin help" ],
             [ "existence:      remove non-existent unknown paths" ],
             [ "moved           update moved files" ],
             [ "index           fetch IndexByDate.txt" ],
@@ -118,6 +122,7 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
             [ "ingest          ingest copies from guessable unknown paths" ],
             [ "md5             compute MD5 hashes for copies" ],
             [ "pdf-metadata    cache PDF metadata for unknown paths" ],
+            [ "End help" ],
             [ "Total elapsed time: 3.500 seconds" ]
         );
 

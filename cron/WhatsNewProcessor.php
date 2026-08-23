@@ -23,10 +23,12 @@ class WhatsNewProcessor
 
     public function process(array $args)
     {
+        $command = $args[1];
         $startTime = $this->_dateTimeProvider->now();
+        $this->log(sprintf("Begin %s", $command));
         try
         {
-            if ($args[1] == 'help')
+            if ($command == 'help')
             {
                 $this->log("existence:      remove non-existent unknown paths");
                 $this->log("moved           update moved files");
@@ -36,49 +38,50 @@ class WhatsNewProcessor
                 $this->log("md5             compute MD5 hashes for copies");
                 $this->log("pdf-metadata    cache PDF metadata for unknown paths");
             }
-            else if ($args[1] == 'existence')
+            else if ($command == 'existence')
             {
-                $this->lock($args[1]);
+                $this->lock($command);
                 $this->_cleaner->removeNonExistentUnknownPaths();
             }
-            else if ($args[1] == 'moved')
+            else if ($command == 'moved')
             {
-                $this->lock($args[1]);
+                $this->lock($command);
                 $this->_cleaner->updateMovedFiles();
             }
-            else if ($args[1] == 'index')
+            else if ($command == 'index')
             {
-                $this->lock($args[1]);
+                $this->lock($command);
                 $this->_cleaner->updateWhatsNewIndex();
                 $this->_cleaner->removeUnknownPathsWithCopy();
                 $this->_cleaner->updateIgnoredUnknownDirs();
             }
-            else if ($args[1] == 'unknown-copies')
+            else if ($command == 'unknown-copies')
             {
-                $this->lock($args[1]);
+                $this->lock($command);
                 $this->_cleaner->removeUnknownPathsWithCopy();
             }
-            else if ($args[1] == 'ingest')
+            else if ($command == 'ingest')
             {
-                $this->lock($args[1]);
+                $this->lock($command);
                 $this->_cleaner->updateWhatsNewIndex();
                 $this->_cleaner->ingest();
                 $this->_cleaner->removeUnknownPathsWithCopy();
             }
-            else if ($args[1] == 'md5')
+            else if ($command == 'md5')
             {
-                $this->lock($args[1]);
+                $this->lock($command);
                 $this->_cleaner->computeMissingMD5();
             }
-            else if ($args[1] == 'pdf-metadata')
+            else if ($command == 'pdf-metadata')
             {
-                $this->lock($args[1]);
+                $this->lock($command);
                 $this->_cleaner->cachePdfMetadata(
                     self::pdfMetadataTimeLimitSeconds($args));
             }
         }
         finally
         {
+            $this->log(sprintf("End %s", $command));
             $this->log(sprintf("Total elapsed time: %.3f seconds",
                 self::secondsBetween($startTime,
                     $this->_dateTimeProvider->now())));
