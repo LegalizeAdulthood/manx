@@ -351,7 +351,7 @@ EOH;
         $existingCopy, $regexResult)
     {
         if (is_array($existingCopy) || $regexResult == 'Invalid'
-            || $pubDate == '' || $title == '')
+            || $title == '')
         {
             return [[], null, ''];
         }
@@ -435,7 +435,7 @@ EOH;
         {
             return 'Rejected';
         }
-        if ($pubDate == '' || $title == '')
+        if ($title == '')
         {
             return 'Rejected';
         }
@@ -479,10 +479,6 @@ EOH;
         if ($regexResult == 'Invalid')
         {
             return 'The directory part-number regex is invalid.';
-        }
-        if ($pubDate == '')
-        {
-            return 'No publication date was extracted from the filename.';
         }
         if ($title == '')
         {

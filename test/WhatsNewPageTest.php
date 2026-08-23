@@ -714,6 +714,53 @@ EOH;
             $rows[0]['matching_publication']);
     }
 
+    public function testPreviewRowsAcceptNoDateExactPartMatch()
+    {
+        $siteName = 'bitsavers';
+        $parentDirId = 1339;
+        $companyId = 13;
+        $this->createPage(['siteName' => $siteName,
+            'parentDir' => $parentDirId]);
+        $thisDir = [
+            'id' => 100,
+            'site_id' => 3,
+            'path' => 'dec/pdp11',
+            'parent_dir_id' => 150,
+            'part_regex' => Manx\UrlMetaData::DEFAULT_PART_REGEX,
+            'ignored' => 0
+        ];
+        $fileRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+            [
+                [222, 3,
+                    'EK-3333-01_Jumbotron_Users_Guide.pdf',
+                    0, 0, $parentDirId]
+            ]);
+        $url = 'http://bitsavers.org/pdf/dec/pdp11/EK-3333-01_Jumbotron_Users_Guide.pdf';
+        $pubRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
+            [
+                [23, 'EK-3333-01', 'Jumbotron Users Guide', '']
+            ]);
+        $this->_db->expects($this->once())
+            ->method('getCompanyIdForSiteUnknownDir')
+            ->with($siteName, 'dec/pdp11')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($url)->willReturn(false);
+        $this->_db->expects($this->once())
+            ->method('getPublicationsForPartNumber')
+            ->with('EK-3333-01', $companyId)->willReturn($pubRows);
+        $this->_db->expects($this->never())->method('searchForPublications');
+
+        $rows = $this->_page->previewRows($thisDir, $fileRows);
+
+        $this->assertEquals('Accepted', $rows[0]['status']);
+        $this->assertEquals('', $rows[0]['pub_date']);
+        $this->assertEquals(23, $rows[0]['pub_id']);
+    }
+
     public function testPreviewRowsRejectNoPartMultipleTitleMatches()
     {
         $siteName = 'bitsavers';
@@ -1160,6 +1207,62 @@ EOH;
         $this->_db->expects($this->once())->method('addCopy')
             ->with($pubId, 'PDF', 3, $url, '', 0, '', '', '')
             ->willReturn(885);
+        $this->_db->expects($this->once())
+            ->method('removeSiteUnknownPathsInDir')
+            ->with([222], $parentDirId);
+
+        $this->_page->ingestPreviewRows();
+    }
+
+    public function testIngestPreviewRowsCreatesPublicationForSelectedNoDateRows()
+    {
+        $siteName = 'bitsavers';
+        $parentDirId = 1339;
+        $companyId = 13;
+        $pubId = 890;
+        $user = $this->createMock(Manx\IUser::class);
+        $this->_manx->expects($this->once())->method('getUserFromSession')
+            ->willReturn($user);
+        $this->createPage(['siteName' => $siteName,
+            'parentDir' => $parentDirId,
+            'ingest_preview' => 1,
+            'ingest0' => 222]);
+        $thisDirRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
+            [
+                [100, 3, 'dec/pdp11', 150,
+                    Manx\UrlMetaData::DEFAULT_PART_REGEX, 0]
+            ]);
+        $fileRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+            [
+                [222, 3,
+                    'EK-5555-01_New_System_Manual.pdf',
+                    0, 0, $parentDirId]
+            ]);
+        $url = 'http://bitsavers.org/pdf/dec/pdp11/EK-5555-01_New_System_Manual.pdf';
+        $this->_db->expects($this->once())->method('getSiteUnknownDir')
+            ->with($parentDirId)->willReturn($thisDirRows[0]);
+        $this->_db->expects($this->once())->method('getSiteUnknownPaths')
+            ->with($siteName, $parentDirId)->willReturn($fileRows);
+        $this->_db->expects($this->once())
+            ->method('getCompanyIdForSiteUnknownDir')
+            ->with($siteName, 'dec/pdp11')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($url)->willReturn(false);
+        $this->_db->expects($this->once())
+            ->method('getPublicationsForPartNumber')
+            ->with('EK-5555-01', $companyId)->willReturn([]);
+        $this->_db->expects($this->never())->method('searchForPublications');
+        $this->_manx->expects($this->once())->method('addPublication')
+            ->with($user, $companyId, 'EK-5555-01', '',
+                'New System Manual', 'D', '', '', '', '', '', '+en')
+            ->willReturn($pubId);
+        $this->_db->expects($this->once())->method('addCopy')
+            ->with($pubId, 'PDF', 3, $url, '', 0, '', '', '')
+            ->willReturn(891);
         $this->_db->expects($this->once())
             ->method('removeSiteUnknownPathsInDir')
             ->with([222], $parentDirId);
