@@ -359,7 +359,11 @@ EOH;
         {
             return 'Rejected';
         }
-        if (count($pubs) != 1)
+        if (count($pubs) == 0)
+        {
+            return 'New';
+        }
+        if (count($pubs) > 1)
         {
             return 'Uncertain';
         }
@@ -473,6 +477,11 @@ EOH;
             htmlspecialchars($row['status_detail']), $status);
     }
 
+    private static function isBulkSelectableStatus($status)
+    {
+        return in_array($status, ['Accepted', 'New', 'Uncertain']);
+    }
+
     private function renderPreviewTable($previewRows)
     {
         if (count($previewRows) == 0)
@@ -499,7 +508,8 @@ EOH;
         foreach ($previewRows as $row)
         {
             $checked = $row['status'] == 'Accepted' ? ' checked="checked"' : '';
-            $disabled = $row['status'] == 'Accepted' ? '' : ' disabled="disabled"';
+            $disabled = self::isBulkSelectableStatus($row['status'])
+                ? '' : ' disabled="disabled"';
             printf('<tr><td><input type="checkbox" id="ingest%d" name="ingest%d" value="%d"%s%s/></td>',
                 $i, $i, $row['id'], $checked, $disabled);
             printf('<td><a href="url-wizard.php?id=%d&url=%s">%s</a></td>',
@@ -556,7 +566,7 @@ EOH;
     {
         foreach ($previewRows as $row)
         {
-            if ($row['status'] == 'Accepted')
+            if (self::isBulkSelectableStatus($row['status']))
             {
                 return true;
             }

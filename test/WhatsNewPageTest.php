@@ -551,45 +551,55 @@ EOH;
                     0, 0, $parentDirId],
                 [224, 3,
                     'EK-4444-01_Jumbotron_Reference_Manual_Feb1977.pdf',
+                    0, 0, $parentDirId],
+                [225, 3,
+                    'EK-5555-01_New_System_Manual_Feb1977.pdf',
                     0, 0, $parentDirId]
             ]);
         $duplicateUrl = 'http://bitsavers.org/pdf/dec/pdp11/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
         $rejectedUrl = 'http://bitsavers.org/pdf/dec/pdp11/LSI-1_Systems_Service_Manual_Aug81.pdf';
         $uncertainUrl = 'http://bitsavers.org/pdf/dec/pdp11/EK-4444-01_Jumbotron_Reference_Manual_Feb1977.pdf';
+        $newUrl = 'http://bitsavers.org/pdf/dec/pdp11/EK-5555-01_New_System_Manual_Feb1977.pdf';
         $this->_db->expects($this->once())
             ->method('getCompanyIdForSiteUnknownDir')
             ->with($siteName, 'dec/pdp11')->willReturn($companyId);
-        $this->_db->expects($this->exactly(3))
+        $this->_db->expects($this->exactly(4))
             ->method('getFormatForExtension')
-            ->withConsecutive(['pdf'], ['pdf'], ['pdf'])
-            ->willReturn('PDF', 'PDF', 'PDF');
-        $this->_db->expects($this->exactly(3))->method('copyExistsForUrl')
-            ->withConsecutive([$duplicateUrl], [$rejectedUrl], [$uncertainUrl])
+            ->withConsecutive(['pdf'], ['pdf'], ['pdf'], ['pdf'])
+            ->willReturn('PDF', 'PDF', 'PDF', 'PDF');
+        $this->_db->expects($this->exactly(4))->method('copyExistsForUrl')
+            ->withConsecutive([$duplicateUrl], [$rejectedUrl], [$uncertainUrl],
+                [$newUrl])
             ->willReturn(
                 ['ph_company' => $companyId, 'ph_pub' => 23,
                     'ph_title' => 'Jumbotron Users Guide'],
                 false,
+                false,
                 false);
-        $this->_db->expects($this->once())
+        $this->_db->expects($this->exactly(2))
             ->method('getPublicationsForPartNumber')
-            ->with('EK-4444-01', $companyId)
-            ->willReturn(\Manx\Test\RowFactory::createResultRowsForColumns(
-                ['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
-                [
-                    [31, 'EK-4444-01', 'Jumbotron Reference Manual', '1977-02'],
-                    [32, 'EK-4444-01', 'Jumbotron Pocket Guide', '1978-04']
-                ]));
+            ->withConsecutive(['EK-4444-01', $companyId],
+                ['EK-5555-01', $companyId])
+            ->willReturn(
+                \Manx\Test\RowFactory::createResultRowsForColumns(
+                    ['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
+                    [
+                        [31, 'EK-4444-01', 'Jumbotron Reference Manual', '1977-02'],
+                        [32, 'EK-4444-01', 'Jumbotron Pocket Guide', '1978-04']
+                    ]),
+                []);
 
         $rows = $this->_page->previewRows($thisDir, $fileRows);
 
         $this->assertEquals(
-            ['Duplicate', 'Rejected', 'Uncertain'],
+            ['Duplicate', 'Rejected', 'Uncertain', 'New'],
             array_column($rows, 'status'));
         $this->assertEquals(
             [
                 'A copy already exists for this URL: Jumbotron Users Guide.',
                 'The directory part-number regex did not match the filename.',
-                'The extracted part number EK-4444-01 matched 2 publications.'
+                'The extracted part number EK-4444-01 matched 2 publications.',
+                'No publication matched the extracted part number EK-5555-01.'
             ],
             array_column($rows, 'status_detail'));
         $this->assertEquals(
@@ -687,10 +697,18 @@ EOH;
                     'EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf',
                     0, 0, $parentDirId],
                 [223, 3, 'LSI-1_Systems_Service_Manual_Aug81.pdf',
+                    0, 0, $parentDirId],
+                [224, 3,
+                    'EK-4444-01_Jumbotron_Reference_Manual_Feb1977.pdf',
+                    0, 0, $parentDirId],
+                [225, 3,
+                    'EK-5555-01_New_System_Manual_Feb1977.pdf',
                     0, 0, $parentDirId]
             ]);
         $acceptedUrl = 'http://bitsavers.org/pdf/dec/pdp11/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
         $rejectedUrl = 'http://bitsavers.org/pdf/dec/pdp11/LSI-1_Systems_Service_Manual_Aug81.pdf';
+        $uncertainUrl = 'http://bitsavers.org/pdf/dec/pdp11/EK-4444-01_Jumbotron_Reference_Manual_Feb1977.pdf';
+        $newUrl = 'http://bitsavers.org/pdf/dec/pdp11/EK-5555-01_New_System_Manual_Feb1977.pdf';
         $pubRows = \Manx\Test\RowFactory::createResultRowsForColumns(
             ['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
             [
@@ -701,16 +719,27 @@ EOH;
         $this->_db->expects($this->once())
             ->method('getCompanyIdForSiteUnknownDir')
             ->with($siteName, 'dec/pdp11')->willReturn($companyId);
-        $this->_db->expects($this->exactly(2))
+        $this->_db->expects($this->exactly(4))
             ->method('getFormatForExtension')
-            ->withConsecutive(['pdf'], ['pdf'])
-            ->willReturn('PDF', 'PDF');
-        $this->_db->expects($this->exactly(2))->method('copyExistsForUrl')
-            ->withConsecutive([$acceptedUrl], [$rejectedUrl])
-            ->willReturn(false, false);
-        $this->_db->expects($this->once())
+            ->withConsecutive(['pdf'], ['pdf'], ['pdf'], ['pdf'])
+            ->willReturn('PDF', 'PDF', 'PDF', 'PDF');
+        $this->_db->expects($this->exactly(4))->method('copyExistsForUrl')
+            ->withConsecutive([$acceptedUrl], [$rejectedUrl], [$uncertainUrl],
+                [$newUrl])
+            ->willReturn(false, false, false, false);
+        $this->_db->expects($this->exactly(3))
             ->method('getPublicationsForPartNumber')
-            ->with('EK-3333-01', $companyId)->willReturn($pubRows);
+            ->withConsecutive(['EK-3333-01', $companyId],
+                ['EK-4444-01', $companyId], ['EK-5555-01', $companyId])
+            ->willReturn(
+                $pubRows,
+                \Manx\Test\RowFactory::createResultRowsForColumns(
+                    ['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
+                    [
+                        [31, 'EK-4444-01', 'Jumbotron Reference Manual', '1977-02'],
+                        [32, 'EK-4444-01', 'Jumbotron Pocket Guide', '1978-04']
+                    ]),
+                []);
 
         ob_start();
         $this->_page->renderBodyContent();
@@ -720,7 +749,7 @@ EOH;
             '<form id="ingest_preview_form" action="whatsnew.php" method="POST">',
             $output);
         preg_match_all('/name="ingest[0-9]+"/', $output, $matches);
-        $this->assertCount(2, $matches[0]);
+        $this->assertCount(4, $matches[0]);
         $this->assertStringContainsString(
             '<input type="checkbox" id="ingest0" name="ingest0" value="222" checked="checked"/>',
             $output);
@@ -728,9 +757,21 @@ EOH;
             '<input type="checkbox" id="ingest1" name="ingest1" value="223" disabled="disabled"/>',
             $output);
         $this->assertStringContainsString(
+            '<input type="checkbox" id="ingest2" name="ingest2" value="224"/>',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="checkbox" id="ingest3" name="ingest3" value="225"/>',
+            $output);
+        $this->assertStringContainsString(
             'function showIngestPreviewStatusDetail(link)', $output);
         $this->assertStringContainsString(
             '<td><a href="#" onclick="showIngestPreviewStatusDetail(this); return false;" data-status-detail="The directory part-number regex did not match the filename.">Rejected</a></td>',
+            $output);
+        $this->assertStringContainsString(
+            '<td><a href="#" onclick="showIngestPreviewStatusDetail(this); return false;" data-status-detail="The extracted part number EK-4444-01 matched 2 publications.">Uncertain</a></td>',
+            $output);
+        $this->assertStringContainsString(
+            '<td><a href="#" onclick="showIngestPreviewStatusDetail(this); return false;" data-status-detail="No publication matched the extracted part number EK-5555-01.">New</a></td>',
             $output);
         $this->assertStringContainsString(
             'input[type="checkbox"][name^="ingest"]:not(:disabled)',
@@ -751,7 +792,7 @@ EOH;
         $this->assertStringNotContainsString('name="copy_url"', $output);
     }
 
-    public function testRenderBodyContentDisablesIngestControlsWithoutAcceptedRows()
+    public function testRenderBodyContentDisablesIngestControlsWithoutSelectableRows()
     {
         $siteName = 'bitsavers';
         $parentDirId = 1339;
