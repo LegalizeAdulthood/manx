@@ -183,6 +183,56 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
         $this->expectOutputString(json_encode($metadata));
     }
 
+    public function testPdfMetadataCachesSiteUnknownMetadata()
+    {
+        $url = 'http://bitsavers.org/pdf/foo.pdf';
+        $siteUnknownId = 54118;
+        $metadata = array(
+            'status' => Manx\PdfMetadata::STATUS_OK,
+            'title' => 'Title',
+            'keywords' => 'keywords',
+            'abstract' => 'Abstract',
+            'copy_notes' => 'Notes',
+            'copy_credits' => 'Credits'
+        );
+        $this->_pdfMetadata->expects($this->once())->method('metadataForUrl')
+            ->with($url)
+            ->willReturn($metadata);
+        $this->_db->expects($this->once())
+            ->method('updateSiteUnknownPdfMetadata')
+            ->with($siteUnknownId, 'Title', 'keywords', 'Abstract', 'Notes',
+                'Credits', 'ok', '');
+        $this->_config['vars'] = self::varsForPdfMetadata($url,
+            $siteUnknownId);
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $this->expectOutputString(json_encode($metadata));
+    }
+
+    public function testPdfMetadataCachesFailedStatus()
+    {
+        $url = 'http://bitsavers.org/pdf/foo.pdf';
+        $siteUnknownId = 54118;
+        $metadata = array(
+            'status' => Manx\PdfMetadata::STATUS_TOO_LARGE
+        );
+        $this->_pdfMetadata->expects($this->once())->method('metadataForUrl')
+            ->with($url)
+            ->willReturn($metadata);
+        $this->_db->expects($this->once())
+            ->method('updateSiteUnknownPdfMetadata')
+            ->with($siteUnknownId, '', '', '', '', '', 'error', 'too_large');
+        $this->_config['vars'] = self::varsForPdfMetadata($url,
+            $siteUnknownId);
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $this->expectOutputString(json_encode($metadata));
+    }
+
     public function testPubSearchIgnoresInvalidCompany()
     {
         $this->_db->expects($this->never())->method('searchForPublications');
@@ -230,12 +280,17 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
         );
     }
 
-    private static function varsForPdfMetadata($url)
+    private static function varsForPdfMetadata($url, $siteUnknownId = null)
     {
-        return array(
+        $vars = array(
             'method' => 'pdf-metadata',
             'url' => $url
         );
+        if (!is_null($siteUnknownId))
+        {
+            $vars['id'] = $siteUnknownId;
+        }
+        return $vars;
     }
 
     private static function varsForPubSearch($company, $keywords)

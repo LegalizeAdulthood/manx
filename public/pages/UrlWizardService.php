@@ -123,7 +123,20 @@ class UrlWizardService extends ServicePageBase
         {
             $this->_pdfMetadata = $this->_config['pdfMetadata'];
         }
-        return $this->_pdfMetadata->metadataForUrl($this->param('url'));
+        $metadata = $this->_pdfMetadata->metadataForUrl($this->param('url'));
+        $this->storePdfMetadata($metadata);
+        return $metadata;
+    }
+
+    private function storePdfMetadata(array $metadata)
+    {
+        $unknownId = $this->param('id');
+        if (preg_match('/^[1-9][0-9]*$/', (string)$unknownId) != 1)
+        {
+            return;
+        }
+
+        PdfMetadataCache::storeSiteUnknown($this->_db, $unknownId, $metadata);
     }
 
     protected function renderJsonResponse($data)

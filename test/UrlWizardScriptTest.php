@@ -11,6 +11,18 @@ class UrlWizardScriptTest extends PHPUnit\Framework\TestCase
         $this->assertStringContainsString("'method': \"pdf-metadata\"", $script);
     }
 
+    public function testPdfMetadataFetchSendsSiteUnknownId()
+    {
+        $script = self::script();
+
+        $this->assertStringContainsString(
+            'var site_unknown_id = $("#site_unknown_id").val();',
+            $script);
+        $this->assertStringContainsString(
+            "request['id'] = site_unknown_id;",
+            $script);
+    }
+
     public function testPdfMetadataCopyMapsFields()
     {
         $script = self::script();

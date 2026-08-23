@@ -424,58 +424,8 @@ class WhatsNewCleaner implements IWhatsNewCleaner
 
     private function storePdfMetadata($unknownId, array $metadata)
     {
-        $status = self::pdfMetadataStatus($metadata);
-        $error = $status == 'error'
-            ? self::pdfMetadataError($metadata)
-            : '';
-        $this->_db->updateSiteUnknownPdfMetadata($unknownId,
-            self::pdfMetadataValue($metadata, 'title', 255),
-            self::pdfMetadataValue($metadata, 'keywords', 100),
-            self::pdfMetadataValue($metadata, 'abstract', 2048),
-            self::pdfMetadataValue($metadata, 'copy_notes', 200),
-            self::pdfMetadataValue($metadata, 'copy_credits', 200),
-            $status, $error);
-    }
-
-    private static function pdfMetadataStatus(array $metadata)
-    {
-        if (!array_key_exists('status', $metadata))
-        {
-            return 'error';
-        }
-        if ($metadata['status'] == \Manx\PdfMetadata::STATUS_OK)
-        {
-            return 'ok';
-        }
-        if ($metadata['status'] == \Manx\PdfMetadata::STATUS_EMPTY)
-        {
-            return 'none';
-        }
-        return 'error';
-    }
-
-    private static function pdfMetadataError(array $metadata)
-    {
-        if (array_key_exists('error', $metadata)
-            && strlen($metadata['error']) > 0)
-        {
-            return self::truncate($metadata['error'], 255);
-        }
-        return self::truncate(
-            array_key_exists('status', $metadata) ? $metadata['status'] : '',
-            255);
-    }
-
-    private static function pdfMetadataValue(array $metadata, $key, $length)
-    {
-        return self::truncate(
-            array_key_exists($key, $metadata) ? trim((string)$metadata[$key]) : '',
-            $length);
-    }
-
-    private static function truncate($value, $length)
-    {
-        return substr($value, 0, $length);
+        \Manx\PdfMetadataCache::storeSiteUnknown($this->_db, $unknownId,
+            $metadata);
     }
 
     private function log($text)

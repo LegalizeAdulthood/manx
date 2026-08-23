@@ -546,11 +546,17 @@ $(function()
         clear_pdf_metadata_results();
         show("pdf_metadata_working");
         next_enable(false);
+        var request = {
+            'method': "pdf-metadata",
+            'url': url
+        };
+        var site_unknown_id = $("#site_unknown_id").val();
+        if (site_unknown_id)
+        {
+            request['id'] = site_unknown_id;
+        }
         wizard_service_with_timeout(
-            {
-                'method': "pdf-metadata",
-                'url': url
-            },
+            request,
             PDF_METADATA_TIMEOUT,
             function(json)
             {
