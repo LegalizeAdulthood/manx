@@ -890,10 +890,11 @@ class ManxDatabase implements IManxDatabase
     public function ignoreSitePaths(array $ignoredIds)
     {
         $params = array_fill(0, count($ignoredIds), '?');
-        $this->beginTransaction();
         $this->execute("UPDATE `site_unknown` `su` SET `su`.`ignored` = 1 WHERE `su`.`id` in (" . implode(', ', $params) . ")", $ignoredIds);
-        $this->execute("CALL `manx_update_unknown_dir_ignored`()", []);
-        $this->commit();
+        foreach ($ignoredIds as $ignoredId)
+        {
+            $this->execute(sprintf('CALL `manx_update_unknown_single_dir_ignored`(%1$d)', $ignoredId), []);
+        }
     }
 
     public function getSiteUnknownPathCount($siteName)
