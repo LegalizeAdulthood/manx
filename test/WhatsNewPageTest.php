@@ -799,10 +799,25 @@ EOH;
             '<form id="ingest_preview_form" action="whatsnew.php" method="POST">',
             $output);
         $this->assertStringContainsString(
+            '<table class="ingest-preview">', $output);
+        $this->assertStringContainsString(
+            '<tr><th>Ingest?</th><th>File</th><th>Status</th></tr>',
+            $output);
+        $this->assertStringNotContainsString(
+            '<th>File</th><th>Status</th><th>Part</th>', $output);
+        $this->assertStringContainsString(
             '<td><a href="url-wizard.php?id=222&amp;url='
                 . rawurlencode($acceptedUrl) . '">'
-                . 'EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf</a></td>',
+                . 'EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf</a>'
+                . '<table class="ingest-preview-metadata">',
             $output);
+        $this->assertStringContainsString(
+            '<tr><th>Part</th><td>EK-3333-01</td></tr>'
+                . '<tr><th>Date</th><td>1977-02</td></tr>'
+                . '<tr><th>Title</th><td>Jumbotron Users Guide</td></tr>',
+            $output);
+        $this->assertStringContainsString(
+            '<td>Accepted</td>', $output);
         preg_match_all('/name="ingest[0-9]+"/', $output, $matches);
         $this->assertCount(4, $matches[0]);
         $this->assertStringContainsString(

@@ -60,6 +60,35 @@ table.restable th.idcol
     font-size: smaller
 }
 
+.ingest-preview td
+{
+    vertical-align: top
+}
+
+.ingest-preview-metadata
+{
+    border-collapse: collapse;
+    margin-top: 0.35em
+}
+
+.ingest-preview-metadata th,
+.ingest-preview-metadata td
+{
+    padding: 0.1em 0.8em 0.1em 0;
+    vertical-align: top
+}
+
+.ingest-preview-metadata th
+{
+    text-align: right;
+    white-space: nowrap
+}
+
+.ingest-preview-metadata td
+{
+    text-align: left
+}
+
 .logo
 {
     float: left;
@@ -381,6 +410,17 @@ ul.citelist li
     #AUTH table
     {
         width: 100%
+    }
+
+    table.ingest-preview-metadata
+    {
+        width: auto
+    }
+
+    .ingest-preview-metadata th,
+    .ingest-preview-metadata td
+    {
+        padding: 0.1em 0.75em 0.1em 0
     }
 
     #AUTH td

@@ -526,6 +526,25 @@ EOH;
         return in_array($status, ['Accepted', 'New', 'Uncertain']);
     }
 
+    private static function previewMetadataHtml($row)
+    {
+        $metadata = [
+            ['Part', htmlspecialchars($row['part'])],
+            ['Date', htmlspecialchars($row['pub_date'])],
+            ['Title', htmlspecialchars($row['title'])],
+            ['Matching Publication', $row['matching_publication']],
+            ['Existing Copy', $row['existing_copy']]
+        ];
+
+        $html = '<table class="ingest-preview-metadata">';
+        foreach ($metadata as $field)
+        {
+            $html .= sprintf('<tr><th>%s</th><td>%s</td></tr>',
+                $field[0], $field[1]);
+        }
+        return $html . '</table>';
+    }
+
     private function renderPreviewTable($previewRows)
     {
         if (count($previewRows) == 0)
@@ -544,8 +563,8 @@ EOH;
 <input type="hidden" name="site" value="$siteName" />
 <input type="hidden" name="parentDir" value="$parentDirId" />
 <input type="hidden" name="ingest_preview" value="1" />
-<table>
-<tr><th>Ingest?</th><th>File</th><th>Status</th><th>Part</th><th>Date</th><th>Title</th><th>Format</th><th>Regex</th><th>Matching Publication</th><th>Existing Copy</th></tr>
+<table class="ingest-preview">
+<tr><th>Ingest?</th><th>File</th><th>Status</th></tr>
 
 EOH;
         $i = 0;
@@ -556,20 +575,10 @@ EOH;
                 ? '' : ' disabled="disabled"';
             printf('<tr><td><input type="checkbox" id="ingest%d" name="ingest%d" value="%d"%s%s/></td>',
                 $i, $i, $row['id'], $checked, $disabled);
-            printf('<td><a href="%s">%s</a></td>',
+            printf('<td><a href="%s">%s</a>%s</td><td>%s</td></tr>' . "\n",
                 self::urlWizardLink($row['id'], $row['url']),
-                htmlspecialchars($row['path']));
-            printf('<td>%s</td><td>%s</td><td>%s</td><td>%s</td>'
-                . '<td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
-                . "\n",
-                self::previewStatusHtml($row),
-                htmlspecialchars($row['part']),
-                htmlspecialchars($row['pub_date']),
-                htmlspecialchars($row['title']),
-                htmlspecialchars($row['format']),
-                htmlspecialchars($row['regex_result']),
-                $row['matching_publication'],
-                $row['existing_copy']);
+                htmlspecialchars($row['path']), self::previewMetadataHtml($row),
+                self::previewStatusHtml($row));
             ++$i;
         }
         print <<<EOH
