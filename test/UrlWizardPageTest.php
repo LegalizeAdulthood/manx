@@ -484,6 +484,49 @@ EOH;
             $output);
     }
 
+    public function testRenderPageEscapesCopyLinkUrl()
+    {
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $url = 'http://bitsavers.org/pdf/dec/foo/Guide.pdf?download=1'
+            . '&url=http://example.test/manual.pdf';
+        $metaData = [
+            'url' => $url,
+            'mirror_url' => '',
+            'size' => 10204,
+            'valid' => true,
+            'site' => [ 'site_id' => 3 ],
+            'company' => -1,
+            'part' => 'EK-1234',
+            'pub_date' => '',
+            'title' => 'Guide',
+            'format' => 'PDF',
+            'site_company_directory' => 'dec',
+            'site_company_parent_directory' => '',
+            'pubs' => [],
+            'keywords' => 'EK-1234 Guide'
+        ];
+        $this->_db->method('getSites')->willReturn([]);
+        $this->_db->method('getCompanyList')->willReturn([]);
+        $this->_manx->method('getDatabase')->willReturn($this->_db);
+        $this->_urlMeta->expects($this->once())->method('determineData')
+            ->with($url)
+            ->willReturn($metaData);
+        $this->_config['vars'] = ['url' => $url];
+        $page = new UrlWizardPageTester($this->_config);
+
+        ob_start();
+        $page->renderBodyContent();
+        $output = ob_get_clean();
+
+        $escapedUrl = htmlspecialchars(
+            $url, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401);
+        $this->assertStringContainsString(
+            '<a id="copy_link" href="' . $escapedUrl
+                . '" class="">Copy</a>',
+            $output);
+    }
+
     public function testCachedPdfMetadataPopulatesResults()
     {
         $output = $this->renderPdfMetadataPage([
@@ -703,7 +746,10 @@ EOH;
         $keywords = self::param($vars, 'keywords');
         $publications = array_key_exists('pubs', $vars) ? self::expectedPublicationOptions($vars) : '';
         $title = self::param($vars, 'title');
-        $copyLink = $urlPresent ? sprintf(' href="%s"', $vars['url']) : '';
+        $copyLink = $urlPresent ? sprintf(' href="%s"',
+            htmlspecialchars(
+                $vars['url'], ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401))
+            : '';
         $copyLinkClass = $urlPresent ? '' : 'hidden';
         $copyTextClass = $urlPresent ? 'hidden' : '';
         $siteCompanyDirectory = self::param($vars, 'site_company_directory');

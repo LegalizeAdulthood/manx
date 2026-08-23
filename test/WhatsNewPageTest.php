@@ -261,13 +261,13 @@ EOH;
 <table>
 <tr><th>Ignored?</th><th>File</th></tr>
 <tr><td><input type="checkbox" id="ignore0" name="ignore0" value="222"/></td>
-<td><a href="url-wizard.php?id=222&url=http://bitsavers.org/pdf/dec/pdp11/KM11_Maintenance_Panel_May70.pdf">KM11_Maintenance_Panel_May70.pdf</a></td></tr>
+<td><a href="url-wizard.php?id=222&amp;url=http%3A%2F%2Fbitsavers.org%2Fpdf%2Fdec%2Fpdp11%2FKM11_Maintenance_Panel_May70.pdf">KM11_Maintenance_Panel_May70.pdf</a></td></tr>
 <tr><td><input type="checkbox" id="ignore1" name="ignore1" value="223"/></td>
-<td><a href="url-wizard.php?id=223&url=http://bitsavers.org/pdf/dec/pdp11/EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf">EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf</a></td></tr>
+<td><a href="url-wizard.php?id=223&amp;url=http%3A%2F%2Fbitsavers.org%2Fpdf%2Fdec%2Fpdp11%2FEK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf">EK0LSIFS-SV-005_LSI-11_Systems_Service_Manual_Volume_3_Jan85.pdf</a></td></tr>
 <tr><td><input type="checkbox" id="ignore2" name="ignore2" value="224"/></td>
-<td><a href="url-wizard.php?id=224&url=http://bitsavers.org/pdf/dec/pdp11/LSI-11_Systems_Service_Manual_Aug81.pdf">LSI-11_Systems_Service_Manual_Aug81.pdf</a></td></tr>
+<td><a href="url-wizard.php?id=224&amp;url=http%3A%2F%2Fbitsavers.org%2Fpdf%2Fdec%2Fpdp11%2FLSI-11_Systems_Service_Manual_Aug81.pdf">LSI-11_Systems_Service_Manual_Aug81.pdf</a></td></tr>
 <tr><td><input type="checkbox" id="ignore3" name="ignore3" value="225" checked/></td>
-<td><a href="url-wizard.php?id=225&url=http://bitsavers.org/pdf/dec/pdp11/firmware.zip">firmware.zip</a></td></tr>
+<td><a href="url-wizard.php?id=225&amp;url=http%3A%2F%2Fbitsavers.org%2Fpdf%2Fdec%2Fpdp11%2Ffirmware.zip">firmware.zip</a></td></tr>
 </table>
 <input type="submit" value="Ignore" />
 </form>
@@ -328,7 +328,7 @@ EOH;
 <table>
 <tr><th>Ignored?</th><th>File</th></tr>
 <tr><td><input type="checkbox" id="ignore0" name="ignore0" value="222"/></td>
-<td><a href="url-wizard.php?id=222&url=http://bitsavers.org/pdf/dec/foo%23bar/EK-11%231%20%26%20Guide.pdf">EK-11#1 &amp; Guide.pdf</a></td></tr>
+<td><a href="url-wizard.php?id=222&amp;url=http%3A%2F%2Fbitsavers.org%2Fpdf%2Fdec%2Ffoo%2523bar%2FEK-11%25231%2520%2526%2520Guide.pdf">EK-11#1 &amp; Guide.pdf</a></td></tr>
 </table>
 <input type="submit" value="Ignore" />
 </form>
@@ -796,6 +796,11 @@ EOH;
 
         $this->assertStringContainsString(
             '<form id="ingest_preview_form" action="whatsnew.php" method="POST">',
+            $output);
+        $this->assertStringContainsString(
+            '<td><a href="url-wizard.php?id=222&amp;url='
+                . rawurlencode($acceptedUrl) . '">'
+                . 'EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf</a></td>',
             $output);
         preg_match_all('/name="ingest[0-9]+"/', $output, $matches);
         $this->assertCount(4, $matches[0]);

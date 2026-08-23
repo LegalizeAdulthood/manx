@@ -496,6 +496,12 @@ EOH;
             htmlspecialchars($row['status_detail']), $status);
     }
 
+    private static function urlWizardLink($id, $url)
+    {
+        return sprintf('url-wizard.php?id=%d&amp;url=%s',
+            $id, htmlspecialchars(rawurlencode($url)));
+    }
+
     private static function isBulkSelectableStatus($status)
     {
         return in_array($status, ['Accepted', 'New', 'Uncertain']);
@@ -531,8 +537,8 @@ EOH;
                 ? '' : ' disabled="disabled"';
             printf('<tr><td><input type="checkbox" id="ingest%d" name="ingest%d" value="%d"%s%s/></td>',
                 $i, $i, $row['id'], $checked, $disabled);
-            printf('<td><a href="url-wizard.php?id=%d&url=%s">%s</a></td>',
-                $row['id'], htmlspecialchars($row['url']),
+            printf('<td><a href="%s">%s</a></td>',
+                self::urlWizardLink($row['id'], $row['url']),
                 htmlspecialchars($row['path']));
             printf('<td>%s</td><td>%s</td><td>%s</td><td>%s</td>'
                 . '<td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
@@ -682,8 +688,9 @@ EOH;
                 $url = $file['url'];
                 $checked = $file['ignored'] ? ' checked' : '';
                 printf('<tr><td><input type="checkbox" id="ignore%1$d" name="ignore%1$d" value="%2$s"%5$s/></td>' . "\n"
-                    .  '<td><a href="url-wizard.php?id=%2$d&url=%3$s">%4$s</a></td></tr>' . "\n",
-                    $i, $file['id'], $url, htmlspecialchars($path), $checked);
+                    .  '<td><a href="%3$s">%4$s</a></td></tr>' . "\n",
+                    $i, $file['id'], self::urlWizardLink($file['id'], $url),
+                    htmlspecialchars($path), $checked);
             }
             print <<<EOH
 </table>

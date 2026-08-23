@@ -254,7 +254,9 @@ EOH;
     private function renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData,
         $idPresent, $cachedPdfMetadata)
     {
-        $copyLink = $urlPresent ? sprintf(' href="%s"', $url) : '';
+        $copyLink = $urlPresent ? sprintf(' href="%s"',
+            htmlspecialchars($url, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401))
+            : '';
         $copyLinkClass = $urlPresent ? '' : 'hidden';
         $copyTextClass = $urlPresent ? 'hidden' : '';
         print <<<EOH
