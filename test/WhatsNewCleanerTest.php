@@ -179,7 +179,9 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
 
     public function testRemoveUnknownPathsWithCopy()
     {
-        $this->_db->expects($this->once())->method('removeUnknownPathsWithCopy');
+        $this->_db->expects($this->once())
+            ->method('removeUnknownPathsWithCopy')
+            ->with('bitsavers');
         $this->_logger->expects($this->once())->method('log');
 
         $this->_cleaner->removeUnknownPathsWithCopy();
@@ -680,7 +682,9 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
 
     public function testUpdateIgnoredUnknownDirs()
     {
-        $this->_db->expects($this->once())->method('updateIgnoredUnknownDirs');
+        $this->_db->expects($this->once())
+            ->method('updateIgnoredUnknownDirs')
+            ->with('bitsavers');
         $this->_logger->expects($this->once())->method('log');
 
         $this->_cleaner->updateIgnoredUnknownDirs();

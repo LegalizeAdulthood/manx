@@ -73,7 +73,7 @@ interface IManxDatabase
     function removeSiteUnknownPathsInDir(array $siteUnknownIds, $siteUnknownDirId);
     function getPossiblyMovedSiteUnknownPaths($siteName);
     function siteFileMoved($pathId, $copyId, $url);
-    function removeUnknownPathsWithCopy();
+    function removeUnknownPathsWithCopy($siteName);
     function getUnknownPathsForCompanies($siteName);
     function getUnknownPdfMetadataPaths($siteName);
     function getSiteUnknownPdfMetadata($siteUnknownId);
@@ -88,6 +88,6 @@ interface IManxDatabase
     function getSiteUnknownDir($dirId);
     function getCompanyIdForSiteUnknownDir($siteName, $dirPath);
     function updateSiteUnknownDirPartRegex($dirId, $partRegex);
-    function updateIgnoredUnknownDirs();
+    function updateIgnoredUnknownDirs($siteName);
     function updateIgnoredUnknownSingleDir($siteUnknownId);
 }

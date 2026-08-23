@@ -1195,12 +1195,14 @@ class ManxDatabase implements IManxDatabase
         $this->commit();
     }
 
-    public function removeUnknownPathsWithCopy()
+    public function removeUnknownPathsWithCopy($siteName)
     {
         $this->beginTransaction();
-        $this->execute("CALL `manx_purge_su_copies`()", []);
-        $this->execute("CALL `manx_purge_unused_unknown_directories`()", []);
-        $this->execute("CALL `manx_update_unknown_dir_ignored`()", []);
+        $this->execute("CALL `manx_purge_su_copies`(?)", [$siteName]);
+        $this->execute("CALL `manx_purge_unused_unknown_directories`(?)",
+            [$siteName]);
+        $this->execute("CALL `manx_update_unknown_dir_ignored`(?)",
+            [$siteName]);
         $this->commit();
     }
 
@@ -1373,9 +1375,10 @@ class ManxDatabase implements IManxDatabase
         return $this->execute("SELECT `url` FROM `copy` WHERE `site` = ? AND `size` <> 0 AND `md5` <> '' LIMIT 0, 1000", [ $siteId ]);
     }
 
-    public function updateIgnoredUnknownDirs()
+    public function updateIgnoredUnknownDirs($siteName)
     {
-        $this->execute("CALL `manx_update_unknown_dir_ignored`()", []);
+        $this->execute("CALL `manx_update_unknown_dir_ignored`(?)",
+            [$siteName]);
     }
 
     public function updateIgnoredUnknownSingleDir($siteUnknownId)

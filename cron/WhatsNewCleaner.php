@@ -146,7 +146,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     public function removeUnknownPathsWithCopy()
     {
         $this->log('Purging unknown paths with known copies.');
-        $this->_db->removeUnknownPathsWithCopy();
+        $this->_db->removeUnknownPathsWithCopy($this->_siteName);
     }
 
     public function computeMissingMD5()
@@ -176,7 +176,7 @@ class WhatsNewCleaner implements IWhatsNewCleaner
     public function updateIgnoredUnknownDirs()
     {
         $this->log("Updating ignored unknown directories");
-        $this->_db->updateIgnoredUnknownDirs();
+        $this->_db->updateIgnoredUnknownDirs($this->_siteName);
     }
 
     private function loadIndexByDateTable()

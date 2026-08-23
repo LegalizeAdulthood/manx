@@ -985,16 +985,16 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     public function testRemoveUnknownPathsWithCopy()
     {
         $this->_db->expects($this->once())->method('beginTransaction');
-        $purgeSuCopies = "CALL `manx_purge_su_copies`()";
-        $purgeDirs = "CALL `manx_purge_unused_unknown_directories`()";
-        $refreshDirs = "CALL `manx_update_unknown_dir_ignored`()";
+        $purgeSuCopies = "CALL `manx_purge_su_copies`(?)";
+        $purgeDirs = "CALL `manx_purge_unused_unknown_directories`(?)";
+        $refreshDirs = "CALL `manx_update_unknown_dir_ignored`(?)";
         $this->_db->expects($this->exactly(3))->method('execute')->withConsecutive(
-            [$purgeSuCopies, []],
-            [$purgeDirs, []],
-            [$refreshDirs, []]);
+            [$purgeSuCopies, ['bitsavers']],
+            [$purgeDirs, ['bitsavers']],
+            [$refreshDirs, ['bitsavers']]);
         $this->_db->expects($this->once())->method('commit');
 
-        $this->_manxDb->removeUnknownPathsWithCopy();
+        $this->_manxDb->removeUnknownPathsWithCopy('bitsavers');
     }
 
     public function testGetUnknownPathsForKnownCompanies()
@@ -1625,10 +1625,11 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
 
     public function testUpdateIgnoredUnkownDirs()
     {
-        $call = "CALL `manx_update_unknown_dir_ignored`()";
-        $this->_db->expects($this->once())->method('execute')->with($call, []);
+        $call = "CALL `manx_update_unknown_dir_ignored`(?)";
+        $this->_db->expects($this->once())->method('execute')
+            ->with($call, ['bitsavers']);
 
-        $this->_manxDb->updateIgnoredUnknownDirs();
+        $this->_manxDb->updateIgnoredUnknownDirs('bitsavers');
     }
 
     public function testupdateIgnoredUnknownSingleDir()

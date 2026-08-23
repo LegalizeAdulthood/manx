@@ -194,29 +194,82 @@ DELIMITER ;
 CALL `manx_backfill_site_unknown_dir_part_regex`();
 DROP PROCEDURE IF EXISTS `manx_backfill_site_unknown_dir_part_regex`;
 
+ALTER TABLE `site_unknown`
+  ADD KEY `dir_id` (`dir_id`),
+  ADD KEY `site_ignored_dir` (`site_id`, `ignored`, `dir_id`);
+
+ALTER TABLE `site_unknown_dir`
+  ADD KEY `parent_dir_id` (`parent_dir_id`);
+
+DROP PROCEDURE IF EXISTS `manx_purge_su_copies`;
+DELIMITER //
+CREATE PROCEDURE `manx_purge_su_copies`(
+    IN `site_name` VARCHAR(100))
+BEGIN
+    DECLARE `target_site_id` INT DEFAULT -1;
+    DECLARE `site_copy_base` VARCHAR(200) DEFAULT '';
+
+    SELECT COALESCE(MAX(`site_id`), -1),
+            COALESCE(MAX(`copy_base`), '')
+        INTO `target_site_id`, `site_copy_base`
+        FROM `site`
+        WHERE `name` = `site_name`;
+
+    IF `target_site_id` <> -1 THEN
+        DELETE `su`
+        FROM `site_unknown` `su`
+            LEFT JOIN `site_unknown_dir` `sud`
+                ON `sud`.`site_id` = `target_site_id`
+                AND `sud`.`id` = `su`.`dir_id`
+            JOIN `copy` `c` FORCE INDEX (`site_filename`)
+                ON `c`.`site` = `target_site_id`
+                AND `c`.`filename` = `su`.`filename`
+                AND `c`.`url` = IF(`su`.`dir_id` = -1,
+                    CONCAT(`site_copy_base`, `su`.`filename`),
+                    CONCAT(`site_copy_base`, `sud`.`path`, '/',
+                        `su`.`filename`))
+        WHERE `su`.`site_id` = `target_site_id`;
+    END IF;
+END//
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS `manx_purge_unused_unknown_directories`;
 DELIMITER //
-CREATE PROCEDURE `manx_purge_unused_unknown_directories`()
+CREATE PROCEDURE `manx_purge_unused_unknown_directories`(
+    IN `site_name` VARCHAR(100))
 BEGIN
     DECLARE `deleted_count` INT DEFAULT 1;
+    DECLARE `target_site_id` INT DEFAULT -1;
 
-    WHILE `deleted_count` > 0 DO
-        DELETE `d` FROM `site_unknown_dir` `d`
-            LEFT JOIN `site_unknown` `su`
-                ON `su`.`dir_id` = `d`.`id`
-            LEFT JOIN `site_unknown_dir` `child`
-                ON `child`.`parent_dir_id` = `d`.`id`
-            WHERE `su`.`id` IS NULL
-            AND `child`.`id` IS NULL;
-        SET `deleted_count` = ROW_COUNT();
-    END WHILE;
+    SELECT COALESCE(MAX(`site_id`), -1) INTO `target_site_id`
+        FROM `site`
+        WHERE `name` = `site_name`;
+
+    IF `target_site_id` <> -1 THEN
+        WHILE `deleted_count` > 0 DO
+            DELETE `d` FROM `site_unknown_dir` `d`
+                LEFT JOIN `site_unknown` `su`
+                    ON `su`.`site_id` = `target_site_id`
+                    AND `su`.`dir_id` = `d`.`id`
+                LEFT JOIN `site_unknown_dir` `child`
+                    ON `child`.`site_id` = `target_site_id`
+                    AND `child`.`parent_dir_id` = `d`.`id`
+                WHERE `d`.`site_id` = `target_site_id`
+                AND `su`.`id` IS NULL
+                AND `child`.`id` IS NULL;
+            SET `deleted_count` = ROW_COUNT();
+        END WHILE;
+    END IF;
 END//
 DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `manx_update_unknown_dir_ignored`;
 DELIMITER //
-CREATE PROCEDURE `manx_update_unknown_dir_ignored`()
+CREATE PROCEDURE `manx_update_unknown_dir_ignored`(
+    IN `site_name` VARCHAR(100))
 BEGIN
+    DECLARE `target_site_id` INT DEFAULT -1;
+
     DROP TEMPORARY TABLE IF EXISTS `tmp_dir_ids_not_ignored`;
     CREATE TEMPORARY TABLE `tmp_dir_ids_not_ignored`(
         `id` INT(11) NOT NULL,
@@ -233,35 +286,44 @@ BEGIN
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-    INSERT IGNORE INTO `tmp_dir_ids_not_ignored`
-        SELECT DISTINCT `dir_id`
-        FROM `site_unknown`
-        WHERE `ignored` = 0
-        AND `dir_id` <> -1;
-    INSERT IGNORE INTO `tmp_dir_ids_to_process`
-        SELECT `id` FROM `tmp_dir_ids_not_ignored`;
+    SELECT COALESCE(MAX(`site_id`), -1) INTO `target_site_id`
+        FROM `site`
+        WHERE `name` = `site_name`;
 
-    WHILE (SELECT COUNT(*) FROM `tmp_dir_ids_to_process`) > 0 DO
-        DELETE FROM `tmp_dir_ids_next`;
-        INSERT IGNORE INTO `tmp_dir_ids_next`
-            SELECT DISTINCT `sud`.`parent_dir_id`
-            FROM `site_unknown_dir` `sud`,
-                `tmp_dir_ids_to_process` `tdi`
-            WHERE `sud`.`id` = `tdi`.`id`
-            AND `sud`.`parent_dir_id` <> -1;
-        DELETE FROM `tmp_dir_ids_next`
-            WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids_not_ignored`);
+    IF `target_site_id` <> -1 THEN
         INSERT IGNORE INTO `tmp_dir_ids_not_ignored`
-            SELECT `id` FROM `tmp_dir_ids_next`;
-        DELETE FROM `tmp_dir_ids_to_process`;
+            SELECT DISTINCT `dir_id`
+            FROM `site_unknown`
+            WHERE `site_id` = `target_site_id`
+            AND `ignored` = 0
+            AND `dir_id` <> -1;
         INSERT IGNORE INTO `tmp_dir_ids_to_process`
-            SELECT `id` FROM `tmp_dir_ids_next`;
-    END WHILE;
+            SELECT `id` FROM `tmp_dir_ids_not_ignored`;
 
-    UPDATE `site_unknown_dir` `d`
-        LEFT JOIN `tmp_dir_ids_not_ignored` `tdi`
-            ON `tdi`.`id` = `d`.`id`
-        SET `d`.`ignored` = IF(`tdi`.`id` IS NULL, 1, 0);
+        WHILE (SELECT COUNT(*) FROM `tmp_dir_ids_to_process`) > 0 DO
+            DELETE FROM `tmp_dir_ids_next`;
+            INSERT IGNORE INTO `tmp_dir_ids_next`
+                SELECT DISTINCT `sud`.`parent_dir_id`
+                FROM `site_unknown_dir` `sud`,
+                    `tmp_dir_ids_to_process` `tdi`
+                WHERE `sud`.`site_id` = `target_site_id`
+                AND `sud`.`id` = `tdi`.`id`
+                AND `sud`.`parent_dir_id` <> -1;
+            DELETE FROM `tmp_dir_ids_next`
+                WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids_not_ignored`);
+            INSERT IGNORE INTO `tmp_dir_ids_not_ignored`
+                SELECT `id` FROM `tmp_dir_ids_next`;
+            DELETE FROM `tmp_dir_ids_to_process`;
+            INSERT IGNORE INTO `tmp_dir_ids_to_process`
+                SELECT `id` FROM `tmp_dir_ids_next`;
+        END WHILE;
+
+        UPDATE `site_unknown_dir` `d`
+            LEFT JOIN `tmp_dir_ids_not_ignored` `tdi`
+                ON `tdi`.`id` = `d`.`id`
+            SET `d`.`ignored` = IF(`tdi`.`id` IS NULL, 1, 0)
+            WHERE `d`.`site_id` = `target_site_id`;
+    END IF;
 
     DROP TEMPORARY TABLE IF EXISTS `tmp_dir_ids_next`;
     DROP TEMPORARY TABLE IF EXISTS `tmp_dir_ids_to_process`;
@@ -353,8 +415,33 @@ BEGIN
 END//
 DELIMITER ;
 
-CALL `manx_purge_unused_unknown_directories`();
-CALL `manx_update_unknown_dir_ignored`();
+DROP PROCEDURE IF EXISTS `manx_cleanup_all_unknown_dirs`;
+DELIMITER //
+CREATE PROCEDURE `manx_cleanup_all_unknown_dirs`()
+BEGIN
+    DECLARE `done` INT DEFAULT 0;
+    DECLARE `current_site_name` VARCHAR(100) DEFAULT '';
+    DECLARE `site_names` CURSOR FOR
+        SELECT `name` FROM `site` WHERE `name` IS NOT NULL;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET `done` = 1;
+
+    OPEN `site_names`;
+    site_loop: LOOP
+        FETCH `site_names` INTO `current_site_name`;
+        IF `done` = 1 THEN
+            LEAVE site_loop;
+        END IF;
+
+        CALL `manx_purge_su_copies`(`current_site_name`);
+        CALL `manx_purge_unused_unknown_directories`(`current_site_name`);
+        CALL `manx_update_unknown_dir_ignored`(`current_site_name`);
+    END LOOP;
+    CLOSE `site_names`;
+END//
+DELIMITER ;
+
+CALL `manx_cleanup_all_unknown_dirs`();
+DROP PROCEDURE IF EXISTS `manx_cleanup_all_unknown_dirs`;
 
 UPDATE `properties`
     SET `value` = '2.2.0'
