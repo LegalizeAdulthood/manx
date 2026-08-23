@@ -194,7 +194,7 @@ class WhatsNewPage extends AdminPageBase
             return $row['pub_id'];
         }
 
-        if ($row['status'] == 'New')
+        if ($row['status'] == 'New' || $row['status'] == 'Uncertain')
         {
             return $this->_manx->addPublication($this->_user,
                 $row['company_id'], $row['part'], $row['pub_date'],

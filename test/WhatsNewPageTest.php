@@ -1055,6 +1055,67 @@ EOH;
         $this->_page->ingestPreviewRows();
     }
 
+    public function testIngestPreviewRowsCreatesPublicationForSelectedUncertainRows()
+    {
+        $siteName = 'bitsavers';
+        $parentDirId = 1339;
+        $companyId = 13;
+        $pubId = 886;
+        $user = $this->createMock(Manx\IUser::class);
+        $this->_manx->expects($this->once())->method('getUserFromSession')
+            ->willReturn($user);
+        $this->createPage(['siteName' => $siteName,
+            'parentDir' => $parentDirId,
+            'ingest_preview' => 1,
+            'ingest0' => 224]);
+        $thisDirRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
+            [
+                [100, 3, 'dec/pdp11', 150,
+                    Manx\UrlMetaData::DEFAULT_PART_REGEX, 0]
+            ]);
+        $fileRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+            [
+                [224, 3,
+                    'EK-4444-01_Jumbotron_Reference_Manual_Feb1977.pdf',
+                    0, 0, $parentDirId]
+            ]);
+        $url = 'http://bitsavers.org/pdf/dec/pdp11/EK-4444-01_Jumbotron_Reference_Manual_Feb1977.pdf';
+        $pubRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
+            [
+                [31, 'EK-4444-01', 'Jumbotron Reference Manual', '1977-02'],
+                [32, 'EK-4444-01', 'Jumbotron Pocket Guide', '1978-04']
+            ]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDir')
+            ->with($parentDirId)->willReturn($thisDirRows[0]);
+        $this->_db->expects($this->once())->method('getSiteUnknownPaths')
+            ->with($siteName, $parentDirId)->willReturn($fileRows);
+        $this->_db->expects($this->once())
+            ->method('getCompanyIdForSiteUnknownDir')
+            ->with($siteName, 'dec/pdp11')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($url)->willReturn(false);
+        $this->_db->expects($this->once())
+            ->method('getPublicationsForPartNumber')
+            ->with('EK-4444-01', $companyId)->willReturn($pubRows);
+        $this->_manx->expects($this->once())->method('addPublication')
+            ->with($user, $companyId, 'EK-4444-01', '1977-02',
+                'Jumbotron Reference Manual', 'D', '', '', '', '', '', '+en')
+            ->willReturn($pubId);
+        $this->_db->expects($this->once())->method('addCopy')
+            ->with($pubId, 'PDF', 3, $url, '', 0, '', '', '')
+            ->willReturn(887);
+        $this->_db->expects($this->once())
+            ->method('removeSiteUnknownPathsInDir')
+            ->with([224], $parentDirId);
+
+        $this->_page->ingestPreviewRows();
+    }
+
     public function testIngestPreviewRowsSkipsRejectedRows()
     {
         $siteName = 'bitsavers';
