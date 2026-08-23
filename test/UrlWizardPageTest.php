@@ -75,6 +75,17 @@ class UrlWizardPageTest extends Manx\Test\TestCase
         $this->_page = new UrlWizardPageTester($this->_config);
     }
 
+    private static function copyLinkHref($output)
+    {
+        $matches = [];
+        if (preg_match('/<a id="copy_link" href="([^"]*)"/',
+            $output, $matches) != 1)
+        {
+            return '';
+        }
+        return html_entity_decode($matches[1], ENT_COMPAT | ENT_HTML401);
+    }
+
     public function testConstruct()
     {
         $this->assertTrue(is_object($this->_page));
@@ -354,7 +365,13 @@ EOH;
 
         $page->renderBodyContent();
 
-        $this->expectOutputStringIgnoringLineEndings(self::expectedBodyContent(array_merge($vars, $metaData, ['sites' => $sites, 'companies' => $companies])));
+        $expectedVars = array_merge($vars, $metaData, [
+            'copy_link_url' => $url,
+            'sites' => $sites,
+            'companies' => $companies
+        ]);
+        $this->expectOutputStringIgnoringLineEndings(
+            self::expectedBodyContent($expectedVars));
     }
 
     public function testRenderPageParamsNoSiteCompanyDir()
@@ -423,7 +440,13 @@ EOH;
 
         $page->renderBodyContent();
 
-        $this->expectOutputStringIgnoringLineEndings(self::expectedBodyContent(array_merge($vars, $metaData, ['sites' => $sites, 'companies' => $companies])));
+        $expectedVars = array_merge($vars, $metaData, [
+            'copy_link_url' => $url,
+            'sites' => $sites,
+            'companies' => $companies
+        ]);
+        $this->expectOutputStringIgnoringLineEndings(
+            self::expectedBodyContent($expectedVars));
     }
 
     public function testRenderPagePreservesSiteCompanyDirectoryMetadataForNonPdfUrl()
@@ -484,14 +507,16 @@ EOH;
             $output);
     }
 
-    public function testRenderPageEscapesCopyLinkUrl()
+    public function testRenderPageCopyLinkUsesRequestUrl()
     {
         $_SERVER['PATH_INFO'] = '';
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $url = 'http://bitsavers.org/pdf/dec/foo/Guide.pdf?download=1'
-            . '&url=http://example.test/manual.pdf';
+        $documentUrl = 'http://bitsavers.org/pdf/dec/foo/Guide.pdf'
+            . '?download=1&source=wizard';
+        $wizardUrl = 'url-wizard.php?id=222&url='
+            . rawurlencode($documentUrl);
         $metaData = [
-            'url' => $url,
+            'url' => $wizardUrl,
             'mirror_url' => '',
             'size' => 10204,
             'valid' => true,
@@ -510,21 +535,20 @@ EOH;
         $this->_db->method('getCompanyList')->willReturn([]);
         $this->_manx->method('getDatabase')->willReturn($this->_db);
         $this->_urlMeta->expects($this->once())->method('determineData')
-            ->with($url)
+            ->with($documentUrl)
             ->willReturn($metaData);
-        $this->_config['vars'] = ['url' => rawurlencode($url)];
+        $this->_config['vars'] = [
+            'id' => 222,
+            'url' => rawurlencode($documentUrl)
+        ];
         $page = new UrlWizardPageTester($this->_config);
 
         ob_start();
         $page->renderBodyContent();
         $output = ob_get_clean();
 
-        $escapedUrl = htmlspecialchars(
-            $url, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401);
-        $this->assertStringContainsString(
-            '<a id="copy_link" href="' . $escapedUrl
-                . '" class="">Copy</a>',
-            $output);
+        $this->assertEquals($documentUrl, self::copyLinkHref($output));
+        $this->assertNotEquals($wizardUrl, self::copyLinkHref($output));
     }
 
     public function testCachedPdfMetadataPopulatesResults()
@@ -746,9 +770,14 @@ EOH;
         $keywords = self::param($vars, 'keywords');
         $publications = array_key_exists('pubs', $vars) ? self::expectedPublicationOptions($vars) : '';
         $title = self::param($vars, 'title');
+        $copyLinkUrl = self::param($vars, 'copy_link_url');
+        if (strlen($copyLinkUrl) == 0)
+        {
+            $copyLinkUrl = $copyUrl;
+        }
         $copyLink = $urlPresent ? sprintf(' href="%s"',
             htmlspecialchars(
-                $vars['url'], ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401))
+                $copyLinkUrl, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401))
             : '';
         $copyLinkClass = $urlPresent ? '' : 'hidden';
         $copyTextClass = $urlPresent ? 'hidden' : '';

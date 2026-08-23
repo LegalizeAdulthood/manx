@@ -260,14 +260,16 @@ EOH;
         }
     }
 
-    private function renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData,
-        $idPresent, $cachedPdfMetadata)
+    private function renderCopyFields($urlPresent, $copyLinkUrl, $url,
+        $mirrorUrl, $metaData, $idPresent, $cachedPdfMetadata)
     {
-        $copyLink = $urlPresent ? sprintf(' href="%s"',
-            htmlspecialchars($url, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401))
+        $hasCopyLink = $urlPresent && strlen($copyLinkUrl) > 0;
+        $copyLink = $hasCopyLink ? sprintf(' href="%s"',
+            htmlspecialchars($copyLinkUrl, ENT_COMPAT | ENT_SUBSTITUTE
+                | ENT_HTML401))
             : '';
-        $copyLinkClass = $urlPresent ? '' : 'hidden';
-        $copyTextClass = $urlPresent ? 'hidden' : '';
+        $copyLinkClass = $hasCopyLink ? '' : 'hidden';
+        $copyTextClass = $hasCopyLink ? 'hidden' : '';
         print <<<EOH
 <fieldset id="copy_fields">
 <legend id="copy_legend"><a id="copy_link"$copyLink class="$copyLinkClass">Copy</a><span id="copy_text" class="$copyTextClass">Copy</span></legend>
@@ -649,15 +651,16 @@ EOH;
     {
         $idPresent = array_key_exists('id', $this->_vars);
         $urlPresent = array_key_exists('url', $this->_vars);
-        $url = $urlPresent ? self::requestUrl($this->_vars['url']) : '';
-        $metaData = $urlPresent ? $this->_urlMeta->determineData($url)
+        $copyLinkUrl = $urlPresent ? self::requestUrl($this->_vars['url'])
+            : '';
+        $metaData = $urlPresent ? $this->_urlMeta->determineData($copyLinkUrl)
             : [
                 'format' => '',
                 'site' => [ 'site_id' => -1 ],
                 'size' => 0,
                 'pub_date' => '',
                 'part' => '',
-                'url' => $url,
+                'url' => $copyLinkUrl,
                 'mirror_url' => '',
                 'company' => -1,
                 'keywords' => '',
@@ -679,8 +682,8 @@ EOH;
 EOH;
 
         $this->renderSiteUnknownFields($idPresent);
-        $this->renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData,
-            $idPresent, $cachedPdfMetadata);
+        $this->renderCopyFields($urlPresent, $copyLinkUrl, $url, $mirrorUrl,
+            $metaData, $idPresent, $cachedPdfMetadata);
         $this->renderPdfMetadataFields($cachedPdfMetadata);
         $this->renderSiteCompanyFields($metaData);
         $this->renderSiteFields($urlPresent, $idPresent, $metaData);
