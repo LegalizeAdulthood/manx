@@ -176,14 +176,32 @@ class WhatsNewPage extends AdminPageBase
 
     private function ingestPreviewRow($row)
     {
-        if ($row['status'] != 'Accepted' || $row['pub_id'] == '')
+        $pubId = $this->previewRowPubId($row);
+        if ($pubId == '')
         {
             return false;
         }
 
-        $this->_manxDb->addCopy($row['pub_id'], $row['format'],
+        $this->_manxDb->addCopy($pubId, $row['format'],
             $row['site_id'], $row['url'], '', 0, '', '', '');
         return true;
+    }
+
+    private function previewRowPubId($row)
+    {
+        if ($row['status'] == 'Accepted' && $row['pub_id'] != '')
+        {
+            return $row['pub_id'];
+        }
+
+        if ($row['status'] == 'New')
+        {
+            return $this->_manx->addPublication($this->_user,
+                $row['company_id'], $row['part'], $row['pub_date'],
+                $row['title'], 'D', '', '', '', '', '', '+en');
+        }
+
+        return '';
     }
 
     private function renderPartRegexForm($thisDir)
@@ -310,6 +328,7 @@ EOH;
         return [
             'id' => $fileInfo['id'],
             'site_id' => $fileInfo['site_id'],
+            'company_id' => $companyId,
             'pub_id' => $pubId,
             'path' => $fileInfo['path'],
             'url' => $fileInfo['url'],
