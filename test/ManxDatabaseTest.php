@@ -690,7 +690,12 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     {
         $ignoredIds = [56, 111];
         $update = "UPDATE `site_unknown` `su` SET `su`.`ignored` = 1 WHERE `su`.`id` in (?, ?)";
-        $this->_db->expects($this->exactly(1))->method('execute')->with($update, $ignoredIds);
+        $refreshDirs = "CALL `manx_update_unknown_dir_ignored`()";
+        $this->_db->expects($this->once())->method('beginTransaction');
+        $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
+            [$update, $ignoredIds],
+            [$refreshDirs, []]);
+        $this->_db->expects($this->once())->method('commit');
 
         $this->_manxDb->ignoreSitePaths($ignoredIds);
     }
@@ -851,9 +856,11 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('beginTransaction');
         $purgeSuCopies = "CALL `manx_purge_su_copies`()";
         $purgeDirs = "CALL `manx_purge_unused_unknown_directories`()";
-        $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
+        $refreshDirs = "CALL `manx_update_unknown_dir_ignored`()";
+        $this->_db->expects($this->exactly(3))->method('execute')->withConsecutive(
             [$purgeSuCopies, []],
-            [$purgeDirs, []]);
+            [$purgeDirs, []],
+            [$refreshDirs, []]);
         $this->_db->expects($this->once())->method('commit');
 
         $this->_manxDb->removeUnknownPathsWithCopy();
@@ -937,7 +944,15 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     {
         $id = 10;
         $delete = "DELETE FROM `site_unknown` WHERE `id` = ?";
-        $this->_db->expects($this->once())->method('execute')->with($delete, [$id]);
+        $purgeDirs = "CALL `manx_purge_unused_unknown_directories`()";
+        $refreshDirs = "CALL `manx_update_unknown_dir_ignored`()";
+        $this->_db->expects($this->once())->method('beginTransaction');
+        $this->_db->expects($this->exactly(3))->method('execute')
+            ->withConsecutive(
+                [$delete, [$id]],
+                [$purgeDirs, []],
+                [$refreshDirs, []]);
+        $this->_db->expects($this->once())->method('commit');
 
         $this->_manxDb->removeSiteUnknownPathById($id);
     }
@@ -1041,10 +1056,14 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->_db->expects($this->once())->method('beginTransaction');
         $deleteId = "DELETE FROM site_unknown WHERE id = ?";
         $updateUrl = "UPDATE copy SET url = ?, filename = ? WHERE copy_id = ?";
-        $this->_db->expects($this->exactly(2))->method('execute')
+        $purgeDirs = "CALL `manx_purge_unused_unknown_directories`()";
+        $refreshDirs = "CALL `manx_update_unknown_dir_ignored`()";
+        $this->_db->expects($this->exactly(4))->method('execute')
             ->withConsecutive(
                 [$deleteId, [$pathId]],
-                [$updateUrl, [$url, $filename, $copyId]]);
+                [$updateUrl, [$url, $filename, $copyId]],
+                [$purgeDirs, []],
+                [$refreshDirs, []]);
         $this->_db->expects($this->once())->method('commit');
 
 

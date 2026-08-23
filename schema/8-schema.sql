@@ -439,6 +439,8 @@ CALL `manx_backfill_copy_filename`();
 -- Purge site_unknown paths for existing copies
 --
 CALL `manx_purge_su_copies`();
+CALL `manx_purge_unused_unknown_directories`();
+CALL `manx_update_unknown_dir_ignored`();
 
 --
 -- ChiClassicComp has become Vintage Technology Digital Archive,
