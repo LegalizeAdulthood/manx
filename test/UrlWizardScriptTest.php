@@ -52,6 +52,26 @@ class UrlWizardScriptTest extends PHPUnit\Framework\TestCase
             $script);
     }
 
+    public function testPublicationSearchFailuresReplaceWorkingIndicator()
+    {
+        $script = self::script();
+
+        $this->assertStringContainsString(
+            'register_ajax_error_handler(error_id, working_id);',
+            $script);
+        $this->assertStringContainsString('show_working(working_id);',
+            $script);
+        $this->assertStringContainsString(
+            'show_request_error(working_id, request_failed_message(response));',
+            $script);
+        $this->assertStringContainsString(
+            '"Request failed with HTTP status " + response.status + "."',
+            $script);
+        $this->assertStringContainsString(
+            '$("#" + id).removeClass("working").addClass("error");',
+            $script);
+    }
+
     private static function script()
     {
         return file_get_contents(__DIR__ . '/../public/assets/UrlWizard.js');

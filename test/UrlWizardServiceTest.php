@@ -183,6 +183,17 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
         $this->expectOutputString(json_encode($metadata));
     }
 
+    public function testPubSearchIgnoresInvalidCompany()
+    {
+        $this->_db->expects($this->never())->method('searchForPublications');
+        $this->_config['vars'] = self::varsForPubSearch('', 'terminal');
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $this->expectOutputString('[]');
+    }
+
     private static function databaseRowFromDictionary(array $dict)
     {
         $result = array();
@@ -209,6 +220,15 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
         return array(
             'method' => 'pdf-metadata',
             'url' => $url
+        );
+    }
+
+    private static function varsForPubSearch($company, $keywords)
+    {
+        return array(
+            'method' => 'pub-search',
+            'company' => $company,
+            'keywords' => $keywords
         );
     }
 }

@@ -89,6 +89,11 @@ class UrlWizardService extends ServicePageBase
     private function findPublications()
     {
         $company = $this->param('company');
+        if (preg_match('/^[0-9]+$/', $company) != 1)
+        {
+            return array();
+        }
+
         $ignoredWords = array();
         $keywords = Searcher::filterSearchKeywords($this->param('keywords'), $ignoredWords);
         if (count($keywords))

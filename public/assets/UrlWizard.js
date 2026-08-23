@@ -25,6 +25,20 @@ $(function()
         $("#" + id).addClass("hidden");
     }
 
+    function show_working(id)
+    {
+        $("#" + id).text("Working...");
+        $("#" + id).removeClass("error").addClass("working");
+        show(id);
+    }
+
+    function show_request_error(id, message)
+    {
+        $("#" + id).text(message);
+        $("#" + id).removeClass("working").addClass("error");
+        show(id);
+    }
+
     function first_item_selected(id_field)
     {
         return $("#" + id_field).val() == -1;
@@ -327,24 +341,47 @@ $(function()
             });
     }
 
-    function ajax_error_handler(error_id)
+    function request_has_error_id(data, error_id)
+    {
+        if (typeof data == "string")
+        {
+            var marker = "error_id=" + error_id;
+            return data == marker
+                || data.indexOf(marker + "&") == 0
+                || data.indexOf("&" + marker + "&") != -1
+                || data.indexOf("&" + marker) ==
+                    data.length - marker.length - 1;
+        }
+        return data.error_id == error_id;
+    }
+
+    function request_failed_message(response)
+    {
+        if (response.status > 0)
+        {
+            return "Request failed with HTTP status " + response.status + ".";
+        }
+        return "Request failed before receiving a server response.";
+    }
+
+    function ajax_error_handler(error_id, working_id)
     {
         return function(e, response, settings)
         {
-            var data = settings.data || '';
-            if (data.indexOf('error_id=' + error_id + '&') == 0)
+            var data = settings.data || { };
+            if (request_has_error_id(data, error_id))
             {
-                show(error_id);
-                $("#" + error_id).html(response.responseText);
+                show_request_error(working_id, request_failed_message(response));
+                next_enable(true);
             }
-            next_enable(true);
         };
     }
 
-    function register_ajax_error_handler(error_id)
+    function register_ajax_error_handler(error_id, working_id)
     {
         $(document).off("ajaxError." + error_id)
-            .on("ajaxError." + error_id, ajax_error_handler(error_id));
+            .on("ajaxError." + error_id,
+                ajax_error_handler(error_id, working_id));
     }
 
     function pub_search(id_base, callback)
@@ -352,10 +389,10 @@ $(function()
         var company_id = $("#company_id").val();
         var error_id = id_base + '_error';
         var working_id = id_base + '_working';
-        if (company_id != -1)
+        if (company_id > 0)
         {
-            register_ajax_error_handler(error_id);
-            show(working_id);
+            register_ajax_error_handler(error_id, working_id);
+            show_working(working_id);
             next_enable(false);
             wizard_service(
                 {
@@ -557,7 +594,7 @@ $(function()
         var url = $("#copy_url").val();
         if (url.length > 0)
         {
-            show("copy_url_working");
+            show_working("copy_url_working");
             next_enable(false);
             wizard_service(
                 {
@@ -683,7 +720,7 @@ $(function()
     }
 
     load_cached_pdf_metadata();
-    register_ajax_error_handler('copy_url_error');
+    register_ajax_error_handler('copy_url_error', 'copy_url_working');
     $("#copy_url").change(url_lookup);
     $("#copy_site").change(copy_site_change);
     $("#company_id").change(company_id_change);
