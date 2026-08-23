@@ -50,14 +50,28 @@ class WhatsNewIndex implements IWhatsNewIndex
 
     public function parseIndexByDateFile()
     {
-        $this->readIndexByDateBatches(function($rows) {
-            $paths = [];
-            foreach ($rows as $row)
-            {
-                array_push($paths, $row['path']);
-            }
-            $this->_manxDb->addSiteUnknownPaths($this->_siteName, $paths);
-        });
+        $this->_manxDb->createTemporarySiteIndexByDate();
+        try
+        {
+            $this->readIndexByDateBatches(function($rows) {
+                $paths = [];
+                foreach ($rows as $row)
+                {
+                    array_push($paths, $row['path']);
+                }
+                $this->_manxDb->addTemporarySiteIndexByDateRows(
+                    $this->_siteName, $rows);
+                $this->_manxDb->addSiteUnknownPaths($this->_siteName, $paths);
+            });
+            $this->_manxDb->removeSiteUnknownPathsMissingFromIndex(
+                $this->_siteName);
+            $this->_manxDb->removeSiteUnknownDirsMissingFromIndex(
+                $this->_siteName);
+        }
+        finally
+        {
+            $this->_manxDb->dropTemporarySiteIndexByDate();
+        }
     }
 
     public function loadIndexByDateTable()

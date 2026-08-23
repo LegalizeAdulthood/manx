@@ -1156,6 +1156,51 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($rows, $results);
     }
 
+    public function testRemoveSiteUnknownPathsMissingFromIndex()
+    {
+        $siteName = 'bitsavers';
+        $path = "IF(`su`.`dir_id` = -1, `su`.`filename`, "
+            . "CONCAT(`sud`.`path`, '/', `su`.`filename`))";
+        $delete = "DELETE `su` "
+            . "FROM `site_unknown` `su` "
+                . "INNER JOIN `site` `s` "
+                    . "ON `s`.`site_id` = `su`.`site_id` "
+                . "LEFT JOIN `site_unknown_dir` `sud` "
+                    . "ON `sud`.`site_id` = `s`.`site_id` "
+                    . "AND `su`.`dir_id` = `sud`.`id` "
+                . "LEFT JOIN `tmp_site_index_by_date` `idx` "
+                    . "ON `idx`.`site_id` = `s`.`site_id` "
+                    . "AND `idx`.`path` = $path "
+            . "WHERE `s`.`name` = ? "
+                . "AND `idx`.`path` IS NULL";
+        $this->_db->expects($this->once())->method('execute')
+            ->with($delete, [$siteName]);
+
+        $this->_manxDb->removeSiteUnknownPathsMissingFromIndex($siteName);
+    }
+
+    public function testRemoveSiteUnknownDirsMissingFromIndex()
+    {
+        $siteName = 'bitsavers';
+        $delete = "DELETE `sud` "
+            . "FROM `site_unknown_dir` `sud` "
+                . "INNER JOIN `site` `s` "
+                    . "ON `s`.`site_id` = `sud`.`site_id` "
+                . "LEFT JOIN `tmp_site_index_by_date` `idx` "
+                    . "ON `idx`.`site_id` = `s`.`site_id` "
+                    . "AND (`idx`.`dir_path` = `sud`.`path` "
+                        . "OR LEFT(`idx`.`dir_path`, "
+                            . "CHAR_LENGTH(`sud`.`path`) + 1) = "
+                            . "CONCAT(`sud`.`path`, '/')) "
+            . "WHERE `s`.`name` = ? "
+                . "AND `idx`.`path` IS NULL";
+        $this->assertStringNotContainsString(' LIKE ', $delete);
+        $this->_db->expects($this->once())->method('execute')
+            ->with($delete, [$siteName]);
+
+        $this->_manxDb->removeSiteUnknownDirsMissingFromIndex($siteName);
+    }
+
     public function testRemoveSiteUnknownPathById()
     {
         $id = 10;

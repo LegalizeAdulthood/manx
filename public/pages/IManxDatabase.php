@@ -66,6 +66,8 @@ interface IManxDatabase
     function getSiteUnknownPathsOrderedByPath($siteName, $start, $ascending);
     function getAllSiteUnknownPaths($siteName);
     function getSiteUnknownPathsMissingFromIndex($siteName);
+    function removeSiteUnknownPathsMissingFromIndex($siteName);
+    function removeSiteUnknownDirsMissingFromIndex($siteName);
     function removeSiteUnknownPathById($siteUnknownId);
     function removeSiteUnknownPathsInDir(array $siteUnknownIds, $siteUnknownDirId);
     function getPossiblyMovedSiteUnknownPaths($siteName);

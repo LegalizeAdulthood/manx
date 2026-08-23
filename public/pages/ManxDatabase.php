@@ -1054,6 +1054,41 @@ class ManxDatabase implements IManxDatabase
             [$siteName]);
     }
 
+    public function removeSiteUnknownPathsMissingFromIndex($siteName)
+    {
+        $path = self::siteUnknownRelativePathSql();
+        $this->execute("DELETE `su` "
+            . "FROM `site_unknown` `su` "
+                . "INNER JOIN `site` `s` "
+                    . "ON `s`.`site_id` = `su`.`site_id` "
+                . "LEFT JOIN `site_unknown_dir` `sud` "
+                    . "ON `sud`.`site_id` = `s`.`site_id` "
+                    . "AND `su`.`dir_id` = `sud`.`id` "
+                . "LEFT JOIN `tmp_site_index_by_date` `idx` "
+                    . "ON `idx`.`site_id` = `s`.`site_id` "
+                    . "AND `idx`.`path` = $path "
+            . "WHERE `s`.`name` = ? "
+                . "AND `idx`.`path` IS NULL",
+            [$siteName]);
+    }
+
+    public function removeSiteUnknownDirsMissingFromIndex($siteName)
+    {
+        $this->execute("DELETE `sud` "
+            . "FROM `site_unknown_dir` `sud` "
+                . "INNER JOIN `site` `s` "
+                    . "ON `s`.`site_id` = `sud`.`site_id` "
+                . "LEFT JOIN `tmp_site_index_by_date` `idx` "
+                    . "ON `idx`.`site_id` = `s`.`site_id` "
+                    . "AND (`idx`.`dir_path` = `sud`.`path` "
+                        . "OR LEFT(`idx`.`dir_path`, "
+                            . "CHAR_LENGTH(`sud`.`path`) + 1) = "
+                            . "CONCAT(`sud`.`path`, '/')) "
+            . "WHERE `s`.`name` = ? "
+                . "AND `idx`.`path` IS NULL",
+            [$siteName]);
+    }
+
     public function removeSiteUnknownPathById($siteUnknownId)
     {
         $this->removeSiteUnknownPathsInDir(

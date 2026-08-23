@@ -52,6 +52,18 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
         $this->_whatsNew = new Manx\WhatsNewIndex($config);
     }
 
+    private function expectIndexReconcile()
+    {
+        $this->_db->expects($this->once())->method(
+            'removeSiteUnknownPathsMissingFromIndex')
+            ->with($this->_config['siteName']);
+        $this->_db->expects($this->once())->method(
+            'removeSiteUnknownDirsMissingFromIndex')
+            ->with($this->_config['siteName']);
+        $this->_db->expects($this->once())->method(
+            'dropTemporarySiteIndexByDate');
+    }
+
     public function testIndexNeededWithoutTimeStampProperty()
     {
         $this->_db->expects($this->once())->method('getProperty')->with($this->_property)->willReturn(false);
@@ -136,10 +148,29 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
         $file->expects($this->exactly(2))->method('getString')->willReturn(
             '2019-10-27 03:40:42 ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
             '2019-10-27 01:24:00 ibm/370/VM_SP/Release_5_Dec86/SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf');
+        $this->_db->expects($this->once())->method(
+            'createTemporarySiteIndexByDate');
+        $this->_db->expects($this->once())->method(
+            'addTemporarySiteIndexByDateRows')
+            ->with($this->_config['siteName'], [
+                [
+                    'path' => 'ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
+                    'dir_path' => 'ibm/4381/fe',
+                    'filename' => 'SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
+                    'index_date' => '2019-10-27'
+                ],
+                [
+                    'path' => 'ibm/370/VM_SP/Release_5_Dec86/SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf',
+                    'dir_path' => 'ibm/370/VM_SP/Release_5_Dec86',
+                    'filename' => 'SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf',
+                    'index_date' => '2019-10-27'
+                ]
+            ]);
         $this->_db->expects($this->once())->method('addSiteUnknownPaths')->
             with($this->_config['siteName'],
                 ['ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
                 'ibm/370/VM_SP/Release_5_Dec86/SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf']);
+        $this->expectIndexReconcile();
 
         $this->_whatsNew->parseIndexByDateFile();
     }
@@ -153,10 +184,15 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
             '2019-10-27 03:40:42 ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
             '2019-10-27 01:24:00 ibm/370/VM_SP/Release_5_Dec86/SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf',
             '');
+        $this->_db->expects($this->once())->method(
+            'createTemporarySiteIndexByDate');
+        $this->_db->expects($this->once())->method(
+            'addTemporarySiteIndexByDateRows');
         $this->_db->expects($this->once())->method('addSiteUnknownPaths')->
             with($this->_config['siteName'],
                 ['ibm/4381/fe/SY24-4024-2_A08_4381_Processor_Group_3_Console_Functions_and_Messages_Sep1985.pdf',
                 'ibm/370/VM_SP/Release_5_Dec86/SC24-5237-3_VM_SP_Release_5_Installation_Guide_Dec1986.pdf']);
+        $this->expectIndexReconcile();
 
         $this->_whatsNew->parseIndexByDateFile();
     }
@@ -172,15 +208,32 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
             ->willReturn(...self::eofResults(count($lines)));
         $file->expects($this->exactly(501))->method('getString')
             ->willReturn(...$lines);
+        $this->_db->expects($this->once())->method(
+            'createTemporarySiteIndexByDate');
+        $indexCalls = [];
+        $this->_db->expects($this->exactly(2))
+            ->method('addTemporarySiteIndexByDateRows')
+            ->willReturnCallback(
+                function($siteName, $rows) use (&$indexCalls) {
+                    array_push($indexCalls, [$siteName, $rows]);
+                });
         $calls = [];
         $this->_db->expects($this->exactly(2))->method('addSiteUnknownPaths')
             ->willReturnCallback(
                 function($siteName, $paths) use (&$calls) {
                     array_push($calls, [$siteName, $paths]);
                 });
+        $this->expectIndexReconcile();
 
         $this->_whatsNew->parseIndexByDateFile();
 
+        $this->assertCount(500, $indexCalls[0][1]);
+        $this->assertCount(1, $indexCalls[1][1]);
+        $this->assertSame($this->_config['siteName'], $indexCalls[0][0]);
+        $this->assertSame('dec/pdp11/file000.pdf',
+            $indexCalls[0][1][0]['path']);
+        $this->assertSame('file500.pdf',
+            $indexCalls[1][1][0]['filename']);
         $this->assertCount(500, $calls[0][1]);
         $this->assertCount(1, $calls[1][1]);
         $this->assertSame($this->_config['siteName'], $calls[0][0]);
