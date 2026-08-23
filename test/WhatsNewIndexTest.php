@@ -188,24 +188,6 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
         $this->assertSame('dec/pdp11/file500.pdf', $calls[1][1][0]);
     }
 
-    private static function eofResults($lineCount)
-    {
-        $eof = array_fill(0, $lineCount, false);
-        array_push($eof, true);
-        return $eof;
-    }
-
-    private static function indexLines($count)
-    {
-        $lines = [];
-        for ($i = 0; $i < $count; ++$i)
-        {
-            array_push($lines, sprintf(
-                '2019-10-27 03:40:42 dec/pdp11/file%03d.pdf', $i));
-        }
-        return $lines;
-    }
-
     public function testLoadIndexByDateTable()
     {
         $file = $this->createMock(Manx\IFile::class);
@@ -255,10 +237,59 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
         $this->_whatsNew->loadIndexByDateTable();
     }
 
+    public function testLoadIndexByDateTableBatchesRows()
+    {
+        $lines = self::indexLines(501);
+        $file = $this->createMock(Manx\IFile::class);
+        $this->_fileSystem->expects($this->once())->method('openFile')
+            ->with(\Manx\Config::configFile($this->_indexFile), 'r')
+            ->willReturn($file);
+        $file->expects($this->exactly(502))->method('eof')
+            ->willReturn(...self::eofResults(count($lines)));
+        $file->expects($this->exactly(501))->method('getString')
+            ->willReturn(...$lines);
+        $this->_db->expects($this->once())->method(
+            'createTemporarySiteIndexByDate');
+        $calls = [];
+        $this->_db->expects($this->exactly(2))
+            ->method('addTemporarySiteIndexByDateRows')
+            ->willReturnCallback(
+                function($siteName, $rows) use (&$calls) {
+                    array_push($calls, [$siteName, $rows]);
+                });
+
+        $this->_whatsNew->loadIndexByDateTable();
+
+        $this->assertCount(500, $calls[0][1]);
+        $this->assertCount(1, $calls[1][1]);
+        $this->assertSame($this->_config['siteName'], $calls[0][0]);
+        $this->assertSame('dec/pdp11/file000.pdf',
+            $calls[0][1][0]['path']);
+        $this->assertSame('file500.pdf', $calls[1][1][0]['filename']);
+    }
+
     public function testDropIndexByDateTable()
     {
         $this->_db->expects($this->once())->method('dropTemporarySiteIndexByDate');
 
         $this->_whatsNew->dropIndexByDateTable();
+    }
+
+    private static function eofResults($lineCount)
+    {
+        $eof = array_fill(0, $lineCount, false);
+        array_push($eof, true);
+        return $eof;
+    }
+
+    private static function indexLines($count)
+    {
+        $lines = [];
+        for ($i = 0; $i < $count; ++$i)
+        {
+            array_push($lines, sprintf(
+                '2019-10-27 03:40:42 dec/pdp11/file%03d.pdf', $i));
+        }
+        return $lines;
     }
 }

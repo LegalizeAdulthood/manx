@@ -50,28 +50,23 @@ class WhatsNewIndex implements IWhatsNewIndex
 
     public function parseIndexByDateFile()
     {
-        $paths = [];
-        foreach ($this->readIndexByDateRows() as $row)
-        {
-            array_push($paths, $row['path']);
-            if (count($paths) == self::INDEX_BATCH_SIZE)
+        $this->readIndexByDateBatches(function($rows) {
+            $paths = [];
+            foreach ($rows as $row)
             {
-                $this->_manxDb->addSiteUnknownPaths(
-                    $this->_siteName, $paths);
-                $paths = [];
+                array_push($paths, $row['path']);
             }
-        }
-        if (count($paths) > 0)
-        {
             $this->_manxDb->addSiteUnknownPaths($this->_siteName, $paths);
-        }
+        });
     }
 
     public function loadIndexByDateTable()
     {
         $this->_manxDb->createTemporarySiteIndexByDate();
-        $this->_manxDb->addTemporarySiteIndexByDateRows(
-            $this->_siteName, $this->readIndexByDateRows());
+        $this->readIndexByDateBatches(function($rows) {
+            $this->_manxDb->addTemporarySiteIndexByDateRows(
+                $this->_siteName, $rows);
+        });
     }
 
     public function dropIndexByDateTable()
@@ -79,7 +74,7 @@ class WhatsNewIndex implements IWhatsNewIndex
         $this->_manxDb->dropTemporarySiteIndexByDate();
     }
 
-    private function readIndexByDateRows()
+    private function readIndexByDateBatches($consumeRows)
     {
         $indexByDate = $this->_fileSystem->openFile(
             Config::configFile($this->_indexByDateFile), 'r');
@@ -90,9 +85,17 @@ class WhatsNewIndex implements IWhatsNewIndex
             if (!is_null($row))
             {
                 array_push($rows, $row);
+                if (count($rows) == self::INDEX_BATCH_SIZE)
+                {
+                    $consumeRows($rows);
+                    $rows = [];
+                }
             }
         }
-        return $rows;
+        if (count($rows) > 0)
+        {
+            $consumeRows($rows);
+        }
     }
 
     private static function parseIndexByDateLine($line)
