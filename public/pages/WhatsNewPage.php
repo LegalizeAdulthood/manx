@@ -409,6 +409,8 @@ EOH;
 
         $siteName = htmlspecialchars($this->_siteName);
         $parentDirId = $this->_parentDirId;
+        $hasSelectableRows = self::hasSelectablePreviewRows($previewRows);
+        $controlsDisabled = $hasSelectableRows ? '' : ' disabled="disabled"';
 
         print <<<EOH
 <h2>Ingestion Preview</h2>
@@ -464,12 +466,24 @@ function setIngestPreviewChecked(checked)
     }
 }
 </script>
-<input type="button" id="ingest_check_all" value="Check All" onclick="setIngestPreviewChecked(true)" />
-<input type="button" id="ingest_uncheck_all" value="Uncheck All" onclick="setIngestPreviewChecked(false)" />
-<input type="submit" value="Ingest Selected" />
+<input type="button" id="ingest_check_all" value="Check All" onclick="setIngestPreviewChecked(true)"$controlsDisabled />
+<input type="button" id="ingest_uncheck_all" value="Uncheck All" onclick="setIngestPreviewChecked(false)"$controlsDisabled />
+<input type="submit" value="Ingest Selected"$controlsDisabled />
 </form>
 
 EOH;
+    }
+
+    private static function hasSelectablePreviewRows($previewRows)
+    {
+        foreach ($previewRows as $row)
+        {
+            if ($row['status'] == 'Accepted')
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected function renderBodyContent()

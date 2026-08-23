@@ -738,6 +738,73 @@ EOH;
         $this->assertStringNotContainsString('name="copy_url"', $output);
     }
 
+    public function testRenderBodyContentDisablesIngestControlsWithoutAcceptedRows()
+    {
+        $siteName = 'bitsavers';
+        $parentDirId = 1339;
+        $companyId = 13;
+        $this->createPage(['siteName' => $siteName,
+            'parentDir' => $parentDirId]);
+        $thisDirRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'parent_dir_id', 'part_regex', 'ignored'],
+            [
+                [100, 3, 'dec/pdp11', 150,
+                    Manx\UrlMetaData::DEFAULT_PART_REGEX, 0]
+            ]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDir')
+            ->with($parentDirId)->willReturn($thisDirRows[0]);
+        $this->_db->expects($this->once())->method('getSiteUnknownDirectories')
+            ->with($siteName, $parentDirId)->willReturn([]);
+        $fileRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+            [
+                [222, 3,
+                    'EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf',
+                    0, 0, $parentDirId],
+                [223, 3, 'LSI-1_Systems_Service_Manual_Aug81.pdf',
+                    0, 0, $parentDirId]
+            ]);
+        $duplicateUrl = 'http://bitsavers.org/pdf/dec/pdp11/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $rejectedUrl = 'http://bitsavers.org/pdf/dec/pdp11/LSI-1_Systems_Service_Manual_Aug81.pdf';
+        $this->_db->expects($this->once())->method('getSiteUnknownPaths')
+            ->with($siteName, $parentDirId)->willReturn($fileRows);
+        $this->_db->expects($this->once())
+            ->method('getCompanyIdForSiteUnknownDir')
+            ->with($siteName, 'dec/pdp11')->willReturn($companyId);
+        $this->_db->expects($this->exactly(2))
+            ->method('getFormatForExtension')
+            ->withConsecutive(['pdf'], ['pdf'])
+            ->willReturn('PDF', 'PDF');
+        $this->_db->expects($this->exactly(2))->method('copyExistsForUrl')
+            ->withConsecutive([$duplicateUrl], [$rejectedUrl])
+            ->willReturn(
+                ['ph_company' => $companyId, 'ph_pub' => 23,
+                    'ph_title' => 'Jumbotron Users Guide'],
+                false);
+        $this->_db->expects($this->never())
+            ->method('getPublicationsForPartNumber');
+
+        ob_start();
+        $this->_page->renderBodyContent();
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString(
+            '<input type="checkbox" id="ingest0" name="ingest0" value="222" disabled="disabled"/>',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="checkbox" id="ingest1" name="ingest1" value="223" disabled="disabled"/>',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="button" id="ingest_check_all" value="Check All" onclick="setIngestPreviewChecked(true)" disabled="disabled" />',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="button" id="ingest_uncheck_all" value="Uncheck All" onclick="setIngestPreviewChecked(false)" disabled="disabled" />',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="submit" value="Ingest Selected" disabled="disabled" />',
+            $output);
+    }
+
     public function testIngestPreviewRowsRecomputesSelectedAcceptedRows()
     {
         $siteName = 'bitsavers';
