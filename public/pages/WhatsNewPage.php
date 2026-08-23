@@ -404,7 +404,7 @@ EOH;
 
         print <<<EOH
 <h2>Ingestion Preview</h2>
-<form action="whatsnew.php" method="POST">
+<form id="ingest_preview_form" action="whatsnew.php" method="POST">
 <input type="hidden" name="site" value="$siteName" />
 <input type="hidden" name="parentDir" value="$parentDirId" />
 <input type="hidden" name="ingest_preview" value="1" />
@@ -415,9 +415,10 @@ EOH;
         $i = 0;
         foreach ($previewRows as $row)
         {
+            $checked = $row['status'] == 'Accepted' ? ' checked="checked"' : '';
             $disabled = $row['status'] == 'Accepted' ? '' : ' disabled="disabled"';
-            printf('<tr><td><input type="checkbox" id="ingest%d" name="ingest%d" value="%d"%s/></td>',
-                $i, $i, $row['id'], $disabled);
+            printf('<tr><td><input type="checkbox" id="ingest%d" name="ingest%d" value="%d"%s%s/></td>',
+                $i, $i, $row['id'], $checked, $disabled);
             printf('<td><a href="url-wizard.php?id=%d&url=%s">%s</a></td>',
                 $row['id'], htmlspecialchars($row['url']),
                 htmlspecialchars($row['path']));
@@ -436,6 +437,27 @@ EOH;
         }
         print <<<EOH
 </table>
+<script type="text/javascript">
+function setIngestPreviewChecked(checked)
+{
+    var form = document.getElementById("ingest_preview_form");
+    var boxes;
+    var i;
+
+    if (form === null)
+    {
+        return;
+    }
+
+    boxes = form.querySelectorAll('input[type="checkbox"][name^="ingest"]:not(:disabled)');
+    for (i = 0; i < boxes.length; ++i)
+    {
+        boxes[i].checked = checked;
+    }
+}
+</script>
+<input type="button" id="ingest_check_all" value="Check All" onclick="setIngestPreviewChecked(true)" />
+<input type="button" id="ingest_uncheck_all" value="Uncheck All" onclick="setIngestPreviewChecked(false)" />
 <input type="submit" value="Ingest Selected" />
 </form>
 

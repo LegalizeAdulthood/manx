@@ -709,13 +709,25 @@ EOH;
         $this->_page->renderBodyContent();
         $output = ob_get_clean();
 
+        $this->assertStringContainsString(
+            '<form id="ingest_preview_form" action="whatsnew.php" method="POST">',
+            $output);
         preg_match_all('/name="ingest[0-9]+"/', $output, $matches);
         $this->assertCount(2, $matches[0]);
         $this->assertStringContainsString(
-            '<input type="checkbox" id="ingest0" name="ingest0" value="222"/>',
+            '<input type="checkbox" id="ingest0" name="ingest0" value="222" checked="checked"/>',
             $output);
         $this->assertStringContainsString(
             '<input type="checkbox" id="ingest1" name="ingest1" value="223" disabled="disabled"/>',
+            $output);
+        $this->assertStringContainsString(
+            'input[type="checkbox"][name^="ingest"]:not(:disabled)',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="button" id="ingest_check_all" value="Check All" onclick="setIngestPreviewChecked(true)" />',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="button" id="ingest_uncheck_all" value="Uncheck All" onclick="setIngestPreviewChecked(false)" />',
             $output);
         $this->assertStringContainsString(
             '<input type="submit" value="Ingest Selected" />', $output);
