@@ -468,14 +468,8 @@ EOH;
     {
         $thisDir = $this->getThisDir();
         $currentDir = $thisDir['path'];
-        $dirs = [];
-        foreach ($this->_manxDb->getSiteUnknownDirectories($this->_siteName, $this->_parentDirId) as $dir)
-        {
-            if ($dir['ignored'] == 0)
-            {
-                $dirs[] = $dir;
-            }
-        }
+        $dirs = $this->_manxDb->getSiteUnknownDirectories(
+            $this->_siteName, $this->_parentDirId);
         $files = $this->_manxDb->getSiteUnknownPaths($this->_siteName, $this->_parentDirId);
         $title = $this->_title;
         if (count($dirs) + count($files) == 0)

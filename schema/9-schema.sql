@@ -194,6 +194,93 @@ DELIMITER ;
 CALL `manx_backfill_site_unknown_dir_part_regex`();
 DROP PROCEDURE IF EXISTS `manx_backfill_site_unknown_dir_part_regex`;
 
+DROP PROCEDURE IF EXISTS `manx_purge_unused_unknown_directories`;
+DELIMITER //
+CREATE PROCEDURE `manx_purge_unused_unknown_directories`()
+BEGIN
+    DECLARE `deleted_count` INT DEFAULT 1;
+
+    WHILE `deleted_count` > 0 DO
+        DELETE `d` FROM `site_unknown_dir` `d`
+            LEFT JOIN `site_unknown` `su`
+                ON `su`.`dir_id` = `d`.`id`
+            LEFT JOIN `site_unknown_dir` `child`
+                ON `child`.`parent_dir_id` = `d`.`id`
+            WHERE `su`.`id` IS NULL
+            AND `child`.`id` IS NULL;
+        SET `deleted_count` = ROW_COUNT();
+    END WHILE;
+END//
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `manx_update_unknown_dir_ignored`;
+DELIMITER //
+CREATE PROCEDURE `manx_update_unknown_dir_ignored`()
+BEGIN
+    DROP TEMPORARY TABLE IF EXISTS `tmp_dir_ids_not_ignored`;
+    CREATE TEMPORARY TABLE `tmp_dir_ids_not_ignored`(
+        `id` INT(11) NOT NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    DROP TEMPORARY TABLE IF EXISTS `tmp_dir_ids_to_process`;
+    CREATE TEMPORARY TABLE `tmp_dir_ids_to_process`(
+        `id` INT(11) NOT NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    DROP TEMPORARY TABLE IF EXISTS `tmp_dir_ids_next`;
+    CREATE TEMPORARY TABLE `tmp_dir_ids_next`(
+        `id` INT(11) NOT NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+    INSERT IGNORE INTO `tmp_dir_ids_not_ignored`
+        SELECT DISTINCT `dir_id`
+        FROM `site_unknown`
+        WHERE `ignored` = 0
+        AND `dir_id` <> -1;
+    INSERT IGNORE INTO `tmp_dir_ids_to_process`
+        SELECT `id` FROM `tmp_dir_ids_not_ignored`;
+
+    WHILE (SELECT COUNT(*) FROM `tmp_dir_ids_to_process`) > 0 DO
+        DELETE FROM `tmp_dir_ids_next`;
+        INSERT IGNORE INTO `tmp_dir_ids_next`
+            SELECT DISTINCT `sud`.`parent_dir_id`
+            FROM `site_unknown_dir` `sud`,
+                `tmp_dir_ids_to_process` `tdi`
+            WHERE `sud`.`id` = `tdi`.`id`
+            AND `sud`.`parent_dir_id` <> -1;
+        DELETE FROM `tmp_dir_ids_next`
+            WHERE `id` IN (SELECT `id` FROM `tmp_dir_ids_not_ignored`);
+        INSERT IGNORE INTO `tmp_dir_ids_not_ignored`
+            SELECT `id` FROM `tmp_dir_ids_next`;
+        DELETE FROM `tmp_dir_ids_to_process`;
+        INSERT IGNORE INTO `tmp_dir_ids_to_process`
+            SELECT `id` FROM `tmp_dir_ids_next`;
+    END WHILE;
+
+    UPDATE `site_unknown_dir` `d`
+        LEFT JOIN `tmp_dir_ids_not_ignored` `tdi`
+            ON `tdi`.`id` = `d`.`id`
+        SET `d`.`ignored` = IF(`tdi`.`id` IS NULL, 1, 0);
+
+    DROP TEMPORARY TABLE IF EXISTS `tmp_dir_ids_next`;
+    DROP TEMPORARY TABLE IF EXISTS `tmp_dir_ids_to_process`;
+    DROP TEMPORARY TABLE IF EXISTS `tmp_dir_ids_not_ignored`;
+END//
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `manx_update_unknown_single_dir_ignored`;
+DELIMITER //
+CREATE PROCEDURE `manx_update_unknown_single_dir_ignored`(
+    `su_id` INT(11))
+BEGIN
+    CALL `manx_update_unknown_dir_ignored`();
+END//
+DELIMITER ;
+
+CALL `manx_purge_unused_unknown_directories`();
+CALL `manx_update_unknown_dir_ignored`();
+
 UPDATE `properties`
     SET `value` = '2.2.0'
     WHERE `name` = 'version';

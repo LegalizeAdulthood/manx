@@ -1255,6 +1255,17 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `sud`.`site_id` "
             . "AND `sud`.`parent_dir_id` = ? "
+            . "AND EXISTS ("
+                . "SELECT 1 "
+                . "FROM `site_unknown_dir` `child` "
+                    . "INNER JOIN `site_unknown` `su` "
+                        . "ON `su`.`site_id` = `child`.`site_id` "
+                        . "AND `su`.`dir_id` = `child`.`id` "
+                        . "AND `su`.`ignored` = 0 "
+                . "WHERE `child`.`site_id` = `sud`.`site_id` "
+                    . "AND (`child`.`path` = `sud`.`path` "
+                        . "OR `child`.`path` LIKE CONCAT(`sud`.`path`, '/%'))"
+            . ") "
             . "ORDER BY `sud`.`path`";
         $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
             [

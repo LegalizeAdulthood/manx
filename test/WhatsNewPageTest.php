@@ -215,7 +215,6 @@ EOH;
                 [111, 3, 'dec/pdp11/1103', 1339, '', 0],
                 [112, 3, 'dec/pdp11/1104', 1339, '', 0],
                 [113, 3, 'dec/pdp11/1105', 1339, '', 0],
-                [114, 3, 'dec/pdp11/photos', 1339, '', 1],
             ]);
         $this->_db->expects($this->once())->method('getSiteUnknownDirectories')
             ->with($siteName, $parentDirId)
