@@ -654,6 +654,83 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->_manxDb->setProperty('foo', 'bar');
     }
 
+    public function testCreateTemporarySiteIndexByDate()
+    {
+        $query = "CREATE TEMPORARY TABLE `tmp_site_index_by_date` ("
+            . "`site_id` INT(11) NOT NULL, "
+            . "`path` VARCHAR(255) NOT NULL, "
+            . "`dir_path` VARCHAR(255) NOT NULL DEFAULT '', "
+            . "`filename` VARCHAR(255) NOT NULL DEFAULT '', "
+            . "`index_date` DATE NULL DEFAULT NULL, "
+            . "UNIQUE KEY `site_path` (`site_id`, `path`), "
+            . "KEY `site_dir_filename` (`site_id`, `dir_path`(128), `filename`(128))"
+            . ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
+        $this->_db->expects($this->once())->method('execute')
+            ->with($query, []);
+
+        $this->_manxDb->createTemporarySiteIndexByDate();
+    }
+
+    public function testAddTemporarySiteIndexByDateRows()
+    {
+        $siteName = 'bitsavers';
+        $siteId = 3;
+        $selectSite = "SELECT `site_id` FROM `site` WHERE `name`=?";
+        $insert = "INSERT INTO `tmp_site_index_by_date`"
+            . "(`site_id`, `path`, `dir_path`, `filename`, `index_date`) "
+            . "VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?) "
+            . "ON DUPLICATE KEY UPDATE "
+                . "`dir_path` = VALUES(`dir_path`), "
+                . "`filename` = VALUES(`filename`), "
+                . "`index_date` = VALUES(`index_date`)";
+        $rows = [
+            [
+                'path' => 'dec/pdp11/file%20%231.pdf',
+                'dir_path' => 'dec/pdp11',
+                'filename' => 'file #1.pdf',
+                'index_date' => '2019-10-27'
+            ],
+            [
+                'path' => 'IndexByDate.txt',
+                'dir_path' => '',
+                'filename' => 'IndexByDate.txt',
+                'index_date' => null
+            ]
+        ];
+        $this->_db->expects($this->exactly(2))->method('execute')
+            ->withConsecutive(
+                [$selectSite, [$siteName]],
+                [$insert, [
+                    $siteId, 'dec/pdp11/file%20%231.pdf', 'dec/pdp11',
+                    'file #1.pdf', '2019-10-27',
+                    $siteId, 'IndexByDate.txt', '', 'IndexByDate.txt', null
+                ]]
+            )
+            ->willReturn(
+                \Manx\Test\RowFactory::createResultRowsForColumns(
+                    ['site_id'], [[$siteId]]),
+                null
+            );
+
+        $this->_manxDb->addTemporarySiteIndexByDateRows($siteName, $rows);
+    }
+
+    public function testAddTemporarySiteIndexByDateRowsSkipsEmptyRows()
+    {
+        $this->_db->expects($this->never())->method('execute');
+
+        $this->_manxDb->addTemporarySiteIndexByDateRows('bitsavers', []);
+    }
+
+    public function testDropTemporarySiteIndexByDate()
+    {
+        $query = "DROP TEMPORARY TABLE IF EXISTS `tmp_site_index_by_date`";
+        $this->_db->expects($this->once())->method('execute')
+            ->with($query, []);
+
+        $this->_manxDb->dropTemporarySiteIndexByDate();
+    }
+
     public function testAddSiteUnknownPaths()
     {
         $this->_db->expects($this->once())->method('beginTransaction');
@@ -1047,6 +1124,38 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($rows, $results);
     }
 
+    public function testGetSiteUnknownPathsMissingFromIndex()
+    {
+        $siteName = 'bitsavers';
+        $path = "IF(`su`.`dir_id` = -1, `su`.`filename`, "
+            . "CONCAT(`sud`.`path`, '/', `su`.`filename`))";
+        $select = "SELECT `su`.`id`, $path AS `path` "
+            . "FROM `site_unknown` `su` "
+                . "INNER JOIN `site` `s` "
+                    . "ON `s`.`site_id` = `su`.`site_id` "
+                . "LEFT JOIN `site_unknown_dir` `sud` "
+                    . "ON `sud`.`site_id` = `s`.`site_id` "
+                    . "AND `su`.`dir_id` = `sud`.`id` "
+                . "LEFT JOIN `tmp_site_index_by_date` `idx` "
+                    . "ON `idx`.`site_id` = `s`.`site_id` "
+                    . "AND `idx`.`path` = $path "
+            . "WHERE `s`.`name` = ? "
+                . "AND `su`.`ignored` = 0 "
+                . "AND `idx`.`path` IS NULL "
+            . "ORDER BY `su`.`id`";
+        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'path'],
+            [
+                [1, 'foo/missing.pdf']
+            ]);
+        $this->_db->expects($this->once())->method('execute')
+            ->with($select, [$siteName])->willReturn($rows);
+
+        $results = $this->_manxDb->getSiteUnknownPathsMissingFromIndex($siteName);
+
+        $this->assertEquals($rows, $results);
+    }
+
     public function testRemoveSiteUnknownPathById()
     {
         $id = 10;
@@ -1067,21 +1176,40 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     public function testGetPossiblyMovedSiteUnknownPaths()
     {
         $siteName = 'bitsavers';
-        $select = "SELECT CONCAT(`sud`.`path`, '/', `su`.`filename`) AS `path`, "
-            . "CONCAT(`s`.`copy_base`, `sud`.`path`, '/', `su`.`filename`) AS `candidate_url`, "
+        $copyPath = "SUBSTRING(`c`.`url`, CHAR_LENGTH(`s`.`copy_base`) + 1)";
+        $copyDir = "IF(INSTR($copyPath, '/') = 0, '', "
+            . "SUBSTRING_INDEX($copyPath, '/', "
+                . "CHAR_LENGTH($copyPath) - "
+                . "CHAR_LENGTH(REPLACE($copyPath, '/', ''))))";
+        $unknownFilename = "IF(`idx`.`dir_path` = '', `idx`.`path`, "
+            . "SUBSTRING(`idx`.`path`, CHAR_LENGTH(`idx`.`dir_path`) + 2))";
+        $select = "SELECT `idx`.`path`, "
+            . "CONCAT(`s`.`copy_base`, `idx`.`path`) AS `candidate_url`, "
             . "`su`.`id` AS `path_id`, `c`.`url`, `c`.`copy_id`, `c`.`size`, `c`.`md5` "
             . "FROM `copy` `c` "
                 . "INNER JOIN `site` `s` ON `s`.`site_id` = `c`.`site` "
-                . "INNER JOIN `site_unknown` `su` ON `su`.`site_id` = `s`.`site_id` AND `su`.`filename` = `c`.`filename` "
-                . "INNER JOIN `site_unknown_dir` `sud` ON `sud`.`site_id` = `s`.`site_id` AND `su`.`dir_id` = `sud`.`id` "
+                . "INNER JOIN `tmp_site_index_by_date` `idx` "
+                    . "ON `idx`.`site_id` = `s`.`site_id` "
+                    . "AND `idx`.`filename` = `c`.`filename` "
+                . "LEFT JOIN `site_unknown_dir` `sud` "
+                    . "ON `sud`.`site_id` = `s`.`site_id` "
+                    . "AND `sud`.`path` = `idx`.`dir_path` "
+                . "INNER JOIN `site_unknown` `su` "
+                    . "ON `su`.`site_id` = `s`.`site_id` "
+                    . "AND `su`.`filename` = $unknownFilename "
+                    . "AND `su`.`dir_id` = IF(`idx`.`dir_path` = '', -1, `sud`.`id`) "
             . "WHERE `s`.`name` = ? "
-            . "AND `c`.`md5` <> '' "
-            . "AND `c`.`size` > 0";
+                . "AND `c`.`url` LIKE CONCAT(`s`.`copy_base`, '%') "
+                . "AND `c`.`md5` <> '' "
+                . "AND `c`.`size` > 0 "
+                . "AND `idx`.`dir_path` <> $copyDir";
         $whereClause = substr($select, strpos($select, "WHERE"));
         $this->assertStringNotContainsString("SUBSTRING_INDEX(`c`.`url`", $select);
-        $this->assertStringNotContainsString("CONCAT(", $whereClause);
         $this->assertStringNotContainsString("site_unknown_copy_dir", $select);
         $this->assertStringNotContainsString("copy.sud_id", $select);
+        $this->assertStringContainsString("`tmp_site_index_by_date`", $select);
+        $this->assertStringContainsString("`idx`.`filename` = `c`.`filename`", $select);
+        $this->assertStringContainsString("`idx`.`dir_path` <> $copyDir", $whereClause);
         $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['path', 'candidate_url', 'path_id', 'url', 'copy_id', 'size', 'md5'],
             [
                 ['foo/bar/foo.pdf', 'http://bitsavers.org/pdf/foo/bar/foo.pdf', 11, 'http://bitsavers.org/pdf/foo/foo.pdf', 22, 6566, 'd131dd02c5e6eec4']
