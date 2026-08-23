@@ -1056,11 +1056,33 @@ class ManxDatabase implements IManxDatabase
 
     public function removeSiteUnknownPathById($siteUnknownId)
     {
+        $this->removeSiteUnknownPathsInDir(
+            [$siteUnknownId], $this->siteUnknownDirIdForPath($siteUnknownId));
+    }
+
+    public function removeSiteUnknownPathsInDir(
+        array $siteUnknownIds, $siteUnknownDirId)
+    {
+        if (count($siteUnknownIds) == 0)
+        {
+            return;
+        }
+
+        $params = array_fill(0, count($siteUnknownIds), '?');
         $this->beginTransaction();
-        $this->execute("DELETE FROM `site_unknown` WHERE `id` = ?", [$siteUnknownId]);
-        $this->execute("CALL `manx_purge_unused_unknown_directories`()", []);
-        $this->execute("CALL `manx_update_unknown_dir_ignored`()", []);
+        $this->execute("DELETE FROM `site_unknown` WHERE `id` IN ("
+            . implode(', ', $params) . ")", $siteUnknownIds);
+        $this->execute(
+            "CALL `manx_cleanup_unknown_dir`(?)", [$siteUnknownDirId]);
         $this->commit();
+    }
+
+    private function siteUnknownDirIdForPath($siteUnknownId)
+    {
+        $rows = $this->execute(
+            "SELECT `dir_id` FROM `site_unknown` WHERE `id` = ?",
+            [$siteUnknownId]);
+        return count($rows) > 0 ? $rows[0]['dir_id'] : -1;
     }
 
     public function getPossiblyMovedSiteUnknownPaths($siteName)
@@ -1094,12 +1116,13 @@ class ManxDatabase implements IManxDatabase
     {
         $url = UrlNormalizer::normalize($url);
         $filename = self::decodedUrlBasename($url);
+        $siteUnknownDirId = $this->siteUnknownDirIdForPath($pathId);
         $this->beginTransaction();
         $this->execute("DELETE FROM site_unknown WHERE id = ?", [$pathId]);
         $this->execute("UPDATE copy SET url = ?, filename = ? WHERE copy_id = ?",
             [$url, $filename, $copyId]);
-        $this->execute("CALL `manx_purge_unused_unknown_directories`()", []);
-        $this->execute("CALL `manx_update_unknown_dir_ignored`()", []);
+        $this->execute(
+            "CALL `manx_cleanup_unknown_dir`(?)", [$siteUnknownDirId]);
         $this->commit();
     }
 
@@ -1214,17 +1237,7 @@ class ManxDatabase implements IManxDatabase
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `sud`.`site_id` "
             . "AND `sud`.`parent_dir_id` = ? "
-            . "AND EXISTS ("
-                . "SELECT 1 "
-                . "FROM `site_unknown_dir` `child` "
-                    . "INNER JOIN `site_unknown` `su` "
-                        . "ON `su`.`site_id` = `child`.`site_id` "
-                        . "AND `su`.`dir_id` = `child`.`id` "
-                        . "AND `su`.`ignored` = 0 "
-                . "WHERE `child`.`site_id` = `sud`.`site_id` "
-                    . "AND (`child`.`path` = `sud`.`path` "
-                        . "OR `child`.`path` LIKE CONCAT(`sud`.`path`, '/%'))"
-            . ") "
+            . "AND `sud`.`ignored` = 0 "
             . "ORDER BY `sud`.`path`",
             [$siteName, $parentDirId]);
     }

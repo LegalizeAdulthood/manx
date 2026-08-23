@@ -1159,18 +1159,48 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     public function testRemoveSiteUnknownPathById()
     {
         $id = 10;
-        $delete = "DELETE FROM `site_unknown` WHERE `id` = ?";
-        $purgeDirs = "CALL `manx_purge_unused_unknown_directories`()";
-        $refreshDirs = "CALL `manx_update_unknown_dir_ignored`()";
+        $dirId = 1339;
+        $selectDir = "SELECT `dir_id` FROM `site_unknown` WHERE `id` = ?";
+        $delete = "DELETE FROM `site_unknown` WHERE `id` IN (?)";
+        $cleanupDir = "CALL `manx_cleanup_unknown_dir`(?)";
         $this->_db->expects($this->once())->method('beginTransaction');
         $this->_db->expects($this->exactly(3))->method('execute')
             ->withConsecutive(
+                [$selectDir, [$id]],
                 [$delete, [$id]],
-                [$purgeDirs, []],
-                [$refreshDirs, []]);
+                [$cleanupDir, [$dirId]])
+            ->willReturn(
+                \Manx\Test\RowFactory::createResultRowsForColumns(
+                    ['dir_id'], [[$dirId]]),
+                null,
+                null);
         $this->_db->expects($this->once())->method('commit');
 
         $this->_manxDb->removeSiteUnknownPathById($id);
+    }
+
+    public function testRemoveSiteUnknownPathsInDir()
+    {
+        $ids = [10, 11];
+        $dirId = 1339;
+        $delete = "DELETE FROM `site_unknown` WHERE `id` IN (?, ?)";
+        $cleanupDir = "CALL `manx_cleanup_unknown_dir`(?)";
+        $this->_db->expects($this->once())->method('beginTransaction');
+        $this->_db->expects($this->exactly(2))->method('execute')
+            ->withConsecutive(
+                [$delete, $ids],
+                [$cleanupDir, [$dirId]]);
+        $this->_db->expects($this->once())->method('commit');
+
+        $this->_manxDb->removeSiteUnknownPathsInDir($ids, $dirId);
+    }
+
+    public function testRemoveSiteUnknownPathsInDirSkipsEmptyPaths()
+    {
+        $this->_db->expects($this->never())->method('beginTransaction');
+        $this->_db->expects($this->never())->method('execute');
+
+        $this->_manxDb->removeSiteUnknownPathsInDir([], 1339);
     }
 
     public function testGetPossiblyMovedSiteUnknownPaths()
@@ -1255,17 +1285,7 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
             . "WHERE `s`.`name` = ? "
             . "AND `s`.`site_id` = `sud`.`site_id` "
             . "AND `sud`.`parent_dir_id` = ? "
-            . "AND EXISTS ("
-                . "SELECT 1 "
-                . "FROM `site_unknown_dir` `child` "
-                    . "INNER JOIN `site_unknown` `su` "
-                        . "ON `su`.`site_id` = `child`.`site_id` "
-                        . "AND `su`.`dir_id` = `child`.`id` "
-                        . "AND `su`.`ignored` = 0 "
-                . "WHERE `child`.`site_id` = `sud`.`site_id` "
-                    . "AND (`child`.`path` = `sud`.`path` "
-                        . "OR `child`.`path` LIKE CONCAT(`sud`.`path`, '/%'))"
-            . ") "
+            . "AND `sud`.`ignored` = 0 "
             . "ORDER BY `sud`.`path`";
         $rows = \Manx\Test\RowFactory::createResultRowsForColumns(['id', 'site_id', 'path', 'parent_dir_id', 'part_regex'],
             [
@@ -1308,20 +1328,27 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
     {
         $copyId = 66;
         $pathId = 77;
+        $dirId = 707;
         $url = 'http://bitsavers.org/pdf/new path/to/file #1.pdf';
         $encodedUrl = 'http://bitsavers.org/pdf/new%20path/to/file%20%231.pdf';
         $filename = 'file #1.pdf';
         $this->_db->expects($this->once())->method('beginTransaction');
+        $selectDir = "SELECT `dir_id` FROM `site_unknown` WHERE `id` = ?";
         $deleteId = "DELETE FROM site_unknown WHERE id = ?";
         $updateUrl = "UPDATE copy SET url = ?, filename = ? WHERE copy_id = ?";
-        $purgeDirs = "CALL `manx_purge_unused_unknown_directories`()";
-        $refreshDirs = "CALL `manx_update_unknown_dir_ignored`()";
+        $cleanupDir = "CALL `manx_cleanup_unknown_dir`(?)";
         $this->_db->expects($this->exactly(4))->method('execute')
             ->withConsecutive(
+                [$selectDir, [$pathId]],
                 [$deleteId, [$pathId]],
                 [$updateUrl, [$encodedUrl, $filename, $copyId]],
-                [$purgeDirs, []],
-                [$refreshDirs, []]);
+                [$cleanupDir, [$dirId]])
+            ->willReturn(
+                \Manx\Test\RowFactory::createResultRowsForColumns(
+                    ['dir_id'], [[$dirId]]),
+                null,
+                null,
+                null);
         $this->_db->expects($this->once())->method('commit');
 
 

@@ -143,12 +143,21 @@ class WhatsNewPage extends AdminPageBase
         $thisDir = $this->getThisDir();
         $files = $this->_manxDb->getSiteUnknownPaths(
             $this->_siteName, $this->_parentDirId);
+        $ingestedIds = [];
         foreach ($this->previewRows($thisDir, $files) as $row)
         {
             if (array_key_exists($row['id'], $selectedIds))
             {
-                $this->ingestPreviewRow($row);
+                if ($this->ingestPreviewRow($row))
+                {
+                    $ingestedIds[] = $row['id'];
+                }
             }
+        }
+        if (count($ingestedIds) > 0)
+        {
+            $this->_manxDb->removeSiteUnknownPathsInDir(
+                $ingestedIds, $this->_parentDirId);
         }
     }
 
@@ -169,13 +178,12 @@ class WhatsNewPage extends AdminPageBase
     {
         if ($row['status'] != 'Accepted' || $row['pub_id'] == '')
         {
-            return;
+            return false;
         }
 
-        $copyId = $this->_manxDb->addCopy($row['pub_id'], $row['format'],
+        $this->_manxDb->addCopy($row['pub_id'], $row['format'],
             $row['site_id'], $row['url'], '', 0, '', '', '');
-        $this->_manxDb->updateIgnoredUnknownSingleDir($row['id']);
-        $this->_manxDb->removeSiteUnknownPathById($row['id']);
+        return true;
     }
 
     private function renderPartRegexForm($thisDir)

@@ -803,11 +803,8 @@ EOH;
             ->with(23, 'PDF', 3, $selectedUrl, '', 0, '', '', '')
             ->willReturn(884);
         $this->_db->expects($this->once())
-            ->method('updateIgnoredUnknownSingleDir')
-            ->with(222);
-        $this->_db->expects($this->once())
-            ->method('removeSiteUnknownPathById')
-            ->with(222);
+            ->method('removeSiteUnknownPathsInDir')
+            ->with([222], $parentDirId);
 
         $this->_page->ingestPreviewRows();
     }
@@ -859,7 +856,7 @@ EOH;
         $this->_db->expects($this->never())
             ->method('getPublicationsForPartNumber');
         $this->_db->expects($this->never())->method('addCopy');
-        $this->_db->expects($this->never())->method('removeSiteUnknownPathById');
+        $this->_db->expects($this->never())->method('removeSiteUnknownPathsInDir');
 
         $this->_page->ingestPreviewRows();
     }
@@ -899,7 +896,7 @@ EOH;
         $this->_db->expects($this->never())
             ->method('getPublicationsForPartNumber');
         $this->_db->expects($this->never())->method('addCopy');
-        $this->_db->expects($this->never())->method('removeSiteUnknownPathById');
+        $this->_db->expects($this->never())->method('removeSiteUnknownPathsInDir');
 
         $this->_page->ingestPreviewRows();
     }

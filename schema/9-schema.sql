@@ -269,12 +269,87 @@ BEGIN
 END//
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS `manx_cleanup_unknown_dir`;
+DELIMITER //
+CREATE PROCEDURE `manx_cleanup_unknown_dir`(
+    `sud_id` INT(11))
+BEGIN
+    DECLARE `current_id` INT DEFAULT -1;
+    DECLARE `parent_id` INT DEFAULT -1;
+    DECLARE `dir_exists` INT DEFAULT 0;
+    DECLARE `file_count` INT DEFAULT 0;
+    DECLARE `child_count` INT DEFAULT 0;
+    DECLARE `unignored_file_count` INT DEFAULT 0;
+    DECLARE `unignored_child_count` INT DEFAULT 0;
+
+    SET `current_id` = `sud_id`;
+
+    purge_loop: WHILE `current_id` <> -1 DO
+        SELECT COUNT(*), COALESCE(MAX(`parent_dir_id`), -1)
+            INTO `dir_exists`, `parent_id`
+            FROM `site_unknown_dir`
+            WHERE `id` = `current_id`;
+
+        IF `dir_exists` = 0 THEN
+            SET `current_id` = -1;
+        ELSE
+            SELECT COUNT(*) INTO `file_count`
+                FROM `site_unknown`
+                WHERE `dir_id` = `current_id`;
+            SELECT COUNT(*) INTO `child_count`
+                FROM `site_unknown_dir`
+                WHERE `parent_dir_id` = `current_id`;
+
+            IF `file_count` = 0 AND `child_count` = 0 THEN
+                DELETE FROM `site_unknown_dir` WHERE `id` = `current_id`;
+                SET `current_id` = `parent_id`;
+            ELSE
+                LEAVE purge_loop;
+            END IF;
+        END IF;
+    END WHILE;
+
+    update_loop: WHILE `current_id` <> -1 DO
+        SELECT COUNT(*), COALESCE(MAX(`parent_dir_id`), -1)
+            INTO `dir_exists`, `parent_id`
+            FROM `site_unknown_dir`
+            WHERE `id` = `current_id`;
+
+        IF `dir_exists` = 0 THEN
+            SET `current_id` = -1;
+        ELSE
+            SELECT COUNT(*) INTO `unignored_file_count`
+                FROM `site_unknown`
+                WHERE `dir_id` = `current_id`
+                AND `ignored` = 0;
+            SELECT COUNT(*) INTO `unignored_child_count`
+                FROM `site_unknown_dir`
+                WHERE `parent_dir_id` = `current_id`
+                AND `ignored` = 0;
+
+            UPDATE `site_unknown_dir`
+                SET `ignored` = IF(
+                    `unignored_file_count` = 0
+                    AND `unignored_child_count` = 0,
+                    1, 0)
+                WHERE `id` = `current_id`;
+            SET `current_id` = `parent_id`;
+        END IF;
+    END WHILE;
+END//
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS `manx_update_unknown_single_dir_ignored`;
 DELIMITER //
 CREATE PROCEDURE `manx_update_unknown_single_dir_ignored`(
     `su_id` INT(11))
 BEGIN
-    CALL `manx_update_unknown_dir_ignored`();
+    DECLARE `cleanup_dir_id` INT DEFAULT -1;
+
+    SELECT COALESCE(MAX(`dir_id`), -1) INTO `cleanup_dir_id`
+        FROM `site_unknown`
+        WHERE `id` = `su_id`;
+    CALL `manx_cleanup_unknown_dir`(`cleanup_dir_id`);
 END//
 DELIMITER ;
 
