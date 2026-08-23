@@ -459,6 +459,55 @@ EOH;
         ], $rows);
     }
 
+    public function testPreviewRowsAcceptSingleExactMatchFromMultipleResults()
+    {
+        $siteName = 'bitsavers';
+        $parentDirId = 1339;
+        $companyId = 13;
+        $this->createPage(['siteName' => $siteName,
+            'parentDir' => $parentDirId]);
+        $thisDir = [
+            'id' => 100,
+            'site_id' => 3,
+            'path' => 'dec/pdp11',
+            'parent_dir_id' => 150,
+            'part_regex' => Manx\UrlMetaData::DEFAULT_PART_REGEX,
+            'ignored' => 0
+        ];
+        $fileRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['id', 'site_id', 'path', 'ignored', 'scanned', 'dir_id'],
+            [
+                [222, 3,
+                    'EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf',
+                    0, 0, $parentDirId]
+            ]);
+        $url = 'http://bitsavers.org/pdf/dec/pdp11/EK-3333-01_Jumbotron_Users_Guide_Feb1977.pdf';
+        $pubRows = \Manx\Test\RowFactory::createResultRowsForColumns(
+            ['pub_id', 'ph_part', 'ph_title', 'ph_pub_date'],
+            [
+                [31, 'EK-3333', 'Jumbotron Overview', '1977-01'],
+                [23, 'EK-3333-01', 'Jumbotron Users Guide', '1977-02']
+            ]);
+        $this->_db->expects($this->once())
+            ->method('getCompanyIdForSiteUnknownDir')
+            ->with($siteName, 'dec/pdp11')->willReturn($companyId);
+        $this->_db->expects($this->once())->method('getFormatForExtension')
+            ->with('pdf')->willReturn('PDF');
+        $this->_db->expects($this->once())->method('copyExistsForUrl')
+            ->with($url)->willReturn(false);
+        $this->_db->expects($this->once())
+            ->method('getPublicationsForPartNumber')
+            ->with('EK-3333-01', $companyId)->willReturn($pubRows);
+
+        $rows = $this->_page->previewRows($thisDir, $fileRows);
+
+        $this->assertEquals('Accepted', $rows[0]['status']);
+        $this->assertEquals(23, $rows[0]['pub_id']);
+        $this->assertEquals(
+            '<a href="details.php/13,23">Jumbotron Users Guide</a>',
+            $rows[0]['matching_publication']);
+    }
+
     public function testPreviewRowsExcludeDefaultIgnoredFiles()
     {
         $siteName = 'bitsavers';

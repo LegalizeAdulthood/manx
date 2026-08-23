@@ -298,9 +298,11 @@ EOH;
         $existingCopy = $this->_manxDb->copyExistsForUrl($fileInfo['url']);
         $pubs = $part == '' || is_array($existingCopy) ? []
             : $this->_manxDb->getPublicationsForPartNumber($part, $companyId);
+        $exactPublication = self::exactPartPublication($part, $pubs);
         $status = self::previewStatus(
-            $part, $pubDate, $title, $pubs, $existingCopy, $regexResult);
-        $pubId = $status == 'Accepted' ? $pubs[0]['pub_id'] : '';
+            $part, $pubDate, $title, $pubs, $existingCopy, $regexResult,
+            $exactPublication);
+        $pubId = $status == 'Accepted' ? $exactPublication['pub_id'] : '';
         $statusDetail = self::previewStatusDetail(
             $status, $part, $pubDate, $title, $pubs, $existingCopy,
             $regexResult);
@@ -317,7 +319,8 @@ EOH;
             'format' => $fileInfo['format'],
             'regex_result' => $regexResult,
             'matching_publication' =>
-                self::matchingPublicationHtml($companyId, $part, $pubs),
+                self::matchingPublicationHtml(
+                    $companyId, $part, $pubs, $exactPublication),
             'existing_copy' => self::existingCopyHtml($existingCopy),
             'status' => $status,
             'status_detail' => $statusDetail
@@ -342,8 +345,21 @@ EOH;
             $part == '' ? 'Default no match' : 'Default match'];
     }
 
+    private static function exactPartPublication($part, $pubs)
+    {
+        $matches = [];
+        foreach ($pubs as $pub)
+        {
+            if ($pub['ph_part'] == $part)
+            {
+                $matches[] = $pub;
+            }
+        }
+        return count($matches) == 1 ? $matches[0] : null;
+    }
+
     private static function previewStatus($part, $pubDate, $title, $pubs,
-        $existingCopy, $regexResult)
+        $existingCopy, $regexResult, $exactPublication)
     {
         if (is_array($existingCopy))
         {
@@ -363,15 +379,11 @@ EOH;
         {
             return 'New';
         }
-        if (count($pubs) > 1)
+        if (!is_null($exactPublication))
         {
-            return 'Uncertain';
+            return 'Accepted';
         }
-        if ($pubs[0]['ph_part'] != $part)
-        {
-            return 'Uncertain';
-        }
-        return 'Accepted';
+        return 'Uncertain';
     }
 
     private static function previewStatusDetail($status, $part, $pubDate,
@@ -438,11 +450,18 @@ EOH;
             htmlspecialchars($title));
     }
 
-    private static function matchingPublicationHtml($companyId, $part, $pubs)
+    private static function matchingPublicationHtml($companyId, $part, $pubs,
+        $exactPublication = null)
     {
         if (count($pubs) == 0)
         {
             return 'None';
+        }
+        if (!is_null($exactPublication))
+        {
+            return self::detailsLink(
+                $companyId, $exactPublication['pub_id'],
+                $exactPublication['ph_title']);
         }
         if (count($pubs) > 1)
         {
