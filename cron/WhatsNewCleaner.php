@@ -9,6 +9,8 @@ use Pimple\Container;
 class WhatsNewCleaner implements IWhatsNewCleaner
 {
     const DEFAULT_PDF_METADATA_TIME_LIMIT_SECONDS = 1800;
+    const MOVE_PROGRESS_INTERVAL_SECONDS = 300;
+    const MOVE_PROGRESS_PATH_COUNT = 50;
 
     /** @var Container */
     private $_config;
@@ -100,6 +102,8 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         {
             $rows = $this->_db->getPossiblyMovedSiteUnknownPaths($this->_siteName);
             $count = 0;
+            $progressCount = 0;
+            $lastProgressTime = $this->nowSeconds();
             $total = count($rows);
             $this->log(sprintf("Updating location of %d moved files for %s", $total, $this->_siteName));
             foreach($rows as $row)
@@ -111,19 +115,24 @@ class WhatsNewCleaner implements IWhatsNewCleaner
                 if ($urlInfo->exists() && $row['md5'] != '')
                 {
                     $size = $urlInfo->size();
-                    if ($size !== false && $row['size'] !== null && $size != $row['size'])
-                    {
-                        continue;
-                    }
-                    if ($urlInfo->md5() == $row['md5'])
+                    if (($size === false || $row['size'] === null
+                        || $size == $row['size'])
+                        && $urlInfo->md5() == $row['md5'])
                     {
                         $this->_db->siteFileMoved($row['path_id'], $row['copy_id'], $candidateUrl);
                         $this->log('Path: ' . $path);
                     }
                 }
-                if(++$count % 100 == 0)
+                ++$count;
+                ++$progressCount;
+                $currentTime = $this->nowSeconds();
+                if ($progressCount >= self::MOVE_PROGRESS_PATH_COUNT
+                    || $currentTime - $lastProgressTime
+                        >= self::MOVE_PROGRESS_INTERVAL_SECONDS)
                 {
                     $this->log(sprintf('Progress: %d of %d (%.2f%%)', $count, $total, 100*$count/$total));
+                    $progressCount = 0;
+                    $lastProgressTime = $currentTime;
                 }
             }
         }

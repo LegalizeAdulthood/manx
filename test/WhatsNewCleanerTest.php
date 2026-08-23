@@ -118,6 +118,7 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
     public function testMovedFilesAreUpdated()
     {
         $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
+        $this->_dateTimeProvider->method('now')->willReturn(self::dateAt(0));
         $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
         $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
         $this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
@@ -143,6 +144,7 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
     public function testMovedFilesWithDifferentSizesAreNotHashed()
     {
         $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';
+        $this->_dateTimeProvider->method('now')->willReturn(self::dateAt(0));
         $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
         $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
         $this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
@@ -166,6 +168,7 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
 
     public function testMovedFilesWithUnchangedUrlsAreSkipped()
     {
+        $this->_dateTimeProvider->method('now')->willReturn(self::dateAt(0));
         $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
         $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
         $this->_db->expects($this->once())->method('getPossiblyMovedSiteUnknownPaths')
@@ -175,6 +178,103 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
         $this->_factory->expects($this->never())->method('createUrlInfo');
 
         $this->_cleaner->updateMovedFiles();
+    }
+
+    public function testMovedFilesReportsProgressEvery50Paths()
+    {
+        $rows = self::movedRows(50);
+        $this->_dateTimeProvider->method('now')->willReturn(self::dateAt(0));
+        $this->expectMovedRows($rows);
+        $this->_factory->expects($this->exactly(50))
+            ->method('createUrlInfo')
+            ->willReturn($this->_urlInfo);
+        $this->_urlInfo->expects($this->exactly(50))->method('exists')
+            ->willReturn(false);
+        $this->_db->expects($this->never())->method('siteFileMoved');
+        $this->_logger->expects($this->exactly(2))->method('log')
+            ->withConsecutive(
+                [ "Updating location of 50 moved files for bitsavers" ],
+                [ "Progress: 50 of 50 (100.00%)" ]);
+
+        $this->_cleaner->updateMovedFiles();
+    }
+
+    public function testMovedFilesReportsProgressEvery5Minutes()
+    {
+        $rows = self::movedRows(2);
+        $this->_dateTimeProvider->expects($this->exactly(3))
+            ->method('now')
+            ->willReturn(self::dateAt(0), self::dateAt(10),
+                self::dateAt(310));
+        $this->expectMovedRows($rows);
+        $this->_factory->expects($this->exactly(2))
+            ->method('createUrlInfo')
+            ->willReturn($this->_urlInfo);
+        $this->_urlInfo->expects($this->exactly(2))->method('exists')
+            ->willReturn(false);
+        $this->_db->expects($this->never())->method('siteFileMoved');
+        $this->_logger->expects($this->exactly(2))->method('log')
+            ->withConsecutive(
+                [ "Updating location of 2 moved files for bitsavers" ],
+                [ "Progress: 2 of 2 (100.00%)" ]);
+
+        $this->_cleaner->updateMovedFiles();
+    }
+
+    public function testMovedFilesResetsProgressCountAfter5Minutes()
+    {
+        $rows = self::movedRows(50);
+        $calls = 0;
+        $this->_dateTimeProvider->method('now')
+            ->willReturnCallback(function() use (&$calls) {
+                ++$calls;
+                return self::dateAt($calls == 1 ? 0 : 300);
+            });
+        $this->expectMovedRows($rows);
+        $this->_factory->expects($this->exactly(50))
+            ->method('createUrlInfo')
+            ->willReturn($this->_urlInfo);
+        $this->_urlInfo->expects($this->exactly(50))->method('exists')
+            ->willReturn(false);
+        $this->_db->expects($this->never())->method('siteFileMoved');
+        $this->_logger->expects($this->exactly(2))->method('log')
+            ->withConsecutive(
+                [ "Updating location of 50 moved files for bitsavers" ],
+                [ "Progress: 1 of 50 (2.00%)" ]);
+
+        $this->_cleaner->updateMovedFiles();
+    }
+
+    private function expectMovedRows(array $rows)
+    {
+        $this->_whatsNewIndex->expects($this->once())
+            ->method('loadIndexByDateTable');
+        $this->_whatsNewIndex->expects($this->once())
+            ->method('dropIndexByDateTable');
+        $this->_db->expects($this->once())
+            ->method('getPossiblyMovedSiteUnknownPaths')
+            ->with('bitsavers')
+            ->willReturn($rows);
+    }
+
+    private static function movedRows($count)
+    {
+        $rows = [];
+        for ($i = 1; $i <= $count; ++$i)
+        {
+            $path = sprintf('hp/newDir/foo%03d.pdf', $i);
+            $rows[] = [
+                'path' => $path,
+                'path_id' => $i,
+                'candidate_url' => 'http://bitsavers.org/pdf/' . $path,
+                'url' => sprintf('http://bitsavers.org/pdf/hp/foo%03d.pdf',
+                    $i),
+                'copy_id' => 1000 + $i,
+                'size' => 1234,
+                'md5' => '37e10bd2e8da6bd96eb3a72feeea56ee'
+            ];
+        }
+        return $rows;
     }
 
     public function testRemoveUnknownPathsWithCopy()

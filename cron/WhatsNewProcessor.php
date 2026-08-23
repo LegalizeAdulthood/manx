@@ -82,10 +82,37 @@ class WhatsNewProcessor
         finally
         {
             $this->log(sprintf("End %s", $command));
-            $this->log(sprintf("Total elapsed time: %.3f seconds",
-                self::secondsBetween($startTime,
+            $this->log(sprintf("Total elapsed time: %s",
+                self::elapsedTime($startTime,
                     $this->_dateTimeProvider->now())));
         }
+    }
+
+    private static function elapsedTime($startTime, $endTime)
+    {
+        return self::formatSeconds(self::secondsBetween($startTime, $endTime));
+    }
+
+    private static function formatSeconds($seconds)
+    {
+        $milliseconds = (int)round($seconds * 1000.0);
+        $wholeSeconds = intdiv($milliseconds, 1000);
+        $milliseconds = $milliseconds % 1000;
+        $hours = intdiv($wholeSeconds, 3600);
+        $minutes = intdiv($wholeSeconds % 3600, 60);
+        $seconds = $wholeSeconds % 60;
+
+        if ($hours > 0)
+        {
+            return sprintf("%d:%02d:%02d.%03d", $hours, $minutes,
+                $seconds, $milliseconds);
+        }
+        if ($minutes > 0)
+        {
+            return sprintf("%d:%02d.%03d", $minutes, $seconds,
+                $milliseconds);
+        }
+        return sprintf("%d.%03d", $seconds, $milliseconds);
     }
 
     private static function secondsBetween($startTime, $endTime)

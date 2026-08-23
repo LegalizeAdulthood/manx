@@ -13,9 +13,6 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
         $this->_logger = $this->createMock(Manx\Cron\ILogger::class);
         $this->_dateTimeProvider =
             $this->createMock(Manx\IDateTimeProvider::class);
-        $this->_dateTimeProvider->method('now')->willReturnOnConsecutiveCalls(
-            self::dateTime('2026-08-23 12:00:00.000000'),
-            self::dateTime('2026-08-23 12:00:03.500000'));
         $config = new Container();
         $config['whatsNewCleaner'] = $this->_cleaner;
         $config['logger'] = $this->_logger;
@@ -30,21 +27,63 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
             new \DateTimeZone('UTC'));
     }
 
+    private function expectElapsedTime($startTime, $endTime)
+    {
+        $this->_dateTimeProvider->expects($this->exactly(2))
+            ->method('now')
+            ->willReturn(self::dateTime($startTime),
+                self::dateTime($endTime));
+    }
+
     public function testMD5()
     {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 12:00:03.500000');
         $this->_locker->expects($this->once())->method('lock')->with('md5.lock');
         $this->_cleaner->expects($this->once())->method('computeMissingMD5');
         $this->_logger->expects($this->exactly(3))->method('log')
             ->withConsecutive(
                 [ 'Begin md5' ],
                 [ 'End md5' ],
-                [ 'Total elapsed time: 3.500 seconds' ]);
+                [ 'Total elapsed time: 3.500' ]);
+
+        $this->_processor->process(['cleaner.php', 'md5']);
+    }
+
+    public function testElapsedTimeIncludesMinutes()
+    {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 12:02:03.500000');
+        $this->_locker->expects($this->once())->method('lock')->with('md5.lock');
+        $this->_cleaner->expects($this->once())->method('computeMissingMD5');
+        $this->_logger->expects($this->exactly(3))->method('log')
+            ->withConsecutive(
+                [ 'Begin md5' ],
+                [ 'End md5' ],
+                [ 'Total elapsed time: 2:03.500' ]);
+
+        $this->_processor->process(['cleaner.php', 'md5']);
+    }
+
+    public function testElapsedTimeIncludesHours()
+    {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 13:02:03.500000');
+        $this->_locker->expects($this->once())->method('lock')->with('md5.lock');
+        $this->_cleaner->expects($this->once())->method('computeMissingMD5');
+        $this->_logger->expects($this->exactly(3))->method('log')
+            ->withConsecutive(
+                [ 'Begin md5' ],
+                [ 'End md5' ],
+                [ 'Total elapsed time: 1:02:03.500' ]);
 
         $this->_processor->process(['cleaner.php', 'md5']);
     }
 
     public function testExistence()
     {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 12:00:03.500000');
         $this->_locker->expects($this->once())->method('lock')->with('existence.lock');
         $this->_cleaner->expects($this->once())->method('removeNonExistentUnknownPaths');
 
@@ -53,6 +92,8 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
 
     public function testMoved()
     {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 12:00:03.500000');
         $this->_locker->expects($this->once())->method('lock')->with('moved.lock');
         $this->_cleaner->expects($this->once())->method('updateMovedFiles');
 
@@ -61,6 +102,8 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
 
     public function testIndex()
     {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 12:00:03.500000');
         $this->_locker->expects($this->once())->method('lock')->with('index.lock');
         $this->_cleaner->expects($this->once())->method('updateWhatsNewIndex');
         $this->_cleaner->expects($this->once())->method('removeUnknownPathsWithCopy');
@@ -72,6 +115,8 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
 
     public function testUnknownCopies()
     {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 12:00:03.500000');
         $this->_locker->expects($this->once())->method('lock')->with('unknown-copies.lock');
         $this->_cleaner->expects($this->once())->method('removeUnknownPathsWithCopy');
 
@@ -80,6 +125,8 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
 
     public function testIngest()
     {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 12:00:03.500000');
         $this->_locker->expects($this->once())->method('lock')->with('ingest.lock');
         $this->_cleaner->expects($this->once())->method('updateWhatsNewIndex');
         $this->_cleaner->expects($this->once())->method('ingest');
@@ -90,6 +137,8 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
 
     public function testPdfMetadataDefaultTimeLimit()
     {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 12:00:03.500000');
         $this->_locker->expects($this->once())->method('lock')
             ->with('pdf-metadata.lock');
         $this->_cleaner->expects($this->once())
@@ -101,6 +150,8 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
 
     public function testPdfMetadataTimeLimitOption()
     {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 12:00:03.500000');
         $this->_locker->expects($this->once())->method('lock')
             ->with('pdf-metadata.lock');
         $this->_cleaner->expects($this->once())
@@ -113,6 +164,8 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
 
     public function testHelp()
     {
+        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
+            '2026-08-23 12:00:03.500000');
         $this->_logger->expects($this->exactly(10))->method('log')->withConsecutive(
             [ "Begin help" ],
             [ "existence:      remove non-existent unknown paths" ],
@@ -123,7 +176,7 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
             [ "md5             compute MD5 hashes for copies" ],
             [ "pdf-metadata    cache PDF metadata for unknown paths" ],
             [ "End help" ],
-            [ "Total elapsed time: 3.500 seconds" ]
+            [ "Total elapsed time: 3.500" ]
         );
 
         $this->_processor->process(['cleaner.php', 'help']);
