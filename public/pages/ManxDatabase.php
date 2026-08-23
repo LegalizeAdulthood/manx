@@ -890,7 +890,10 @@ class ManxDatabase implements IManxDatabase
     public function ignoreSitePaths(array $ignoredIds)
     {
         $params = array_fill(0, count($ignoredIds), '?');
+        $this->beginTransaction();
         $this->execute("UPDATE `site_unknown` `su` SET `su`.`ignored` = 1 WHERE `su`.`id` in (" . implode(', ', $params) . ")", $ignoredIds);
+        $this->execute("CALL `manx_update_unknown_dir_ignored`()", []);
+        $this->commit();
     }
 
     public function getSiteUnknownPathCount($siteName)
@@ -946,7 +949,11 @@ class ManxDatabase implements IManxDatabase
 
     public function removeSiteUnknownPathById($siteUnknownId)
     {
+        $this->beginTransaction();
         $this->execute("DELETE FROM `site_unknown` WHERE `id` = ?", [$siteUnknownId]);
+        $this->execute("CALL `manx_purge_unused_unknown_directories`()", []);
+        $this->execute("CALL `manx_update_unknown_dir_ignored`()", []);
+        $this->commit();
     }
 
     public function getPossiblyMovedSiteUnknownPaths($siteName)
@@ -971,6 +978,8 @@ class ManxDatabase implements IManxDatabase
         $this->execute("DELETE FROM site_unknown WHERE id = ?", [$pathId]);
         $this->execute("UPDATE copy SET url = ?, filename = ? WHERE copy_id = ?",
             [$url, $filename, $copyId]);
+        $this->execute("CALL `manx_purge_unused_unknown_directories`()", []);
+        $this->execute("CALL `manx_update_unknown_dir_ignored`()", []);
         $this->commit();
     }
 
@@ -979,6 +988,7 @@ class ManxDatabase implements IManxDatabase
         $this->beginTransaction();
         $this->execute("CALL `manx_purge_su_copies`()", []);
         $this->execute("CALL `manx_purge_unused_unknown_directories`()", []);
+        $this->execute("CALL `manx_update_unknown_dir_ignored`()", []);
         $this->commit();
     }
 
