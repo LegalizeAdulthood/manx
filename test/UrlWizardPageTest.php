@@ -443,7 +443,7 @@ EOH;
             'title' => 'Chicago DEC Store1',
             'format' => 'JPEG',
             'site_company_directory' => 'DEC',
-            'site_company_parent_directory' => '',
+            'site_company_parent_directory' => 'computing',
             'pubs' => [],
             'keywords' => 'Chicago DEC Store1'
         ];
@@ -465,6 +465,14 @@ EOH;
             $output);
         $this->assertStringContainsString(
             '<details id="pdf_metadata_results" class="hidden">',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="hidden" id="site_company_directory"'
+                . ' name="site_company_directory" value="DEC" />',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="hidden" id="site_company_parent_directory"'
+                . ' name="site_company_parent_directory" value="computing" />',
             $output);
     }
 
@@ -691,6 +699,9 @@ EOH;
         $copyLinkClass = $urlPresent ? '' : 'hidden';
         $copyTextClass = $urlPresent ? 'hidden' : '';
         $pdfMetadataClass = $urlPresent && self::isPdfUrl($copyUrl) ? '' : 'hidden';
+        $siteCompanyDirectory = self::param($vars, 'site_company_directory');
+        $siteCompanyParentDirectory = self::param($vars,
+            'site_company_parent_directory');
 
         return <<<EOH
 <h1>URL Wizard</h1>
@@ -796,8 +807,8 @@ $copySiteHidden</li>
 </details>
 
 <fieldset id="site_company_field" class="hidden">
-<input type="hidden" id="site_company_directory" name="site_company_directory" value="" />
-<input type="hidden" id="site_company_parent_directory" name="site_company_parent_directory" value="" />
+<input type="hidden" id="site_company_directory" name="site_company_directory" value="$siteCompanyDirectory" />
+<input type="hidden" id="site_company_parent_directory" name="site_company_parent_directory" value="$siteCompanyParentDirectory" />
 </fieldset>
 
 <fieldset id="site_fields" class="hidden">
