@@ -696,17 +696,18 @@ class ManxDatabase implements IManxDatabase
         return is_string($md5) ? $md5 : null;
     }
 
-    public function addSiteDirectory($siteName, $companyId, $directory, $parentDirectory)
+    public function addSiteDirectory($siteId, $companyId, $directory, $parentDirectory)
     {
-        $row = $this->execute("SELECT * FROM `site_company_dir` `scd`, `site` `s` "
-            . "WHERE `scd`.`site_id`=`s`.`site_id` "
-            . "AND `s`.`name`=? "
-            . "AND `scd`.`company_id`=?", [$siteName, $companyId]);
+        $row = $this->execute("SELECT * FROM `site_company_dir` "
+            . "WHERE `site_id`=? "
+            . "AND (`company_id`=? "
+                . "OR (`directory`=? AND `parent_directory`=?))",
+            [$siteId, $companyId, $directory, $parentDirectory]);
         if (count($row) == 0)
         {
             $this->_db->execute("INSERT INTO `site_company_dir`(`site_id`, `company_id`, `directory`, `parent_directory`) "
-                . "(SELECT `site_id`, ?, ?, ? FROM `site` WHERE `name`=?)",
-                [$companyId, $directory, $parentDirectory, $siteName]);
+                . "VALUES (?, ?, ?, ?)",
+                [$siteId, $companyId, $directory, $parentDirectory]);
         }
     }
 

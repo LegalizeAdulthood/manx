@@ -1346,22 +1346,68 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
 
     public function testAddSiteDirectory()
     {
-        $siteName = 'VTDA';
+        $siteId = '58';
         $companyId = 44;
         $directory = 'DigitalResearch';
         $parentDirectory = 'computing';
-        $select = "SELECT * FROM `site_company_dir` `scd`, `site` `s` "
-            . "WHERE `scd`.`site_id`=`s`.`site_id` "
-            . "AND `s`.`name`=? "
-            . "AND `scd`.`company_id`=?";
+        $select = "SELECT * FROM `site_company_dir` "
+            . "WHERE `site_id`=? "
+            . "AND (`company_id`=? "
+                . "OR (`directory`=? AND `parent_directory`=?))";
         $execute = "INSERT INTO `site_company_dir`(`site_id`, `company_id`, `directory`, `parent_directory`) "
-            . "(SELECT `site_id`, ?, ?, ? FROM `site` WHERE `name`=?)";
+            . "VALUES (?, ?, ?, ?)";
         $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
-                [$select, [$siteName, $companyId]],
-                [$execute, [$companyId, $directory, $parentDirectory, $siteName]])
+                [$select, [$siteId, $companyId, $directory, $parentDirectory]],
+                [$execute, [$siteId, $companyId, $directory, $parentDirectory]])
             ->willReturn([], []);
 
-        $this->_manxDb->addSiteDirectory($siteName, $companyId, $directory, $parentDirectory);
+        $this->_manxDb->addSiteDirectory($siteId, $companyId, $directory, $parentDirectory);
+    }
+
+    public function testAddSiteDirectorySkipsExistingCompanyAssociation()
+    {
+        $siteId = '58';
+        $companyId = 44;
+        $directory = 'DigitalResearch';
+        $parentDirectory = 'computing';
+        $select = "SELECT * FROM `site_company_dir` "
+            . "WHERE `site_id`=? "
+            . "AND (`company_id`=? "
+                . "OR (`directory`=? AND `parent_directory`=?))";
+        $existing = [[
+            'site_id' => $siteId,
+            'company_id' => $companyId,
+            'directory' => 'OtherDirectory',
+            'parent_directory' => $parentDirectory
+        ]];
+        $this->_db->expects($this->once())->method('execute')
+            ->with($select, [$siteId, $companyId, $directory, $parentDirectory])
+            ->willReturn($existing);
+
+        $this->_manxDb->addSiteDirectory($siteId, $companyId, $directory, $parentDirectory);
+    }
+
+    public function testAddSiteDirectorySkipsExistingDirectoryAssociation()
+    {
+        $siteId = '58';
+        $companyId = 44;
+        $directory = 'DigitalResearch';
+        $parentDirectory = 'computing';
+        $select = "SELECT * FROM `site_company_dir` "
+            . "WHERE `site_id`=? "
+            . "AND (`company_id`=? "
+                . "OR (`directory`=? AND `parent_directory`=?))";
+        $existing = [[
+            'site_id' => $siteId,
+            'company_id' => 99,
+            'directory' => $directory,
+            'parent_directory' => $parentDirectory
+        ]];
+        $this->_db->expects($this->once())->method('execute')
+            ->with($select, [$siteId, $companyId, $directory, $parentDirectory])
+            ->willReturn($existing);
+
+        $this->_manxDb->addSiteDirectory($siteId, $companyId, $directory, $parentDirectory);
     }
 
     public function testGetCompanyForSiteDirectory()

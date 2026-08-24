@@ -236,12 +236,11 @@ class UrlWizardPageTest extends Manx\Test\TestCase
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $vars = array_merge(
             self::copyData('http://vtda.org/docs/computing/DEC/ChicagoDECStore1.jpg', 'JPEG', '58'),
-            self::siteData('VTDA'),
             self::companyData('5'),
             self::pubHistoryData('Accessories & Supplies Center Chicago Brochure', 'D', '1979'),
             [
                 'site_company_directory' => 'DEC',
-                'site_company_parent_directory' => '',
+                'site_company_parent_directory' => 'computing',
                 'pub_search_keywords' => 'Chicago DEC Store1',
                 'pub_pub_id' => '-1',
                 'supersession_search_keywords' => 'Chicago DEC Store1',
@@ -252,7 +251,7 @@ class UrlWizardPageTest extends Manx\Test\TestCase
         $this->_config['vars'] = $vars;
         $page = new UrlWizardPageTester($this->_config);
         $this->_db->expects($this->once())->method('addSiteDirectory')
-            ->with('VTDA', '5', 'DEC');
+            ->with('58', '5', 'DEC', 'computing');
 
         $page->postPage();
     }
