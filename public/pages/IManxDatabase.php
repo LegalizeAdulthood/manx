@@ -44,7 +44,7 @@ interface IManxDatabase
     function addSite($name, $url, $description, $copy_base, $low, $live);
     function addCopy($pubId, $format, $siteId, $url,
         $notes, $size, $md5, $credits, $amendSerial);
-    function addSiteDirectory($siteName, $companyId, $directory, $parentDirectory);
+    function addSiteDirectory($siteId, $companyId, $directory, $parentDirectory);
     function getMostRecentDocuments($count);
     function getManxVersion();
     function copyExistsForUrl($url);

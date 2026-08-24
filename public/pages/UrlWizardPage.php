@@ -29,10 +29,10 @@ class UrlWizardPage extends AdminPageBase
     protected function postPage()
     {
         $companyId = $this->addCompany();
-        $this->addSiteCompanyDirectory($companyId);
+        $siteId = $this->addSite();
+        $this->addSiteCompanyDirectory($siteId, $companyId);
         $pubId = $this->addPublication($companyId);
         $this->addSupersession($pubId);
-        $siteId = $this->addSite();
         $copyId = $this->addCopy($pubId, $siteId);
         if ($this->removeSiteUnknownPath($copyId))
         {
@@ -84,12 +84,12 @@ class UrlWizardPage extends AdminPageBase
         return $company;
     }
 
-    private function addSiteCompanyDirectory($companyId)
+    private function addSiteCompanyDirectory($siteId, $companyId)
     {
         $directory = $this->param('site_company_directory');
         if (strlen($directory) > 0)
         {
-            $this->_db->addSiteDirectory($this->param('site_name'), $companyId, $directory, $this->param('site_company_parent_directory'));
+            $this->_db->addSiteDirectory($siteId, $companyId, $directory, $this->param('site_company_parent_directory'));
         }
     }
 
