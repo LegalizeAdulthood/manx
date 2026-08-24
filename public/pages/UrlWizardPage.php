@@ -268,13 +268,22 @@ EOH;
 EOH;
     }
 
-    private function renderSiteCompanyFields()
+    private function renderSiteCompanyFields($metaData)
     {
+        $directory = array_key_exists('site_company_directory', $metaData)
+            ? htmlspecialchars($metaData['site_company_directory'],
+                ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401)
+            : '';
+        $parentDirectory = array_key_exists('site_company_parent_directory',
+            $metaData)
+            ? htmlspecialchars($metaData['site_company_parent_directory'],
+                ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401)
+            : '';
         print <<<EOH
 
 <fieldset id="site_company_field" class="hidden">
-<input type="hidden" id="site_company_directory" name="site_company_directory" value="" />
-<input type="hidden" id="site_company_parent_directory" name="site_company_parent_directory" value="" />
+<input type="hidden" id="site_company_directory" name="site_company_directory" value="$directory" />
+<input type="hidden" id="site_company_parent_directory" name="site_company_parent_directory" value="$parentDirectory" />
 </fieldset>
 
 EOH;
@@ -512,7 +521,7 @@ EOH;
 
         $this->renderSiteUnknownFields($idPresent);
         $this->renderCopyFields($urlPresent, $url, $mirrorUrl, $metaData, $idPresent);
-        $this->renderSiteCompanyFields();
+        $this->renderSiteCompanyFields($metaData);
         $this->renderSiteFields($urlPresent, $idPresent, $metaData);
         $this->renderPublicationFields($urlPresent, $metaData);
         $this->renderSupersessionFields($urlPresent, $metaData);

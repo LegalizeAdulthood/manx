@@ -424,6 +424,50 @@ EOH;
         $this->expectOutputStringIgnoringLineEndings(self::expectedBodyContent(array_merge($vars, $metaData, ['sites' => $sites, 'companies' => $companies])));
     }
 
+    public function testRenderPagePreservesSiteCompanyDirectoryMetadata()
+    {
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $url = 'http://vtda.org/docs/computing/DEC/ChicagoDECStore1.jpg';
+        $metaData = [
+            'url' => $url,
+            'mirror_url' => '',
+            'size' => 10204,
+            'valid' => true,
+            'site' => [ 'site_id' => 58 ],
+            'company' => 5,
+            'part' => '',
+            'pub_date' => '1979',
+            'title' => 'Chicago DEC Store1',
+            'format' => 'JPEG',
+            'site_company_directory' => 'DEC',
+            'site_company_parent_directory' => 'computing',
+            'pubs' => [],
+            'keywords' => 'Chicago DEC Store1'
+        ];
+        $this->_db->method('getSites')->willReturn([]);
+        $this->_db->method('getCompanyList')->willReturn([]);
+        $this->_manx->method('getDatabase')->willReturn($this->_db);
+        $this->_urlMeta->expects($this->once())->method('determineData')
+            ->with($url)
+            ->willReturn($metaData);
+        $this->_config['vars'] = ['url' => $url];
+        $page = new UrlWizardPageTester($this->_config);
+
+        ob_start();
+        $page->renderBodyContent();
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString(
+            '<input type="hidden" id="site_company_directory"'
+                . ' name="site_company_directory" value="DEC" />',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="hidden" id="site_company_parent_directory"'
+                . ' name="site_company_parent_directory" value="computing" />',
+            $output);
+    }
+
     private static function expectedSiteOptions($vars)
     {
         $options = [];
@@ -525,6 +569,9 @@ EOH;
         $copyLink = $urlPresent ? sprintf(' href="%s"', $vars['url']) : '';
         $copyLinkClass = $urlPresent ? '' : 'hidden';
         $copyTextClass = $urlPresent ? 'hidden' : '';
+        $siteCompanyDirectory = self::param($vars, 'site_company_directory');
+        $siteCompanyParentDirectory = self::param($vars,
+            'site_company_parent_directory');
 
         return <<<EOH
 <h1>URL Wizard</h1>
@@ -594,8 +641,8 @@ $copySiteHidden</li>
 </fieldset>
 
 <fieldset id="site_company_field" class="hidden">
-<input type="hidden" id="site_company_directory" name="site_company_directory" value="" />
-<input type="hidden" id="site_company_parent_directory" name="site_company_parent_directory" value="" />
+<input type="hidden" id="site_company_directory" name="site_company_directory" value="$siteCompanyDirectory" />
+<input type="hidden" id="site_company_parent_directory" name="site_company_parent_directory" value="$siteCompanyParentDirectory" />
 </fieldset>
 
 <fieldset id="site_fields" class="hidden">
