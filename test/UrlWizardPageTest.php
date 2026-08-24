@@ -474,6 +474,14 @@ EOH;
         $this->assertStringContainsString(
             '<details id="pdf_metadata_results" class="hidden">',
             $output);
+        $this->assertStringContainsString(
+            '<input type="hidden" id="site_company_directory"'
+                . ' name="site_company_directory" value="DEC" />',
+            $output);
+        $this->assertStringContainsString(
+            '<input type="hidden" id="site_company_parent_directory"'
+                . ' name="site_company_parent_directory" value="computing" />',
+            $output);
     }
 
     public function testCachedPdfMetadataPopulatesResults()
@@ -702,6 +710,9 @@ EOH;
         $siteCompanyParentDirectory = self::param($vars,
             'site_company_parent_directory');
         $pdfMetadataClass = $urlPresent && self::isPdfUrl($copyUrl) ? '' : 'hidden';
+        $siteCompanyDirectory = self::param($vars, 'site_company_directory');
+        $siteCompanyParentDirectory = self::param($vars,
+            'site_company_parent_directory');
 
         return <<<EOH
 <h1>URL Wizard</h1>
