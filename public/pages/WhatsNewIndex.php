@@ -6,6 +6,8 @@ use Pimple\Container;
 
 class WhatsNewIndex implements IWhatsNewIndex
 {
+    const INDEX_BATCH_SIZE = 500;
+
     public function __construct(Container $config)
     {
         $this->_manxDb = $config['manx']->getDatabase();
@@ -57,9 +59,18 @@ class WhatsNewIndex implements IWhatsNewIndex
             if ($path !== false && $path != '')
             {
                 array_push($paths, $path);
+                if (count($paths) == self::INDEX_BATCH_SIZE)
+                {
+                    $this->_manxDb->addSiteUnknownPaths(
+                        $this->_siteName, $paths);
+                    $paths = [];
+                }
             }
         }
-        $this->_manxDb->addSiteUnknownPaths($this->_siteName, $paths);
+        if (count($paths) > 0)
+        {
+            $this->_manxDb->addSiteUnknownPaths($this->_siteName, $paths);
+        }
     }
 
     private static function escapeSpecialChars($path)

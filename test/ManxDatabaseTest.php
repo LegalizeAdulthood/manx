@@ -686,6 +686,14 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->_manxDb->addSiteUnknownPaths('bitsavers', ['IndexByDate.txt', 'foo/DEC/frob.jpg', 'bar/bar.pdf']);
     }
 
+    public function testAddSiteUnknownPathsSkipsEmptyPaths()
+    {
+        $this->_db->expects($this->never())->method('beginTransaction');
+        $this->_db->expects($this->never())->method('execute');
+
+        $this->_manxDb->addSiteUnknownPaths('bitsavers', []);
+    }
+
     public function testIgnoreSitePath()
     {
         $ignoredIds = [56, 111];

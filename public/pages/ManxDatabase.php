@@ -814,6 +814,11 @@ class ManxDatabase implements IManxDatabase
 
     public function addSiteUnknownPaths($siteName, array $paths)
     {
+        if (count($paths) == 0)
+        {
+            return;
+        }
+
         $this->beginTransaction();
 
         $siteId = $this->siteIdForName($siteName);
