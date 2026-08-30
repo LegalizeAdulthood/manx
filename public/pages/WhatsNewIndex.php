@@ -27,6 +27,10 @@ class WhatsNewIndex implements IWhatsNewIndex
         {
             return true;
         }
+        if (!$this->_fileSystem->fileExists(Config::configFile($this->_indexByDateFile)))
+        {
+            return true;
+        }
         $urlInfo = $this->_factory->createUrlInfo($this->_indexByDateUrl);
         $lastModified = $urlInfo->lastModified();
         if ($lastModified === false)

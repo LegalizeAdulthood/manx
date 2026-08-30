@@ -64,8 +64,24 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
     public function testIndexNeededWithNewLastModified()
     {
         $this->_db->expects($this->once())->method('getProperty')->with($this->_property)->willReturn('10');
+        $this->_fileSystem->expects($this->once())->method('fileExists')
+            ->with(\Manx\Config::configFile($this->_indexFile))
+            ->willReturn(true);
         $this->_factory->expects($this->once())->method('createUrlInfo')->with($this->_indexUrl)->willReturn($this->_urlInfo);
         $this->_urlInfo->expects($this->once())->method('lastModified')->willReturn('20');
+
+        $result = $this->_whatsNew->needIndexByDateFile();
+
+        $this->assertTrue($result);
+    }
+
+    public function testIndexNeededWithoutLocalFile()
+    {
+        $this->_db->expects($this->once())->method('getProperty')->with($this->_property)->willReturn('20');
+        $this->_fileSystem->expects($this->once())->method('fileExists')
+            ->with(\Manx\Config::configFile($this->_indexFile))
+            ->willReturn(false);
+        $this->_factory->expects($this->never())->method('createUrlInfo');
 
         $result = $this->_whatsNew->needIndexByDateFile();
 
@@ -75,6 +91,9 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
     public function testIndexNotNeededWithOldLastModified()
     {
         $this->_db->expects($this->once())->method('getProperty')->with($this->_property)->willReturn('20');
+        $this->_fileSystem->expects($this->once())->method('fileExists')
+            ->with(\Manx\Config::configFile($this->_indexFile))
+            ->willReturn(true);
         $this->_factory->expects($this->once())->method('createUrlInfo')->with($this->_indexUrl)->willReturn($this->_urlInfo);
         $this->_urlInfo->expects($this->once())->method('lastModified')->willReturn('10');
 
@@ -86,6 +105,9 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
     public function testIndexNeededWithoutLastModified()
     {
         $this->_db->expects($this->once())->method('getProperty')->with($this->_property)->willReturn('20');
+        $this->_fileSystem->expects($this->once())->method('fileExists')
+            ->with(\Manx\Config::configFile($this->_indexFile))
+            ->willReturn(true);
         $this->_factory->expects($this->once())->method('createUrlInfo')->with($this->_indexUrl)->willReturn($this->_urlInfo);
         $this->_urlInfo->expects($this->once())->method('lastModified')->willReturn(false);
         $this->_factory->expects($this->once())->method('getCurrentTime')->willReturn('30');
