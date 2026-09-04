@@ -29,6 +29,11 @@ class PDODatabaseAdapter implements IDatabase
         $this->_pdo->commit();
     }
 
+    public function rollback()
+    {
+        $this->_pdo->rollBack();
+    }
+
     public function query($statement)
     {
         return $this->_pdo->query($statement);

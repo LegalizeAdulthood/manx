@@ -4,6 +4,9 @@ namespace Manx;
 
 interface IManxDatabase
 {
+    function beginTransaction();
+    function commit();
+    function rollback();
     function getDocumentCount();
     function getOnlineDocumentCount();
     function getSiteCount();

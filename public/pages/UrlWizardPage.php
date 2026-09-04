@@ -8,6 +8,8 @@ use Pimple\Container;
 
 class UrlWizardPage extends AdminPageBase
 {
+    const METADATA_ERROR = 'Unable to fetch metadata for document URL.';
+
     /** @var IManxDatabase */
     private $_db;
     /** @var IUrlMetaData */
@@ -26,17 +28,104 @@ class UrlWizardPage extends AdminPageBase
         return MenuType::UrlWizard;
     }
 
+    private static function emptyMetaData($url)
+    {
+        return [
+            'format' => '',
+            'site' => [ 'site_id' => -1 ],
+            'size' => 0,
+            'pub_date' => '',
+            'part' => '',
+            'url' => $url,
+            'mirror_url' => '',
+            'company' => -1,
+            'keywords' => '',
+            'title' => ''
+        ];
+    }
+
+    private function getCopyMetaData($url)
+    {
+        try
+        {
+            return $this->_urlMeta->determineData($url);
+        }
+        catch (\Throwable $e)
+        {
+            return ['valid' => false, 'error' => self::METADATA_ERROR];
+        }
+    }
+
+    private static function metaDataIsValid($metaData)
+    {
+        return is_array($metaData)
+            && array_key_exists('valid', $metaData)
+            && $metaData['valid'];
+    }
+
+    private static function metaDataErrorMessage($metaData, $url)
+    {
+        if (is_array($metaData) && array_key_exists('error', $metaData))
+        {
+            return $metaData['error'];
+        }
+        if (is_array($metaData) && array_key_exists('exists', $metaData)
+            && $metaData['exists'])
+        {
+            return "Manx already knows about this document URL.";
+        }
+        return sprintf("No document at URL %s.", $url);
+    }
+
+    private function renderMetaDataError($metaData, $url)
+    {
+        $this->sendHeader("Status: 400 Bad Request");
+        $this->sendHeader("Content-Type: text/plain; charset=utf-8");
+        print self::metaDataErrorMessage($metaData, $url);
+    }
+
+    private function renderMetaDataErrorBody($metaData, $url)
+    {
+        printf("<h1>URL Wizard</h1>\n\n<p class=\"error\">%s</p>\n",
+            htmlspecialchars(self::metaDataErrorMessage($metaData, $url)));
+    }
+
     protected function postPage()
     {
-        $companyId = $this->addCompany();
-        $siteId = $this->addSite();
-        $this->addSiteCompanyDirectory($siteId, $companyId);
-        $pubId = $this->addPublication($companyId);
-        $this->addSupersession($pubId);
-        $copyId = $this->addCopy($pubId, $siteId);
-        if ($this->removeSiteUnknownPath($copyId))
+        $copyUrl = $this->param('copy_url');
+        $metaData = $this->getCopyMetaData($copyUrl);
+        if (!self::metaDataIsValid($metaData)
+            || (array_key_exists('exists', $metaData) && $metaData['exists']))
         {
-            $this->clearBrowserCache();
+            $this->renderMetaDataError($metaData, $copyUrl);
+            return;
+        }
+
+        if (array_key_exists('url', $metaData))
+        {
+            $this->_vars['copy_url'] = $metaData['url'];
+        }
+        $this->_vars['copy_size'] = $metaData['size'];
+
+        $this->_db->beginTransaction();
+        try
+        {
+            $companyId = $this->addCompany();
+            $siteId = $this->addSite();
+            $this->addSiteCompanyDirectory($siteId, $companyId);
+            $pubId = $this->addPublication($companyId);
+            $this->addSupersession($pubId);
+            $copyId = $this->addCopy($pubId, $siteId);
+            if ($this->removeSiteUnknownPath($copyId))
+            {
+                $this->clearBrowserCache();
+            }
+            $this->_db->commit();
+        }
+        catch (\Throwable $e)
+        {
+            $this->_db->rollback();
+            throw $e;
         }
         $this->redirect(sprintf("details.php/%s,%s", $companyId, $pubId));
     }
@@ -655,19 +744,13 @@ EOH;
         $urlPresent = array_key_exists('url', $this->_vars);
         $copyLinkUrl = $urlPresent ? self::requestUrl($this->_vars['url'])
             : '';
-        $metaData = $urlPresent ? $this->_urlMeta->determineData($copyLinkUrl)
-            : [
-                'format' => '',
-                'site' => [ 'site_id' => -1 ],
-                'size' => 0,
-                'pub_date' => '',
-                'part' => '',
-                'url' => $copyLinkUrl,
-                'mirror_url' => '',
-                'company' => -1,
-                'keywords' => '',
-                'title' => ''
-            ];
+        $metaData = $urlPresent ? $this->getCopyMetaData($copyLinkUrl)
+            : self::emptyMetaData($copyLinkUrl);
+        if ($urlPresent && !self::metaDataIsValid($metaData))
+        {
+            $this->renderMetaDataErrorBody($metaData, $copyLinkUrl);
+            return;
+        }
         $url = $metaData['url'];
         $mirrorUrl = $metaData['mirror_url'];
         $keywords = $metaData['keywords'];

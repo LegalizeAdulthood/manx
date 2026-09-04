@@ -467,6 +467,69 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($newCopyId, $result);
     }
 
+    public function testNestedAddCopyTransactionCommitsAtOuterLevel()
+    {
+        $query = 'INSERT INTO `copy`'
+            . '(`pub`,`format`,`site`,`url`,`filename`,`notes`,`size`,`md5`,`credits`,`amend_serial`) '
+            . 'VALUES (?,?,?,?,?,?,?,?,?,?)';
+        $pubId = 23;
+        $format = 'PDF';
+        $siteId = 5;
+        $url = 'http://foo.bar/file%20%231.pdf';
+        $filename = 'file #1.pdf';
+        $notes = '';
+        $size = '';
+        $md5 = '';
+        $credits = '';
+        $amendSerial = '';
+        $this->_db->expects($this->once())->method('beginTransaction');
+        $update = 'UPDATE `pub` SET `pub_has_online_copies`=1 WHERE `pub_id`=?';
+        $this->_db->expects($this->exactly(2))->method('execute')->withConsecutive(
+            [ $query, array($pubId, $format, $siteId, $url, $filename, $notes, $size, $md5, $credits, $amendSerial) ],
+            [ $update, array($pubId) ]
+        );
+        $newCopyId = 55;
+        $this->_db->expects($this->once())->method('getLastInsertId')->willReturn($newCopyId);
+        $this->_db->expects($this->once())->method('commit');
+
+        $this->_manxDb->beginTransaction();
+        $result = $this->_manxDb->addCopy($pubId, $format, $siteId, $url,
+                $notes, $size, $md5, $credits, $amendSerial);
+        $this->_manxDb->commit();
+
+        $this->assertEquals($newCopyId, $result);
+    }
+
+    public function testNestedAddCopyFailureRollsBackOuterTransaction()
+    {
+        $pubId = 23;
+        $format = 'PDF';
+        $siteId = 5;
+        $url = 'http://foo.bar/file%20%231.pdf';
+        $notes = '';
+        $size = '';
+        $md5 = '';
+        $credits = '';
+        $amendSerial = '';
+        $this->_db->expects($this->once())->method('beginTransaction');
+        $this->_db->expects($this->once())->method('execute')
+            ->willThrowException(new RuntimeException('insert failed'));
+        $this->_db->expects($this->never())->method('commit');
+        $this->_db->expects($this->once())->method('rollback');
+
+        $this->_manxDb->beginTransaction();
+        try
+        {
+            $this->_manxDb->addCopy($pubId, $format, $siteId, $url,
+                $notes, $size, $md5, $credits, $amendSerial);
+            $this->fail('Expected addCopy to fail.');
+        }
+        catch (RuntimeException $e)
+        {
+            $this->_manxDb->rollback();
+        }
+    }
+
     public function testGetMostRecentDocuments()
     {
         $count = 200;

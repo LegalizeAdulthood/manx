@@ -27,6 +27,8 @@ use Pimple\Container;
 
 class UrlWizardService extends ServicePageBase
 {
+    const METADATA_ERROR = 'Unable to fetch metadata for document URL.';
+
     /** @var IUrlMetaData */
     private $_meta;
     /** @var IPdfMetadata */
@@ -45,7 +47,14 @@ class UrlWizardService extends ServicePageBase
     private function determineData()
     {
         $url = $this->param('url');
-        return $this->_meta->determineData($url);
+        try
+        {
+            return $this->_meta->determineData($url);
+        }
+        catch (\Throwable $e)
+        {
+            return ['valid' => false, 'error' => self::METADATA_ERROR];
+        }
     }
 
     private static function emptyStringIfNull($str)

@@ -74,6 +74,25 @@ class UrlWizardServiceTest extends PHPUnit\Framework\TestCase
         $this->expectOutputString($expected);
     }
 
+    public function testUrlLookupMetadataError()
+    {
+        $url = 'http://bitsavers.org/pdf/hp/foo.pdf';
+        $this->_meta->expects($this->once())->method('determineData')
+            ->with($url)
+            ->willThrowException(new RuntimeException('timeout'));
+        $vars = self::varsForUrlLookup($url);
+        $this->_config['vars'] = $vars;
+        $page = new UrlWizardServiceTester($this->_config);
+
+        $page->processRequest();
+
+        $expected = json_encode(array(
+            'valid' => false,
+            'error' => 'Unable to fetch metadata for document URL.'
+        ));
+        $this->expectOutputString($expected);
+    }
+
     public function testUrlLookupKeepsUrlWhenCopyBaseDiffers()
     {
         $url = 'http://example.com/manuals/acme/ABC-123_Guide_Jan1980.pdf';

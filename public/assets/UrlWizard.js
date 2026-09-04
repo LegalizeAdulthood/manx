@@ -613,7 +613,8 @@ $(function()
                 {
                     if (!json.valid)
                     {
-                        clear_or_set_error_label(true, "copy_url", "No document at URL " + url);
+                        var message = json.error || "No document at URL " + url;
+                        clear_or_set_error_label(true, "copy_url", message);
                         reset_form();
                     }
                     else if (json.exists)

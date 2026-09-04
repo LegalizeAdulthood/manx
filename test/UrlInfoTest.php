@@ -1,9 +1,11 @@
 <?php
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -51,6 +53,16 @@ class UrlInfoTest extends PHPUnit\Framework\TestCase
         $size = $this->_info->size();
 
         $this->assertTrue($size === false);
+    }
+
+    public function testSizePropagatesMetadataErrors()
+    {
+        $this->_handler->append(new ConnectException('timeout',
+            new Request('HEAD', $this->_url)));
+
+        $this->expectException(ConnectException::class);
+
+        $this->_info->size();
     }
 
     public function testExistsHttpStatus200()

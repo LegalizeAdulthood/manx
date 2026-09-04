@@ -257,6 +257,55 @@ BEGIN
 END//
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS `manx_reset_partial_unknown_ingest`;
+DELIMITER //
+CREATE PROCEDURE `manx_reset_partial_unknown_ingest`(
+    IN `site_name` VARCHAR(100))
+BEGIN
+    DECLARE `target_site_id` INT DEFAULT -1;
+
+    SELECT COALESCE(MAX(`site_id`), -1) INTO `target_site_id`
+        FROM `site`
+        WHERE `name` = `site_name`;
+
+    IF `target_site_id` <> -1 THEN
+        UPDATE `site_unknown` `su`
+            JOIN `site` `s`
+                ON `s`.`site_id` = `su`.`site_id`
+            JOIN `site_unknown_dir` `sud`
+                ON `sud`.`site_id` = `su`.`site_id`
+                AND `sud`.`id` = `su`.`dir_id`
+            JOIN `site_company_dir` `scd`
+                ON `scd`.`site_id` = `su`.`site_id`
+            LEFT JOIN `copy` `c` FORCE INDEX (`site_filename`)
+                ON `c`.`site` = `target_site_id`
+                AND `c`.`filename` = `su`.`filename`
+                AND `c`.`url` = CONCAT(`s`.`copy_base`, `sud`.`path`, '/',
+                    `su`.`filename`)
+            SET `su`.`scanned` = 0
+            WHERE `su`.`site_id` = `target_site_id`
+            AND `s`.`name` = `site_name`
+            AND `s`.`live` = 'Y'
+            AND `su`.`scanned` = 1
+            AND `su`.`ignored` = 0
+            AND `c`.`copy_id` IS NULL
+            AND INSTR(`su`.`filename`, '#') = 0
+            AND INSTR(`su`.`filename`, ' ') = 0
+            AND INSTR(`su`.`filename`, '&') = 0
+            AND INSTR(`su`.`filename`, '%') = 0
+            AND `su`.`filename` LIKE '%\_%\_%.pdf'
+            AND (
+                (`scd`.`parent_directory` = ''
+                    AND `sud`.`path` LIKE CONCAT(`scd`.`directory`, '/%'))
+                OR
+                (`scd`.`parent_directory` <> ''
+                    AND `sud`.`path` LIKE CONCAT(`scd`.`parent_directory`,
+                        '/', `scd`.`directory`, '/%'))
+            );
+    END IF;
+END//
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS `manx_purge_unused_unknown_directories`;
 DELIMITER //
 CREATE PROCEDURE `manx_purge_unused_unknown_directories`(
@@ -457,6 +506,7 @@ BEGIN
         END IF;
 
         CALL `manx_purge_su_copies`(`current_site_name`);
+        CALL `manx_reset_partial_unknown_ingest`(`current_site_name`);
         CALL `manx_purge_unused_unknown_directories`(`current_site_name`);
         CALL `manx_update_unknown_dir_ignored`(`current_site_name`);
     END LOOP;
@@ -466,6 +516,7 @@ DELIMITER ;
 
 CALL `manx_cleanup_all_unknown_dirs`();
 DROP PROCEDURE IF EXISTS `manx_cleanup_all_unknown_dirs`;
+DROP PROCEDURE IF EXISTS `manx_reset_partial_unknown_ingest`;
 
 UPDATE `properties`
     SET `value` = '2.2.0'

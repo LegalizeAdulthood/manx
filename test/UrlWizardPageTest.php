@@ -121,6 +121,9 @@ class UrlWizardPageTest extends Manx\Test\TestCase
                 'next' => 'Next+%3E'
             ]);
         $this->_config['vars'] = $vars;
+        $this->_urlMeta->expects($this->once())->method('determineData')
+            ->with(rawurldecode($vars['copy_url']))
+            ->willReturn(self::copyMetaData($vars));
         $this->_manx->expects($this->once())->method('addPublication')
             ->with($this->anything(), $this->anything(), $part, $this->anything(), $title,
                 $this->anything(), $this->anything(), $this->anything(), $keywords, $this->anything(),
@@ -172,6 +175,9 @@ class UrlWizardPageTest extends Manx\Test\TestCase
                 'next' => 'Next+%3E'
             ]);
         $this->_config['vars'] = $vars;
+        $this->_urlMeta->expects($this->once())->method('determineData')
+            ->with(rawurldecode($vars['copy_url']))
+            ->willReturn(self::copyMetaData($vars));
         $page = new UrlWizardPageTester($this->_config);
         $this->_db->expects($this->never())->method('addCompany');
         $this->_db->expects($this->never())->method('addSupersession');
@@ -190,6 +196,49 @@ class UrlWizardPageTest extends Manx\Test\TestCase
         $this->assertTrue($page->redirectCalled);
         $this->assertEquals("details.php/5,$pubId", $page->redirectLastTarget);
         $this->assertContains('Clear-Site-Data: "cache"', $page->headers);
+    }
+
+    public function testDocumentAddMetadataTimeoutDoesNotWrite()
+    {
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $vars = array_merge(
+            self::copyData('http://bitsavers.org/pdf/tektronix/401x/070-1183-01_Rev_B_4010_Maintenance_Manual_Apr_1976.pdf', 'PDF', '3'),
+            self::siteData(),
+            self::companyData('5'),
+            self::pubHistoryData('4010 and 4010-1 Maintenance Manual', 'D'),
+            [
+                'site_unknown_id' => 7077,
+                'site_company_directory' => '',
+                'site_company_parent_directory' => '',
+                'pub_search_keywords' => 'Rev B 4010 Maintenance Manual',
+                'pub_pub_id' => '-1',
+                'supersession_search_keywords' => '4010 Maintenance Manual',
+                'supersession_old_pub' => '-1',
+                'supersession_new_pub' => '-1',
+                'next' => 'Next+%3E'
+            ]);
+        $this->_config['vars'] = $vars;
+        $this->_urlMeta->expects($this->once())->method('determineData')
+            ->with(rawurldecode($vars['copy_url']))
+            ->willThrowException(new RuntimeException('timeout'));
+        $this->_db->expects($this->never())->method('beginTransaction');
+        $this->_db->expects($this->never())->method('addCompany');
+        $this->_db->expects($this->never())->method('addSite');
+        $this->_db->expects($this->never())->method('addSiteDirectory');
+        $this->_db->expects($this->never())->method('addSupersession');
+        $this->_db->expects($this->never())->method('addCopy');
+        $this->_db->expects($this->never())->method('updateIgnoredUnknownSingleDir');
+        $this->_db->expects($this->never())->method('removeSiteUnknownPathById');
+        $this->_manx->expects($this->never())->method('addPublication');
+        $page = new UrlWizardPageTester($this->_config);
+
+        $page->postPage();
+
+        $this->assertTrue(!$page->redirectCalled);
+        $this->assertContains('Status: 400 Bad Request', $page->headers);
+        $this->expectOutputString('Unable to fetch metadata for document URL.');
     }
 
     public function testNewBitSaversDirectoryAdded()
@@ -216,6 +265,9 @@ class UrlWizardPageTest extends Manx\Test\TestCase
                 'next' => 'Next+%3E'
             ]);
         $this->_config['vars'] = $vars;
+        $this->_urlMeta->expects($this->once())->method('determineData')
+            ->with(rawurldecode($vars['copy_url']))
+            ->willReturn(self::copyMetaData($vars));
         $this->_manx->expects($this->once())->method('addPublication')
             ->with($this->anything(), $this->anything(), $part, $this->anything(), $title,
                 $this->anything(), $this->anything(), $this->anything(), $keywords, $this->anything(),
@@ -260,6 +312,9 @@ class UrlWizardPageTest extends Manx\Test\TestCase
                 'next' => 'Next+%3E'
             ]);
         $this->_config['vars'] = $vars;
+        $this->_urlMeta->expects($this->once())->method('determineData')
+            ->with(rawurldecode($vars['copy_url']))
+            ->willReturn(self::copyMetaData($vars));
         $page = new UrlWizardPageTester($this->_config);
         $this->_db->expects($this->once())->method('addSiteDirectory')
             ->with('58', '5', 'DEC', 'computing');
@@ -296,6 +351,29 @@ EOH;
         $page->renderBodyContent();
 
         $expected = self::expectedBodyContent($vars);
+        $this->expectOutputStringIgnoringLineEndings($expected);
+    }
+
+    public function testRenderPageMetadataTimeoutShowsError()
+    {
+        $_SERVER['PATH_INFO'] = '';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $this->_manx->expects($this->atLeastOnce())->method('getDatabase')->willReturn($this->_db);
+        $url = 'http://bitsavers.org/pdf/hp/foo.pdf';
+        $this->_urlMeta->expects($this->once())->method('determineData')
+            ->with($url)
+            ->willThrowException(new RuntimeException('timeout'));
+        $this->_config['vars'] = ['url' => $url];
+        $page = new UrlWizardPageTester($this->_config);
+
+        $page->renderBodyContent();
+
+        $expected = <<<EOH
+<h1>URL Wizard</h1>
+
+<p class="error">Unable to fetch metadata for document URL.</p>
+
+EOH;
         $this->expectOutputStringIgnoringLineEndings($expected);
     }
 
@@ -1170,6 +1248,15 @@ EOH;
             'copy_md5' => '',
             'copy_credits' => '',
             'copy_amend_serial' => ''
+        ];
+    }
+
+    private static function copyMetaData($vars)
+    {
+        return [
+            'valid' => true,
+            'url' => rawurldecode($vars['copy_url']),
+            'size' => $vars['copy_size']
         ];
     }
 

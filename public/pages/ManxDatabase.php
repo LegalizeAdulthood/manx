@@ -38,15 +38,38 @@ class ManxDatabase implements IManxDatabase
     }
     /** @var IDatabase */
     private $_db;
+    private $_transactionDepth = 0;
 
-    private function beginTransaction()
+    public function beginTransaction()
     {
-        $this->_db->beginTransaction();
+        if ($this->_transactionDepth == 0)
+        {
+            $this->_db->beginTransaction();
+        }
+        ++$this->_transactionDepth;
     }
 
-    private function commit()
+    public function commit()
     {
-        $this->_db->commit();
+        if ($this->_transactionDepth == 0)
+        {
+            throw new \RuntimeException("No transaction is active.");
+        }
+        if ($this->_transactionDepth == 1)
+        {
+            $this->_db->commit();
+        }
+        --$this->_transactionDepth;
+    }
+
+    public function rollback()
+    {
+        if ($this->_transactionDepth == 0)
+        {
+            return;
+        }
+        $this->_transactionDepth = 0;
+        $this->_db->rollback();
     }
 
     private function execute($statement, $args)
@@ -652,13 +675,13 @@ class ManxDatabase implements IManxDatabase
 
     function addSupersession($oldPub, $newPub)
     {
-        $this->_db->beginTransaction();
+        $this->beginTransaction();
         $this->_db->execute('INSERT INTO `supersession`(`old_pub`,`new_pub`) VALUES (?,?)',
             array($oldPub, $newPub));
         $result = $this->_db->getLastInsertId();
         $this->_db->execute('UPDATE `pub` SET `pub_superseded` = 1 WHERE `pub_id` = ?',
             array($oldPub));
-        $this->_db->commit();
+        $this->commit();
         return $result;
     }
 

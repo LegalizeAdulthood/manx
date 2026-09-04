@@ -6,6 +6,9 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 class UrlInfo implements IUrlInfo
 {
+    const CONNECT_TIMEOUT = 10;
+    const REQUEST_TIMEOUT = 20;
+
     private $_url;
     private $_client;
     private $_response;
@@ -15,7 +18,9 @@ class UrlInfo implements IUrlInfo
         $this->_url = $url;
         $options = array(
             'allow_redirects' => \GuzzleHttp\RedirectMiddleware::$defaultSettings,
-            'http_errors' => false
+            'http_errors' => false,
+            'connect_timeout' => self::CONNECT_TIMEOUT,
+            'timeout' => self::REQUEST_TIMEOUT
         );
         $options['allow_redirects']['track_redirects'] = true;
         $this->_client = is_null($client) ? new \GuzzleHttp\Client($options) : $client;
@@ -71,7 +76,12 @@ class UrlInfo implements IUrlInfo
     {
         if (is_null($this->_response))
         {
-            $this->_response = $this->_client->request('HEAD', $this->_url, array('http_errors' => false));
+            $this->_response = $this->_client->request('HEAD', $this->_url,
+                array(
+                    'http_errors' => false,
+                    'connect_timeout' => self::CONNECT_TIMEOUT,
+                    'timeout' => self::REQUEST_TIMEOUT
+                ));
             $history = $this->_response->getHeader(\GuzzleHttp\RedirectMiddleware::HISTORY_HEADER);
             if (is_array($history) && count($history) > 0)
             {
