@@ -123,8 +123,8 @@ class UrlWizardPageTest extends Manx\Test\TestCase
                 $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
                 $vars['copy_amend_serial'])
             ->willReturn($copyId);
-        $this->_db->expects($this->once())->method('updateIgnoredUnknownSingleDir')->with($siteUnknownId);
-        $this->_db->expects($this->once())->method('removeSiteUnknownPathById')->with($siteUnknownId);
+        $this->_db->expects($this->once())->method('ignoreSitePaths')->with([$siteUnknownId]);
+        $this->_db->expects($this->never())->method('removeSiteUnknownPathById');
 
         $page->postPage();
 
@@ -169,8 +169,8 @@ class UrlWizardPageTest extends Manx\Test\TestCase
                 $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
                 $vars['copy_amend_serial'])
             ->willReturn($copyId);
-        $this->_db->expects($this->once())->method('updateIgnoredUnknownSingleDir')->with($siteUnknownId);
-        $this->_db->expects($this->once())->method('removeSiteUnknownPathById')->with($siteUnknownId);
+        $this->_db->expects($this->once())->method('ignoreSitePaths')->with([$siteUnknownId]);
+        $this->_db->expects($this->never())->method('removeSiteUnknownPathById');
 
         $page->postPage();
 
@@ -217,7 +217,7 @@ class UrlWizardPageTest extends Manx\Test\TestCase
                 $vars['copy_notes'], $vars['copy_size'], '', $vars['copy_credits'],
                 $vars['copy_amend_serial']
             );
-        $this->_db->expects($this->never())->method('updateIgnoredUnknownSingleDir');
+        $this->_db->expects($this->never())->method('ignoreSitePaths');
         $this->_db->expects($this->never())->method('removeSiteUnknownPathById');
 
         $page->postPage();
