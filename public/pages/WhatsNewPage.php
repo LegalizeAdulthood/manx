@@ -176,6 +176,12 @@ class WhatsNewPage extends AdminPageBase
 
     private function ingestPreviewRow($row)
     {
+        if (!self::isBulkSelectableStatus($row['status']))
+        {
+            return false;
+        }
+
+        $row = $this->editedPreviewRow($row);
         $pubId = $this->previewRowPubId($row);
         if ($pubId == '')
         {
@@ -202,6 +208,43 @@ class WhatsNewPage extends AdminPageBase
         }
 
         return '';
+    }
+
+    private function editedPreviewRow($row)
+    {
+        $id = $row['id'];
+        if (!$this->hasEditedPreviewRow($id))
+        {
+            return $row;
+        }
+
+        return $this->previewRowWithMetadata(
+            $row,
+            $this->previewEditValue($id, 'part', $row['part']),
+            $this->previewEditValue($id, 'pub_date', $row['pub_date']),
+            $this->previewEditValue($id, 'title', $row['title']),
+            'Edited',
+            $this->_manxDb->copyExistsForUrl($row['url']));
+    }
+
+    private function hasEditedPreviewRow($id)
+    {
+        foreach (['part', 'pub_date', 'title'] as $field)
+        {
+            if (array_key_exists(self::previewEditName($id, $field),
+                $this->_vars))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function previewEditValue($id, $field, $default)
+    {
+        $key = self::previewEditName($id, $field);
+        return trim(array_key_exists($key, $this->_vars)
+            ? $this->_vars[$key] : $default);
     }
 
     private function renderPartRegexForm($thisDir)
@@ -314,37 +357,41 @@ EOH;
             $this->previewPart($fileBase, $thisDir['part_regex']);
         $title = UrlMetaData::titleForFileBase($fileBase);
         $existingCopy = $this->_manxDb->copyExistsForUrl($fileInfo['url']);
+        return $this->previewRowWithMetadata([
+            'id' => $fileInfo['id'],
+            'site_id' => $fileInfo['site_id'],
+            'company_id' => $companyId,
+            'path' => $fileInfo['path'],
+            'url' => $fileInfo['url'],
+            'format' => $fileInfo['format']
+        ], $part, $pubDate, $title, $regexResult, $existingCopy);
+    }
+
+    private function previewRowWithMetadata($row, $part, $pubDate, $title,
+        $regexResult, $existingCopy)
+    {
         list($pubs, $exactPublication, $searchType) =
             $this->previewPublications(
-                $companyId, $part, $pubDate, $title, $existingCopy,
+                $row['company_id'], $part, $pubDate, $title, $existingCopy,
                 $regexResult);
         $status = self::previewStatus(
             $part, $pubDate, $title, $pubs, $existingCopy, $regexResult,
             $exactPublication, $searchType);
-        $pubId = $status == 'Accepted' ? $exactPublication['pub_id'] : '';
-        $statusDetail = self::previewStatusDetail(
+        $row['pub_id'] = $status == 'Accepted'
+            ? $exactPublication['pub_id'] : '';
+        $row['part'] = $part;
+        $row['pub_date'] = $pubDate;
+        $row['title'] = $title;
+        $row['regex_result'] = $regexResult;
+        $row['matching_publication'] =
+            self::matchingPublicationHtml(
+                $row['company_id'], $part, $title, $pubs, $exactPublication);
+        $row['existing_copy'] = self::existingCopyHtml($existingCopy);
+        $row['status'] = $status;
+        $row['status_detail'] = self::previewStatusDetail(
             $status, $part, $pubDate, $title, $pubs, $existingCopy,
             $regexResult, $searchType);
-
-        return [
-            'id' => $fileInfo['id'],
-            'site_id' => $fileInfo['site_id'],
-            'company_id' => $companyId,
-            'pub_id' => $pubId,
-            'path' => $fileInfo['path'],
-            'url' => $fileInfo['url'],
-            'part' => $part,
-            'pub_date' => $pubDate,
-            'title' => $title,
-            'format' => $fileInfo['format'],
-            'regex_result' => $regexResult,
-            'matching_publication' =>
-                self::matchingPublicationHtml(
-                    $companyId, $part, $title, $pubs, $exactPublication),
-            'existing_copy' => self::existingCopyHtml($existingCopy),
-            'status' => $status,
-            'status_detail' => $statusDetail
-        ];
+        return $row;
     }
 
     private function previewPublications($companyId, $part, $pubDate, $title,
@@ -600,6 +647,11 @@ EOH;
                 ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401));
     }
 
+    private static function previewEditName($id, $field)
+    {
+        return sprintf('preview_%s_%d', $field, $id);
+    }
+
     private static function isBulkSelectableStatus($status)
     {
         return in_array($status, ['Accepted', 'New', 'Uncertain']);
@@ -629,6 +681,35 @@ EOH;
                 $field[0], $field[1]);
         }
         return $html . '</table>';
+    }
+
+    private static function previewEditInput($row, $field, $label, $value)
+    {
+        $id = self::previewEditName($row['id'], $field);
+        return sprintf(
+            '<tr><th><label for="%s">%s</label></th><td><input type="text" id="%s" name="%s" value="%s" /></td></tr>',
+            htmlspecialchars($id), htmlspecialchars($label),
+            htmlspecialchars($id), htmlspecialchars($id),
+            htmlspecialchars($value));
+    }
+
+    private static function previewEditorHtml($row)
+    {
+        $url = htmlspecialchars(UrlNormalizer::normalize($row['url']),
+            ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML401);
+        $html = '<details class="ingest-preview-editor">';
+        $html .= '<summary>Edit metadata</summary>';
+        $html .= '<table class="ingest-preview-editor-fields">';
+        $html .= self::previewEditInput($row, 'part', 'Part',
+            $row['part']);
+        $html .= self::previewEditInput($row, 'title', 'Title',
+            $row['title']);
+        $html .= self::previewEditInput($row, 'pub_date', 'Date',
+            $row['pub_date']);
+        $html .= sprintf(
+            '<tr><th>Source</th><td><a href="%s">Copy</a></td></tr>',
+            $url);
+        return $html . '</table></details>';
     }
 
     private function renderPreviewTable($previewRows)
@@ -665,6 +746,8 @@ EOH;
                 self::urlWizardLink($row['id'], $row['url']),
                 htmlspecialchars($row['path']), self::documentCopyLink($row['url']),
                 self::previewMetadataHtml($row), self::previewStatusHtml($row));
+            printf('<tr class="ingest-preview-editor-row"><td></td><td colspan="2">%s</td></tr>' . "\n",
+                self::previewEditorHtml($row));
             ++$i;
         }
         print <<<EOH

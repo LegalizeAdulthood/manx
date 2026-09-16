@@ -89,6 +89,41 @@ table.restable th.idcol
     text-align: left
 }
 
+.ingest-preview-editor-row td
+{
+    padding-bottom: 0.5em
+}
+
+.ingest-preview-editor
+{
+    margin: 0.2em 0 0.5em
+}
+
+.ingest-preview-editor-fields
+{
+    border-collapse: collapse
+}
+
+.ingest-preview-editor-fields th,
+.ingest-preview-editor-fields td
+{
+    padding: 0.15em 0.8em 0.15em 0;
+    vertical-align: top
+}
+
+.ingest-preview-editor-fields th
+{
+    text-align: right;
+    white-space: nowrap
+}
+
+.ingest-preview-editor-fields input[type="text"]
+{
+    box-sizing: border-box;
+    max-width: 100%;
+    width: 32em
+}
+
 .logo
 {
     float: left;
