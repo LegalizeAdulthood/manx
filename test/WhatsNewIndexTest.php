@@ -4,6 +4,13 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Pimple\Container;
 
+class TestWhatsNewIndex extends Manx\WhatsNewIndex
+{
+    protected function sleepBeforeEmptyIndexRetry()
+    {
+    }
+}
+
 class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
 {
     /** @var Container */
@@ -17,6 +24,8 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
     private $_fileSystem;
     /** @var Manx\IWhatsNewPageFactory */
     private $_factory;
+    /** @var Manx\Cron\ILogger */
+    private $_logger;
     /** @var Manx\IUrlTransfer */
     private $_transfer;
     private $_indexUrl;
@@ -34,12 +43,14 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
         $this->_manx->method('getDatabase')->willReturn($this->_db);
         $this->_fileSystem = $this->createMock(Manx\IFileSystem::class);
         $this->_factory = $this->createMock(Manx\IWhatsNewPageFactory::class);
+        $this->_logger = $this->createMock(Manx\Cron\ILogger::class);
         $this->_transfer = $this->createMock(Manx\IUrlTransfer::class);
         $this->_urlInfo = $this->createMock(Manx\IUrlInfo::class);
         $config = new Container();
         $config['manx'] = $this->_manx;
         $config['fileSystem'] = $this->_fileSystem;
         $config['whatsNewPageFactory'] = $this->_factory;
+        $config['logger'] = $this->_logger;
         $this->_property = 'timestamp';
         $config['timeStampProperty'] = $this->_property;
         $this->_indexUrl = 'http://bitsavers.trailing-edge.com/pdf/IndexByDate.txt';
@@ -49,7 +60,7 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
         $config['baseUrl'] = 'http://www.bitsavers.org/pdf';
         $config['siteName'] = 'bitsavers';
         $this->_config = $config;
-        $this->_whatsNew = new Manx\WhatsNewIndex($config);
+        $this->_whatsNew = new TestWhatsNewIndex($config);
     }
 
     private function expectIndexReconcile()
@@ -131,13 +142,57 @@ class WhatsNewIndexTest extends PHPUnit\Framework\TestCase
 
     public function testGetIndex()
     {
+        $this->_factory->expects($this->once())->method('createUrlInfo')
+            ->with($this->_indexUrl)->willReturn($this->_urlInfo);
+        $this->_urlInfo->expects($this->once())->method('size')
+            ->willReturn('123');
         $this->_factory->expects($this->once())->method('createUrlTransfer')->with($this->_indexUrl)->willReturn($this->_transfer);
-        $this->_transfer->expects($this->once())->method('get')->with(\Manx\Config::configFile($this->_indexFile));
+        $this->_transfer->expects($this->once())->method('get')
+            ->with(\Manx\Config::configFile($this->_indexFile))
+            ->willReturn(true);
         $now = '50';
         $this->_factory->expects($this->once())->method('getCurrentTime')->willReturn($now);
         $this->_db->expects($this->once())->method('setProperty')->with($this->_property, $now);
 
-        $this->_whatsNew->getIndexByDateFile();
+        $this->assertTrue($this->_whatsNew->getIndexByDateFile());
+    }
+
+    public function testGetIndexRetriesZeroLengthIndex()
+    {
+        $emptyInfo = $this->createMock(Manx\IUrlInfo::class);
+        $emptyInfo->expects($this->once())->method('size')->willReturn('0');
+        $fullInfo = $this->createMock(Manx\IUrlInfo::class);
+        $fullInfo->expects($this->once())->method('size')->willReturn('123');
+        $this->_factory->expects($this->exactly(2))->method('createUrlInfo')
+            ->with($this->_indexUrl)
+            ->willReturnOnConsecutiveCalls($emptyInfo, $fullInfo);
+        $this->_logger->expects($this->once())->method('log')
+            ->with('IndexByDate.txt for site bitsavers is empty; retrying in 15 seconds (1 of 15).');
+        $this->_factory->expects($this->once())->method('createUrlTransfer')
+            ->with($this->_indexUrl)->willReturn($this->_transfer);
+        $this->_transfer->expects($this->once())->method('get')
+            ->with(\Manx\Config::configFile($this->_indexFile))
+            ->willReturn(true);
+        $now = '50';
+        $this->_factory->expects($this->once())->method('getCurrentTime')
+            ->willReturn($now);
+        $this->_db->expects($this->once())->method('setProperty')
+            ->with($this->_property, $now);
+
+        $this->assertTrue($this->_whatsNew->getIndexByDateFile());
+    }
+
+    public function testGetIndexKeepsLocalFileWhenRemoteIndexStaysEmpty()
+    {
+        $this->_urlInfo->expects($this->exactly(16))->method('size')
+            ->willReturn('0');
+        $this->_factory->expects($this->exactly(16))->method('createUrlInfo')
+            ->with($this->_indexUrl)->willReturn($this->_urlInfo);
+        $this->_logger->expects($this->exactly(16))->method('log');
+        $this->_factory->expects($this->never())->method('createUrlTransfer');
+        $this->_db->expects($this->never())->method('setProperty');
+
+        $this->assertFalse($this->_whatsNew->getIndexByDateFile());
     }
 
     public function testParseIndex()

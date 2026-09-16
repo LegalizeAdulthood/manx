@@ -147,7 +147,10 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         if ($this->_whatsNewIndex->needIndexByDateFile())
         {
             $this->log('Updating IndexByDate.txt for site ' . $this->_siteName);
-            $this->_whatsNewIndex->getIndexByDateFile();
+            if (!$this->_whatsNewIndex->getIndexByDateFile())
+            {
+                return;
+            }
             $this->_whatsNewIndex->parseIndexByDateFile();
         }
     }

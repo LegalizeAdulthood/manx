@@ -773,8 +773,22 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
     public function testUpdateWhatsNew()
     {
         $this->_whatsNewIndex->expects($this->once())->method('needIndexByDateFile')->willReturn(true);
-        $this->_whatsNewIndex->expects($this->once())->method('getIndexByDateFile');
+        $this->_whatsNewIndex->expects($this->once())->method('getIndexByDateFile')
+            ->willReturn(true);
         $this->_whatsNewIndex->expects($this->once())->method('parseIndexByDateFile');
+        $this->_logger->expects($this->once())->method('log');
+
+        $this->_cleaner->updateWhatsNewIndex();
+    }
+
+    public function testUpdateWhatsNewSkipsParseWhenDownloadIsSkipped()
+    {
+        $this->_whatsNewIndex->expects($this->once())
+            ->method('needIndexByDateFile')->willReturn(true);
+        $this->_whatsNewIndex->expects($this->once())
+            ->method('getIndexByDateFile')->willReturn(false);
+        $this->_whatsNewIndex->expects($this->never())
+            ->method('parseIndexByDateFile');
         $this->_logger->expects($this->once())->method('log');
 
         $this->_cleaner->updateWhatsNewIndex();

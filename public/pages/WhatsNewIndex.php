@@ -7,6 +7,8 @@ use Pimple\Container;
 class WhatsNewIndex implements IWhatsNewIndex
 {
     const INDEX_BATCH_SIZE = 500;
+    const EMPTY_INDEX_MAX_RETRIES = 15;
+    const EMPTY_INDEX_RETRY_SECONDS = 15;
 
     public function __construct(Container $config)
     {
@@ -18,6 +20,7 @@ class WhatsNewIndex implements IWhatsNewIndex
         $this->_siteName = $config['siteName'];
         $this->_fileSystem = $config['fileSystem'];
         $this->_factory = $config['whatsNewPageFactory'];
+        $this->_logger = isset($config['logger']) ? $config['logger'] : null;
     }
 
     public function needIndexByDateFile()
@@ -37,15 +40,70 @@ class WhatsNewIndex implements IWhatsNewIndex
         {
             $lastModified = $this->_factory->getCurrentTime();
         }
-        $this->_manxDb->setProperty($this->_timeStampProperty, $lastModified);
         return $lastModified > $timeStamp;
     }
 
     public function getIndexByDateFile()
     {
+        if (!$this->waitForNonEmptyIndexByDateFile())
+        {
+            return false;
+        }
+
         $transfer = $this->_factory->createUrlTransfer($this->_indexByDateUrl);
-        $transfer->get(Config::configFile($this->_indexByDateFile));
+        if (!$transfer->get(Config::configFile($this->_indexByDateFile)))
+        {
+            return false;
+        }
+
         $this->_manxDb->setProperty($this->_timeStampProperty, $this->_factory->getCurrentTime());
+        return true;
+    }
+
+    private function waitForNonEmptyIndexByDateFile()
+    {
+        for ($retry = 0; $retry <= self::EMPTY_INDEX_MAX_RETRIES; ++$retry)
+        {
+            if (!$this->indexByDateFileIsEmpty())
+            {
+                return true;
+            }
+
+            if ($retry == self::EMPTY_INDEX_MAX_RETRIES)
+            {
+                $this->log(sprintf(
+                    'IndexByDate.txt for site %s is still empty after %d retries; keeping existing local file.',
+                    $this->_siteName, self::EMPTY_INDEX_MAX_RETRIES));
+                return false;
+            }
+
+            $this->log(sprintf(
+                'IndexByDate.txt for site %s is empty; retrying in %d seconds (%d of %d).',
+                $this->_siteName, self::EMPTY_INDEX_RETRY_SECONDS,
+                $retry + 1, self::EMPTY_INDEX_MAX_RETRIES));
+            $this->sleepBeforeEmptyIndexRetry();
+        }
+        return true;
+    }
+
+    private function indexByDateFileIsEmpty()
+    {
+        $urlInfo = $this->_factory->createUrlInfo($this->_indexByDateUrl);
+        $size = $urlInfo->size();
+        return $size !== false && (string)$size == '0';
+    }
+
+    protected function sleepBeforeEmptyIndexRetry()
+    {
+        sleep(self::EMPTY_INDEX_RETRY_SECONDS);
+    }
+
+    private function log($text)
+    {
+        if (!is_null($this->_logger))
+        {
+            $this->_logger->log($text);
+        }
     }
 
     public function parseIndexByDateFile()
@@ -187,4 +245,5 @@ class WhatsNewIndex implements IWhatsNewIndex
     private $_indexByDateFile;
     private $_baseUrl;
     private $_siteName;
+    private $_logger;
 }
