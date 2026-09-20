@@ -827,9 +827,9 @@ EOH;
 
 
 EOH;
+                $this->renderDirectoryList(
+                    $this->dirsWithParent($dirs, $thisDir));
                 $this->renderPartRegexForm($thisDir);
-                printf("<ul>\n<li><a href=\"%s&parentDir=%d#D%d\">(parent)</a></li>\n</ul>\n",
-                    $this->_page, $thisDir['parent_dir_id'], $thisDir['id']);
             }
             return;
         }
@@ -841,36 +841,10 @@ EOH;
 
 EOH;
 
+        $this->renderDirectoryList($this->dirsWithParent($dirs, $thisDir));
         $this->renderPartRegexForm($thisDir);
         $this->renderPreviewTable(
             $this->previewRowsForFileInfos($thisDir, $fileInfos));
-
-        if ($this->_parentDirId != -1)
-        {
-            array_unshift($dirs,
-                ['id' => $thisDir['parent_dir_id'],
-                'path' => '(parent)',
-                'parent_dir_id' => -1,
-                'part_regex' => '']);
-        }
-        if (count($dirs) > 0)
-        {
-            printf("<ul>\n");
-            foreach ($dirs as $dir)
-            {
-                if ($dir['path'] == '(parent)')
-                {
-                    printf('<li><a href="%s&parentDir=%d#D%d">%s</a></li>' . "\n",
-                        $this->_page, $dir['id'], $thisDir['id'], $dir['path']);
-                }
-                else
-                {
-                    printf('<li><span id="D%d"><a href="%s&parentDir=%d">%s</a></span></li>' . "\n",
-                        $dir['id'], $this->_page, $dir['id'], $dir['path']);
-                }
-            }
-            printf("</ul>\n");
-        }
 
         if (count($files) > 0)
         {
@@ -903,6 +877,44 @@ EOH;
 
 EOH;
         }
+    }
+
+    private function dirsWithParent($dirs, $thisDir)
+    {
+        if ($this->_parentDirId != -1)
+        {
+            array_unshift($dirs,
+                ['id' => $thisDir['parent_dir_id'],
+                'path' => '(parent)',
+                'parent_dir_id' => -1,
+                'part_regex' => '']);
+        }
+        return $dirs;
+    }
+
+    private function renderDirectoryList($dirs)
+    {
+        if (count($dirs) == 0)
+        {
+            return;
+        }
+
+        $thisDir = $this->getThisDir();
+        printf("<ul>\n");
+        foreach ($dirs as $dir)
+        {
+            if ($dir['path'] == '(parent)')
+            {
+                printf('<li><a href="%s&parentDir=%d#D%d">%s</a></li>' . "\n",
+                    $this->_page, $dir['id'], $thisDir['id'], $dir['path']);
+            }
+            else
+            {
+                printf('<li><span id="D%d"><a href="%s&parentDir=%d">%s</a></span></li>' . "\n",
+                    $dir['id'], $this->_page, $dir['id'], $dir['path']);
+            }
+        }
+        printf("</ul>\n");
     }
 
     public static function ignoreExtension(IManxDatabase $manxDb, $extension)

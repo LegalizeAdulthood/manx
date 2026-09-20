@@ -181,6 +181,9 @@ class WhatsNewPageTest extends Manx\Test\TestCase
         $expected = <<<EOH
 <h1>No New <a href="whatsnew.php?site=bitsavers&amp;parentDir=-1">BitSavers</a> dec/pdp11 Publications Found</h1>
 
+<ul>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
+</ul>
 <form action="whatsnew.php" method="POST">
 <input type="hidden" name="site" value="bitsavers" />
 <input type="hidden" name="parentDir" value="1339" />
@@ -192,9 +195,6 @@ class WhatsNewPageTest extends Manx\Test\TestCase
 </fieldset>
 </form>
 
-<ul>
-<li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
-</ul>
 
 EOH;
         $this->expectOutputStringIgnoringLineEndings($expected);
@@ -239,6 +239,12 @@ EOH;
         $expected = <<<EOH
 <h1>New <a href="whatsnew.php?site=bitsavers&amp;parentDir=-1">BitSavers</a> dec/pdp11 Publications</h1>
 
+<ul>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
+<li><span id="D111"><a href="whatsnew.php?site=bitsavers&parentDir=111">dec/pdp11/1103</a></span></li>
+<li><span id="D112"><a href="whatsnew.php?site=bitsavers&parentDir=112">dec/pdp11/1104</a></span></li>
+<li><span id="D113"><a href="whatsnew.php?site=bitsavers&parentDir=113">dec/pdp11/1105</a></span></li>
+</ul>
 <form action="whatsnew.php" method="POST">
 <input type="hidden" name="site" value="bitsavers" />
 <input type="hidden" name="parentDir" value="1339" />
@@ -250,12 +256,6 @@ EOH;
 </fieldset>
 </form>
 
-<ul>
-<li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
-<li><span id="D111"><a href="whatsnew.php?site=bitsavers&parentDir=111">dec/pdp11/1103</a></span></li>
-<li><span id="D112"><a href="whatsnew.php?site=bitsavers&parentDir=112">dec/pdp11/1104</a></span></li>
-<li><span id="D113"><a href="whatsnew.php?site=bitsavers&parentDir=113">dec/pdp11/1105</a></span></li>
-</ul>
 <form action="whatsnew.php" method="POST">
 <input type="hidden" name="site" value="bitsavers" />
 <input type="hidden" name="parentDir" value="1339" />
@@ -309,6 +309,9 @@ EOH;
         $expected = <<<EOH
 <h1>New <a href="whatsnew.php?site=bitsavers&amp;parentDir=-1">BitSavers</a> dec/foo#bar Publications</h1>
 
+<ul>
+<li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
+</ul>
 <form action="whatsnew.php" method="POST">
 <input type="hidden" name="site" value="bitsavers" />
 <input type="hidden" name="parentDir" value="1339" />
@@ -320,9 +323,6 @@ EOH;
 </fieldset>
 </form>
 
-<ul>
-<li><a href="whatsnew.php?site=bitsavers&parentDir=150#D100">(parent)</a></li>
-</ul>
 <form action="whatsnew.php" method="POST">
 <input type="hidden" name="site" value="bitsavers" />
 <input type="hidden" name="parentDir" value="1339" />
@@ -872,7 +872,7 @@ EOH;
         $list = strpos($output, '<ul>');
         $this->assertNotFalse($preview);
         $this->assertNotFalse($list);
-        $this->assertLessThan($list, $preview);
+        $this->assertLessThan($preview, $list);
         $this->assertStringContainsString('<td>Accepted</td>', $output);
         $this->assertStringContainsString(
             '<td><a href="details.php/13,23">Jumbotron Users Guide</a></td>',
