@@ -70,51 +70,6 @@ class WhatsNewCleanerTest extends PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Manx\Cron\BitSaversCleaner::class, $cleaner);
     }
 
-    public function testNonExistentPathsAreRemoved()
-    {
-        $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
-        $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
-        $this->_db->expects($this->once())->method('getSiteUnknownPathsMissingFromIndex')
-            ->with('bitsavers')
-            ->willReturn( array( array('id' => 1, 'path' => 'foo/path.pdf') ) );
-        $this->_db->expects($this->once())->method('removeSiteUnknownPathById')->with(1);
-        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(false);
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with('http://bitsavers.trailing-edge.com/pdf/foo/path.pdf')
-            ->willReturn($this->_urlInfo);
-        $this->_logger->expects($this->exactly(3))->method('log');
-
-        $this->_cleaner->removeNonExistentUnknownPaths();
-    }
-
-    public function testExistingPathsAreKept()
-    {
-        $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
-        $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
-        $this->_db->expects($this->once())->method('getSiteUnknownPathsMissingFromIndex')
-            ->willReturn(array());
-        $this->_factory->expects($this->never())->method('createUrlInfo');
-        $this->_logger->expects($this->exactly(2))->method('log');
-
-        $this->_cleaner->removeNonExistentUnknownPaths();
-    }
-
-    public function testPathsEscapeSpecialChars()
-    {
-        $this->_whatsNewIndex->expects($this->once())->method('loadIndexByDateTable');
-        $this->_whatsNewIndex->expects($this->once())->method('dropIndexByDateTable');
-        $this->_db->expects($this->once())->method('getSiteUnknownPathsMissingFromIndex')
-            ->willReturn(array(
-                array('id' => 1, 'path' => 'foo/path#1.pdf')
-            ));
-        $this->_urlInfo->expects($this->once())->method('exists')->willReturn(true);
-        $this->_factory->expects($this->once())->method('createUrlInfo')
-            ->with('http://bitsavers.trailing-edge.com/pdf/foo/path%231.pdf')
-            ->willReturn($this->_urlInfo);
-
-        $this->_cleaner->removeNonExistentUnknownPaths();
-    }
-
     public function testMovedFilesAreUpdated()
     {
         $md5 = '37e10bd2e8da6bd96eb3a72feeea56ee';

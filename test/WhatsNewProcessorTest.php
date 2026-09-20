@@ -80,16 +80,6 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
         $this->_processor->process(['cleaner.php', 'md5']);
     }
 
-    public function testExistence()
-    {
-        $this->expectElapsedTime('2026-08-23 12:00:00.000000',
-            '2026-08-23 12:00:03.500000');
-        $this->_locker->expects($this->once())->method('lock')->with('existence.lock');
-        $this->_cleaner->expects($this->once())->method('removeNonExistentUnknownPaths');
-
-        $this->_processor->process(['cleaner.php', 'existence']);
-    }
-
     public function testMoved()
     {
         $this->expectElapsedTime('2026-08-23 12:00:00.000000',
@@ -166,9 +156,8 @@ class WhatsNewProcessorTest extends PHPUnit\Framework\TestCase
     {
         $this->expectElapsedTime('2026-08-23 12:00:00.000000',
             '2026-08-23 12:00:03.500000');
-        $this->_logger->expects($this->exactly(10))->method('log')->withConsecutive(
+        $this->_logger->expects($this->exactly(9))->method('log')->withConsecutive(
             [ "Begin help" ],
-            [ "existence:      remove non-existent unknown paths" ],
             [ "moved           update moved files" ],
             [ "index           fetch IndexByDate.txt" ],
             [ "unknown-copies  remove unknown paths with existing copy" ],

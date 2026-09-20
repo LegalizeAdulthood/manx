@@ -1094,26 +1094,6 @@ class ManxDatabase implements IManxDatabase
             [$siteName]);
     }
 
-    public function getSiteUnknownPathsMissingFromIndex($siteName)
-    {
-        $path = self::siteUnknownRelativePathSql();
-        return $this->execute("SELECT `su`.`id`, $path AS `path` "
-            . "FROM `site_unknown` `su` "
-                . "INNER JOIN `site` `s` "
-                    . "ON `s`.`site_id` = `su`.`site_id` "
-                . "LEFT JOIN `site_unknown_dir` `sud` "
-                    . "ON `sud`.`site_id` = `s`.`site_id` "
-                    . "AND `su`.`dir_id` = `sud`.`id` "
-                . "LEFT JOIN `tmp_site_index_by_date` `idx` "
-                    . "ON `idx`.`site_id` = `s`.`site_id` "
-                    . "AND `idx`.`path` = $path "
-            . "WHERE `s`.`name` = ? "
-                . "AND `su`.`ignored` = 0 "
-                . "AND `idx`.`path` IS NULL "
-            . "ORDER BY `su`.`id`",
-            [$siteName]);
-    }
-
     public function removeSiteUnknownPathsMissingFromIndex($siteName)
     {
         $path = self::siteUnknownRelativePathSql();

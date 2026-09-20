@@ -1228,38 +1228,6 @@ class ManxDatabaseTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($rows, $results);
     }
 
-    public function testGetSiteUnknownPathsMissingFromIndex()
-    {
-        $siteName = 'bitsavers';
-        $path = "IF(`su`.`dir_id` = -1, `su`.`filename`, "
-            . "CONCAT(`sud`.`path`, '/', `su`.`filename`))";
-        $select = "SELECT `su`.`id`, $path AS `path` "
-            . "FROM `site_unknown` `su` "
-                . "INNER JOIN `site` `s` "
-                    . "ON `s`.`site_id` = `su`.`site_id` "
-                . "LEFT JOIN `site_unknown_dir` `sud` "
-                    . "ON `sud`.`site_id` = `s`.`site_id` "
-                    . "AND `su`.`dir_id` = `sud`.`id` "
-                . "LEFT JOIN `tmp_site_index_by_date` `idx` "
-                    . "ON `idx`.`site_id` = `s`.`site_id` "
-                    . "AND `idx`.`path` = $path "
-            . "WHERE `s`.`name` = ? "
-                . "AND `su`.`ignored` = 0 "
-                . "AND `idx`.`path` IS NULL "
-            . "ORDER BY `su`.`id`";
-        $rows = \Manx\Test\RowFactory::createResultRowsForColumns(
-            ['id', 'path'],
-            [
-                [1, 'foo/missing.pdf']
-            ]);
-        $this->_db->expects($this->once())->method('execute')
-            ->with($select, [$siteName])->willReturn($rows);
-
-        $results = $this->_manxDb->getSiteUnknownPathsMissingFromIndex($siteName);
-
-        $this->assertEquals($rows, $results);
-    }
-
     public function testRemoveSiteUnknownPathsMissingFromIndex()
     {
         $siteName = 'bitsavers';

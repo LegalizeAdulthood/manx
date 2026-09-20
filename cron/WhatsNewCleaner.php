@@ -62,39 +62,6 @@ class WhatsNewCleaner implements IWhatsNewCleaner
         $this->_limit = 500;
     }
 
-    public function removeNonExistentUnknownPaths()
-    {
-        $this->log("Remove non-existent unknown paths");
-        $this->loadIndexByDateTable();
-        try
-        {
-            $count = 0;
-            $rows = $this->_db->getSiteUnknownPathsMissingFromIndex(
-                $this->_siteName);
-            $total = count($rows);
-            $this->log(sprintf('Checking %d paths.', $total));
-            foreach($rows as $row)
-            {
-                $path = $row['path'];
-                $url = \Manx\UrlNormalizer::normalize($this->_baseCheckUrl . $path);
-                $urlInfo = $this->_factory->createUrlInfo($url);
-                if (!$urlInfo->exists())
-                {
-                    $this->_db->removeSiteUnknownPathById($row['id']);
-                    $this->log('    Path: ' . $path);
-                }
-                if(++$count % 100 == 0)
-                {
-                    $this->log(sprintf('Progress: %d of %d (%.2f%%)', $count, $total, 100*$count/$total));
-                }
-            }
-        }
-        finally
-        {
-            $this->_whatsNewIndex->dropIndexByDateTable();
-        }
-    }
-
     public function updateMovedFiles()
     {
         $this->loadIndexByDateTable();

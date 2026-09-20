@@ -30,18 +30,12 @@ class WhatsNewProcessor
         {
             if ($command == 'help')
             {
-                $this->log("existence:      remove non-existent unknown paths");
                 $this->log("moved           update moved files");
                 $this->log("index           fetch IndexByDate.txt");
                 $this->log("unknown-copies  remove unknown paths with existing copy");
                 $this->log("ingest          ingest copies from guessable unknown paths");
                 $this->log("md5             compute MD5 hashes for copies");
                 $this->log("pdf-metadata    cache PDF metadata for unknown paths");
-            }
-            else if ($command == 'existence')
-            {
-                $this->lock($command);
-                $this->_cleaner->removeNonExistentUnknownPaths();
             }
             else if ($command == 'moved')
             {
